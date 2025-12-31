@@ -1,45 +1,55 @@
 <template>
   <div class="grid grid-cols-2 gap-4">
     <!-- Sales -->
-    <div class="dashboard-card p-6">
+    <div
+      class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg border-t-4 border-t-violet-500 dark:border-t-violet-600"
+    >
       <div class="flex items-start justify-between">
         <div>
-          <h3 class="font-bold text-lg tracking-tight">
+          <h3
+            class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+          >
             {{ t`Sales` }}
             <span class="text-sm font-medium text-gray-500 dark:text-gray-400"
               >({{ t`Receipts Control` }})</span
             >
           </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p
+            class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium uppercase tracking-wide"
+          >
             {{ periodLabel }}
           </p>
         </div>
         <span
-          class="w-2.5 h-2.5 rounded-full mt-1 bg-violet-500/80 dark:bg-violet-600/80"
+          class="w-2.5 h-2.5 rounded-full mt-1 bg-violet-500/80 dark:bg-violet-600/80 shadow-sm"
         />
       </div>
 
       <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm tabular-nums">
-        <div class="text-gray-600 dark:text-gray-300">{{ t`Total Sales` }}</div>
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Total Sales` }}
+        </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.sales.total) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Amount Received` }}
         </div>
-        <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
+        <div
+          class="text-right font-semibold text-violet-600 dark:text-violet-400"
+        >
           {{ formatCurrency(salesReceived) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Amount Outstanding` }}
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.receivables.outstanding) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Overdue Sales` }}
         </div>
         <div
@@ -53,7 +63,7 @@
           {{ formatCurrency(summary.receivables.overdue) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Avg. Collection Period` }}
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
@@ -62,7 +72,7 @@
       </div>
 
       <div class="mt-5 flex items-center justify-between text-xs">
-        <div class="text-gray-500 dark:text-gray-400 tabular-nums">
+        <div class="text-gray-500 dark:text-gray-400 tabular-nums font-medium">
           {{ salesPaidPercentText }}
           <span class="mx-1">•</span>
           {{ t`${summary.sales.unpaidCount || 0} unpaid bills (this period)` }}
@@ -71,13 +81,13 @@
 
       <div class="mt-5 flex items-center gap-4 text-sm">
         <button
-          class="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
           @click="routeToOverdueSales"
         >
           {{ t`View overdue bills` }}
         </button>
         <button
-          class="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
           @click="routeToOverdueSales"
         >
           {{ t`Send reminders` }}
@@ -86,43 +96,53 @@
     </div>
 
     <!-- Purchases -->
-    <div class="dashboard-card p-6">
+    <div
+      class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg border-t-4 border-t-teal-500 dark:border-t-teal-600"
+    >
       <div class="flex items-start justify-between">
         <div>
-          <h3 class="font-bold text-lg tracking-tight">
+          <h3
+            class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+          >
             {{ t`Purchases` }}
             <span class="text-sm font-medium text-gray-500 dark:text-gray-400"
               >({{ t`Payments Control` }})</span
             >
           </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p
+            class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium uppercase tracking-wide"
+          >
             {{ periodLabel }}
           </p>
         </div>
         <span
-          class="w-2.5 h-2.5 rounded-full mt-1 bg-teal-500/80 dark:bg-teal-600/80"
+          class="w-2.5 h-2.5 rounded-full mt-1 bg-teal-500/80 dark:bg-teal-600/80 shadow-sm"
         />
       </div>
 
       <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm tabular-nums">
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Total Purchases` }}
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.purchases.total) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">{{ t`Amount Paid` }}</div>
-        <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Amount Paid` }}
+        </div>
+        <div class="text-right font-semibold text-teal-600 dark:text-teal-400">
           {{ formatCurrency(purchasesPaid) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">{{ t`Amount Due` }}</div>
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Amount Due` }}
+        </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.payables.outstanding) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Due in next 7 days` }}
         </div>
         <div
@@ -136,7 +156,7 @@
           {{ formatCurrency(summary.payables.dueNext7) }}
         </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-gray-600 dark:text-gray-300 font-medium">
           {{ t`Overdue vendor bills` }}
         </div>
         <div
@@ -153,13 +173,13 @@
 
       <div class="mt-5 flex items-center gap-4 text-sm">
         <button
-          class="text-teal-600 dark:text-teal-400 font-medium hover:underline"
+          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
           @click="routeToUnpaidPurchases"
         >
           {{ t`Pay bills` }}
         </button>
         <button
-          class="text-teal-600 dark:text-teal-400 font-medium hover:underline"
+          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
           @click="routeToOverduePurchases"
         >
           {{ t`View overdue vendors` }}

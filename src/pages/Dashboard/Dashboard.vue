@@ -29,7 +29,9 @@
           </div>
 
           <div class="col-span-12 xl:col-span-9 space-y-4">
-            <div class="dashboard-card p-6">
+            <div
+              class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+            >
               <Cashflow :dark-mode="darkMode" />
             </div>
 
@@ -40,10 +42,14 @@
             />
 
             <div v-if="summary" class="grid grid-cols-2 gap-4">
-              <div class="dashboard-card p-6">
+              <div
+                class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+              >
                 <ProfitOverview :summary="summary" />
               </div>
-              <div class="dashboard-card p-6">
+              <div
+                class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+              >
                 <ExpenseBreakdown
                   :summary="summary"
                   :dark-mode="darkMode"
@@ -55,7 +61,10 @@
           </div>
 
           <div class="col-span-12 xl:col-span-3">
-            <div v-if="summary" class="dashboard-card p-4 xl:sticky xl:top-4">
+            <div
+              v-if="summary"
+              class="dashboard-card p-4 xl:sticky xl:top-4 transition-all duration-300 hover:shadow-lg"
+            >
               <AlertsPanel :summary="summary" />
             </div>
           </div>
@@ -102,7 +111,7 @@ export default defineComponent({
   },
   data() {
     return {
-      period: 'This Month' as PeriodKey,
+      period: 'This Year' as PeriodKey,
       summary: null as DashboardSummary | null,
       fromDateISO: DateTime.now().toISODate(),
       toDateISO: DateTime.now().plus({ days: 1 }).toISODate(),

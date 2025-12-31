@@ -1,11 +1,13 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="flex items-center justify-between">
-      <h3 class="font-bold text-lg tracking-tight">
+      <h3
+        class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+      >
         {{ t`Expense Breakdown` }}
       </h3>
       <button
-        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:underline"
+        class="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
         @click="routeToProfitAndLoss"
       >
         {{ t`View full Profit & Loss` }}
@@ -18,14 +20,21 @@
         <button
           v-for="(row, i) in expenseRows"
           :key="row.account"
-          class="text-left p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
-          :class="active === i ? 'bg-gray-50 dark:bg-gray-800/40' : ''"
+          class="text-left p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all duration-300 hover:shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+          :class="
+            active === i
+              ? 'bg-gray-50 dark:bg-gray-800/40 shadow-sm border-gray-200 dark:border-gray-700'
+              : ''
+          "
           @mouseenter="active = i"
           @mouseleave="active = null"
           @click="routeToLedger(row.account)"
         >
           <div class="flex items-center gap-2 text-sm">
-            <span class="w-2.5 h-2.5 rounded-full" :class="row.class" />
+            <span
+              class="w-2.5 h-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110"
+              :class="row.class"
+            />
             <span
               class="font-medium text-gray-800 dark:text-gray-100 truncate max-w-[9rem]"
               >{{ row.account }}</span
@@ -37,12 +46,14 @@
             </span>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
-            <span class="text-gray-500 dark:text-gray-400 tabular-nums">
+            <span
+              class="text-gray-500 dark:text-gray-400 tabular-nums font-medium"
+            >
               {{ row.percentText }}
             </span>
             <span
               v-if="row.changeText"
-              class="tabular-nums"
+              class="tabular-nums font-semibold"
               :class="
                 row.isUnusualIncrease
                   ? 'text-amber-600 dark:text-amber-500'
@@ -72,6 +83,7 @@
 
     <div v-else class="flex-1 w-full h-full flex-center my-20">
       <div class="text-center">
+        <div class="text-6xl mb-4">💸</div>
         <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
           {{ t`No expenses in this period` }}
         </span>
@@ -118,27 +130,27 @@ export default defineComponent({
     shades() {
       return [
         {
-          class: 'bg-violet-500 dark:bg-violet-600',
+          class: 'bg-violet-500 dark:bg-violet-600 shadow-sm',
           hex: uicolors.violet['500'],
           darkHex: uicolors.violet['600'],
         },
         {
-          class: 'bg-teal-500 dark:bg-teal-600',
+          class: 'bg-teal-500 dark:bg-teal-600 shadow-sm',
           hex: uicolors.teal['500'],
           darkHex: uicolors.teal['600'],
         },
         {
-          class: 'bg-amber-500 dark:bg-amber-600',
+          class: 'bg-amber-500 dark:bg-amber-600 shadow-sm',
           hex: uicolors.amber['500'],
           darkHex: uicolors.amber['600'],
         },
         {
-          class: 'bg-blue-500 dark:bg-blue-600',
+          class: 'bg-blue-500 dark:bg-blue-600 shadow-sm',
           hex: uicolors.blue['500'],
           darkHex: uicolors.blue['600'],
         },
         {
-          class: 'bg-pink-500 dark:bg-pink-600',
+          class: 'bg-pink-500 dark:bg-pink-600 shadow-sm',
           hex: uicolors.pink['500'],
           darkHex: uicolors.pink['600'],
         },
