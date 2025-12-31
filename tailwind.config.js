@@ -49,8 +49,11 @@ module.exports = {
       boxShadow: {
         'outline-px': '0 0 0 1px rgba(66, 153, 225, 0.5)',
         DEFAULT: '0 2px 4px 0 rgba(0, 0, 0, 0.05)',
+        sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         md: '0 0 2px 0 rgba(0, 0, 0, 0.10), 0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+        lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         button: '0 0.5px 0 0 rgba(0, 0, 0, 0.08)',
+        inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
       },
       borderRadius: {
         sm: '0.25rem', // 4px

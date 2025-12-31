@@ -9,20 +9,27 @@
 
     <div v-show="hasData" class="flex relative">
       <!-- Chart Legend -->
-      <div class="w-1/2 flex flex-col gap-4 justify-center dark:text-gray-25">
+      <div class="w-1/2 flex flex-col gap-3 justify-center dark:text-gray-200">
         <!-- Ledgend Item -->
         <div
           v-for="(d, i) in expenses"
           :key="d.account"
-          class="flex items-center text-sm"
+          class="flex items-center text-sm p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-default"
           @mouseover="active = i"
           @mouseleave="active = null"
         >
-          <div class="w-3 h-3 rounded-sm flex-shrink-0" :class="d.class" />
-          <p class="ms-2 overflow-x-auto whitespace-nowrap no-scrollbar w-28">
+          <div
+            class="w-3 h-3 rounded-sm flex-shrink-0 shadow-sm"
+            :class="d.class"
+          />
+          <p
+            class="ms-3 overflow-x-auto whitespace-nowrap no-scrollbar w-28 font-medium text-gray-700 dark:text-gray-200"
+          >
             {{ d.account }}
           </p>
-          <p class="whitespace-nowrap flex-shrink-0 ms-auto">
+          <p
+            class="whitespace-nowrap flex-shrink-0 ms-auto font-semibold text-gray-800 dark:text-gray-100"
+          >
             {{ fyo.format(d?.total ?? 0, 'Currency') }}
           </p>
         </div>
@@ -46,9 +53,12 @@
       v-if="expenses.length === 0"
       class="flex-1 w-full h-full flex-center my-20"
     >
-      <span class="text-base text-gray-600 dark:text-gray-500">
-        {{ t`No expenses in this period` }}
-      </span>
+      <div class="text-center">
+        <div class="text-4xl mb-3 opacity-50">💸</div>
+        <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`No expenses in this period` }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -87,7 +97,7 @@ export default defineComponent({
       account: string;
       total: number;
       color: { color: string; darkColor: string };
-      class: { class: string; darkClass: string };
+      class: string;
     }[],
   }),
   computed: {
@@ -120,32 +130,45 @@ export default defineComponent({
         toDate.toISO()
       );
       const shades = [
-        { class: 'bg-pink-500', hex: uicolors.pink['500'] },
-        { class: 'bg-pink-400', hex: uicolors.pink['400'] },
-        { class: 'bg-pink-300', hex: uicolors.pink['300'] },
-        { class: 'bg-pink-200', hex: uicolors.pink['200'] },
-        { class: 'bg-pink-100', hex: uicolors.pink['100'] },
-      ];
-
-      const darkshades = [
-        { class: 'bg-pink-600', hex: uicolors.pink['600'] },
-        { class: 'bg-pink-500', hex: uicolors.pink['500'] },
-        { class: 'bg-pink-400', hex: uicolors.pink['400'] },
-        { class: 'bg-pink-300', hex: uicolors.pink['300'] },
         {
-          class: 'bg-pink-200 dark:bg-opacity-80',
-          hex: uicolors.pink['200'] + 'CC',
+          class: 'bg-violet-500 dark:bg-violet-600',
+          hex: uicolors.violet['500'],
+          darkHex: uicolors.violet['600'],
+        },
+        {
+          class: 'bg-teal-500 dark:bg-teal-600',
+          hex: uicolors.teal['500'],
+          darkHex: uicolors.teal['600'],
+        },
+        {
+          class: 'bg-amber-500 dark:bg-amber-600',
+          hex: uicolors.amber['500'],
+          darkHex: uicolors.amber['600'],
+        },
+        {
+          class: 'bg-blue-500 dark:bg-blue-600',
+          hex: uicolors.blue['500'],
+          darkHex: uicolors.blue['600'],
+        },
+        {
+          class: 'bg-pink-500 dark:bg-pink-600',
+          hex: uicolors.pink['500'],
+          darkHex: uicolors.pink['600'],
         },
       ];
 
       this.expenses = topExpenses
         .filter((e) => e.total > 0)
         .map((d, i) => {
+          const shadeIndex = i % shades.length;
           return {
             account: d.account,
             total: d.total,
-            color: { color: shades[i].hex, darkColor: darkshades[i].hex },
-            class: { class: shades[i].class, darkClass: darkshades[i].class },
+            color: {
+              color: shades[shadeIndex].hex,
+              darkColor: shades[shadeIndex].darkHex,
+            },
+            class: shades[shadeIndex].class,
           };
         });
     },

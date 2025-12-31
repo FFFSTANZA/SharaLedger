@@ -9,11 +9,11 @@
       }"
     >
       <div
-        class="text-sm flex focus:outline-none hover:text-gray-800 dark:hover:text-gray-100 focus:text-gray-800 dark:focus:text-gray-100 items-center py-1 rounded-md leading-relaxed cursor-pointer"
+        class="text-sm flex focus:outline-none hover:text-gray-700 dark:hover:text-gray-200 focus:text-gray-700 dark:focus:text-gray-200 items-center py-1.5 px-2 rounded-lg leading-relaxed cursor-pointer transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700/50"
         :class="
           !value
-            ? 'text-gray-600 dark:text-gray-500'
-            : 'text-gray-900 dark:text-gray-300'
+            ? 'text-gray-500 dark:text-gray-400'
+            : 'text-gray-700 dark:text-gray-300'
         "
         tabindex="0"
         @click="toggleDropdown()"
@@ -22,7 +22,7 @@
         @keydown.enter="selectHighlightedItem"
       >
         {{ periodSelectorMap?.[value] ?? value }}
-        <feather-icon name="chevron-down" class="ms-1 w-3 h-3" />
+        <feather-icon name="chevron-down" class="ms-1.5 w-3 h-3" />
       </div>
     </template>
   </Dropdown>
