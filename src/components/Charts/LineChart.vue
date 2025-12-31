@@ -117,14 +117,14 @@
       ref="tooltip"
       :offset="15"
       placement="top"
-      class="text-sm shadow-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200 border-s-4"
+      class="text-sm shadow-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg border-l-4"
       :style="{ borderColor: colors[yi] }"
     >
-      <div class="flex flex-col justify-center items-center">
-        <p>
+      <div class="flex flex-col justify-center items-center min-w-[120px]">
+        <p class="text-gray-600 dark:text-gray-400 text-xs font-medium mb-1">
           {{ xi > -1 ? formatX(xLabels[xi]) : '' }}
         </p>
-        <p class="font-semibold">
+        <p class="text-lg font-bold">
           {{ yi > -1 ? format(points[yi][xi]) : '' }}
         </p>
       </div>

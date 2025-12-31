@@ -2,7 +2,7 @@
   <div>
     <!-- Title and Period Selector -->
     <div class="flex items-center justify-between">
-      <div class="font-semibold text-base dark:text-white">
+      <div class="font-semibold text-base text-gray-800 dark:text-white">
         {{ t`Cashflow` }}
       </div>
 
@@ -10,15 +10,19 @@
       <div v-if="hasData" class="flex text-base gap-8">
         <div class="flex items-center gap-2">
           <span
-            class="w-3 h-3 rounded-sm inline-block bg-blue-500 dark:bg-blue-600"
+            class="w-3 h-3 rounded-sm inline-block bg-violet-500 dark:bg-violet-600 shadow-sm"
           />
-          <span class="text-gray-900 dark:text-gray-25">{{ t`Inflow` }}</span>
+          <span class="text-gray-700 dark:text-gray-200 font-medium">{{
+            t`Inflow`
+          }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span
-            class="w-3 h-3 rounded-sm inline-block bg-pink-500 dark:bg-pink-600"
+            class="w-3 h-3 rounded-sm inline-block bg-teal-500 dark:bg-teal-600 shadow-sm"
           />
-          <span class="text-gray-900 dark:text-gray-25">{{ t`Outflow` }}</span>
+          <span class="text-gray-700 dark:text-gray-200 font-medium">{{
+            t`Outflow`
+          }}</span>
         </div>
       </div>
       <div v-else class="w-16 h-5 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -90,8 +94,8 @@ export default defineComponent({
     chartData() {
       let data = this.data;
       let colors = [
-        uicolors.blue[this.darkMode ? '600' : '500'],
-        uicolors.pink[this.darkMode ? '600' : '500'],
+        uicolors.violet[this.darkMode ? '600' : '500'],
+        uicolors.teal[this.darkMode ? '600' : '500'],
       ];
       if (!this.hasData) {
         data = dummyData;
@@ -115,8 +119,10 @@ export default defineComponent({
         format,
         yMax,
         formatX: formatXLabels,
-        gridColor: this.darkMode ? 'rgba(200, 200, 200, 0.2)' : undefined,
-        fontColor: this.darkMode ? uicolors.gray['400'] : undefined,
+        gridColor: this.darkMode
+          ? 'rgba(200, 200, 200, 0.15)'
+          : 'rgba(0, 0, 0, 0.06)',
+        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['600'],
       };
     },
   },

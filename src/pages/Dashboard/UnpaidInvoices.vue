@@ -11,39 +11,39 @@
     <!-- Widget Body -->
     <div class="mt-4">
       <!-- Paid & Unpaid Amounts -->
-      <div class="flex justify-between">
+      <div class="flex justify-between gap-4">
         <!-- Paid -->
         <div
-          class="text-sm font-medium dark:text-gray-25"
+          class="text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
           :class="{
-            'bg-gray-200 dark:bg-gray-700 text-gray-200 dark:text-gray-700 rounded':
+            'bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 rounded px-2 py-1':
               !count,
-            'cursor-pointer': paidCount > 0,
           }"
           :title="paidCount > 0 ? t`View Paid Invoices` : ''"
           @click="() => routeToInvoices('paid')"
         >
           {{ fyo.format(paid, 'Currency') }}
           <span
-            :class="{ 'text-gray-900 dark:text-gray-200 font-normal': count }"
+            v-if="count"
+            class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1"
             >{{ t`Paid` }}</span
           >
         </div>
 
         <!-- Unpaid -->
         <div
-          class="text-sm font-medium dark:text-gray-25"
+          class="text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
           :class="{
-            'bg-gray-200 dark:bg-gray-700 text-gray-200 dark:text-gray-700 rounded':
+            'bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 rounded px-2 py-1':
               !count,
-            'cursor-pointer': unpaidCount > 0,
           }"
           :title="unpaidCount > 0 ? t`View Unpaid Invoices` : ''"
           @click="() => routeToInvoices('unpaid')"
         >
           {{ fyo.format(unpaid, 'Currency') }}
           <span
-            :class="{ 'text-gray-900 dark:text-gray-200 font-normal': count }"
+            v-if="count"
+            class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1"
             >{{ t`Unpaid` }}</span
           >
         </div>
@@ -51,14 +51,17 @@
 
       <!-- Widget Bar -->
       <div
-        class="mt-2 relative rounded overflow-hidden"
+        class="mt-3 relative rounded-lg overflow-hidden h-5 shadow-inner"
         @mouseenter="show = true"
         @mouseleave="show = false"
       >
-        <div class="w-full h-4" :class="unpaidColor"></div>
         <div
-          class="absolute inset-0 h-4"
-          :class="paidColor"
+          class="w-full h-full transition-all duration-300"
+          :class="unpaidColorClass"
+        ></div>
+        <div
+          class="absolute inset-0 h-full transition-all duration-300"
+          :class="paidColorClass"
           :style="`width: ${barWidth}%`"
         ></div>
       </div>
@@ -68,15 +71,15 @@
       :offset="15"
       :show="show"
       placement="top"
-      class="text-sm shadow-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-s-4"
+      class="text-sm shadow-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg border-l-4"
       :style="{ borderColor: colors }"
     >
-      <div class="flex justify-between gap-4">
-        <p>{{ t`Paid` }}</p>
+      <div class="flex justify-between gap-6">
+        <p class="text-gray-600 dark:text-gray-300">{{ t`Paid` }}</p>
         <p class="font-semibold">{{ paidCount ?? 0 }}</p>
       </div>
-      <div v-if="unpaidCount > 0" class="flex justify-between gap-4">
-        <p>{{ t`Unpaid` }}</p>
+      <div v-if="unpaidCount > 0" class="flex justify-between gap-6 mt-1">
+        <p class="text-gray-600 dark:text-gray-300">{{ t`Unpaid` }}</p>
         <p class="font-semibold">{{ unpaidCount ?? 0 }}</p>
       </div>
     </MouseFollower>
@@ -145,28 +148,34 @@ export default defineComponent({
     title(): string {
       return fyo.schemaMap[this.schemaName]?.label ?? '';
     },
-    color(): 'blue' | 'pink' {
+    color(): 'violet' | 'teal' {
       if (this.schemaName === ModelNameEnum.SalesInvoice) {
-        return 'blue';
+        return 'violet';
       }
-      return 'pink';
+      return 'teal';
     },
     colors(): string {
       return uicolors[this.color][this.darkMode ? '600' : '500'];
     },
-    paidColor(): string {
+    paidColorClass(): string {
       if (!this.hasData) {
-        return this.darkMode ? 'bg-gray-700' : 'bg-gray-400';
+        return this.darkMode ? 'bg-gray-700' : 'bg-gray-300';
       }
 
-      return `bg-${this.color}-${this.darkMode ? '600' : '500'}`;
+      if (this.color === 'violet') {
+        return this.darkMode ? 'bg-violet-600' : 'bg-violet-500';
+      }
+      return this.darkMode ? 'bg-teal-600' : 'bg-teal-500';
     },
-    unpaidColor(): string {
+    unpaidColorClass(): string {
       if (!this.hasData) {
-        return `bg-gray-${this.darkMode ? '800' : '200'}`;
+        return `bg-gray-${this.darkMode ? '800' : '100'}`;
       }
 
-      return `bg-${this.color}-${this.darkMode ? '700 bg-opacity-20' : '200'}`;
+      if (this.color === 'violet') {
+        return this.darkMode ? 'bg-violet-50' : 'bg-violet-100';
+      }
+      return this.darkMode ? 'bg-teal-50' : 'bg-teal-100';
     },
   },
   async activated() {

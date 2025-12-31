@@ -25,9 +25,12 @@
       :y-min="chartData.yMin"
     />
     <div v-else class="flex-1 w-full h-full flex-center my-20">
-      <span class="text-base text-gray-600 dark:text-gray-500">
-        {{ t`No transactions yet` }}
-      </span>
+      <div class="text-center">
+        <div class="text-4xl mb-3 opacity-50">📊</div>
+        <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`No transactions yet` }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -69,8 +72,8 @@ export default defineComponent({
       const points = [this.data.map((d) => d.balance)];
       const colors = [
         {
-          positive: uicolors.blue[this.darkMode ? '600' : '500'],
-          negative: uicolors.pink[this.darkMode ? '600' : '500'],
+          positive: uicolors.violet[this.darkMode ? '600' : '500'],
+          negative: uicolors.amber[this.darkMode ? '600' : '500'],
         },
       ];
       const format = (value: number) => fyo.format(value ?? 0, 'Currency');
@@ -84,9 +87,13 @@ export default defineComponent({
         yMax,
         yMin,
         formatX: formatXLabels,
-        gridColor: this.darkMode ? 'rgba(200, 200, 200, 0.2)' : undefined,
-        fontColor: this.darkMode ? uicolors.gray['400'] : undefined,
-        zeroLineColor: this.darkMode ? uicolors.gray['400'] : undefined,
+        gridColor: this.darkMode
+          ? 'rgba(200, 200, 200, 0.15)'
+          : 'rgba(0, 0, 0, 0.06)',
+        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['600'],
+        zeroLineColor: this.darkMode
+          ? uicolors.gray['400']
+          : uicolors.gray['300'],
       };
     },
   },
