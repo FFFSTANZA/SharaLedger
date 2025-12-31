@@ -1,6 +1,6 @@
 {
   "name": "SalesQuote",
-  "label": "Quote",
+  "label": "Quotation",
   "extends": "Invoice",
   "naming": "numberSeries",
   "showTitle": true,

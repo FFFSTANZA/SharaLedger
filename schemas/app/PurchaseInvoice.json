@@ -1,6 +1,6 @@
 {
   "name": "PurchaseInvoice",
-  "label": "Purchase Invoice",
+  "label": "Purchase Bill",
   "extends": "Invoice",
   "naming": "numberSeries",
   "showTitle": true,
@@ -17,7 +17,7 @@
     },
     {
       "fieldname": "party",
-      "label": "Supplier",
+      "label": "Vendor",
       "fieldtype": "Link",
       "target": "Party",
       "create": true,

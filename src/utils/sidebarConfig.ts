@@ -124,7 +124,7 @@ function getReportSidebar() {
         route: '/report/GeneralLedger',
       },
       {
-        label: t`Profit And Loss`,
+        label: t`Profit & Loss`,
         name: 'profit-and-loss',
         route: '/report/ProfitAndLoss',
       },
@@ -166,13 +166,13 @@ function getCompleteSidebar(): SidebarConfig {
       route: '/list/SalesInvoice',
       items: [
         {
-          label: t`Sales Quotes`,
+          label: t`Quotations`,
           name: 'sales-quotes',
           route: '/list/SalesQuote',
           schemaName: 'SalesQuote',
         },
         {
-          label: t`Sales Invoices`,
+          label: t`Sales Bills`,
           name: 'sales-invoices',
           route: '/list/SalesInvoice',
           schemaName: 'SalesInvoice',
@@ -235,7 +235,7 @@ function getCompleteSidebar(): SidebarConfig {
       route: '/list/PurchaseInvoice',
       items: [
         {
-          label: t`Purchase Invoices`,
+          label: t`Purchase Bills`,
           name: 'purchase-invoices',
           route: '/list/PurchaseInvoice',
           schemaName: 'PurchaseInvoice',
@@ -248,9 +248,9 @@ function getCompleteSidebar(): SidebarConfig {
           filters: routeFilters.PurchasePayments,
         },
         {
-          label: t`Suppliers`,
+          label: t`Vendors`,
           name: 'suppliers',
-          route: `/list/Party/${t`Suppliers`}`,
+          route: `/list/Party/${t`Vendors`}`,
           schemaName: 'Party',
           filters: routeFilters.Suppliers,
         },

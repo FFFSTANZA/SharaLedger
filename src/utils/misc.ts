@@ -70,7 +70,9 @@ export function getSetupWizardDoc(languageMap?: LanguageMap) {
   }
   return fyo.doc.getNewDoc(
     'SetupWizard',
-    {},
+    {
+      country: 'India',
+    },
     false,
     schema as Schema,
     SetupWizard
