@@ -1,15 +1,7 @@
 <template>
   <div
     :class="[containerClasses]"
-    class="
-      mt-6
-      p-2
-      w-full
-      text-gray-900
-      dark:text-gray-100
-      text-base
-      focus:outline-none
-    "
+    class="mt-6 p-2 w-full text-gray-900 dark:text-gray-100 text-base focus:outline-none"
   >
     <label class="flex items-center justify-between w-full">
       <div v-if="showLabel && !labelRight" :class="labelClasses">

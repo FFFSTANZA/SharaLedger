@@ -1,14 +1,7 @@
 <template>
   <div
     id="app"
-    class="
-      dark:bg-gray-900
-      h-screen
-      flex flex-col
-      font-sans
-      overflow-hidden
-      antialiased
-    "
+    class="dark:bg-gray-900 h-screen flex flex-col font-sans overflow-hidden antialiased"
     :dir="languageDirection"
     :language="language"
   >
@@ -186,7 +179,7 @@ export default defineComponent({
           title: this.t`Cannot open file`,
           type: 'error',
           detail: this
-            .t`Frappe Books does not have access to the selected file: ${filePath}`,
+            .t`SharaLedger does not have access to the selected file: ${filePath}`,
         });
 
         fyo.config.set('lastSelectedFilePath', null);

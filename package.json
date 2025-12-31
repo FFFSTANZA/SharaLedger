@@ -1,10 +1,10 @@
 {
-  "name": "frappe-books",
+  "name": "sharaledger",
   "version": "0.36.0",
   "description": "Simple book-keeping app for everyone",
   "author": {
-    "name": "Frappe Technologies Pvt. Ltd.",
-    "email": "hello@frappe.io"
+    "name": "SharaLedger Technologies",
+    "email": "hello@sharaledger.com"
   },
   "scripts": {
     "dev": "node build/scripts/dev.mjs",
@@ -91,9 +91,9 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "homepage": "https://frappe.io/books",
+  "homepage": "https://sharaledger.com",
   "repository": {
-    "url": "https://github.com/frappe/books"
+    "url": "https://github.com/sharaledger/sharaledger"
   },
   "license": "AGPL-3.0-only"
 }

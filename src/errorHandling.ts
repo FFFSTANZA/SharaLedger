@@ -246,7 +246,8 @@ function getFeatureFlags(): string[] {
 }
 
 function getIssueUrlQuery(errorLogObj?: ErrorLog): string {
-  const baseUrl = 'https://github.com/frappe/books/issues/new?labels=bug';
+  const baseUrl =
+    'https://github.com/sharaledger/sharaledger/issues/new?labels=bug';
 
   const body = [
     '<h2>Description</h2>',
