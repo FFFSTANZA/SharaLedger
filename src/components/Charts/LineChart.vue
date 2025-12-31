@@ -117,14 +117,16 @@
       ref="tooltip"
       :offset="15"
       placement="top"
-      class="text-sm shadow-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg border-l-4"
-      :style="{ borderColor: colors[yi] }"
+      class="text-[13px] shadow-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl border border-gray-100 dark:border-gray-700 transition-all duration-200"
+      :style="{ borderLeft: `4px solid ${colors[yi]}` }"
     >
       <div class="flex flex-col justify-center items-center min-w-[120px]">
-        <p class="text-gray-600 dark:text-gray-400 text-xs font-medium mb-1">
+        <p
+          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1 uppercase tracking-wider"
+        >
           {{ xi > -1 ? formatX(xLabels[xi]) : '' }}
         </p>
-        <p class="text-lg font-bold">
+        <p class="text-xl font-bold tracking-tight">
           {{ yi > -1 ? format(points[yi][xi]) : '' }}
         </p>
       </div>

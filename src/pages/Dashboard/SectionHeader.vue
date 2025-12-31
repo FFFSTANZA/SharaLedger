@@ -1,10 +1,12 @@
 <template>
   <div
-    class="flex items-baseline justify-between text-gray-800 dark:text-white"
+    class="flex items-center justify-between text-gray-900 dark:text-white mb-2"
   >
-    <span class="font-semibold text-base tracking-tight"
-      ><slot name="title"></slot
-    ></span>
-    <slot name="action"></slot>
+    <h3 class="font-bold text-lg tracking-tight">
+      <slot name="title"></slot>
+    </h3>
+    <div class="flex items-center gap-2">
+      <slot name="action"></slot>
+    </div>
   </div>
 </template>
