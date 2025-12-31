@@ -1,5 +1,7 @@
 import {
   Cashflow,
+  CashflowSeriesPoint,
+  DashboardSummary,
   IncomeExpense,
   TopExpenses,
   TotalCreditAndDebit,
@@ -90,6 +92,406 @@ export class BespokeQueries {
       .groupBy(dateAsMonthYear)) as Cashflow;
   }
 
+  static async getCashflowSeries(
+    db: DatabaseCore,
+    fromDate: string,
+    toDate: string,
+    groupBy: 'day' | 'month'
+  ): Promise<CashflowSeriesPoint> {
+    const cashAndBankAccounts = db.knex!('Account')
+      .select('name')
+      .where('accountType', 'in', ['Cash', 'Bank'])
+      .andWhere('isGroup', false);
+
+    const format = groupBy === 'day' ? '%Y-%m-%d' : '%Y-%m';
+    const periodExpr = db.knex!.raw(`strftime('${format}', ??)`, 'date');
+
+    const aggregated = (await db.knex!('AccountingLedgerEntry')
+      .where('reverted', false)
+      .where('account', 'in', cashAndBankAccounts)
+      .whereBetween('date', [fromDate, toDate])
+      .select({
+        period: periodExpr,
+        inflow: db.knex!.raw('sum(cast(debit as real))'),
+        outflow: db.knex!.raw('sum(cast(credit as real))'),
+      })
+      .groupBy(periodExpr)
+      .orderBy(periodExpr)) as unknown as {
+      period: string;
+      inflow: number;
+      outflow: number;
+    }[];
+
+    const entries = (await db.knex!('AccountingLedgerEntry')
+      .where('reverted', false)
+      .where('account', 'in', cashAndBankAccounts)
+      .whereBetween('date', [fromDate, toDate])
+      .select({
+        period: periodExpr,
+        debit: db.knex!.raw('cast(debit as real) as debit'),
+        credit: db.knex!.raw('cast(credit as real) as credit'),
+      })
+      .select('referenceType', 'referenceName')) as unknown as {
+      period: string;
+      debit: number;
+      credit: number;
+      referenceType?: string;
+      referenceName?: string;
+    }[];
+
+    const highlightMap: Record<
+      string,
+      {
+        topInflow?: {
+          amount: number;
+          referenceType?: string;
+          referenceName?: string;
+        };
+        topOutflow?: {
+          amount: number;
+          referenceType?: string;
+          referenceName?: string;
+        };
+      }
+    > = {};
+
+    for (const e of entries) {
+      const period = e.period;
+      highlightMap[period] ??= {};
+
+      const debit = safeParseFloat(e.debit);
+      const credit = safeParseFloat(e.credit);
+
+      if (debit > (highlightMap[period].topInflow?.amount ?? 0)) {
+        highlightMap[period].topInflow = {
+          amount: debit,
+          referenceType: e.referenceType,
+          referenceName: e.referenceName,
+        };
+      }
+
+      if (credit > (highlightMap[period].topOutflow?.amount ?? 0)) {
+        highlightMap[period].topOutflow = {
+          amount: credit,
+          referenceType: e.referenceType,
+          referenceName: e.referenceName,
+        };
+      }
+    }
+
+    return aggregated.map((row) => {
+      const inflow = safeParseFloat(row.inflow);
+      const outflow = safeParseFloat(row.outflow);
+      const net = inflow - outflow;
+      const highlights = highlightMap[row.period] ?? {};
+
+      const topInflow = highlights.topInflow?.amount
+        ? highlights.topInflow
+        : undefined;
+      const topOutflow = highlights.topOutflow?.amount
+        ? highlights.topOutflow
+        : undefined;
+
+      return {
+        period: row.period,
+        inflow,
+        outflow,
+        net,
+        topInflow,
+        topOutflow,
+      };
+    });
+  }
+
+  static async getDashboardSummary(
+    db: DatabaseCore,
+    fromDate: string,
+    toDate: string,
+    prevFromDate: string,
+    prevToDate: string,
+    today: string,
+    creditDays = 30
+  ): Promise<DashboardSummary> {
+    const dueModifier = `+${creditDays} day`;
+
+    const cashAndBankAccounts = db.knex!('Account')
+      .select('name')
+      .where('accountType', 'in', ['Cash', 'Bank'])
+      .andWhere('isGroup', false);
+
+    const taxAccounts = db.knex!('Account')
+      .select('name')
+      .where('accountType', 'Tax')
+      .andWhere('isGroup', false);
+
+    const getCashBalance = async (tillDate: string) => {
+      const res = (await db.knex!('AccountingLedgerEntry')
+        .where('reverted', false)
+        .where('account', 'in', cashAndBankAccounts)
+        .where('date', '<=', tillDate)
+        .select({
+          balance: db.knex!.raw(
+            'sum(cast(debit as real) - cast(credit as real))'
+          ),
+        })
+        .first()) as { balance?: number } | undefined;
+
+      return safeParseFloat(res?.balance);
+    };
+
+    const getProfit = async (
+      startDate: string,
+      endDate: string
+    ): Promise<{ income: number; expense: number }> => {
+      const res = (await db.knex!.raw(
+        `
+        select 
+          sum(case when a.rootType = 'Income'
+            then cast(ale.credit as real) - cast(ale.debit as real)
+            else 0 end) as income,
+          sum(case when a.rootType = 'Expense'
+            then cast(ale.debit as real) - cast(ale.credit as real)
+            else 0 end) as expense
+        from AccountingLedgerEntry ale
+        join Account a on a.name = ale.account
+        where
+          ale.reverted = false and
+          date(ale.date) between date(?) and date(?) and
+          a.rootType in ('Income', 'Expense')
+        `,
+        [startDate, endDate]
+      )) as { income: number; expense: number }[];
+
+      return {
+        income: safeParseFloat(res?.[0]?.income),
+        expense: safeParseFloat(res?.[0]?.expense),
+      };
+    };
+
+    const [cashBalance, cashBalancePrev, profit, profitPrev] =
+      await Promise.all([
+        getCashBalance(toDate),
+        getCashBalance(prevToDate),
+        getProfit(fromDate, toDate),
+        getProfit(prevFromDate, prevToDate),
+      ]);
+
+    const receivablesRes = (await db.knex!('SalesInvoice')
+      .where({ submitted: true, cancelled: false })
+      .whereRaw('cast(outstandingAmount as real) > 0')
+      .select({
+        outstanding: db.knex!.raw('sum(cast(outstandingAmount as real))'),
+        overdue: db.knex!.raw(
+          `sum(case when date(date, ?) < date(?) then cast(outstandingAmount as real) else 0 end)`,
+          [dueModifier, today]
+        ),
+        overdueCount: db.knex!.raw(
+          `sum(case when date(date, ?) < date(?) then 1 else 0 end)`,
+          [dueModifier, today]
+        ),
+      })
+      .first()) as {
+      outstanding?: number;
+      overdue?: number;
+      overdueCount?: number;
+    };
+
+    const payablesRes = (await db.knex!('PurchaseInvoice')
+      .where({ submitted: true, cancelled: false })
+      .whereRaw('cast(outstandingAmount as real) > 0')
+      .select({
+        outstanding: db.knex!.raw('sum(cast(outstandingAmount as real))'),
+        overdue: db.knex!.raw(
+          `sum(case when date(date, ?) < date(?) then cast(outstandingAmount as real) else 0 end)`,
+          [dueModifier, today]
+        ),
+        overdueCount: db.knex!.raw(
+          `sum(case when date(date, ?) < date(?) then 1 else 0 end)`,
+          [dueModifier, today]
+        ),
+        dueNext7: db.knex!.raw(
+          `sum(case when date(date, ?) >= date(?) and date(date, ?) <= date(?, '+7 day') then cast(outstandingAmount as real) else 0 end)`,
+          [dueModifier, today, dueModifier, today]
+        ),
+        dueNext7Count: db.knex!.raw(
+          `sum(case when date(date, ?) >= date(?) and date(date, ?) <= date(?, '+7 day') then 1 else 0 end)`,
+          [dueModifier, today, dueModifier, today]
+        ),
+      })
+      .first()) as {
+      outstanding?: number;
+      overdue?: number;
+      overdueCount?: number;
+      dueNext7?: number;
+      dueNext7Count?: number;
+    };
+
+    const nextDueRes = (await db.knex!('PurchaseInvoice')
+      .where({ submitted: true, cancelled: false })
+      .whereRaw('cast(outstandingAmount as real) > 0')
+      .whereRaw('date(date, ?) >= date(?)', [dueModifier, today])
+      .whereRaw("date(date, ?) <= date(?, '+7 day')", [dueModifier, today])
+      .select('name', 'party')
+      .select({
+        amount: db.knex!.raw('cast(outstandingAmount as real)'),
+        dueDate: db.knex!.raw('date(date, ?)', [dueModifier]),
+      })
+      .orderBy(db.knex!.raw('date(date, ?)', [dueModifier]), 'asc')
+      .first()) as
+      | {
+          name?: string;
+          party?: string;
+          amount?: number;
+          dueDate?: string;
+        }
+      | undefined;
+
+    const getInvoiceControl = async (
+      schemaName: 'SalesInvoice' | 'PurchaseInvoice'
+    ) => {
+      const res = (await db.knex!(schemaName)
+        .where({ submitted: true, cancelled: false })
+        .whereBetween('date', [fromDate, toDate])
+        .select({
+          total: db.knex!.raw('sum(cast(baseGrandTotal as real))'),
+          outstanding: db.knex!.raw('sum(cast(outstandingAmount as real))'),
+          count: db.knex!.raw('count(*)'),
+          unpaidCount: db.knex!.raw(
+            'sum(case when cast(outstandingAmount as real) > 0 then 1 else 0 end)'
+          ),
+          paidCount: db.knex!.raw(
+            'sum(case when cast(outstandingAmount as real) = 0 then 1 else 0 end)'
+          ),
+        })
+        .first()) as {
+        total?: number;
+        outstanding?: number;
+        count?: number;
+        unpaidCount?: number;
+        paidCount?: number;
+      };
+
+      return {
+        total: safeParseFloat(res?.total),
+        outstanding: safeParseFloat(res?.outstanding),
+        count: safeParseFloat(res?.count),
+        unpaidCount: safeParseFloat(res?.unpaidCount),
+        paidCount: safeParseFloat(res?.paidCount),
+      };
+    };
+
+    const [salesAgg, purchasesAgg] = await Promise.all([
+      getInvoiceControl('SalesInvoice'),
+      getInvoiceControl('PurchaseInvoice'),
+    ]);
+
+    const avgSalesCollectionRes = (await db.knex!.raw(
+      `
+      select avg(julianday(p.lastPaymentDate) - julianday(i.date)) as avgDays
+      from SalesInvoice i
+      join (
+        select pf.referenceName as invoiceName, max(datetime(pay.date)) as lastPaymentDate
+        from PaymentFor pf
+        join Payment pay on pay.name = pf.parent
+        where
+          pf.referenceType = 'SalesInvoice' and
+          pf.parentSchemaName = 'Payment' and
+          pay.submitted = true and
+          pay.cancelled = false
+        group by pf.referenceName
+      ) p on p.invoiceName = i.name
+      where
+        i.submitted = true and
+        i.cancelled = false and
+        cast(i.outstandingAmount as real) = 0 and
+        date(i.date) between date(?) and date(?)
+      `,
+      [fromDate, toDate]
+    )) as { avgDays: number }[];
+
+    const avgCollectionDays = avgSalesCollectionRes?.[0]?.avgDays;
+
+    const topExpensesCurrent = await BespokeQueries.getTopExpenses(
+      db,
+      fromDate,
+      toDate
+    );
+
+    const topExpenseAccounts = topExpensesCurrent.map((e) => e.account);
+    let prevExpenseTotals: { account: string; total: number }[] = [];
+    if (topExpenseAccounts.length) {
+      prevExpenseTotals = (await db.knex!('AccountingLedgerEntry')
+        .where('reverted', false)
+        .where('account', 'in', topExpenseAccounts)
+        .whereBetween('date', [prevFromDate, prevToDate])
+        .select('account')
+        .select({
+          total: db.knex!.raw(
+            'sum(cast(debit as real) - cast(credit as real))'
+          ),
+        })
+        .groupBy('account')) as unknown as { account: string; total: number }[];
+    }
+
+    const prevExpenseMap = prevExpenseTotals.reduce((acc, r) => {
+      acc[r.account] = safeParseFloat(r.total);
+      return acc;
+    }, {} as Record<string, number>);
+
+    const topExpenses = topExpensesCurrent.map((e) => ({
+      account: e.account,
+      total: safeParseFloat(e.total),
+      prevTotal: prevExpenseMap[e.account] ?? 0,
+    }));
+
+    const taxRes = (await db.knex!('AccountingLedgerEntry')
+      .where('reverted', false)
+      .where('account', 'in', taxAccounts)
+      .where('date', '<=', toDate)
+      .select({
+        netGst: db.knex!.raw('sum(cast(credit as real) - cast(debit as real))'),
+      })
+      .first()) as { netGst?: number };
+
+    return {
+      cashBalance,
+      cashBalancePrev,
+      profit,
+      profitPrev,
+      receivables: {
+        outstanding: safeParseFloat(receivablesRes?.outstanding),
+        overdue: safeParseFloat(receivablesRes?.overdue),
+        overdueCount: safeParseFloat(receivablesRes?.overdueCount),
+      },
+      payables: {
+        outstanding: safeParseFloat(payablesRes?.outstanding),
+        overdue: safeParseFloat(payablesRes?.overdue),
+        overdueCount: safeParseFloat(payablesRes?.overdueCount),
+        dueNext7: safeParseFloat(payablesRes?.dueNext7),
+        dueNext7Count: safeParseFloat(payablesRes?.dueNext7Count),
+        nextDueName: nextDueRes?.name,
+        nextDueParty: nextDueRes?.party,
+        nextDueAmount:
+          nextDueRes?.amount !== undefined
+            ? safeParseFloat(nextDueRes.amount)
+            : undefined,
+        nextDueDate: nextDueRes?.dueDate,
+      },
+      sales: {
+        ...salesAgg,
+        avgCollectionDays:
+          avgCollectionDays === null || avgCollectionDays === undefined
+            ? null
+            : safeParseFloat(avgCollectionDays),
+      },
+      purchases: purchasesAgg,
+      topExpenses,
+      tax: {
+        netGst: safeParseFloat(taxRes?.netGst),
+      },
+    };
+  }
+
   static async getIncomeAndExpenses(
     db: DatabaseCore,
     fromDate: string,
@@ -133,7 +535,7 @@ export class BespokeQueries {
   static async getTotalCreditAndDebit(db: DatabaseCore) {
     return (await db.knex!.raw(`
     select 
-	    account, 
+        account, 
       sum(cast(credit as real)) as totalCredit, 
       sum(cast(debit as real)) as totalDebit
     from AccountingLedgerEntry

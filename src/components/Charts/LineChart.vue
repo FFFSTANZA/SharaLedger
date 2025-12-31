@@ -83,7 +83,7 @@
         <path
           stroke-linejoin="round"
           :d="getGradLine(i - 1)"
-          :stroke-width="thickness"
+          :stroke-width="getThickness(i - 1)"
           stroke-linecap="round"
           :fill="colors[i - 1] || getRandomColor()"
           :mask="`url('#rect-mask-${i}')`"
@@ -94,7 +94,7 @@
           stroke-linejoin="round"
           :d="getLine(i - 1)"
           :stroke="colors[i - 1] || getRandomColor()"
-          :stroke-width="thickness"
+          :stroke-width="getThickness(i - 1)"
           stroke-linecap="round"
           fill="transparent"
         />
@@ -118,15 +118,47 @@
       :offset="15"
       placement="top"
       class="text-[13px] shadow-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl border border-gray-100 dark:border-gray-700 transition-all duration-200"
-      :style="{ borderLeft: `4px solid ${colors[yi]}` }"
+      :style="{
+        borderLeft: `4px solid ${colors[yi] || colors[0] || '#d1d5db'}`,
+      }"
     >
-      <div class="flex flex-col justify-center items-center min-w-[120px]">
+      <div class="min-w-[160px]">
         <p
-          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1 uppercase tracking-wider"
+          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-2 uppercase tracking-wider text-center"
         >
           {{ xi > -1 ? formatX(xLabels[xi]) : '' }}
         </p>
-        <p class="text-xl font-bold tracking-tight">
+
+        <div v-if="showAllSeriesInTooltip" class="space-y-1 tabular-nums">
+          <div
+            v-for="(label, sIdx) in tooltipSeriesLabels"
+            :key="label + sIdx"
+            class="flex items-center gap-2"
+          >
+            <span
+              class="w-2 h-2 rounded-full flex-shrink-0"
+              :style="{ backgroundColor: colors[sIdx] }"
+            />
+            <span class="text-gray-600 dark:text-gray-300">{{ label }}</span>
+            <span
+              class="ms-auto font-semibold text-gray-900 dark:text-gray-100"
+            >
+              {{ xi > -1 ? format(points[sIdx]?.[xi] ?? 0) : '' }}
+            </span>
+          </div>
+
+          <p
+            v-if="tooltipExtraText"
+            class="mt-2 text-xs text-gray-600 dark:text-gray-300 text-center"
+          >
+            {{ tooltipExtraText }}
+          </p>
+        </div>
+
+        <p
+          v-else
+          class="text-xl font-bold tracking-tight text-center tabular-nums"
+        >
           {{ yi > -1 ? format(points[yi][xi]) : '' }}
         </p>
       </div>
@@ -156,6 +188,7 @@ export default {
     gridColor: { type: String, default: 'rgba(0, 0, 0, 0.2)' },
     axisColor: { type: String, default: 'rgba(0, 0, 0, 0.5)' },
     thickness: { type: Number, default: 5 },
+    thicknesses: { type: Array, default: () => [] },
     axisThickness: { type: Number, default: 1 },
     gridThickness: { type: Number, default: 0.5 },
     yMin: { type: Number, default: null },
@@ -169,6 +202,9 @@ export default {
     left: { type: Number, default: 55 },
     extendGridX: { type: Number, default: -20 },
     tooltipDispDistThreshold: { type: Number, default: 40 },
+    showAllSeriesInTooltip: { type: Boolean, default: false },
+    seriesLabels: { type: Array, default: () => [] },
+    tooltipExtra: { type: Function, default: null },
     showTooltip: { type: Boolean, default: true },
   },
   data() {
@@ -254,8 +290,36 @@ export default {
       }
       return hMax;
     },
+    tooltipSeriesLabels() {
+      if (this.seriesLabels?.length === this.num) {
+        return this.seriesLabels;
+      }
+
+      if (this.seriesLabels?.length) {
+        return this.seriesLabels;
+      }
+
+      return Array(this.num)
+        .fill(null)
+        .map((_, i) => `Series ${i + 1}`);
+    },
+    tooltipExtraText() {
+      if (!this.tooltipExtra || this.xi < 0) {
+        return '';
+      }
+
+      try {
+        return this.tooltipExtra(this.xi, this.yi) ?? '';
+      } catch {
+        return '';
+      }
+    },
   },
   methods: {
+    getThickness(seriesIndex) {
+      const t = this.thicknesses?.[seriesIndex];
+      return typeof t === 'number' ? t : this.thickness;
+    },
     gradY(i) {
       return Math.min(...this.ys[i]).toFixed();
     },

@@ -2,12 +2,12 @@
   <div class="h-screen" style="width: var(--w-desk)">
     <PageHeader :title="t`Dashboard`" :border="false">
       <div
-        class="rounded-xl bg-gray-100 dark:bg-gray-800/50 p-0.5 flex items-center transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-800"
+        class="rounded-xl bg-gray-100 dark:bg-gray-800/50 p-0.5 flex items-center"
       >
         <PeriodSelector
           class="px-3"
           :value="period"
-          :options="['This Year', 'This Quarter', 'This Month', 'YTD']"
+          :options="['This Month', 'This Quarter', 'This Year', 'YTD']"
           @change="(value) => (period = value)"
         />
       </div>
@@ -17,96 +17,166 @@
       class="no-scrollbar overflow-auto dark:bg-gradient-to-b dark:from-gray-875 dark:to-gray-900"
       style="height: calc(100vh - var(--h-row-largest) - 1px)"
     >
-      <div
-        style="min-width: var(--w-desk-fixed)"
-        class="overflow-auto p-4 space-y-4"
-      >
-        <Cashflow
-          class="dashboard-card p-6"
-          :common-period="period"
-          :dark-mode="darkMode"
-          @period-change="handlePeriodChange"
-        />
-        <div class="flex w-full gap-4">
-          <UnpaidInvoices
-            :schema-name="'SalesInvoice'"
-            :common-period="period"
-            :dark-mode="darkMode"
-            class="dashboard-card flex-1"
-            @period-change="handlePeriodChange"
-          />
-          <UnpaidInvoices
-            :schema-name="'PurchaseInvoice'"
-            :common-period="period"
-            :dark-mode="darkMode"
-            class="dashboard-card flex-1"
-            @period-change="handlePeriodChange"
-          />
-        </div>
-        <div class="flex gap-4">
-          <ProfitAndLoss
-            class="dashboard-card flex-1 p-6"
-            :common-period="period"
-            :dark-mode="darkMode"
-            @period-change="handlePeriodChange"
-          />
-          <Expenses
-            class="dashboard-card flex-1 p-6"
-            :common-period="period"
-            :dark-mode="darkMode"
-            @period-change="handlePeriodChange"
-          />
+      <div style="min-width: var(--w-desk-fixed)" class="p-4">
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12">
+            <KpiSummaryStrip v-if="summary" :summary="summary" class="w-full" />
+            <div v-else class="dashboard-card p-4">
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                {{ t`Loading dashboard...` }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-span-12 xl:col-span-9 space-y-4">
+            <div class="dashboard-card p-6">
+              <Cashflow :dark-mode="darkMode" />
+            </div>
+
+            <SalesPurchasePanels
+              v-if="summary"
+              :summary="summary"
+              :period-label="periodLabel"
+            />
+
+            <div v-if="summary" class="grid grid-cols-2 gap-4">
+              <div class="dashboard-card p-6">
+                <ProfitOverview :summary="summary" />
+              </div>
+              <div class="dashboard-card p-6">
+                <ExpenseBreakdown
+                  :summary="summary"
+                  :dark-mode="darkMode"
+                  :from-date="fromDateISO"
+                  :to-date="toDateISO"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-12 xl:col-span-3">
+            <div v-if="summary" class="dashboard-card p-4 xl:sticky xl:top-4">
+              <AlertsPanel :summary="summary" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { t } from 'fyo';
+import { DateTime } from 'luxon';
 import PageHeader from 'src/components/PageHeader.vue';
-import UnpaidInvoices from './UnpaidInvoices.vue';
-import Cashflow from './Cashflow.vue';
-import Expenses from './Expenses.vue';
-import PeriodSelector from './PeriodSelector.vue';
-import ProfitAndLoss from './ProfitAndLoss.vue';
+import { fyo } from 'src/initFyo';
 import { docsPathRef } from 'src/utils/refs';
+import { getDatesAndPeriodList } from 'src/utils/misc';
+import type { PeriodKey } from 'src/utils/types';
+import type { DashboardSummary } from 'utils/db/types';
+import { defineComponent } from 'vue';
+import AlertsPanel from './AlertsPanel.vue';
+import Cashflow from './Cashflow.vue';
+import ExpenseBreakdown from './ExpenseBreakdown.vue';
+import KpiSummaryStrip from './KpiSummaryStrip.vue';
+import PeriodSelector from './PeriodSelector.vue';
+import ProfitOverview from './ProfitOverview.vue';
+import SalesPurchasePanels from './SalesPurchasePanels.vue';
 
-export default {
+const DEFAULT_CREDIT_DAYS = 30;
+
+export default defineComponent({
   name: 'Dashboard',
   components: {
     PageHeader,
-    Cashflow,
-    ProfitAndLoss,
-    Expenses,
     PeriodSelector,
-    UnpaidInvoices,
+    Cashflow,
+    KpiSummaryStrip,
+    SalesPurchasePanels,
+    ProfitOverview,
+    ExpenseBreakdown,
+    AlertsPanel,
   },
   props: {
     darkMode: { type: Boolean, default: false },
   },
   data() {
-    return { period: 'This Year' };
+    return {
+      period: 'This Month' as PeriodKey,
+      summary: null as DashboardSummary | null,
+      fromDateISO: DateTime.now().toISODate(),
+      toDateISO: DateTime.now().plus({ days: 1 }).toISODate(),
+      requestId: 0,
+    };
   },
-  activated() {
+  computed: {
+    periodLabel(): string {
+      if (this.period === 'This Month') {
+        return t`This Month`;
+      }
+
+      if (this.period === 'This Quarter') {
+        return t`This Quarter`;
+      }
+
+      if (this.period === 'This Year') {
+        return t`This Year`;
+      }
+
+      if (this.period === 'YTD') {
+        return t`Year to Date`;
+      }
+
+      return this.period;
+    },
+  },
+  watch: {
+    period: 'fetchSummary',
+  },
+  async activated() {
     docsPathRef.value = 'books/dashboard';
+    await this.fetchSummary();
   },
   deactivated() {
     docsPathRef.value = '';
   },
   methods: {
-    handlePeriodChange(period) {
-      if (period === this.period) {
+    async fetchSummary() {
+      const currentRequestId = ++this.requestId;
+
+      const { fromDate, toDate } = getDatesAndPeriodList(this.period);
+      this.fromDateISO = fromDate.toISODate();
+      this.toDateISO = toDate.toISODate();
+
+      const durationMs = toDate.toMillis() - fromDate.toMillis();
+      const prevFromDate = DateTime.fromMillis(
+        fromDate.toMillis() - durationMs
+      );
+      const prevToDate = fromDate;
+
+      const todayISODate = DateTime.now().toISODate();
+
+      const summary = await fyo.db.getDashboardSummary(
+        fromDate.toISO(),
+        toDate.toISO(),
+        prevFromDate.toISO(),
+        prevToDate.toISO(),
+        todayISODate,
+        DEFAULT_CREDIT_DAYS
+      );
+
+      if (currentRequestId !== this.requestId) {
         return;
       }
 
-      this.period = '';
+      this.summary = summary;
     },
   },
-};
+});
 </script>
 
-<style scoped>
+<style>
 .dashboard-card {
-  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-700;
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700;
 }
 </style>

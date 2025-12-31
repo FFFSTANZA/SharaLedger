@@ -8,6 +8,8 @@ import { Field, RawValue, SchemaMap } from 'schemas/types';
 import { getMapFromList } from 'utils';
 import {
   Cashflow,
+  CashflowSeriesPoint,
+  DashboardSummary,
   DatabaseBase,
   DatabaseDemuxBase,
   GetAllOptions,
@@ -294,6 +296,38 @@ export class DatabaseHandler extends DatabaseBase {
       fromDate,
       toDate
     )) as Cashflow;
+  }
+
+  async getCashflowSeries(
+    fromDate: string,
+    toDate: string,
+    groupBy: 'day' | 'month'
+  ): Promise<CashflowSeriesPoint> {
+    return (await this.#demux.callBespoke(
+      'getCashflowSeries',
+      fromDate,
+      toDate,
+      groupBy
+    )) as CashflowSeriesPoint;
+  }
+
+  async getDashboardSummary(
+    fromDate: string,
+    toDate: string,
+    prevFromDate: string,
+    prevToDate: string,
+    today: string,
+    creditDays = 30
+  ): Promise<DashboardSummary> {
+    return (await this.#demux.callBespoke(
+      'getDashboardSummary',
+      fromDate,
+      toDate,
+      prevFromDate,
+      prevToDate,
+      today,
+      creditDays
+    )) as DashboardSummary;
   }
 
   async getIncomeAndExpenses(

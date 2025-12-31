@@ -105,3 +105,70 @@ export type TotalCreditAndDebit = {
   totalCredit: number;
   totalDebit: number;
 };
+
+export type DashboardInvoiceControl = {
+  total: number;
+  outstanding: number;
+  count: number;
+  unpaidCount: number;
+  paidCount: number;
+  avgCollectionDays: number | null;
+};
+
+export type DashboardOutstandingSummary = {
+  outstanding: number;
+  overdue: number;
+  overdueCount: number;
+};
+
+export type DashboardPayablesSummary = DashboardOutstandingSummary & {
+  dueNext7: number;
+  dueNext7Count: number;
+  nextDueName?: string;
+  nextDueParty?: string;
+  nextDueAmount?: number;
+  nextDueDate?: string;
+};
+
+export type DashboardTaxSummary = {
+  netGst: number;
+};
+
+export type ExpenseWithChange = {
+  account: string;
+  total: number;
+  prevTotal: number;
+}[];
+
+export type DashboardProfitSummary = {
+  income: number;
+  expense: number;
+};
+
+export type DashboardSummary = {
+  cashBalance: number;
+  cashBalancePrev: number;
+  profit: DashboardProfitSummary;
+  profitPrev: DashboardProfitSummary;
+  receivables: DashboardOutstandingSummary;
+  payables: DashboardPayablesSummary;
+  sales: DashboardInvoiceControl;
+  purchases: Omit<DashboardInvoiceControl, 'avgCollectionDays'>;
+  topExpenses: ExpenseWithChange;
+  tax: DashboardTaxSummary;
+};
+
+export type CashflowHighlight = {
+  amount: number;
+  referenceType?: string;
+  referenceName?: string;
+};
+
+export type CashflowSeriesPoint = {
+  period: string;
+  inflow: number;
+  outflow: number;
+  net: number;
+  topInflow?: CashflowHighlight;
+  topOutflow?: CashflowHighlight;
+}[];

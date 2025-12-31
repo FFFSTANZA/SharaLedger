@@ -1,52 +1,74 @@
 <template>
   <div>
-    <!-- Title and Period Selector -->
-    <SectionHeader>
-      <template #title>{{ t`Cashflow` }}</template>
-      <template #action>
-        <!-- Chart Legend -->
-        <div v-if="hasData" class="flex text-sm gap-6 me-4">
-          <div class="flex items-center gap-2">
-            <span
-              class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-600 shadow-sm"
-            />
-            <span class="text-gray-600 dark:text-gray-300 font-medium">{{
-              t`Inflow`
-            }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span
-              class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-600 shadow-sm"
-            />
-            <span class="text-gray-600 dark:text-gray-300 font-medium">{{
-              t`Outflow`
-            }}</span>
-          </div>
-        </div>
-        <div
-          v-else
-          class="w-16 h-5 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-        />
+    <div class="flex items-start justify-between">
+      <div>
+        <h3 class="font-bold text-lg tracking-tight">{{ t`Cashflow` }}</h3>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 tabular-nums">
+          {{ netSummaryText }}
+        </p>
+      </div>
 
-        <PeriodSelector
-          v-if="hasData"
-          :value="period"
-          :options="periodOptions"
-          @change="(value) => (period = value)"
-        />
-        <div
-          v-else
-          class="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-        />
-      </template>
-    </SectionHeader>
+      <div
+        class="rounded-xl bg-gray-100 dark:bg-gray-800/50 p-1 flex items-center"
+      >
+        <button
+          class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          :class="
+            range === 'This Month'
+              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
+          "
+          @click="range = 'This Month'"
+        >
+          {{ t`This Month` }}
+        </button>
+        <button
+          class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          :class="
+            range === 'This Year'
+              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
+          "
+          @click="range = 'This Year'"
+        >
+          {{ t`This Year` }}
+        </button>
+      </div>
+    </div>
 
-    <!-- Line Chart -->
+    <div v-if="hasData" class="mt-4 flex flex-wrap gap-5 text-sm">
+      <div class="flex items-center gap-2">
+        <span
+          class="w-2.5 h-2.5 rounded-full inline-block bg-violet-500 dark:bg-violet-600"
+        />
+        <span class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Inflow` }}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span
+          class="w-2.5 h-2.5 rounded-full inline-block bg-teal-500 dark:bg-teal-600"
+        />
+        <span class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Outflow` }}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span
+          class="w-2.5 h-2.5 rounded-full inline-block bg-gray-700 dark:bg-gray-200"
+        />
+        <span class="text-gray-600 dark:text-gray-300 font-medium">
+          {{ t`Net Cashflow` }}
+        </span>
+      </div>
+    </div>
+
     <LineChart
-      v-if="chartData.points.length"
+      v-if="hasData"
       class="mt-6"
       :aspect-ratio="4.15"
       :colors="chartData.colors"
+      :thicknesses="chartData.thicknesses"
       :grid-color="chartData.gridColor"
       :font-color="chartData.fontColor"
       :points="chartData.points"
@@ -54,148 +76,194 @@
       :format="chartData.format"
       :format-x="chartData.formatX"
       :y-max="chartData.yMax"
-      :draw-labels="hasData"
-      :show-tooltip="hasData"
+      :draw-labels="range !== 'This Month'"
+      :show-all-series-in-tooltip="true"
+      :series-labels="chartData.seriesLabels"
+      :tooltip-extra="getTooltipExtra"
     />
+
+    <div v-else class="flex-1 w-full h-full flex-center my-20">
+      <div class="text-center">
+        <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`No transactions yet` }}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
-<script lang="ts">
-import { AccountTypeEnum } from 'models/baseModels/Account/types';
-import { ModelNameEnum } from 'models/types';
-import LineChart from 'src/components/Charts/LineChart.vue';
-import { fyo } from 'src/initFyo';
-import { formatXLabels, getYMax } from 'src/utils/chart';
-import { uicolors } from 'src/utils/colors';
-import { getDatesAndPeriodList } from 'src/utils/misc';
-import DashboardChartBase from './BaseDashboardChart.vue';
-import PeriodSelector from './PeriodSelector.vue';
-import SectionHeader from './SectionHeader.vue';
-import { defineComponent } from 'vue';
-import { getMapFromList } from 'utils/index';
-import { PeriodKey } from 'src/utils/types';
 
-// Linting broken in this file cause of `extends: ...`
-/* 
-  eslint-disable @typescript-eslint/no-unsafe-argument, 
-  @typescript-eslint/no-unsafe-return
-*/
+<script lang="ts">
+import { t } from 'fyo';
+import { DateTime } from 'luxon';
+import { fyo } from 'src/initFyo';
+import { uicolors } from 'src/utils/colors';
+import { getYMax } from 'src/utils/chart';
+import LineChart from 'src/components/Charts/LineChart.vue';
+import { defineComponent } from 'vue';
+import type { CashflowSeriesPoint } from 'utils/db/types';
+
+type RangeKey = 'This Month' | 'This Year';
 
 export default defineComponent({
   name: 'Cashflow',
-  components: {
-    PeriodSelector,
-    SectionHeader,
-    LineChart,
-  },
-  extends: DashboardChartBase,
+  components: { LineChart },
   props: {
     darkMode: { type: Boolean, default: false },
   },
   data: () => ({
-    data: [] as { inflow: number; outflow: number; yearmonth: string }[],
-    periodList: [],
-    periodOptions: ['This Year', 'This Quarter', 'YTD'],
-    hasData: false,
+    range: 'This Month' as RangeKey,
+    series: [] as CashflowSeriesPoint,
+    prevNetTotal: 0,
   }),
   computed: {
-    chartData() {
-      let data = this.data;
-      let colors = [
-        uicolors.violet[this.darkMode ? '600' : '500'],
-        uicolors.teal[this.darkMode ? '600' : '500'],
-      ];
-      if (!this.hasData) {
-        data = dummyData;
-        colors = [
-          this.darkMode ? uicolors.gray['700'] : uicolors.gray['200'],
-          this.darkMode ? uicolors.gray['800'] : uicolors.gray['100'],
-        ];
+    hasData(): boolean {
+      return (this.series ?? []).some(
+        (p) => (p.inflow ?? 0) > 0 || (p.outflow ?? 0) > 0
+      );
+    },
+    netTotal(): number {
+      return (this.series ?? []).reduce((sum, p) => sum + (p.net ?? 0), 0);
+    },
+    netSummaryText(): string {
+      const net = this.netTotal;
+      const prev = this.prevNetTotal;
+
+      const isSurplus = net >= 0;
+      const label = isSurplus ? t`Net cash surplus` : t`Net cash deficit`;
+      const absNet = Math.abs(net);
+
+      if (!prev) {
+        return `${label} ${fyo.format(absNet, 'Currency')}`;
       }
 
-      const xLabels = data.map((cf) => cf.yearmonth);
-      const points = (['inflow', 'outflow'] as const).map((k) =>
-        data.map((d) => d[k])
-      );
+      const diffPercent = ((net - prev) / Math.abs(prev)) * 100;
+      const arrow = diffPercent >= 0 ? '↑' : '↓';
+      const tag = this.range === 'This Month' ? t`MoM` : t`YoY`;
 
+      return `${label} ${fyo.format(absNet, 'Currency')} (${arrow}${Math.abs(
+        diffPercent
+      ).toFixed(1)}% ${tag})`;
+    },
+    chartData() {
+      const points = [
+        this.series.map((p) => p.inflow ?? 0),
+        this.series.map((p) => p.outflow ?? 0),
+        this.series.map((p) => p.net ?? 0),
+      ];
+
+      const colors = [
+        uicolors.violet[this.darkMode ? '600' : '500'],
+        uicolors.teal[this.darkMode ? '600' : '500'],
+        this.darkMode ? uicolors.gray['200'] : uicolors.gray['700'],
+      ];
+
+      const thicknesses = [3, 3, 6];
+
+      const xLabels = this.series.map((p) => p.period);
       const format = (value: number) => fyo.format(value ?? 0, 'Currency');
       const yMax = getYMax(points);
+
+      const formatX = (value: string) => {
+        if (this.range === 'This Month') {
+          const dt = DateTime.fromFormat(value, 'yyyy-MM-dd');
+          return dt.isValid ? dt.toFormat('dd') : value;
+        }
+
+        const dt = DateTime.fromFormat(value, 'yyyy-MM');
+        return dt.isValid ? dt.toFormat('MMM yy') : value;
+      };
+
       return {
         points,
         xLabels,
         colors,
+        thicknesses,
         format,
         yMax,
-        formatX: formatXLabels,
+        formatX,
         gridColor: this.darkMode
           ? 'rgba(200, 200, 200, 0.15)'
           : 'rgba(0, 0, 0, 0.06)',
         fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['600'],
+        seriesLabels: [t`Inflow`, t`Outflow`, t`Net Cashflow`],
       };
     },
   },
+  watch: {
+    range: 'setData',
+  },
   async activated() {
     await this.setData();
-    if (!this.hasData) {
-      await this.setHasData();
-    }
   },
   methods: {
     async setData() {
-      const { periodList, fromDate, toDate } = getDatesAndPeriodList(
-        this.period as PeriodKey
+      const toDate = DateTime.now().plus({ days: 1 });
+
+      let fromDate: DateTime;
+      let prevFromDate: DateTime;
+      let prevToDate: DateTime;
+      let groupBy: 'day' | 'month';
+
+      if (this.range === 'This Month') {
+        fromDate = toDate.startOf('month');
+        prevFromDate = fromDate.minus({ months: 1 });
+        prevToDate = toDate.minus({ months: 1 });
+        groupBy = 'day';
+      } else {
+        fromDate = toDate.minus({ months: 12 });
+        prevFromDate = fromDate.minus({ months: 12 });
+        prevToDate = toDate.minus({ months: 12 });
+        groupBy = 'month';
+      }
+
+      const [current, prev] = await Promise.all([
+        fyo.db.getCashflowSeries(fromDate.toISO(), toDate.toISO(), groupBy),
+        fyo.db.getCashflowSeries(
+          prevFromDate.toISO(),
+          prevToDate.toISO(),
+          groupBy
+        ),
+      ]);
+
+      this.series = current;
+      this.prevNetTotal = (prev ?? []).reduce(
+        (sum, p) => sum + (p.net ?? 0),
+        0
       );
-
-      const data = await fyo.db.getCashflow(fromDate.toISO(), toDate.toISO());
-      const dataMap = getMapFromList(data, 'yearmonth');
-      this.data = periodList.map((p) => {
-        const key = p.toFormat('yyyy-MM');
-        const item = dataMap[key];
-        if (item) {
-          return item;
-        }
-
-        return {
-          inflow: 0,
-          outflow: 0,
-          yearmonth: key,
-        };
-      });
     },
-    async setHasData() {
-      const accounts = await fyo.db.getAllRaw('Account', {
-        filters: {
-          accountType: ['in', [AccountTypeEnum.Cash, AccountTypeEnum.Bank]],
-        },
-      });
-      const accountNames = accounts.map((a) => a.name as string);
-      const count = await fyo.db.count(ModelNameEnum.AccountingLedgerEntry, {
-        filters: { account: ['in', accountNames] },
-      });
-      this.hasData = count > 0;
+    getTooltipExtra(xi: number) {
+      const point = this.series?.[xi];
+      if (!point) {
+        return '';
+      }
+
+      const inflow = point.topInflow;
+      const outflow = point.topOutflow;
+
+      const inflowAmount = inflow?.amount ?? 0;
+      const outflowAmount = outflow?.amount ?? 0;
+
+      if (!inflowAmount && !outflowAmount) {
+        return '';
+      }
+
+      const isInflowSpike = inflowAmount >= outflowAmount;
+      const spike = isInflowSpike ? inflow : outflow;
+      const spikeLabel = isInflowSpike ? t`inflow` : t`outflow`;
+
+      if (!spike?.amount) {
+        return '';
+      }
+
+      const refType = spike.referenceType ?? '';
+      const refName = spike.referenceName ?? '';
+      const schemaLabel = refType
+        ? fyo.schemaMap[refType]?.label ?? refType
+        : t`Entry`;
+
+      const ref = refName ? `${schemaLabel} ${refName}` : schemaLabel;
+      return `${fyo.format(spike.amount, 'Currency')} ${spikeLabel} – ${ref}`;
     },
   },
 });
-
-const dummyData = [
-  {
-    inflow: 100,
-    outflow: 250,
-    yearmonth: '2021-05',
-  },
-  {
-    inflow: 350,
-    outflow: 100,
-    yearmonth: '2021-06',
-  },
-  {
-    inflow: 50,
-    outflow: 300,
-    yearmonth: '2021-07',
-  },
-  {
-    inflow: 320,
-    outflow: 100,
-    yearmonth: '2021-08',
-  },
-];
 </script>
