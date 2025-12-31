@@ -55,11 +55,11 @@ export default function registerIpcMainActionListeners(main: Main) {
         root = 'dbs';
       }
 
-      const dbsPath = path.join(root, 'Frappe Books');
+      const dbsPath = path.join(root, 'SharaLedger');
       const backupPath = path.join(dbsPath, 'backups');
       await fs.ensureDir(backupPath);
 
-      let dbFilePath = path.join(dbsPath, `${companyName}.books.db`);
+      let dbFilePath = path.join(dbsPath, `${companyName}.sharaledger.db`);
 
       if (await fs.pathExists(dbFilePath)) {
         const option = await dialog.showMessageBox({

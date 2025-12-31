@@ -1,33 +1,33 @@
 <div align="center" markdown="1">
 <br/>
 
-<img src="https://frappe.io/files/books.png" alt="Frappe Books logo" width="80"/>
+<img src="https://frappe.io/files/books.png" alt="SharaLedger logo" width="80"/>
 
 <br/>
 
-<h1>Frappe Books</h1>
+<h1>SharaLedger</h1>
 
 **Modern Accounting Made Simple**
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/books)](https://github.com/frappe/books/releases)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/sharaledger/sharaledger)](https://github.com/sharaledger/sharaledger/releases)
 ![Platforms](https://img.shields.io/badge/platform-mac%2C%20windows%2C%20linux-yellowgreen)
-[![Publish](https://github.com/frappe/books/actions/workflows/publish.yml/badge.svg)](https://github.com/frappe/books/actions/workflows/publish.yml)
+[![Publish](https://github.com/sharaledger/sharaledger/actions/workflows/publish.yml/badge.svg)](https://github.com/sharaledger/sharaledger/actions/workflows/publish.yml)
 
 </div>
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/29507195/207267857-4ae48890-3fb2-4046-80cf-3256b46c72a0.png" alt="Frappe Books Preview"/>
+<img src="https://user-images.githubusercontent.com/29507195/207267857-4ae48890-3fb2-4046-80cf-3256b46c72a0.png" alt="SharaLedger Preview"/>
 </div>
 <br />
 <div align="center">
-	<a href="https://frappe.io/books">Website</a>
-	-
-	<a href="https://docs.frappe.io/books">Documentation</a>
+    <a href="https://sharaledger.com">Website</a>
+    -
+    <a href="https://docs.sharaledger.com">Documentation</a>
 </div>
 
-## Frappe Books
+## SharaLedger
 
-Frappe Books is an open-source accounting software aimed at simplifying financial management for businesses. With its clean and user-friendly interface, it streamlines accounting tasks for small and medium-sized enterprises, offering a seamless solution for modern businesses to manage their finances with ease.
+SharaLedger is an open-source accounting software aimed at simplifying financial management for businesses. With its clean and user-friendly interface, it streamlines accounting tasks for small and medium-sized enterprises, offering a seamless solution for modern businesses to manage their finances with ease.
 
 <details>
 <summary>Screenshots</summary>
@@ -42,7 +42,7 @@ Frappe Books is an open-source accounting software aimed at simplifying financia
 
 ### Motivation
 
-Frappe Books addresses a market gap where small businesses face expensive, complex accounting tools. It offers an intuitive, open-source solution that combines simplicity with essential features, empowering businesses to manage finances effectively—even offline.
+SharaLedger addresses a market gap where small businesses face expensive, complex accounting tools. It offers an intuitive, open-source solution that combines simplicity with essential features, empowering businesses to manage finances effectively—even offline.
 
 ### Key Features
 
@@ -75,17 +75,17 @@ Frappe Books addresses a market gap where small businesses face expensive, compl
 ### Manual
 
 Download and install the latest release for your platform from the [releases
-page](https://github.com/frappe/books/releases) .
+page](https://github.com/sharaledger/sharaledger/releases) .
 
 ### Using Homebrew (for MacOS and Linux)
 
 ```zsh
-brew install --cask frappe-books
+brew install --cask sharaledger
 ```
 
 ### Via Flatpak (Linux)
 
-<a href='https://flathub.org/apps/io.frappe.books'>
+<a href='https://flathub.org/apps/com.sharaledger.app'>
     <img width='120' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
@@ -101,20 +101,20 @@ Next, you will need to install [yarn](https://classic.yarnpkg.com/lang/en/docs/i
 ### Clone and Run
 
 Once you are through the Pre-requisites, you can run the following commands to
-setup Frappe Books for development and building:
+setup SharaLedger for development and building:
 
 ```bash
 # clone the repository
-git clone https://github.com/frappe/books.git
+git clone https://github.com/sharaledger/sharaledger.git
 
 # change directory
-cd books
+cd sharaledger
 
 # install dependencies
 yarn
 ```
 
-To run Frappe Books in development mode (with hot reload, etc):
+To run SharaLedger in development mode (with hot reload, etc):
 
 ```bash
 # start the electron app
@@ -132,13 +132,13 @@ sent.
 
 When in dev mode electron runs with the `--inspect` flag which allows an
 external debugger to connect to port 5858. You can use chrome for this by
-visiting `chrome://inspect` while Frappe Books is running in dev mode.
+visiting `chrome://inspect` while SharaLedger is running in dev mode.
 
 See more [here](https://www.electronjs.org/docs/latest/tutorial/debugging-main-process#external-debuggers).
 
 #### Build
 
-To build Frappe Books and create an installer:
+To build SharaLedger and create an installer:
 
 ```bash
 # start the electron app
@@ -155,10 +155,10 @@ So to build for linux you could use the `--linux` flag like so: `yarn build --li
 
 ## Want to Just Try Out or Contribute?
 
-If you want to contribute to Frappe Books, please check our [Contribution Guidelines](https://github.com/frappe/books/blob/master/.github/CONTRIBUTING.md). There are many ways you can contribute even if you don't code:
+If you want to contribute to SharaLedger, please check our [Contribution Guidelines](https://github.com/sharaledger/sharaledger/blob/master/.github/CONTRIBUTING.md). There are many ways you can contribute even if you don't code:
 
-1. If you find any issues, no matter how small (even typos), you can [raise an issue](https://github.com/frappe/books/issues/new) to inform us.
-2. You can help us with language support by [contributing translations](https://github.com/frappe/books/wiki/Contributing-Translations).
+1. If you find any issues, no matter how small (even typos), you can [raise an issue](https://github.com/sharaledger/sharaledger/issues/new) to inform us.
+2. You can help us with language support by [contributing translations](https://github.com/sharaledger/sharaledger/wiki/Contributing-Translations).
 3. If you're an ardent user you can tell us what you would like to see.
 4. If you have accounting requirements, you can become an ardent user. 🙂
 
@@ -187,7 +187,6 @@ If you want to contribute code then you can fork this repo, make changes and rai
 
 ## Learn and connect
 
-- [Telegram Group](https://t.me/frappebooks): Used for discussions and decisions regarding everything Frappe Books.
-- [GitHub Discussions](https://github.com/frappe/books/discussions): Used for discussions around a specific topic.
-- [Documentation](https://docs.frappe.io/books): Official documentation for more details.
-# SharaLedger
+- [Telegram Group](https://t.me/sharaledger): Used for discussions and decisions regarding everything SharaLedger.
+- [GitHub Discussions](https://github.com/sharaledger/sharaledger/discussions): Used for discussions around a specific topic.
+- [Documentation](https://docs.sharaledger.com): Official documentation for more details.

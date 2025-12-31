@@ -883,7 +883,7 @@ export const printSizes = [
 ] as const;
 
 export const paperSizeMap: Record<
-  typeof printSizes[number],
+  (typeof printSizes)[number],
   { width: number; height: number }
 > = {
   A0: {
@@ -1041,7 +1041,7 @@ export async function deleteDb(filePath: string) {
   } else if (error?.code === 'EPERM') {
     await showDialog({
       title: t`Cannot Delete`,
-      detail: t`Close Frappe Books and try manually.`,
+      detail: t`Close SharaLedger and try manually.`,
       type: 'error',
     });
   } else if (error) {

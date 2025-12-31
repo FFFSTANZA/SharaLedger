@@ -19,8 +19,8 @@ mkdir build_publish
 cd build_publish
 
 # Clone and cd into books
-git clone https://github.com/frappe/books --depth 1
-cd books
+git clone https://github.com/sharaledger/sharaledger --depth 1
+cd sharaledger
 
 # Copy creds to log_creds.txt
 echo $ERR_LOG_KEY > log_creds.txt

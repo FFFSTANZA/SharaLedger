@@ -103,40 +103,40 @@ export function updateConfigFiles(fyo: Fyo): ConfigFile {
 
 export const docsPathMap: Record<string, string | undefined> = {
   // Analytics
-  Dashboard: 'books/dashboard',
-  Reports: 'books/reports',
-  GeneralLedger: 'books/general-ledger',
-  ProfitAndLoss: 'books/profit-and-loss',
-  BalanceSheet: 'books/balance-sheet',
-  TrialBalance: 'books/trial-balance',
+  Dashboard: 'dashboard',
+  Reports: 'reports',
+  GeneralLedger: 'general-ledger',
+  ProfitAndLoss: 'profit-and-loss',
+  BalanceSheet: 'balance-sheet',
+  TrialBalance: 'trial-balance',
 
   // Transactions
-  [ModelNameEnum.SalesInvoice]: 'books/sales-invoices',
-  [ModelNameEnum.PurchaseInvoice]: 'books/purchase-invoices',
-  [ModelNameEnum.Payment]: 'books/payments',
-  [ModelNameEnum.JournalEntry]: 'books/journal-entries',
+  [ModelNameEnum.SalesInvoice]: 'sales-invoices',
+  [ModelNameEnum.PurchaseInvoice]: 'purchase-invoices',
+  [ModelNameEnum.Payment]: 'payments',
+  [ModelNameEnum.JournalEntry]: 'journal-entries',
 
   // Inventory
-  [ModelNameEnum.StockMovement]: 'books/stock-movement',
-  [ModelNameEnum.Shipment]: 'books/shipment',
-  [ModelNameEnum.PurchaseReceipt]: 'books/purchase-receipt',
-  StockLedger: 'books/stock-ledger',
-  StockBalance: 'books/stock-balance',
-  [ModelNameEnum.Batch]: 'books/batches',
+  [ModelNameEnum.StockMovement]: 'stock-movement',
+  [ModelNameEnum.Shipment]: 'shipment',
+  [ModelNameEnum.PurchaseReceipt]: 'purchase-receipt',
+  StockLedger: 'stock-ledger',
+  StockBalance: 'stock-balance',
+  [ModelNameEnum.Batch]: 'batches',
 
   // Entries
-  Entries: 'books/books',
-  [ModelNameEnum.Party]: 'books/party',
-  [ModelNameEnum.Item]: 'books/items',
-  [ModelNameEnum.Tax]: 'books/taxes',
-  [ModelNameEnum.PrintTemplate]: 'books/print-templates',
+  Entries: 'entries',
+  [ModelNameEnum.Party]: 'party',
+  [ModelNameEnum.Item]: 'items',
+  [ModelNameEnum.Tax]: 'taxes',
+  [ModelNameEnum.PrintTemplate]: 'print-templates',
 
   // Miscellaneous
-  Search: 'books/quick-search',
-  NumberSeries: 'books/number-series',
-  ImportWizard: 'books/import-wizard',
-  Settings: 'books/settings',
-  ChartOfAccounts: 'books/chart-of-accounts',
+  Search: 'quick-search',
+  NumberSeries: 'number-series',
+  ImportWizard: 'import-wizard',
+  Settings: 'settings',
+  ChartOfAccounts: 'chart-of-accounts',
 };
 
 export async function getDataURL(type: string, data: Uint8Array) {
@@ -162,7 +162,7 @@ export function getCreateFiltersFromListViewFilters(filters: QueryFilter) {
   const createFilters: Record<string, string | number | boolean | null> = {};
 
   for (const key in filters) {
-    let value: typeof filters[string] | undefined | number = filters[key];
+    let value: (typeof filters)[string] | undefined | number = filters[key];
 
     if (Array.isArray(value) && value[0] === 'in' && Array.isArray(value[1])) {
       value = value[1].filter((v) => v !== 'Both')[0];
