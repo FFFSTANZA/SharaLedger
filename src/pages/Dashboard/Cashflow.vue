@@ -2,8 +2,12 @@
   <div>
     <div class="flex items-start justify-between">
       <div>
-        <h3 class="font-bold text-lg tracking-tight">{{ t`Cashflow` }}</h3>
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 tabular-nums">
+        <h3
+          class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+        >
+          {{ t`Cashflow` }}
+        </h3>
+        <p :class="`mt-1 text-sm tabular-nums ${netSummaryClass}`">
           {{ netSummaryText }}
         </p>
       </div>
@@ -84,6 +88,7 @@
 
     <div v-else class="flex-1 w-full h-full flex-center my-20">
       <div class="text-center">
+        <div class="text-6xl mb-4">📊</div>
         <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
           {{ t`No transactions yet` }}
         </span>
@@ -143,6 +148,19 @@ export default defineComponent({
       return `${label} ${fyo.format(absNet, 'Currency')} (${arrow}${Math.abs(
         diffPercent
       ).toFixed(1)}% ${tag})`;
+    },
+    netSummaryClass(): string {
+      const net = this.netTotal;
+      const prev = this.prevNetTotal;
+
+      if (!prev) {
+        return 'text-gray-600 dark:text-gray-300';
+      }
+
+      const diffPercent = ((net - prev) / Math.abs(prev)) * 100;
+      return diffPercent >= 0
+        ? 'text-violet-600 dark:text-violet-400 font-semibold'
+        : 'text-amber-600 dark:text-amber-500 font-semibold';
     },
     chartData() {
       const points = [

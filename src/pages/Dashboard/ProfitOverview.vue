@@ -1,9 +1,13 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="flex items-center justify-between">
-      <h3 class="font-bold text-lg tracking-tight">{{ t`Profit Overview` }}</h3>
+      <h3
+        class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+      >
+        {{ t`Profit Overview` }}
+      </h3>
       <button
-        class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:underline"
+        class="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
         @click="routeToProfitAndLoss"
       >
         {{ t`View full Profit & Loss` }}
@@ -11,31 +15,37 @@
     </div>
 
     <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm tabular-nums">
-      <div class="text-gray-600 dark:text-gray-300">{{ t`Total Revenue` }}</div>
+      <div class="text-gray-600 dark:text-gray-300 font-medium">
+        {{ t`Total Revenue` }}
+      </div>
       <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
         {{ formatCurrency(revenue) }}
       </div>
 
-      <div class="text-gray-600 dark:text-gray-300">
+      <div class="text-gray-600 dark:text-gray-300 font-medium">
         {{ t`Total Expenses` }}
       </div>
       <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
         {{ formatCurrency(expenses) }}
       </div>
 
-      <div class="text-gray-600 dark:text-gray-300">{{ t`Net Profit` }}</div>
+      <div class="text-gray-600 dark:text-gray-300 font-medium">
+        {{ t`Net Profit` }}
+      </div>
       <div
-        class="text-right font-bold"
+        class="text-right font-bold text-lg"
         :class="
           netProfit >= 0
-            ? 'text-gray-900 dark:text-gray-100'
+            ? 'text-violet-600 dark:text-violet-400'
             : 'text-amber-600 dark:text-amber-500'
         "
       >
         {{ formatCurrency(netProfit) }}
       </div>
 
-      <div class="text-gray-600 dark:text-gray-300">{{ t`Profit Margin` }}</div>
+      <div class="text-gray-600 dark:text-gray-300 font-medium">
+        {{ t`Profit Margin` }}
+      </div>
       <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
         {{ marginText }}
       </div>

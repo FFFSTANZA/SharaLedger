@@ -2,28 +2,30 @@
   <div class="grid grid-cols-4 gap-4">
     <!-- Cash Balance -->
     <div
-      class="dashboard-card p-4"
+      class="kpi-card p-4 transition-all duration-300 hover:shadow-lg"
       :class="`border-l-4 ${cashStatusBorderClass}`"
     >
       <div class="flex items-start justify-between">
         <div>
           <p
-            class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300"
+            class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase"
           >
             {{ t`Cash Balance` }}
           </p>
-          <p class="mt-1 text-2xl font-bold tabular-nums">
+          <p
+            class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100"
+          >
             {{ formatCurrency(summary.cashBalance) }}
           </p>
         </div>
         <span
-          class="w-2.5 h-2.5 rounded-full mt-1"
+          class="w-2.5 h-2.5 rounded-full mt-1 shadow-sm transition-all duration-300 hover:scale-110"
           :class="cashStatusDotClass"
         />
       </div>
 
       <div class="mt-3 flex items-center justify-between text-xs tabular-nums">
-        <span class="text-gray-500 dark:text-gray-400">{{
+        <span class="text-gray-500 dark:text-gray-400 font-medium">{{
           t`vs last period`
         }}</span>
         <span :class="cashTrendClass">{{ cashTrendText }}</span>
@@ -31,41 +33,55 @@
     </div>
 
     <!-- Net Profit -->
-    <div class="dashboard-card p-4">
+    <div
+      class="kpi-card p-4 transition-all duration-300 hover:shadow-lg border-l-4"
+      :class="netProfitBorderClass"
+    >
       <p
-        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300"
+        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase"
       >
         {{ t`Net Profit (This Period)` }}
       </p>
-      <p class="mt-1 text-2xl font-bold tabular-nums">
+      <p
+        class="mt-1 text-2xl font-bold tabular-nums"
+        :class="netProfitTextClass"
+      >
         {{ formatCurrency(netProfit) }}
       </p>
       <div class="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums">
-        <div class="text-gray-500 dark:text-gray-400">{{ t`Margin` }}</div>
-        <div class="text-right font-medium text-gray-700 dark:text-gray-200">
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`Margin` }}
+        </div>
+        <div class="text-right font-semibold text-gray-700 dark:text-gray-200">
           {{ profitMarginText }}
         </div>
-        <div class="text-gray-500 dark:text-gray-400">
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
           {{ t`vs last period` }}
         </div>
-        <div :class="['text-right font-medium', profitTrendClass]">
+        <div :class="['text-right font-semibold', profitTrendClass]">
           {{ profitTrendText }}
         </div>
       </div>
     </div>
 
     <!-- Receivables -->
-    <div class="dashboard-card p-4">
+    <div
+      class="kpi-card p-4 transition-all duration-300 hover:shadow-lg border-l-4 border-l-violet-500 dark:border-l-violet-600"
+    >
       <p
-        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300"
+        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase"
       >
         {{ t`Receivables` }}
       </p>
-      <p class="mt-1 text-2xl font-bold tabular-nums">
+      <p
+        class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100"
+      >
         {{ formatCurrency(summary.receivables.outstanding) }}
       </p>
       <div class="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums">
-        <div class="text-gray-500 dark:text-gray-400">{{ t`Overdue` }}</div>
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`Overdue` }}
+        </div>
         <div
           class="text-right font-semibold"
           :class="
@@ -76,27 +92,31 @@
         >
           {{ formatCurrency(summary.receivables.overdue) }}
         </div>
-        <div class="text-gray-500 dark:text-gray-400">
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
           {{ t`Overdue bills` }}
         </div>
-        <div class="text-right font-medium text-gray-700 dark:text-gray-200">
+        <div class="text-right font-semibold text-gray-700 dark:text-gray-200">
           {{ summary.receivables.overdueCount || 0 }}
         </div>
       </div>
     </div>
 
     <!-- Payables -->
-    <div class="dashboard-card p-4">
+    <div
+      class="kpi-card p-4 transition-all duration-300 hover:shadow-lg border-l-4 border-l-teal-500 dark:border-l-teal-600"
+    >
       <p
-        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300"
+        class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase"
       >
         {{ t`Payables` }}
       </p>
-      <p class="mt-1 text-2xl font-bold tabular-nums">
+      <p
+        class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100"
+      >
         {{ formatCurrency(summary.payables.outstanding) }}
       </p>
       <div class="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums">
-        <div class="text-gray-500 dark:text-gray-400">
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
           {{ t`Due in 7 days` }}
         </div>
         <div
@@ -109,7 +129,9 @@
         >
           {{ formatCurrency(summary.payables.dueNext7) }}
         </div>
-        <div class="text-gray-500 dark:text-gray-400">{{ t`Overdue` }}</div>
+        <div class="text-gray-500 dark:text-gray-400 font-medium">
+          {{ t`Overdue` }}
+        </div>
         <div
           class="text-right font-semibold"
           :class="
@@ -123,7 +145,7 @@
       </div>
       <div
         v-if="summary.payables.overdueCount > 0"
-        class="mt-1 text-xs text-amber-600 dark:text-amber-500 tabular-nums text-right"
+        class="mt-1 text-xs text-amber-600 dark:text-amber-500 tabular-nums text-right font-semibold"
       >
         {{ summary.payables.overdueCount }} {{ t`overdue bills` }}
       </div>
@@ -219,7 +241,7 @@ export default defineComponent({
     },
     cashTrendClass(): string {
       if (this.cashTrend.diff > 0) {
-        return 'text-green-600 dark:text-green-500 font-medium';
+        return 'text-violet-600 dark:text-violet-400 font-medium';
       }
 
       if (this.cashTrend.diff < 0) {
@@ -245,7 +267,7 @@ export default defineComponent({
     },
     profitTrendClass(): string {
       if (this.profitTrend.diff > 0) {
-        return 'text-green-600 dark:text-green-500';
+        return 'text-violet-600 dark:text-violet-400';
       }
 
       if (this.profitTrend.diff < 0) {
@@ -253,6 +275,18 @@ export default defineComponent({
       }
 
       return 'text-gray-700 dark:text-gray-200';
+    },
+    netProfitBorderClass(): string {
+      if (this.netProfit >= 0) {
+        return 'border-l-violet-500 dark:border-l-violet-600';
+      }
+      return 'border-l-amber-500 dark:border-l-amber-600';
+    },
+    netProfitTextClass(): string {
+      if (this.netProfit >= 0) {
+        return 'text-violet-600 dark:text-violet-400';
+      }
+      return 'text-amber-600 dark:text-amber-500';
     },
   },
   methods: {
@@ -262,3 +296,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.kpi-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700;
+}
+</style>

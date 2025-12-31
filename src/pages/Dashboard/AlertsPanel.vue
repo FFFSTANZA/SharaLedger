@@ -1,7 +1,11 @@
 <template>
   <div>
-    <h3 class="font-bold text-lg tracking-tight">{{ t`Attention` }}</h3>
-    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+    <h3
+      class="font-bold text-lg tracking-tight text-gray-900 dark:text-gray-100"
+    >
+      {{ t`Attention` }}
+    </h3>
+    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">
       {{ t`Only actionable items` }}
     </p>
 
@@ -9,20 +13,22 @@
       <button
         v-for="item in items"
         :key="item.key"
-        class="w-full text-left p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+        class="w-full text-left p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-800/40 hover:border-gray-200 dark:hover:border-gray-600"
         @click="item.action"
       >
         <div class="flex items-start gap-3">
           <feather-icon
             :name="item.icon"
-            class="w-4 h-4 mt-0.5"
+            class="w-4 h-4 mt-0.5 flex-shrink-0 transition-all duration-300 hover:scale-110"
             :class="item.iconClass"
           />
           <div class="flex-1">
             <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               {{ item.title }}
             </div>
-            <div class="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+            <div
+              class="text-xs text-gray-600 dark:text-gray-300 mt-0.5 font-medium"
+            >
               {{ item.detail }}
             </div>
           </div>
@@ -30,8 +36,11 @@
       </button>
     </div>
 
-    <div v-else class="mt-8 text-sm text-gray-600 dark:text-gray-300">
-      {{ t`No urgent items right now.` }}
+    <div v-else class="mt-8 text-center">
+      <div class="text-5xl mb-3">✓</div>
+      <div class="text-sm text-gray-600 dark:text-gray-300 font-medium">
+        {{ t`No urgent items right now.` }}
+      </div>
     </div>
   </div>
 </template>
