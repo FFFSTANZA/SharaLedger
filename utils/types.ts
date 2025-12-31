@@ -12,6 +12,7 @@ export interface CountryInfo {
   currency_fraction_units?: number;
   smallest_currency_fraction_value?: number;
   currency_symbol?: string;
+  date_format?: string;
   timezones?: string[];
   fiscal_year_start: string;
   fiscal_year_end: string;

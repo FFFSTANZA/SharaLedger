@@ -38,6 +38,7 @@
       "label": "Country",
       "fieldtype": "AutoComplete",
       "placeholder": "Select Country",
+      "default": "India",
       "section": "Locale",
       "required": true
     },
@@ -46,6 +47,7 @@
       "label": "Currency",
       "fieldtype": "AutoComplete",
       "placeholder": "Currency",
+      "default": "INR",
       "section": "Locale",
       "required": true
     },

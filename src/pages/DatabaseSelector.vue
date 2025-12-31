@@ -19,15 +19,21 @@
       "
       style="height: 700px"
     >
-      <!-- Welcome to Frappe Books -->
+      <!-- Welcome -->
       <div class="px-4 py-4">
-        <h1 class="text-2xl font-semibold select-none dark:text-gray-25">
-          {{ t`Welcome to Frappe Books` }}
+        <img
+          src="../assets/img/sharaledger-logo.svg"
+          class="h-10 select-none"
+          draggable="false"
+        />
+        <h1 class="mt-3 text-2xl font-semibold select-none dark:text-gray-25">
+          {{ t`Welcome to SharaLedger` }}
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 text-base select-none">
-          {{
-            t`Create a new company or select an existing one from your computer`
-          }}
+        <p class="text-gray-700 dark:text-gray-300 text-base select-none">
+          {{ t`Made for Indian businesses` }}
+        </p>
+        <p class="text-gray-600 dark:text-gray-400 text-sm select-none mt-1">
+          {{ t`Create a new company or open an existing one from your computer` }}
         </p>
       </div>
 
@@ -126,7 +132,7 @@
             {{ t`Create Demo` }}
           </p>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ t`Create a demo company to try out Frappe Books` }}
+            {{ t`Create a demo company to explore SharaLedger` }}
           </p>
         </div>
       </div>

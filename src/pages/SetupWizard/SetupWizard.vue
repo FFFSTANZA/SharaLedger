@@ -6,7 +6,7 @@
   >
     <template #body>
       <FormHeader
-        :form-title="t`Set up your organization`"
+        :form-title="t`Set up your business`"
         class="
           sticky
           top-0

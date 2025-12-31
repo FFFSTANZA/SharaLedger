@@ -28,6 +28,13 @@
       style="height: calc(100vh - var(--h-row-largest) - 1px)"
     >
       <div style="min-width: var(--w-desk-fixed)" class="overflow-auto">
+        <GSTDue
+          class="p-4"
+          :common-period="period"
+          :dark-mode="darkMode"
+          @period-change="handlePeriodChange"
+        />
+        <hr class="dark:border-gray-800" />
         <Cashflow
           class="p-4"
           :common-period="period"
@@ -74,6 +81,7 @@
 <script>
 import PageHeader from 'src/components/PageHeader.vue';
 import UnpaidInvoices from './UnpaidInvoices.vue';
+import GSTDue from './GSTDue.vue';
 import Cashflow from './Cashflow.vue';
 import Expenses from './Expenses.vue';
 import PeriodSelector from './PeriodSelector.vue';
@@ -84,6 +92,7 @@ export default {
   name: 'Dashboard',
   components: {
     PageHeader,
+    GSTDue,
     Cashflow,
     ProfitAndLoss,
     Expenses,

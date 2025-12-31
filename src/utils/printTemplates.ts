@@ -1,6 +1,9 @@
 import { Fyo, t } from 'fyo';
+import { DEFAULT_DATE_FORMAT } from 'fyo/utils/consts';
 import { Doc } from 'fyo/model/doc';
+import { DateTime } from 'luxon';
 import { Invoice } from 'models/baseModels/Invoice/Invoice';
+import { getIndiaGSTStateCode } from 'utils/india/stateCodes';
 import { ModelNameEnum } from 'models/types';
 import { FieldTypeEnum, Schema, TargetField } from 'schemas/types';
 import { getValueMapFromList } from 'utils/index';
@@ -27,6 +30,44 @@ type TemplateUpdateItem = {
   width: number;
   height: number;
 };
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function getNestedValue(value: unknown, path: string[]): unknown {
+  let current: unknown = value;
+  for (const key of path) {
+    const rec = asRecord(current);
+    if (!rec) {
+      return;
+    }
+
+    current = rec[key];
+  }
+
+  return current;
+}
+
+function getNestedRecord(
+  value: unknown,
+  path: string[]
+): Record<string, unknown> | undefined {
+  return asRecord(getNestedValue(value, path));
+}
+
+function getNestedString(value: unknown, path: string[]): string | undefined {
+  const v = getNestedValue(value, path);
+  if (typeof v !== 'string') {
+    return;
+  }
+
+  return v;
+}
 
 const printSettingsFields = [
   'logo',
@@ -123,7 +164,7 @@ export async function getPrintTemplatePropValues(
     ((doc.grandTotal as Money) ?? (doc.amount as Money)).float
   );
 
-  (values.doc as PrintTemplateData).date = getDate(doc.date as string);
+  (values.doc as PrintTemplateData).date = getDate(doc.date as string, fyo);
 
   if (printSettings.displayTime) {
     (values.doc as PrintTemplateData).time = getTime(doc.date as string);
@@ -131,6 +172,33 @@ export async function getPrintTemplatePropValues(
 
   if (printSettings.displayDescription) {
     (values.doc as PrintTemplateData).description = showDescription(doc);
+  }
+
+  if (fyo.singles.SystemSettings?.countryCode === 'in') {
+    const partyAddress = getNestedRecord(values.doc, [
+      'links',
+      'party',
+      'links',
+      'address',
+    ]);
+
+    const companyAddress = getNestedRecord(values.print, ['links', 'address']);
+
+    const placeOfSupply =
+      getNestedString(partyAddress, ['pos']) ??
+      getNestedString(partyAddress, ['state']) ??
+      '';
+
+    const partyState = getNestedString(partyAddress, ['state']);
+    const companyState = getNestedString(companyAddress, ['state']);
+
+    const docValues = values.doc as PrintTemplateData;
+    const printValues = values.print as PrintTemplateData;
+
+    docValues.placeOfSupply = placeOfSupply;
+    docValues.placeOfSupplyStateCode = getIndiaGSTStateCode(placeOfSupply);
+    docValues.partyStateCode = getIndiaGSTStateCode(partyState);
+    printValues.companyStateCode = getIndiaGSTStateCode(companyState);
   }
 
   return values;
@@ -158,13 +226,16 @@ async function getPaymentDetails(doc: Doc, paymentId: string[]) {
   return paymentDetails;
 }
 
-function getDate(dateString: string): string {
-  const date = new Date(dateString);
-  date.setMonth(date.getMonth());
+function getDate(dateString: string, fyo: Fyo): string {
+  const dateFormat =
+    (fyo.singles.SystemSettings?.dateFormat as string) ?? DEFAULT_DATE_FORMAT;
 
-  return `${date.toLocaleString('default', {
-    month: 'short',
-  })} ${date.getDate()}, ${date.getFullYear()}`;
+  const dateTime = DateTime.fromISO(dateString);
+  if (!dateTime.isValid) {
+    return '';
+  }
+
+  return dateTime.toFormat(dateFormat);
 }
 
 function getTime(dateString: string): string {
@@ -309,6 +380,10 @@ function getGrandTotalInWords(total: number) {
 }
 
 function showHSN(doc: Doc): boolean {
+  if (doc.fyo.singles.SystemSettings?.countryCode === 'in') {
+    return true;
+  }
+
   const items = doc.items;
   if (!Array.isArray(items)) {
     return false;

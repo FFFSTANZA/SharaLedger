@@ -19,6 +19,15 @@
         <p class="text-sm text-gray-800" v-if="print.gstin">
           GSTIN: {{ print.gstin }}
         </p>
+        <p
+          class="text-sm text-gray-800"
+          v-if="print.links.address && print.links.address.state"
+        >
+          {{ t`State` }}: {{ print.links.address.state }}
+          <span v-if="print.companyStateCode"
+            >({{ t`Code` }}: {{ print.companyStateCode }})</span
+          >
+        </p>
       </div>
     </section>
 
@@ -27,7 +36,7 @@
       <!-- Doc Details -->
       <section class="flex">
         <h3 class="w-1/3 font-semibold">
-          {{ doc.entryType === 'SalesInvoice' ? 'Invoice' : 'Bill' }}
+          {{ doc.entryType === 'SalesInvoice' ? t`Tax Invoice` : t`Purchase Bill` }}
         </h3>
         <div class="w-2/3 text-gray-800">
           <p class="font-semibold">{{ doc.name }}</p>
@@ -51,6 +60,18 @@
             {{ doc.links.party.links.address.addressDisplay }}
           </p>
           <p v-if="doc.links.party.gstin">GSTIN: {{ doc.links.party.gstin }}</p>
+          <p v-if="doc.placeOfSupply">
+            {{ t`Place of Supply` }}: {{ doc.placeOfSupply }}
+            <span v-if="doc.placeOfSupplyStateCode"
+              >({{ t`Code` }}: {{ doc.placeOfSupplyStateCode }})</span
+            >
+          </p>
+          <p v-if="doc.links.party.links.address && doc.links.party.links.address.state">
+            {{ t`State` }}: {{ doc.links.party.links.address.state }}
+            <span v-if="doc.partyStateCode"
+              >({{ t`Code` }}: {{ doc.partyStateCode }})</span
+            >
+          </p>
         </div>
       </section>
     </div>

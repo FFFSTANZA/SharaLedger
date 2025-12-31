@@ -4,6 +4,7 @@ import { Doc } from 'fyo/model/doc';
 import { createNumberSeries } from 'fyo/model/naming';
 import {
   DEFAULT_CURRENCY,
+  DEFAULT_DATE_FORMAT,
   DEFAULT_LOCALE,
   DEFAULT_SERIES_START,
 } from 'fyo/utils/consts';
@@ -133,9 +134,15 @@ async function updateSystemSettings(
   const systemSettings = await fyo.doc.getDoc('SystemSettings');
   const instanceId = getRandomString();
 
+  const dateFormat =
+    countryCode === 'in'
+      ? 'dd-MM-yyyy'
+      : countryOptions.date_format ?? DEFAULT_DATE_FORMAT;
+
   await systemSettings.setAndSync({
     locale,
     currency,
+    dateFormat,
     instanceId,
     countryCode,
   });

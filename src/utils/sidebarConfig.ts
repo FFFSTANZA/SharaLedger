@@ -145,7 +145,7 @@ function getReportSidebar() {
 function getCompleteSidebar(): SidebarConfig {
   return [
     {
-      label: t`Get Started`,
+      label: t`Getting Started`,
       name: 'get-started',
       route: '/get-started',
       icon: 'general',
@@ -166,21 +166,21 @@ function getCompleteSidebar(): SidebarConfig {
       route: '/list/SalesInvoice',
       items: [
         {
-          label: t`Sales Quotes`,
+          label: t`Quotations`,
           name: 'sales-quotes',
           route: '/list/SalesQuote',
           schemaName: 'SalesQuote',
         },
         {
-          label: t`Sales Invoices`,
+          label: t`Tax Invoices`,
           name: 'sales-invoices',
           route: '/list/SalesInvoice',
           schemaName: 'SalesInvoice',
         },
         {
-          label: t`Sales Payments`,
+          label: t`Receipts`,
           name: 'payments',
-          route: `/list/Payment/${t`Sales Payments`}`,
+          route: `/list/Payment/${t`Receipts`}`,
           schemaName: 'Payment',
           filters: routeFilters.SalesPayments,
         },
@@ -192,7 +192,7 @@ function getCompleteSidebar(): SidebarConfig {
           filters: routeFilters.Customers,
         },
         {
-          label: t`Sales Items`,
+          label: t`Products & Services`,
           name: 'sales-items',
           route: `/list/Item/${t`Sales Items`}`,
           schemaName: 'Item',

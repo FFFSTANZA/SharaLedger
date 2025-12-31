@@ -3,7 +3,7 @@
     <!-- Title and Period Selector -->
     <div class="flex items-center justify-between">
       <div class="font-semibold text-base dark:text-white">
-        {{ t`Cashflow` }}
+        {{ t`Cash Flow` }}
       </div>
 
       <!-- Chart Legend -->

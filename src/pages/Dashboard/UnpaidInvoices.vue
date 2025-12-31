@@ -153,6 +153,14 @@ export default defineComponent({
   },
   computed: {
     title(): string {
+      if (this.schemaName === ModelNameEnum.SalesInvoice) {
+        return t`Receivables`;
+      }
+
+      if (this.schemaName === ModelNameEnum.PurchaseInvoice) {
+        return t`Payables`;
+      }
+
       return fyo.schemaMap[this.schemaName]?.label ?? '';
     },
     color(): 'blue' | 'pink' {

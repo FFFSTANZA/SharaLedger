@@ -42,7 +42,7 @@
           "value": "dd.MM.yyyy"
         }
       ],
-      "default": "MMM d, y",
+      "default": "dd-MM-yyyy",
       "required": true,
       "allowCustom": true,
       "description": "Sets the app-wide date display format.",

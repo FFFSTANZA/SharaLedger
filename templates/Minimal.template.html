@@ -24,7 +24,13 @@
     <!-- Right Section -->
     <section class="text-right">
       <p class="font-semibold text-xl" :style="{ color: print.color }">
-        {{ doc.entryLabel }}
+        {{
+          doc.entryType === 'SalesInvoice'
+            ? t`Tax Invoice`
+            : doc.entryType === 'PurchaseInvoice'
+              ? t`Purchase Bill`
+              : doc.entryLabel
+        }}
       </p>
       <p>{{ doc.name }}</p>
     </section>
@@ -49,6 +55,19 @@
         class="mt-2 text-black leading-relaxed text-lg"
       >
         GSTIN: {{ doc.links.party.gstin }}
+      </p>
+      <p v-if="doc.placeOfSupply" class="mt-2 text-black leading-relaxed text-lg">
+        {{ t`Place of Supply` }}: {{ doc.placeOfSupply }}
+        <span v-if="doc.placeOfSupplyStateCode"
+          >({{ t`Code` }}: {{ doc.placeOfSupplyStateCode }})</span
+        >
+      </p>
+      <p
+        v-if="doc.links.party.links.address && doc.links.party.links.address.state"
+        class="mt-2 text-black leading-relaxed text-lg"
+      >
+        {{ t`State` }}: {{ doc.links.party.links.address.state }}
+        <span v-if="doc.partyStateCode">({{ t`Code` }}: {{ doc.partyStateCode }})</span>
       </p>
     </section>
 
@@ -80,6 +99,13 @@
         class="mt-2 ml-8 text-black leading-relaxed text-lg"
       >
         GSTIN: {{ print.gstin }}
+      </p>
+      <p
+        v-if="print.links.address && print.links.address.state"
+        class="mt-2 ml-8 text-black leading-relaxed text-lg"
+      >
+        {{ t`State` }}: {{ print.links.address.state }}
+        <span v-if="print.companyStateCode">({{ t`Code` }}: {{ print.companyStateCode }})</span>
       </p>
     </section>
   </section>
