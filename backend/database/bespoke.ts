@@ -128,8 +128,8 @@ export class BespokeQueries {
       .whereBetween('date', [fromDate, toDate])
       .select({
         period: periodExpr,
-        debit: db.knex!.raw('cast(debit as real) as debit'),
-        credit: db.knex!.raw('cast(credit as real) as credit'),
+        debit: db.knex!.raw('cast(debit as real)'),
+        credit: db.knex!.raw('cast(credit as real)'),
       })
       .select('referenceType', 'referenceName')) as unknown as {
       period: string;
