@@ -5,7 +5,7 @@
     "Application of Funds (Assets)": {
       "Current Assets": {
         "Accounts Receivable": {
-          "Debtors": {
+          "Sundry Debtors": {
             "isGroup": false,
             "accountType": "Receivable"
           }
@@ -27,7 +27,7 @@
           "Earnest Money": {}
         },
         "Stock Assets": {
-          "Stock In Hand": {
+          "Stock-in-hand": {
             "accountType": "Stock"
           },
           "accountType": "Stock"
@@ -37,19 +37,19 @@
         }
       },
       "Fixed Assets": {
-        "Capital Equipments": {
+        "Capital Equipment": {
           "accountType": "Fixed Asset"
         },
-        "Electronic Equipments": {
+        "Electronic Equipment": {
           "accountType": "Fixed Asset"
         },
-        "Furnitures and Fixtures": {
+        "Furniture and Fixtures": {
           "accountType": "Fixed Asset"
         },
-        "Office Equipments": {
+        "Office Equipment": {
           "accountType": "Fixed Asset"
         },
-        "Plants and Machineries": {
+        "Plant and Machinery": {
           "accountType": "Fixed Asset"
         },
         "Buildings": {
@@ -99,7 +99,7 @@
         "Office Maintenance Expenses": {},
         "Office Rent": {},
         "Postal Expenses": {},
-        "Print and Stationary": {},
+        "Printing and Stationery": {},
         "Rounded Off": {
           "accountType": "Round Off"
         },
@@ -137,7 +137,7 @@
       },
       "Current Liabilities": {
         "Accounts Payable": {
-          "Creditors": {
+          "Sundry Creditors": {
             "accountType": "Payable"
           },
           "Payroll Payable": {}

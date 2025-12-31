@@ -21,7 +21,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           key: 'Print',
           label: t`Print`,
           icon: 'invoice',
-          description: t`Customize your invoices by adding a logo and address details`,
+          description: t`Customize your bills by adding a logo and address details`,
           fieldname: 'printSetup',
           action: () => openSettings(ModelNameEnum.PrintSettings),
         },
@@ -90,7 +90,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           key: 'Add Customers',
           label: t`Add Customers`,
           icon: 'customer',
-          description: t`Add a few customers to create your first sales invoice`,
+          description: t`Add a few customers to create your first sales bill`,
           action: () =>
             routeTo({
               path: `/list/Party/${t`Customers`}`,
@@ -103,10 +103,10 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
             'https://docs.sharaledger.com/create-initial-entries#add-customers',
         },
         {
-          key: 'Create Sales Invoice',
-          label: t`Create Sales Invoice`,
+          key: 'Create Sales Bill',
+          label: t`Create Sales Bill`,
           icon: 'sales-invoice',
-          description: t`Create your first sales invoice for the created customer`,
+          description: t`Create your first sales bill for the created customer`,
           action: () => routeTo('/list/SalesInvoice'),
           fieldname: 'invoiceCreated',
           documentation: 'https://docs.sharaledger.com/sales-invoices',
@@ -120,7 +120,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           key: 'Add Purchase Items',
           label: t`Add Items`,
           icon: 'item',
-          description: t`Add products or services that you buy from your suppliers`,
+          description: t`Add products or services that you buy from your vendors`,
           action: () =>
             routeTo({
               path: `/list/Item/${t`Purchase Items`}`,
@@ -131,22 +131,22 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           fieldname: 'purchaseItemCreated',
         },
         {
-          key: 'Add Suppliers',
-          label: t`Add Suppliers`,
+          key: 'Add Vendors',
+          label: t`Add Vendors`,
           icon: 'supplier',
-          description: t`Add a few suppliers to create your first purchase invoice`,
+          description: t`Add a few vendors to create your first purchase bill`,
           action: () =>
             routeTo({
-              path: `/list/Party/${t`Suppliers`}`,
+              path: `/list/Party/${t`Vendors`}`,
               query: { filters: JSON.stringify({ role: 'Supplier' }) },
             }),
           fieldname: 'supplierCreated',
         },
         {
-          key: 'Create Purchase Invoice',
-          label: t`Create Purchase Invoice`,
+          key: 'Create Purchase Bill',
+          label: t`Create Purchase Bill`,
           icon: 'purchase-invoice',
-          description: t`Create your first purchase invoice from the created supplier`,
+          description: t`Create your first purchase bill from the created vendor`,
           action: () => routeTo('/list/PurchaseInvoice'),
           fieldname: 'billCreated',
           documentation:

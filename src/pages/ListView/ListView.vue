@@ -156,9 +156,9 @@ export default defineComponent({
     },
     actionOptions(): { value: string; label: string }[] {
       return [
-        { value: 'SalesQuote', label: 'Sales Quote' },
-        { value: 'SalesInvoice', label: 'Sales Invoice' },
-        { value: 'PurchaseInvoice', label: 'Purchase Invoice' },
+        { value: 'SalesQuote', label: 'Quotation' },
+        { value: 'SalesInvoice', label: 'Sales Bill' },
+        { value: 'PurchaseInvoice', label: 'Purchase Bill' },
       ];
     },
   },

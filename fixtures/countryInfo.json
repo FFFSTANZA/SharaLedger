@@ -958,7 +958,7 @@
     "currency_fraction_units": 100,
     "currency_name": "Indian Rupee",
     "currency_symbol": "₹",
-    "date_format": "dd/MM/yyyy",
+    "date_format": "dd-MM-yyyy",
     "timezones": ["Asia/Kolkata"],
     "fiscal_year_start": "04-01",
     "fiscal_year_end": "03-31",
