@@ -14,12 +14,13 @@
         <div
           v-for="(d, i) in expenses"
           :key="d.account"
-          class="flex items-center text-sm p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-default"
+          class="flex items-center text-sm p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-default"
+          :class="active === i ? 'bg-gray-100 dark:bg-gray-800' : ''"
           @mouseover="active = i"
           @mouseleave="active = null"
         >
           <div
-            class="w-3 h-3 rounded-sm flex-shrink-0 shadow-sm"
+            class="w-3 h-3 rounded-full flex-shrink-0 shadow-sm"
             :class="d.class"
           />
           <p

@@ -1,34 +1,34 @@
 <template>
   <div
-    class="py-2 h-full flex justify-between flex-col bg-gray-25 dark:bg-gray-900 relative"
+    class="py-4 h-full flex justify-between flex-col bg-gray-50 dark:bg-gray-900 relative border-r dark:border-gray-800"
     :class="{
       'window-drag': platform !== 'Windows',
     }"
   >
-    <div>
+    <div class="space-y-1">
       <!-- Company name -->
       <div
-        class="px-4 flex flex-row items-center justify-between mb-4"
+        class="px-6 flex flex-row items-center justify-between mb-6"
         :class="
-          platform === 'Mac' && languageDirection === 'ltr' ? 'mt-10' : 'mt-2'
+          platform === 'Mac' && languageDirection === 'ltr' ? 'mt-8' : 'mt-2'
         "
       >
         <h6
           data-testid="company-name"
-          class="font-semibold dark:text-gray-200 whitespace-nowrap overflow-auto no-scrollbar select-none"
+          class="font-bold text-lg dark:text-gray-100 whitespace-nowrap overflow-auto no-scrollbar select-none tracking-tight"
         >
           {{ companyName }}
         </h6>
       </div>
 
       <!-- Sidebar Items -->
-      <div v-for="group in groups" :key="group.label">
+      <div v-for="group in groups" :key="group.label" class="px-3">
         <div
-          class="px-4 flex items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-875 h-10"
+          class="px-3 flex items-center cursor-pointer hover:bg-gray-200/50 dark:hover:bg-gray-800/50 h-10 rounded-lg transition-colors duration-200"
           :class="
             isGroupActive(group) && !group.items
-              ? 'bg-gray-100 dark:bg-gray-875 border-s-4 border-gray-800 dark:border-gray-100'
-              : ''
+              ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 font-medium shadow-sm shadow-violet-200/50 dark:shadow-none'
+              : 'text-gray-700 dark:text-gray-300'
           "
           @click="routeToSidebarItem(group)"
         >
@@ -39,83 +39,76 @@
             :height="group.iconHeight ?? 0"
             :active="!!isGroupActive(group)"
             :darkMode="darkMode"
-            :class="isGroupActive(group) && !group.items ? '-ms-1' : ''"
-          />
-          <div
-            class="ms-2 text-lg text-gray-700"
             :class="
               isGroupActive(group) && !group.items
-                ? 'text-gray-900 dark:text-gray-25'
-                : 'dark:text-gray-300'
+                ? 'text-violet-600 dark:text-violet-400'
+                : ''
             "
-          >
+          />
+          <div class="ms-3 text-base">
             {{ group.label }}
           </div>
         </div>
 
         <!-- Expanded Group -->
-        <div v-if="group.items && isGroupActive(group)">
+        <div v-if="group.items && isGroupActive(group)" class="mt-1 space-y-1">
           <div
             v-for="item in group.items"
             :key="item.label"
-            class="text-base h-10 ps-10 cursor-pointer flex items-center hover:bg-gray-100 dark:hover:bg-gray-875"
+            class="text-base h-9 ps-11 pe-3 cursor-pointer flex items-center hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
             :class="
               isItemActive(item)
-                ? 'bg-gray-100 dark:bg-gray-875 text-gray-900 dark:text-gray-100 border-s-4 border-gray-800 dark:border-gray-100'
-                : 'text-gray-700 dark:text-gray-400'
+                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 font-medium shadow-sm shadow-violet-200/50 dark:shadow-none'
+                : 'text-gray-600 dark:text-gray-400'
             "
             @click="routeToSidebarItem(item)"
           >
-            <p :style="isItemActive(item) ? 'margin-left: -4px' : ''">
-              {{ item.label }}
-            </p>
+            {{ item.label }}
           </div>
         </div>
       </div>
     </div>
 
     <!-- Report Issue and DB Switcher -->
-    <div class="window-no-drag flex flex-col gap-2 py-2 px-4">
+    <div
+      class="window-no-drag flex flex-col gap-2 py-4 px-6 border-t dark:border-gray-800"
+    >
       <button
-        class="flex text-sm text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 gap-1 items-center"
+        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
         @click="openDocumentation"
       >
         <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />
-        <p>
-          {{ t`Help` }}
-        </p>
+        <span>{{ t`Help` }}</span>
       </button>
 
       <button
-        class="flex text-sm text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 gap-1 items-center"
+        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
         @click="viewShortcuts = true"
       >
         <feather-icon name="command" class="h-4 w-4 flex-shrink-0" />
-        <p>{{ t`Shortcuts` }}</p>
+        <span>{{ t`Shortcuts` }}</span>
       </button>
 
       <button
         data-testid="change-db"
-        class="flex text-sm text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 gap-1 items-center"
+        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
         @click="$emit('change-db-file')"
       >
         <feather-icon name="database" class="h-4 w-4 flex-shrink-0" />
-        <p>{{ t`Change DB` }}</p>
+        <span>{{ t`Change DB` }}</span>
       </button>
 
       <button
-        class="flex text-sm text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 gap-1 items-center"
+        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
         @click="() => reportIssue()"
       >
         <feather-icon name="flag" class="h-4 w-4 flex-shrink-0" />
-        <p>
-          {{ t`Report Issue` }}
-        </p>
+        <span>{{ t`Report Issue` }}</span>
       </button>
 
       <p
         v-if="showDevMode"
-        class="text-xs text-gray-500 select-none cursor-pointer"
+        class="text-[10px] uppercase tracking-wider text-gray-400 select-none cursor-pointer mt-2"
         @click="showDevMode = false"
         title="Open dev tools with Ctrl+Shift+I"
       >
@@ -125,7 +118,7 @@
 
     <!-- Hide Sidebar Button -->
     <button
-      class="absolute bottom-0 end-0 text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-875 rounded p-1 m-4 rtl-rotate-180"
+      class="absolute bottom-4 end-4 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg p-1.5 transition-all duration-200 rtl-rotate-180"
       @click="() => toggleSidebar()"
     >
       <feather-icon name="chevrons-left" class="w-4 h-4" />

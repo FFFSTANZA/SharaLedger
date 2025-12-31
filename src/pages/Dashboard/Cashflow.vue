@@ -1,45 +1,50 @@
 <template>
   <div>
     <!-- Title and Period Selector -->
-    <div class="flex items-center justify-between">
-      <div class="font-semibold text-base text-gray-800 dark:text-white">
-        {{ t`Cashflow` }}
-      </div>
-
-      <!-- Chart Legend -->
-      <div v-if="hasData" class="flex text-base gap-8">
-        <div class="flex items-center gap-2">
-          <span
-            class="w-3 h-3 rounded-sm inline-block bg-violet-500 dark:bg-violet-600 shadow-sm"
-          />
-          <span class="text-gray-700 dark:text-gray-200 font-medium">{{
-            t`Inflow`
-          }}</span>
+    <SectionHeader>
+      <template #title>{{ t`Cashflow` }}</template>
+      <template #action>
+        <!-- Chart Legend -->
+        <div v-if="hasData" class="flex text-sm gap-6 me-4">
+          <div class="flex items-center gap-2">
+            <span
+              class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-600 shadow-sm"
+            />
+            <span class="text-gray-600 dark:text-gray-300 font-medium">{{
+              t`Inflow`
+            }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-600 shadow-sm"
+            />
+            <span class="text-gray-600 dark:text-gray-300 font-medium">{{
+              t`Outflow`
+            }}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span
-            class="w-3 h-3 rounded-sm inline-block bg-teal-500 dark:bg-teal-600 shadow-sm"
-          />
-          <span class="text-gray-700 dark:text-gray-200 font-medium">{{
-            t`Outflow`
-          }}</span>
-        </div>
-      </div>
-      <div v-else class="w-16 h-5 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div
+          v-else
+          class="w-16 h-5 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
+        />
 
-      <PeriodSelector
-        v-if="hasData"
-        :value="period"
-        :options="periodOptions"
-        @change="(value) => (period = value)"
-      />
-      <div v-else class="w-20 h-5 bg-gray-200 dark:bg-gray-700 rounded" />
-    </div>
+        <PeriodSelector
+          v-if="hasData"
+          :value="period"
+          :options="periodOptions"
+          @change="(value) => (period = value)"
+        />
+        <div
+          v-else
+          class="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
+        />
+      </template>
+    </SectionHeader>
 
     <!-- Line Chart -->
     <LineChart
       v-if="chartData.points.length"
-      class="mt-4"
+      class="mt-6"
       :aspect-ratio="4.15"
       :colors="chartData.colors"
       :grid-color="chartData.gridColor"
@@ -64,6 +69,7 @@ import { uicolors } from 'src/utils/colors';
 import { getDatesAndPeriodList } from 'src/utils/misc';
 import DashboardChartBase from './BaseDashboardChart.vue';
 import PeriodSelector from './PeriodSelector.vue';
+import SectionHeader from './SectionHeader.vue';
 import { defineComponent } from 'vue';
 import { getMapFromList } from 'utils/index';
 import { PeriodKey } from 'src/utils/types';
@@ -78,6 +84,7 @@ export default defineComponent({
   name: 'Cashflow',
   components: {
     PeriodSelector,
+    SectionHeader,
     LineChart,
   },
   extends: DashboardChartBase,

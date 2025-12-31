@@ -1,8 +1,8 @@
 <template>
   <div class="h-screen" style="width: var(--w-desk)">
-    <PageHeader :title="t`Dashboard`">
+    <PageHeader :title="t`Dashboard`" :border="false">
       <div
-        class="border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus-within:bg-gray-50 dark:focus-within:bg-gray-700 flex items-center shadow-sm hover:shadow-md transition-shadow duration-200"
+        class="rounded-xl bg-gray-100 dark:bg-gray-800/50 p-0.5 flex items-center transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-800"
       >
         <PeriodSelector
           class="px-3"
