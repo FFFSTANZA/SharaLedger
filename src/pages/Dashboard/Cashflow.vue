@@ -59,7 +59,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-amber-500 dark:bg-amber-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Net Cashflow` }}
@@ -164,7 +164,7 @@ export default defineComponent({
       const colors = [
         this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet 400/500
         this.darkMode ? '#2dd4bf' : '#14b8a6', // Teal 400/500
-        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet 400/500
+        this.darkMode ? '#fbbf24' : '#f59e0b', // Amber 400/500
       ];
 
       const thicknesses = [3, 3, 6];
