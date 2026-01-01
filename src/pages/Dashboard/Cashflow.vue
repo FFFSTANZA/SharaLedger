@@ -40,10 +40,10 @@
       </div>
     </div>
 
-    <div v-if="hasData" class="mt-6 flex flex-wrap gap-6 text-sm">
+    <div class="mt-6 flex flex-wrap gap-6 text-sm">
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-emerald-500 dark:bg-emerald-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Inflow` }}
@@ -51,7 +51,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-red-500 dark:bg-red-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Outflow` }}
@@ -68,7 +68,6 @@
     </div>
 
     <LineChart
-      v-if="hasData"
       class="mt-6"
       :aspect-ratio="4.15"
       :colors="chartData.colors"
@@ -80,20 +79,11 @@
       :format="chartData.format"
       :format-x="chartData.formatX"
       :y-max="chartData.yMax"
-      :draw-labels="range !== 'This Month'"
+      :draw-labels="hasData"
       :show-all-series-in-tooltip="true"
       :series-labels="chartData.seriesLabels"
       :tooltip-extra="getTooltipExtra"
     />
-
-    <div v-else class="flex-1 w-full h-full flex-center my-20">
-      <div class="text-center">
-        <div class="text-6xl mb-4">📊</div>
-        <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
-          {{ t`No transactions yet` }}
-        </span>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -163,16 +153,18 @@ export default defineComponent({
         : 'text-amber-600 dark:text-amber-500 font-semibold';
     },
     chartData() {
-      const points = [
-        this.series.map((p) => p.inflow ?? 0),
-        this.series.map((p) => p.outflow ?? 0),
-        this.series.map((p) => p.net ?? 0),
-      ];
+      const points = this.hasData
+        ? [
+            this.series.map((p) => p.inflow ?? 0),
+            this.series.map((p) => p.outflow ?? 0),
+            this.series.map((p) => p.net ?? 0),
+          ]
+        : [];
 
       const colors = [
-        uicolors.violet[this.darkMode ? '400' : '500'],
-        uicolors.teal[this.darkMode ? '400' : '500'],
-        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet color for net cashflow instead of gray
+        this.darkMode ? '#34d399' : '#10b981', // Emerald 400/500
+        this.darkMode ? '#f87171' : '#ef4444', // Red 400/500
+        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet 400/500
       ];
 
       const thicknesses = [3, 3, 6];
@@ -200,9 +192,9 @@ export default defineComponent({
         yMax,
         formatX,
         gridColor: this.darkMode
-          ? 'rgba(200, 200, 200, 0.15)'
-          : 'rgba(0, 0, 0, 0.06)',
-        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['600'],
+          ? 'rgba(255, 255, 255, 0.08)'
+          : 'rgba(0, 0, 0, 0.04)',
+        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['500'],
         seriesLabels: [t`Inflow`, t`Outflow`, t`Net Cashflow`],
       };
     },
