@@ -13,25 +13,25 @@
       </div>
 
       <div
-        class="rounded-xl bg-gray-100 dark:bg-gray-800/50 p-1 flex items-center"
+        class="rounded-lg border border-gray-200 dark:border-gray-700 p-1 flex items-center"
       >
         <button
-          class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
           :class="
             range === 'This Month'
-              ? 'bg-emerald-500 dark:bg-emerald-400 text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
+              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
           "
           @click="range = 'This Month'"
         >
           {{ t`This Month` }}
         </button>
         <button
-          class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
           :class="
             range === 'This Year'
-              ? 'bg-emerald-500 dark:bg-emerald-400 text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
+              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
           "
           @click="range = 'This Year'"
         >
@@ -43,18 +43,18 @@
     <div class="mt-6 flex flex-wrap gap-6 text-sm">
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-emerald-500 dark:bg-emerald-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
-          {{ t`Inflow` }}
+          {{ t`Cash Inflow` }}
         </span>
       </div>
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-red-500 dark:bg-red-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
-          {{ t`Outflow` }}
+          {{ t`Cash Outflow` }}
         </span>
       </div>
       <div class="flex items-center gap-3">
@@ -162,14 +162,14 @@ export default defineComponent({
         : [];
 
       const colors = [
-        this.darkMode ? '#34d399' : '#10b981', // Emerald 400/500
-        this.darkMode ? '#f87171' : '#ef4444', // Red 400/500
+        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet 400/500
+        this.darkMode ? '#2dd4bf' : '#14b8a6', // Teal 400/500
         this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet 400/500
       ];
 
       const thicknesses = [3, 3, 6];
 
-      const xLabels = this.series.map((p) => p.period);
+      const xLabels = this.series.map((p) => p.period ?? '');
       const format = (value: number) => fyo.format(value ?? 0, 'Currency');
       const yMax = getYMax(points);
 
@@ -198,7 +198,7 @@ export default defineComponent({
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
         fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['500'],
-        seriesLabels: [t`Inflow`, t`Outflow`, t`Net Cashflow`],
+        seriesLabels: [t`Cash Inflow`, t`Cash Outflow`, t`Net Cashflow`],
       };
     },
   },
@@ -262,7 +262,7 @@ export default defineComponent({
 
       const isInflowSpike = inflowAmount >= outflowAmount;
       const spike = isInflowSpike ? inflow : outflow;
-      const spikeLabel = isInflowSpike ? t`inflow` : t`outflow`;
+      const spikeLabel = isInflowSpike ? t`cash inflow` : t`cash outflow`;
 
       if (!spike?.amount) {
         return '';
