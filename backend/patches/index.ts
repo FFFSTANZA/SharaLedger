@@ -9,6 +9,7 @@ import fixLedgerDateTime from './v0_21_0/fixLedgerDateTime';
 import fixInvoiceItemHSNField from './fixInvoiceItemHSNField';
 import fixItemHSNField from './fixItemHSNField';
 import setIndiaDefaultDateFormat from './setIndiaDefaultDateFormat';
+import setIndiaDefaultLocale from './setIndiaDefaultLocale';
 import createPaymentMethods from './createPaymentMethods';
 
 export default [
@@ -54,6 +55,11 @@ export default [
     name: 'setIndiaDefaultDateFormat',
     version: '0.36.1',
     patch: setIndiaDefaultDateFormat,
+  },
+  {
+    name: 'setIndiaDefaultLocale',
+    version: '0.36.1',
+    patch: setIndiaDefaultLocale,
   },
   {
     name: 'createPaymentMethods',

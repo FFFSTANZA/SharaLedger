@@ -86,9 +86,13 @@ export async function getPrintTemplatePropValues(
     totalTax = await ((sinvDoc as Invoice) ?? (doc as Payment))?.getTotalTax();
   }
 
+  const currencyForWords = getCurrencyForAmountInWords(doc, fyo);
+
   if (doc.schema.name == ModelNameEnum.Payment) {
     (values.doc as PrintTemplateData).amountPaidInWords = getGrandTotalInWords(
-      (doc.amountPaid as Money)?.float
+      (doc.amountPaid as Money)?.float,
+      fyo,
+      currencyForWords
     );
   }
 
@@ -132,7 +136,9 @@ export async function getPrintTemplatePropValues(
   }
 
   (values.doc as PrintTemplateData).grandTotalInWords = getGrandTotalInWords(
-    ((doc.grandTotal as Money) ?? (doc.amount as Money)).float
+    ((doc.grandTotal as Money) ?? (doc.amount as Money)).float,
+    fyo,
+    currencyForWords
   );
 
   (values.doc as PrintTemplateData).date = getDate(doc.date, fyo);
@@ -254,10 +260,34 @@ export function getPrintTemplatePropHints(schemaName: string, fyo: Fyo) {
   return hints;
 }
 
-function getGrandTotalInWords(total: number) {
-  const formattedTotal = total.toFixed(2);
+function getCurrencyForAmountInWords(doc: Doc, fyo: Fyo): string {
+  const currencyValue = doc.get('currency');
+  if (typeof currencyValue === 'string' && currencyValue) {
+    return currencyValue;
+  }
 
+  return fyo.singles.SystemSettings?.currency ?? 'INR';
+}
+
+function getGrandTotalInWords(
+  total: number | undefined,
+  fyo: Fyo,
+  currency?: string
+) {
+  const safeTotal =
+    typeof total === 'number' && Number.isFinite(total) ? total : 0;
+  const isNegative = safeTotal < 0;
+  const absTotal = Math.abs(safeTotal);
+
+  const currencyCode =
+    currency ?? fyo.singles.SystemSettings?.currency ?? 'INR';
+  const isIndian = fyo.singles.SystemSettings?.countryCode === 'in';
+
+  const formattedTotal = absTotal.toFixed(2);
   const [integerPart, decimalPart] = formattedTotal.split('.');
+
+  const integerValue = parseInt(integerPart, 10) || 0;
+  const decimalValue = parseInt(decimalPart, 10) || 0;
 
   const ones = [
     '',
@@ -298,8 +328,6 @@ function getGrandTotalInWords(total: number) {
     t`Ninety`,
   ];
 
-  const scales = ['', t`Thousand`, t`Million`, t`Billion`];
-
   function convertThreeDigitNumber(num: number) {
     let result = '';
 
@@ -332,32 +360,74 @@ function getGrandTotalInWords(total: number) {
     return result;
   }
 
-  let spelledOutInteger = '';
-  const integerGroups = integerPart.match(/(\d{1,3})(?=(\d{3})*$)/g) || [];
-  const groupCount = integerGroups.length;
-
-  integerGroups.forEach((group, index) => {
-    const groupValue = parseInt(group);
-
-    if (groupValue > 0) {
-      const groupText = convertThreeDigitNumber(groupValue);
-      const groupSuffix = scales[groupCount - index - 1];
-      spelledOutInteger +=
-        groupText + (groupSuffix ? ' ' + groupSuffix : '') + ' ';
+  function getIndianIntegerWords(num: number): string {
+    if (num === 0) {
+      return t`Zero`;
     }
-  });
 
-  spelledOutInteger = spelledOutInteger.trim() || t`Zero`;
+    const crore = Math.floor(num / 10000000);
+    const lakh = Math.floor((num % 10000000) / 100000);
+    const thousand = Math.floor((num % 100000) / 1000);
+    const rest = num % 1000;
 
-  let spelledOutDecimal = '';
-  const decimalCents = parseInt(decimalPart);
+    const parts: string[] = [];
+    if (crore) {
+      parts.push(`${convertThreeDigitNumber(crore)} ${t`Crore`}`);
+    }
 
-  if (decimalCents !== 0) {
-    spelledOutDecimal =
-      ` ${t`and`} ` + convertThreeDigitNumber(decimalCents) + ` ${t`Paisa`}`;
+    if (lakh) {
+      parts.push(`${convertThreeDigitNumber(lakh)} ${t`Lakh`}`);
+    }
+
+    if (thousand) {
+      parts.push(`${convertThreeDigitNumber(thousand)} ${t`Thousand`}`);
+    }
+
+    if (rest) {
+      parts.push(convertThreeDigitNumber(rest));
+    }
+
+    return parts.join(' ').trim();
   }
 
-  return `${spelledOutInteger}${spelledOutDecimal} ${t`only`}`;
+  function getInternationalIntegerWords(part: string): string {
+    const scales = ['', t`Thousand`, t`Million`, t`Billion`];
+    const integerGroups = part.match(/(\d{1,3})(?=(\d{3})*$)/g) || [];
+    const groupCount = integerGroups.length;
+
+    let spelledOut = '';
+    integerGroups.forEach((group, index) => {
+      const groupValue = parseInt(group, 10);
+
+      if (groupValue > 0) {
+        const groupText = convertThreeDigitNumber(groupValue);
+        const groupSuffix = scales[groupCount - index - 1];
+        spelledOut += groupText + (groupSuffix ? ' ' + groupSuffix : '') + ' ';
+      }
+    });
+
+    return spelledOut.trim() || t`Zero`;
+  }
+
+  const spelledOutInteger = isIndian
+    ? getIndianIntegerWords(integerValue)
+    : getInternationalIntegerWords(integerPart);
+
+  const spelledOutDecimal =
+    decimalValue !== 0
+      ? ` ${t`and`} ${convertThreeDigitNumber(decimalValue)} ${
+          decimalValue === 1 ? t`Paisa` : t`Paise`
+        }`
+      : '';
+
+  const prefix = isNegative ? `${t`Minus`} ` : '';
+
+  if (isIndian && currencyCode === 'INR') {
+    const rupeeWord = integerValue === 1 ? t`Rupee` : t`Rupees`;
+    return `${prefix}${spelledOutInteger} ${rupeeWord}${spelledOutDecimal} ${t`only`}`;
+  }
+
+  return `${prefix}${spelledOutInteger}${spelledOutDecimal} ${t`only`}`;
 }
 
 function showHSN(doc: Doc): boolean {
