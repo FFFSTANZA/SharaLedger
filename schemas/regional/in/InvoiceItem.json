@@ -1,0 +1,11 @@
+{
+  "name": "InvoiceItem",
+  "fields": [
+    {
+      "fieldname": "hsnCode",
+      "label": "HSN/SAC",
+      "fieldtype": "Data",
+      "placeholder": "HSN/SAC Code"
+    }
+  ]
+}

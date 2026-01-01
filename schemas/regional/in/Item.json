@@ -1,0 +1,13 @@
+{
+  "name": "Item",
+  "fields": [
+    {
+      "fieldname": "hsnCode",
+      "label": "HSN (Goods) / SAC (Services)",
+      "fieldtype": "AutoComplete",
+      "placeholder": "HSN/SAC Code",
+      "section": "Inventory",
+      "allowCustom": true
+    }
+  ]
+}

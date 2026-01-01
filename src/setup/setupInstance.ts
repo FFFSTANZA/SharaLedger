@@ -133,11 +133,14 @@ async function updateSystemSettings(
   const systemSettings = await fyo.doc.getDoc('SystemSettings');
   const instanceId = getRandomString();
 
+  const dateFormat = countryCode === 'in' ? 'dd/MM/yyyy' : undefined;
+
   await systemSettings.setAndSync({
     locale,
     currency,
     instanceId,
     countryCode,
+    ...(dateFormat ? { dateFormat } : {}),
   });
 }
 

@@ -44,11 +44,11 @@
       >
         {{ doc.links.party.links.address.addressDisplay ?? '' }}
       </p>
-      <p
-        v-if="doc.links.party.gstin"
-        class="mt-2 text-black leading-relaxed text-lg"
-      >
-        GSTIN: {{ doc.links.party.gstin }}
+      <p v-if="doc.isIndian" class="mt-2 text-black leading-relaxed text-lg">
+        GSTIN: {{ doc.links.party.gstin || '-' }}
+      </p>
+      <p v-if="doc.isIndian" class="mt-2 text-black leading-relaxed text-lg">
+        Place of Supply: {{ doc.placeOfSupply || '-' }}
       </p>
     </section>
 
@@ -69,10 +69,10 @@
         {{ print.links.address.addressDisplay }}
       </p>
       <p
-        v-if="print.gstin"
+        v-if="doc.isIndian"
         class="mt-2 ml-8 text-black leading-relaxed text-lg"
       >
-        GSTIN: {{ print.gstin }}
+        GSTIN: {{ print.gstin || '-' }}
       </p>
     </section>
   </section>

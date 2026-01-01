@@ -1,7 +1,12 @@
 import { Fyo, t } from 'fyo';
+import { DEFAULT_DATE_FORMAT } from 'fyo/utils/consts';
 import { Doc } from 'fyo/model/doc';
+import { DateTime } from 'luxon';
 import { Invoice } from 'models/baseModels/Invoice/Invoice';
+import { Payment } from 'models/baseModels/Payment/Payment';
+import { SalesInvoice } from 'models/baseModels/SalesInvoice/SalesInvoice';
 import { ModelNameEnum } from 'models/types';
+import { codeStateMap } from 'regional/in';
 import { FieldTypeEnum, Schema, TargetField } from 'schemas/types';
 import { getValueMapFromList } from 'utils/index';
 import { TemplateFile } from 'utils/types';
@@ -13,8 +18,6 @@ import {
   showExportInFolder,
 } from './ui';
 import { Money } from 'pesa';
-import { SalesInvoice } from 'models/baseModels/SalesInvoice/SalesInvoice';
-import { Payment } from 'models/baseModels/Payment/Payment';
 
 export type PrintTemplateHint = {
   [key: string]: string | PrintTemplateHint | PrintTemplateHint[];
@@ -112,6 +115,7 @@ export async function getPrintTemplatePropValues(
     ...printValues,
     ...accountingValues,
   };
+
   const discountSchema = ['Invoice', 'Quote'];
   if (discountSchema.some((value) => doc.schemaName?.endsWith(value))) {
     (values.doc as PrintTemplateData).totalDiscount =
@@ -119,14 +123,22 @@ export async function getPrintTemplatePropValues(
   }
   (values.doc as PrintTemplateData).showHSN = showHSN(doc);
 
+  const isIndian = fyo.singles.SystemSettings?.countryCode === 'in';
+  (values.doc as PrintTemplateData).isIndian = isIndian;
+  if (isIndian) {
+    (values.doc as PrintTemplateData).placeOfSupply = await getPlaceOfSupply(
+      doc
+    );
+  }
+
   (values.doc as PrintTemplateData).grandTotalInWords = getGrandTotalInWords(
     ((doc.grandTotal as Money) ?? (doc.amount as Money)).float
   );
 
-  (values.doc as PrintTemplateData).date = getDate(doc.date as string);
+  (values.doc as PrintTemplateData).date = getDate(doc.date, fyo);
 
   if (printSettings.displayTime) {
-    (values.doc as PrintTemplateData).time = getTime(doc.date as string);
+    (values.doc as PrintTemplateData).time = getTime(doc.date);
   }
 
   if (printSettings.displayDescription) {
@@ -158,19 +170,59 @@ async function getPaymentDetails(doc: Doc, paymentId: string[]) {
   return paymentDetails;
 }
 
-function getDate(dateString: string): string {
-  const date = new Date(dateString);
-  date.setMonth(date.getMonth());
+async function getPlaceOfSupply(doc: Doc): Promise<string> {
+  if (!doc.party) {
+    return '';
+  }
 
-  return `${date.toLocaleString('default', {
-    month: 'short',
-  })} ${date.getDate()}, ${date.getFullYear()}`;
+  await doc.loadLinks();
+  const partyDoc = doc.links?.party;
+  if (!partyDoc) {
+    return '';
+  }
+
+  const addressDoc = partyDoc.links?.address;
+  const pos = typeof addressDoc?.pos === 'string' ? addressDoc.pos : '';
+  if (pos) {
+    return pos;
+  }
+
+  const gstin = typeof partyDoc.gstin === 'string' ? partyDoc.gstin : '';
+  const stateCode = gstin.slice(0, 2);
+  return codeStateMap[stateCode] ?? '';
 }
 
-function getTime(dateString: string): string {
-  const date = new Date(dateString);
+function toLuxonDateTime(value: unknown): DateTime | null {
+  if (typeof value === 'string') {
+    return DateTime.fromISO(value);
+  }
 
-  return date.toTimeString().split(' ')[0];
+  if (value instanceof Date) {
+    return DateTime.fromJSDate(value);
+  }
+
+  return null;
+}
+
+function getDate(value: unknown, fyo: Fyo): string {
+  const dateFormat =
+    (fyo.singles.SystemSettings?.dateFormat as string) ?? DEFAULT_DATE_FORMAT;
+
+  const dt = toLuxonDateTime(value);
+  if (!dt?.isValid) {
+    return '';
+  }
+
+  return dt.toFormat(dateFormat);
+}
+
+function getTime(value: unknown): string {
+  const dt = toLuxonDateTime(value);
+  if (!dt?.isValid) {
+    return '';
+  }
+
+  return dt.toFormat('HH:mm:ss');
 }
 
 export function getPrintTemplatePropHints(schemaName: string, fyo: Fyo) {
