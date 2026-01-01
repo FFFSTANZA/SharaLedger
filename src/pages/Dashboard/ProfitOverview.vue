@@ -18,14 +18,18 @@
       <div class="text-gray-600 dark:text-gray-300 font-medium">
         {{ t`Total Revenue` }}
       </div>
-      <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
+      <div
+        class="text-right font-semibold bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1"
+      >
         {{ formatCurrency(revenue) }}
       </div>
 
       <div class="text-gray-600 dark:text-gray-300 font-medium">
         {{ t`Total Expenses` }}
       </div>
-      <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
+      <div
+        class="text-right font-semibold bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1"
+      >
         {{ formatCurrency(expenses) }}
       </div>
 
@@ -33,7 +37,7 @@
         {{ t`Net Profit` }}
       </div>
       <div
-        class="text-right font-bold text-lg"
+        class="text-right font-bold text-lg bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg px-2 py-1"
         :class="
           netProfit >= 0
             ? 'text-violet-600 dark:text-violet-400'
@@ -46,7 +50,9 @@
       <div class="text-gray-600 dark:text-gray-300 font-medium">
         {{ t`Profit Margin` }}
       </div>
-      <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
+      <div
+        class="text-right font-semibold bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1"
+      >
         {{ marginText }}
       </div>
     </div>

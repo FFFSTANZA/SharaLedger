@@ -19,7 +19,7 @@
           class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
           :class="
             range === 'This Month'
-              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+              ? 'bg-emerald-500 dark:bg-emerald-400 text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
           "
           @click="range = 'This Month'"
@@ -30,7 +30,7 @@
           class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
           :class="
             range === 'This Year'
-              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+              ? 'bg-emerald-500 dark:bg-emerald-400 text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700/40'
           "
           @click="range = 'This Year'"
@@ -174,6 +174,9 @@ export default defineComponent({
       const yMax = getYMax(points);
 
       const formatX = (value: string) => {
+        // Handle undefined or null values
+        if (!value) return '';
+
         if (this.range === 'This Month') {
           const dt = DateTime.fromFormat(value, 'yyyy-MM-dd');
           return dt.isValid ? dt.toFormat('dd') : value;
