@@ -1,410 +1,352 @@
 <template>
-  <div>
+  <div class="w-full">
     <svg
       ref="chartSvg"
       :viewBox="`0 0 ${viewBoxWidth} ${viewBoxHeight}`"
       xmlns="http://www.w3.org/2000/svg"
-      @mousemove="update"
+      @mousemove="hasData ? update : null"
     >
-      <!-- x Grid Lines -->
+      <!-- Grid -->
       <path
         v-if="drawXGrid"
         :d="xGrid"
         :stroke="gridColor"
         :stroke-width="gridThickness"
-        stroke-linecap="round"
-        fill="transparent"
+        fill="none"
       />
 
       <!-- Axis -->
       <path
         v-if="drawAxis"
         :d="axis"
-        :stroke-width="axisThickness"
         :stroke="axisColor"
-        fill="transparent"
+        :stroke-width="axisThickness"
+        fill="none"
       />
 
-      <!-- x Labels -->
-      <template v-if="drawLabels && xLabels.length > 0">
+      <!-- X Labels -->
+      <template v-if="drawLabels && hasData">
         <text
-          v-for="(i, j) in count"
-          :key="j + '-xlabels'"
-          :style="fontStyle"
-          :y="
-            viewBoxHeight -
-            axisPadding +
-            yLabelOffset +
-            fontStyle.fontSize / 2 -
-            bottom
-          "
-          :x="xs[i - 1]"
+          v-for="(x, i) in xs"
+          :key="'x-' + i"
+          :x="x"
+          :y="viewBoxHeight - bottom + fontSize"
           text-anchor="middle"
-        >
-          {{ formatX(xLabels[i - 1] || '') }}
-        </text>
-      </template>
-
-      <!-- y Labels -->
-      <template v-if="drawLabels && yLabelDivisions > 0">
-        <text
-          v-for="(i, j) in yLabelDivisions + 1"
-          :key="j + '-ylabels'"
           :style="fontStyle"
-          :y="yScalerLocation(i - 1)"
-          :x="axisPadding - xLabelOffset + left"
-          text-anchor="end"
         >
-          {{ yScalerValue(i - 1) }}
+          {{ formatX(xLabels[i] ?? '') }}
         </text>
       </template>
 
-      <!-- Gradient Mask -->
+      <!-- Y Labels -->
+      <template v-if="drawLabels">
+        <text
+          v-for="i in yLabelDivisions + 1"
+          :key="'y-' + i"
+          :x="axisPadding + left - 8"
+          :y="yScalerLocation(i - 1)"
+          text-anchor="end"
+          :style="fontStyleMuted"
+        >
+          {{ formatY(yScalerValue(i - 1)) }}
+        </text>
+      </template>
+
+      <!-- Gradients -->
       <defs>
-        <linearGradient id="grad" x1="0" y1="0" x2="0" y2="85%">
-          <stop offset="0%" stop-color="rgba(139, 92, 246, 0.3)" />
-          <stop offset="40%" stop-color="rgba(139, 92, 246, 0.15)" />
-          <stop offset="70%" stop-color="rgba(139, 92, 246, 0.05)" />
+        <linearGradient id="idleGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.05" />
         </linearGradient>
 
-        <mask v-for="(i, j) in num" :id="'rect-mask-' + i" :key="j + '-mask'">
-          <rect
-            x="0"
-            :y="gradY(j)"
-            :height="viewBoxHeight - gradY(j)"
-            width="100%"
-            fill="url('#grad')"
-          />
-        </mask>
+        <linearGradient
+          v-for="(c, i) in resolvedColors"
+          :key="'grad-' + i"
+          :id="`grad-${i}`"
+          x1="0"
+          y1="0"
+          x2="0"
+          y2="1"
+        >
+          <stop offset="0%" :stop-color="c" stop-opacity="0.25" />
+          <stop offset="100%" :stop-color="c" stop-opacity="0.05" />
+        </linearGradient>
       </defs>
 
-      <g v-for="(i, j) in num" :key="j + '-gpath'">
-        <!-- Gradient Paths -->
+      <!-- EMPTY STATE -->
+      <g v-if="!hasData">
         <path
-          stroke-linejoin="round"
-          :d="getGradLine(i - 1)"
-          :stroke-width="getThickness(i - 1)"
-          stroke-linecap="round"
-          :fill="colors[i - 1] || getRandomColor()"
-          :mask="`url('#rect-mask-${i}')`"
+          :d="idleAreaPath"
+          fill="url(#idleGrad)"
         />
-
-        <!-- Lines -->
         <path
-          stroke-linejoin="round"
-          :d="getLine(i - 1)"
-          :stroke="colors[i - 1] || getRandomColor()"
-          :stroke-width="getThickness(i - 1)"
+          :d="idleLinePath"
+          stroke="#8B5CF6"
+          stroke-width="3"
+          fill="none"
           stroke-linecap="round"
-          fill="transparent"
+          stroke-linejoin="round"
         />
       </g>
 
-      <!-- Tooltip Reference -->
+      <!-- DATA STATE -->
+      <g v-else v-for="(series, sIdx) in points" :key="'s-' + sIdx">
+        <path
+          :d="getAreaPath(sIdx)"
+          :fill="`url(#grad-${sIdx})`"
+        />
+        <path
+          :d="getLinePath(sIdx)"
+          :stroke="resolvedColors[sIdx]"
+          :stroke-width="getThickness(sIdx)"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+
+      <!-- Tooltip Dot -->
       <circle
-        v-if="xi > -1 && yi > -1"
-        r="12"
+        v-if="hasData && xi >= 0 && yi >= 0"
         :cx="cx"
         :cy="cy"
-        :fill="colors[yi]"
-        style="
-          filter: brightness(115%) drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.25));
-        "
+        r="8"
+        :fill="resolvedColors[yi]"
+        style="filter: drop-shadow(0 2px 6px rgba(0,0,0,.25))"
       />
     </svg>
+
+    <!-- Tooltip -->
     <Tooltip
-      v-if="showTooltip"
+      v-if="hasData && showTooltip && xi >= 0"
       ref="tooltip"
-      :offset="15"
       placement="top"
-      class="text-[13px] shadow-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl border border-gray-100 dark:border-gray-700 transition-all duration-200"
-      :style="{
-        borderLeft: `4px solid ${colors[yi] || colors[0] || '#d1d5db'}`,
-      }"
+      class="px-4 py-3 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 text-sm"
+      :style="{ borderLeft: `4px solid ${resolvedColors[yi]}` }"
     >
-      <div class="min-w-[160px]">
-        <p
-          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-2 uppercase tracking-wider text-center"
-        >
-          {{ xi > -1 ? formatX(xLabels[xi]) : '' }}
+      <div class="min-w-[140px]">
+        <p class="text-xs text-gray-400 text-center mb-2">
+          {{ formatX(xLabels[xi]) }}
         </p>
 
-        <div v-if="showAllSeriesInTooltip" class="space-y-1 tabular-nums">
+        <div v-if="showAllSeriesInTooltip" class="space-y-1">
           <div
-            v-for="(label, sIdx) in tooltipSeriesLabels"
-            :key="label + sIdx"
+            v-for="(label, i) in tooltipSeriesLabels"
+            :key="label"
             class="flex items-center gap-2"
           >
             <span
-              class="w-2 h-2 rounded-full flex-shrink-0"
-              :style="{ backgroundColor: colors[sIdx] }"
+              class="w-2 h-2 rounded-full"
+              :style="{ background: resolvedColors[i] }"
             />
             <span class="text-gray-600 dark:text-gray-300">{{ label }}</span>
-            <span
-              class="ms-auto font-semibold text-gray-900 dark:text-gray-100"
-            >
-              {{ xi > -1 ? format(points[sIdx]?.[xi] ?? 0) : '' }}
+            <span class="ml-auto font-semibold">
+              {{ format(points[i]?.[xi] ?? 0) }}
             </span>
           </div>
-
-          <p
-            v-if="tooltipExtraText"
-            class="mt-2 text-xs text-gray-600 dark:text-gray-300 text-center"
-          >
-            {{ tooltipExtraText }}
-          </p>
         </div>
 
-        <p
-          v-else
-          class="text-xl font-bold tracking-tight text-center tabular-nums"
-        >
-          {{ yi > -1 ? format(points[yi][xi]) : '' }}
+        <p v-else class="text-lg font-semibold text-center">
+          {{ format(points[yi][xi]) }}
         </p>
       </div>
     </Tooltip>
   </div>
 </template>
+
 <script>
-import { euclideanDistance, prefixFormat } from 'src/utils/chart';
-import Tooltip from '../Tooltip.vue';
+import Tooltip from '../Tooltip.vue'
+import { euclideanDistance, prefixFormat } from 'src/utils/chart'
 
 export default {
   components: { Tooltip },
+
   props: {
-    colors: { type: Array, default: () => [] },
+    points: { type: Array, default: () => [] },
     xLabels: { type: Array, default: () => [] },
-    yLabelDivisions: { type: Number, default: 4 },
-    points: { type: Array, default: () => [[]] },
+
+    colors: { type: Array, default: () => [] },
+
+    viewBoxHeight: { type: Number, default: 420 },
+    aspectRatio: { type: Number, default: 4 },
+
+    axisPadding: { type: Number, default: 28 },
+    pointsPadding: { type: Number, default: 20 },
+    left: { type: Number, default: 48 },
+    bottom: { type: Number, default: 32 },
+
     drawAxis: { type: Boolean, default: false },
     drawXGrid: { type: Boolean, default: true },
     drawLabels: { type: Boolean, default: true },
-    viewBoxHeight: { type: Number, default: 500 },
-    aspectRatio: { type: Number, default: 4 },
-    axisPadding: { type: Number, default: 30 },
-    pointsPadding: { type: Number, default: 24 },
-    xLabelOffset: { type: Number, default: 20 },
-    yLabelOffset: { type: Number, default: 5 },
-    gridColor: { type: String, default: 'rgba(0, 0, 0, 0.2)' },
-    axisColor: { type: String, default: 'rgba(0, 0, 0, 0.5)' },
-    thickness: { type: Number, default: 5 },
+
+    yLabelDivisions: { type: Number, default: 4 },
+
+    thickness: { type: Number, default: 3 },
     thicknesses: { type: Array, default: () => [] },
-    axisThickness: { type: Number, default: 1 },
-    gridThickness: { type: Number, default: 0.5 },
-    yMin: { type: Number, default: null },
-    yMax: { type: Number, default: null },
-    format: { type: Function, default: (n) => n.toFixed(1) },
+
+    gridColor: { type: String, default: 'rgba(0,0,0,.06)' },
+    axisColor: { type: String, default: 'rgba(0,0,0,.1)' },
+
+    format: { type: Function, default: (n) => n.toFixed(0) },
     formatY: { type: Function, default: prefixFormat },
     formatX: { type: Function, default: (v) => v },
-    fontSize: { type: Number, default: 20 },
-    fontColor: { type: String, default: '#415668' },
-    bottom: { type: Number, default: 0 },
-    left: { type: Number, default: 55 },
-    extendGridX: { type: Number, default: -20 },
-    tooltipDispDistThreshold: { type: Number, default: 40 },
+
+    fontSize: { type: Number, default: 12 },
+    fontColor: { type: String, default: '#6B7280' },
+
+    showTooltip: { type: Boolean, default: true },
     showAllSeriesInTooltip: { type: Boolean, default: false },
     seriesLabels: { type: Array, default: () => [] },
-    tooltipExtra: { type: Function, default: null },
-    showTooltip: { type: Boolean, default: true },
   },
+
   data() {
-    return { cx: -1, cy: -1, xi: -1, yi: -1 };
+    return { xi: -1, yi: -1, cx: -1, cy: -1 }
   },
+
   computed: {
+    hasData() {
+      return this.points.some(p => p && p.length)
+    },
+
+    resolvedColors() {
+      return (
+        this.colors.length
+          ? this.colors
+          : ['#10B981', '#EF4444', '#8B5CF6']
+      )
+    },
+
     fontStyle() {
-      return { fontSize: this.fontSize, fill: this.fontColor };
+      return { fontSize: `${this.fontSize}px`, fill: this.fontColor }
     },
+
+    fontStyleMuted() {
+      return { fontSize: `${this.fontSize}px`, fill: '#9CA3AF' }
+    },
+
     viewBoxWidth() {
-      return this.aspectRatio * this.viewBoxHeight;
+      return this.viewBoxHeight * this.aspectRatio
     },
-    num() {
-      return this.points.length;
-    },
-    count() {
-      return Math.max(...this.points.map((p) => p.length));
-    },
-    xs() {
-      return Array(this.count)
-        .fill()
-        .map(
-          (_, i) =>
-            this.padding +
-            this.left +
-            (i * (this.viewBoxWidth - this.left - 2 * this.padding)) /
-              (this.count - 1 || 1) // The "or" one (1) prevents accidentally dividing by 0
-        );
-    },
-    ys() {
-      const min = this.hMin;
-      const max = this.hMax;
-      return this.points.map((pp) =>
-        pp.map(
-          (p) =>
-            this.padding +
-            (1 - (p - min) / (max - min)) *
-              (this.viewBoxHeight - 2 * this.padding - this.bottom)
-        )
-      );
-    },
-    xy() {
-      return this.xs.map((x, i) => [x, this.ys.map((y) => y[i])]);
-    },
-    min() {
-      return Math.min(...this.points.flat());
-    },
-    max() {
-      return Math.max(...this.points.flat());
-    },
-    axis() {
-      return `M ${this.axisPadding + this.left} ${this.axisPadding} V ${
-        this.viewBoxHeight - this.axisPadding - this.bottom
-      } H ${this.viewBoxWidth - this.axisPadding}`;
-    },
+
     padding() {
-      return this.axisPadding + this.pointsPadding;
+      return this.axisPadding + this.pointsPadding
     },
+
+    xs() {
+      const count = Math.max(...this.points.map(p => p.length))
+      return Array(count).fill(0).map((_, i) =>
+        this.padding + this.left +
+        (i * (this.viewBoxWidth - this.left - this.padding * 2)) /
+        Math.max(count - 1, 1)
+      )
+    },
+
+    ys() {
+      if (!this.hasData) return []
+      const flat = this.points.flat()
+      const min = Math.min(...flat, 0)
+      const max = Math.max(...flat, 1)
+      return this.points.map(series =>
+        series.map(v =>
+          this.padding +
+          (1 - (v - min) / (max - min)) *
+          (this.viewBoxHeight - this.padding * 2 - this.bottom)
+        )
+      )
+    },
+
+    idleLinePath() {
+      const y = this.viewBoxHeight / 2
+      return `M ${this.padding + this.left} ${y}
+              C ${this.viewBoxWidth * .35} ${y - 24},
+                ${this.viewBoxWidth * .65} ${y + 24},
+                ${this.viewBoxWidth - this.padding} ${y}`
+    },
+
+    idleAreaPath() {
+      const base = this.viewBoxHeight - this.padding - this.bottom
+      return `${this.idleLinePath} L ${this.viewBoxWidth} ${base}
+              L 0 ${base} Z`
+    },
+
+    axis() {
+      return `M ${this.axisPadding + this.left} ${this.axisPadding}
+              V ${this.viewBoxHeight - this.axisPadding - this.bottom}`
+    },
+
     xGrid() {
-      const { l, r } = this.xLims;
-      const lo = l + this.extendGridX;
-      const ro = r - this.extendGridX;
-      const ys = Array(this.yLabelDivisions + 1)
-        .fill()
-        .map((_, i) => this.yScalerLocation(i));
-      return ys.map((y) => `M ${lo} ${y} H ${ro}`).join(' ');
-    },
-    yGrid() {
-      return [];
-    },
-    xLims() {
-      const l = this.padding + this.left;
-      const r = this.viewBoxWidth - this.padding;
-      return { l, r };
-    },
-    hMin() {
-      return Math.min(this.yMin ?? this.min, 0);
-    },
-    hMax() {
-      let hMax = Math.max(this.yMax ?? this.max, 0);
-      if (hMax === this.hMin) {
-        return hMax + 1000;
+      const lines = []
+      for (let i = 0; i <= this.yLabelDivisions; i++) {
+        lines.push(
+          `M ${this.padding + this.left}
+             ${this.yScalerLocation(i)}
+           H ${this.viewBoxWidth - this.padding}`
+        )
       }
-      return hMax;
+      return lines.join(' ')
     },
+
     tooltipSeriesLabels() {
-      if (this.seriesLabels?.length === this.num) {
-        return this.seriesLabels;
-      }
-
-      if (this.seriesLabels?.length) {
-        return this.seriesLabels;
-      }
-
-      return Array(this.num)
-        .fill(null)
-        .map((_, i) => `Series ${i + 1}`);
-    },
-    tooltipExtraText() {
-      if (!this.tooltipExtra || this.xi < 0) {
-        return '';
-      }
-
-      try {
-        return this.tooltipExtra(this.xi, this.yi) ?? '';
-      } catch {
-        return '';
-      }
-    },
+      return this.seriesLabels.length
+        ? this.seriesLabels
+        : this.points.map((_, i) => `Series ${i + 1}`)
+    }
   },
+
   methods: {
-    getThickness(seriesIndex) {
-      const t = this.thicknesses?.[seriesIndex];
-      return typeof t === 'number' ? t : this.thickness;
+    getThickness(i) {
+      return this.thicknesses[i] ?? this.thickness
     },
-    gradY(i) {
-      return Math.min(...this.ys[i]).toFixed();
-    },
+
     yScalerLocation(i) {
       return (
         ((this.yLabelDivisions - i) *
           (this.viewBoxHeight - this.padding * 2 - this.bottom)) /
-          this.yLabelDivisions +
+        this.yLabelDivisions +
         this.padding
-      );
+      )
     },
+
     yScalerValue(i) {
-      const min = this.hMin;
-      const max = this.hMax;
-      return this.formatY((i * (max - min)) / this.yLabelDivisions + min);
+      const flat = this.points.flat()
+      const min = Math.min(...flat, 0)
+      const max = Math.max(...flat, 1)
+      return (i * (max - min)) / this.yLabelDivisions + min
     },
-    getLine(i) {
-      const [x, y] = this.xy[0];
-      let d = `M ${x} ${y[i]} `;
-      this.xy.slice(1).forEach(([x, y]) => {
-        d += `L ${x} ${y[i]} `;
-      });
-      return d;
-    },
-    getGradLine(i) {
-      let bo = this.viewBoxHeight - this.padding - this.bottom;
-      let d = `M ${this.padding + this.left} ${bo}`;
-      this.xy.forEach(([x, y]) => {
-        d += `L ${x} ${y[i]} `;
-      });
-      return d + ` V ${bo} Z`;
-    },
-    getRandomColor() {
-      const rgb = Array(3)
-        .fill()
-        .map(() => parseInt(Math.random() * 255))
-        .join(',');
-      return `rgb(${rgb})`;
-    },
-    update(event) {
-      if (!this.showTooltip) {
-        return;
-      }
 
-      const { x, y } = this.getSvgXY(event);
-      const { xi, yi, cx, cy, d } = this.getPointIndexAndCoords(x, y);
+    getLinePath(i) {
+      return this.xs.map((x, idx) =>
+        `${idx === 0 ? 'M' : 'L'} ${x} ${this.ys[i][idx]}`
+      ).join(' ')
+    },
 
-      if (d > this.tooltipDispDistThreshold) {
-        this.xi = -1;
-        this.yi = -1;
-        this.cx = -1;
-        this.cy = -1;
-        this.$refs.tooltip.destroy();
-        return;
-      }
-      this.$refs.tooltip.create();
+    getAreaPath(i) {
+      const base = this.viewBoxHeight - this.padding - this.bottom
+      return `${this.getLinePath(i)}
+              L ${this.xs.at(-1)} ${base}
+              L ${this.xs[0]} ${base} Z`
+    },
 
-      this.xi = xi;
-      this.yi = yi;
-      this.cx = cx;
-      this.cy = cy;
-      this.$refs.tooltip.update(event);
-    },
-    getSvgXY({ clientX, clientY }) {
-      const inv = this.$refs.chartSvg.getScreenCTM().inverse();
-      const point = new DOMPoint(clientX, clientY);
-      const { x, y } = point.matrixTransform(inv);
-      return { x, y };
-    },
-    getPointIndexAndCoords(x, y) {
-      const { l, r } = this.xLims;
-      const xi = Math.round((x - l) / ((r - l) / (this.count - 1)));
-      if (xi < 0 || xi > this.count - 1) {
-        return { d: this.tooltipDispDistThreshold + 1 };
-      }
-      const px = this.xs[xi];
-      const pys = this.ys.map((yarr) => yarr[xi]);
-      const dists = pys.map((py) => euclideanDistance(x, y, px, py));
-      const minDist = Math.min(...dists);
-      const yi = dists
-        .map((j, i) => [j - minDist, i])
-        .filter(([j, _]) => j === 0)
-        .at(-1)[1];
-      return { xi, yi, cx: px, cy: pys[yi], d: minDist };
-    },
-  },
-};
+    update(e) {
+      const rect = this.$refs.chartSvg.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+
+      const xi = Math.round((x / rect.width) * (this.xs.length - 1))
+      if (xi < 0 || xi >= this.xs.length) return
+
+      const dists = this.ys.map((s, i) =>
+        euclideanDistance(x, y, this.xs[xi], s[xi])
+      )
+
+      const yi = dists.indexOf(Math.min(...dists))
+      this.xi = xi
+      this.yi = yi
+      this.cx = this.xs[xi]
+      this.cy = this.ys[yi][xi]
+
+      this.$refs.tooltip?.update(e)
+    }
+  }
+}
 </script>
