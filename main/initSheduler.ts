@@ -11,27 +11,16 @@ export async function initScheduler(interval: string) {
     await bree.stop();
   }
 
+  // No jobs scheduled for now
+  return;
+
   bree = new Bree({
     root: jobsRoot,
     defaultExtension: 'ts',
-    jobs: [
-      {
-        name: 'triggerErpNextSync',
-        interval: interval,
-        worker: {
-          workerData: {
-            useTsNode: true,
-          },
-        },
-      },
-    ],
+    jobs: [],
     worker: {
       argv: ['--require', 'ts-node/register'],
     },
-  });
-
-  bree.on('worker created', () => {
-    main.mainWindow?.webContents.send('trigger-erpnext-sync');
   });
 
   await bree.start();

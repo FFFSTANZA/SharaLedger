@@ -44,7 +44,6 @@ import {
   ValidationMap,
 } from './types';
 import { validateOptions, validateRequired } from './validationFunction';
-import { getShouldDocSyncToERPNext } from 'src/utils/erpnextSync';
 import { ModelNameEnum } from 'models/types';
 
 export class Doc extends Observable<DocValue | Doc[]> {
@@ -252,20 +251,7 @@ export class Doc extends Observable<DocValue | Doc[]> {
   }
 
   get shouldDocSyncToERPNext(): boolean {
-    const syncEnabled = !!this.fyo.singles.ERPNextSyncSettings?.isEnabled;
-    if (!syncEnabled) {
-      return false;
-    }
-
-    if (!this.schemaName || !this.fyo.singles.ERPNextSyncSettings) {
-      return false;
-    }
-
-    if (!!this.schema.isSubmittable && !this.isSubmitted) {
-      return false;
-    }
-
-    return getShouldDocSyncToERPNext(this);
+    return false;
   }
 
   _setValuesWithoutChecks(data: DocValueMap, convertToDocValue: boolean) {
@@ -933,38 +919,6 @@ export class Doc extends Observable<DocValue | Doc[]> {
     this._notInserted = false;
     await this.trigger('afterSync');
     this.fyo.doc.observer.trigger(`sync:${this.schemaName}`, this.name);
-
-    if (this._addDocToSyncQueue && !!this.shouldDocSyncToERPNext) {
-      const isSalesInvoice = this.schemaName === ModelNameEnum.SalesInvoice;
-
-      if (
-        !(isSalesInvoice && this.isSyncedWithErp) ||
-        (isSalesInvoice && !!this.isReturn)
-      ) {
-        if (isSalesInvoice && !this.isReturn) {
-          await this.setAndSync('isSyncedWithErp', true);
-        }
-
-        const isDocExistsInQueue = await this.fyo.db.getAll(
-          ModelNameEnum.ERPNextSyncQueue,
-          {
-            filters: {
-              referenceType: this.schemaName,
-              documentName: this.name as string,
-            },
-          }
-        );
-
-        if (!isDocExistsInQueue.length) {
-          await this.fyo.doc
-            .getNewDoc(ModelNameEnum.ERPNextSyncQueue, {
-              referenceType: this.schemaName,
-              documentName: this.name,
-            })
-            .sync();
-        }
-      }
-    }
 
     this._syncing = false;
     return doc;
