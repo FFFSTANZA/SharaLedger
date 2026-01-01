@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative">
     <div class="flex items-start justify-between">
       <div>
         <h3
@@ -46,7 +46,7 @@
           class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
-          {{ t`Inflow` }}
+          {{ t`Income` }}
         </span>
       </div>
       <div class="flex items-center gap-3">
@@ -54,21 +54,20 @@
           class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
-          {{ t`Outflow` }}
+          {{ t`Expenses` }}
         </span>
       </div>
       <div class="flex items-center gap-3">
         <span
-          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
+          class="w-3 h-3 rounded-full inline-block bg-indigo-500 dark:bg-indigo-400 shadow-md"
         />
         <span class="text-gray-700 dark:text-gray-300 font-medium">
-          {{ t`Net Cashflow` }}
+          {{ t`Net Balance` }}
         </span>
       </div>
     </div>
 
     <LineChart
-      v-if="hasData"
       class="mt-6"
       :aspect-ratio="4.15"
       :colors="chartData.colors"
@@ -79,21 +78,31 @@
       :x-labels="chartData.xLabels"
       :format="chartData.format"
       :format-x="chartData.formatX"
+      :format-y="chartData.formatY"
       :y-max="chartData.yMax"
       :draw-labels="range !== 'This Month'"
       :show-all-series-in-tooltip="true"
       :series-labels="chartData.seriesLabels"
       :tooltip-extra="getTooltipExtra"
-      :show-points="true"
+      :show-points="hasData"
       :dark-mode="darkMode"
+      :style="!hasData ? 'opacity: 0.3; filter: grayscale(0.5);' : ''"
     />
 
-    <div v-else class="flex-1 w-full h-full flex-center my-20">
-      <div class="text-center">
-        <div class="text-6xl mb-4">📊</div>
-        <span class="text-base text-gray-500 dark:text-gray-400 font-medium">
-          {{ t`No transactions yet` }}
-        </span>
+    <div
+      v-if="!hasData"
+      class="absolute inset-0 flex items-center justify-center pt-24 pointer-events-none"
+    >
+      <div
+        class="text-center bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl"
+      >
+        <div class="text-4xl mb-3">📈</div>
+        <p class="text-base text-gray-900 dark:text-gray-100 font-semibold">
+          {{ t`Waiting for your first transaction` }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {{ t`Your cashflow will appear here once you start recording.` }}
+        </p>
       </div>
     </div>
   </div>
@@ -104,7 +113,7 @@ import { t } from 'fyo';
 import { DateTime } from 'luxon';
 import { fyo } from 'src/initFyo';
 import { uicolors } from 'src/utils/colors';
-import { getYMax } from 'src/utils/chart';
+import { getYMax, prefixFormat } from 'src/utils/chart';
 import LineChart from 'src/components/Charts/LineChart.vue';
 import { defineComponent } from 'vue';
 import type { CashflowSeriesPoint } from 'utils/db/types';
@@ -127,6 +136,10 @@ export default defineComponent({
       return (this.series ?? []).some(
         (p) => (p.inflow ?? 0) > 0 || (p.outflow ?? 0) > 0
       );
+    },
+    isIndian(): boolean {
+      const locale = fyo.singles.SystemSettings?.locale as string;
+      return locale === 'en-IN' || locale?.endsWith('-IN');
     },
     netTotal(): number {
       return (this.series ?? []).reduce((sum, p) => sum + (p.net ?? 0), 0);
@@ -171,16 +184,36 @@ export default defineComponent({
         this.series.map((p) => p.net ?? 0),
       ];
 
+      // If no data, show some placeholder points for the "ghost" chart
+      if (!this.hasData) {
+        const placeholderPoints = Array(12).fill(0);
+        points[0] = placeholderPoints.map(
+          (_, i) => 600 + 200 * Math.sin(i * 0.8)
+        );
+        points[1] = placeholderPoints.map(
+          (_, i) => 400 + 150 * Math.cos(i * 0.8)
+        );
+        points[2] = points[0].map((v, i) => v - points[1][i]);
+      }
+
       const colors = [
         uicolors.violet[this.darkMode ? '400' : '500'],
         uicolors.teal[this.darkMode ? '400' : '500'],
-        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet color for net cashflow instead of gray
+        uicolors.indigo[this.darkMode ? '400' : '500'],
       ];
 
-      const thicknesses = [3, 3, 6];
+      const thicknesses = [4, 4, 7]; // Slightly thicker lines for better visibility
 
       const xLabels = this.series.map((p) => p.period);
+      if (!this.hasData) {
+        // Placeholder xLabels
+        for (let i = 0; i < 12; i++) {
+          xLabels.push(`2024-${(i + 1).toString().padStart(2, '0')}`);
+        }
+      }
+
       const format = (value: number) => fyo.format(value ?? 0, 'Currency');
+      const formatY = (value: number) => prefixFormat(value, this.isIndian);
       const yMax = getYMax(points);
 
       const formatX = (value: string) => {
@@ -199,13 +232,14 @@ export default defineComponent({
         colors,
         thicknesses,
         format,
+        formatY,
         yMax,
         formatX,
         gridColor: this.darkMode
-          ? 'rgba(200, 200, 200, 0.15)'
-          : 'rgba(0, 0, 0, 0.06)',
-        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['600'],
-        seriesLabels: [t`Inflow`, t`Outflow`, t`Net Cashflow`],
+          ? 'rgba(148, 163, 184, 0.15)'
+          : 'rgba(71, 85, 105, 0.08)',
+        fontColor: this.darkMode ? uicolors.gray['400'] : uicolors.gray['500'],
+        seriesLabels: [t`Income`, t`Expenses`, t`Net Balance`],
       };
     },
   },
@@ -269,7 +303,7 @@ export default defineComponent({
 
       const isInflowSpike = inflowAmount >= outflowAmount;
       const spike = isInflowSpike ? inflow : outflow;
-      const spikeLabel = isInflowSpike ? t`inflow` : t`outflow`;
+      const spikeLabel = isInflowSpike ? t`income` : t`expense`;
 
       if (!spike?.amount) {
         return '';

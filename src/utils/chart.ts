@@ -1,24 +1,39 @@
 import { DateTime } from 'luxon';
 
-export function prefixFormat(value: number): string {
+export function prefixFormat(value: number, isIndian = false): string {
   /*
-  1,000000,000,000,000,000 = 1 P (Pentillion)
-      1000,000,000,000,000 = 1 Q (Quadrillion)
-          1000,000,000,000 = 1 T (Trillion)
-              1000,000,000 = 1 B (Billion)
-                  1000,000 = 1 M (Million)
-                      1000 = 1 K (Thousand)
-                         1 = 1
+  Standard:
+  1,000,000,000,000 = 1 T (Trillion)
+  1,000,000,000 = 1 B (Billion)
+  1,000,000 = 1 M (Million)
+  1,000 = 1 K (Thousand)
+
+  Indian:
+  10,00,00,000 = 10 Cr (Crore)
+  1,00,00,000 = 1 Cr (Crore)
+  1,00,000 = 1 L (Lakh)
+  1,000 = 1 K (Thousand)
   */
-  if (Math.abs(value) < 1) {
+  const absValue = Math.abs(value);
+  if (absValue < 1000) {
     return Math.round(value).toString();
   }
 
-  const ten = Math.floor(Math.log10(Math.abs(value)));
+  if (isIndian) {
+    if (absValue >= 10000000) {
+      return `${(value / 10000000).toFixed(1)} Cr`;
+    } else if (absValue >= 100000) {
+      return `${(value / 100000).toFixed(1)} L`;
+    } else if (absValue >= 1000) {
+      return `${(value / 1000).toFixed(1)} K`;
+    }
+  }
+
+  const ten = Math.floor(Math.log10(absValue));
   const three = Math.floor(ten / 3);
-  const num = Math.round(value / Math.pow(10, three * 3));
+  const num = (value / Math.pow(10, three * 3)).toFixed(1);
   const suffix = ['', 'K', 'M', 'B', 'T', 'Q', 'P'][three];
-  return `${num} ${suffix}`;
+  return `${num.endsWith('.0') ? num.slice(0, -2) : num} ${suffix}`;
 }
 
 export function euclideanDistance(

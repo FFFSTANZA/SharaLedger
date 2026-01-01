@@ -70,18 +70,24 @@
           x2="0"
           y2="100%"
         >
-          <stop offset="0%" :stop-color="color" stop-opacity="0.45" />
-          <stop offset="50%" :stop-color="color" stop-opacity="0.2" />
-          <stop offset="100%" :stop-color="color" stop-opacity="0.02" />
+          <stop offset="0%" :stop-color="color" stop-opacity="0.3" />
+          <stop offset="60%" :stop-color="color" stop-opacity="0.1" />
+          <stop offset="100%" :stop-color="color" stop-opacity="0.01" />
         </linearGradient>
 
-        <!-- Drop shadow filter for lines -->
+        <!-- Premium line shadow filter -->
         <filter id="line-shadow" x="-50%" y="-50%" width="200%" height="200%">
           <feDropShadow
             dx="0"
-            dy="2"
-            stdDeviation="2"
-            flood-color="rgba(0, 0, 0, 0.15)"
+            dy="4"
+            stdDeviation="4"
+            flood-color="rgba(0, 0, 0, 0.12)"
+          />
+          <feDropShadow
+            dx="0"
+            dy="1"
+            stdDeviation="1"
+            flood-color="rgba(0, 0, 0, 0.08)"
           />
         </filter>
 
@@ -369,9 +375,9 @@ export default {
       return typeof t === 'number' ? t : this.thickness;
     },
     getPointRadius(seriesIndex) {
-      // Smaller points for thicker lines, larger for thinner lines
+      // Slightly larger points for premium look
       const thickness = this.getThickness(seriesIndex);
-      return Math.max(3, 5 - thickness / 3);
+      return Math.max(4, 6 - thickness / 3);
     },
     gradY(i) {
       return Math.min(...this.ys[i]).toFixed();
