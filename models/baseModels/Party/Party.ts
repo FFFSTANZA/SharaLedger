@@ -116,13 +116,18 @@ export class Party extends Doc {
           return '';
         }
 
-        let accountName = 'Debtors';
-        if (role === 'Supplier') {
-          accountName = 'Creditors';
+        const accountNames =
+          role === 'Supplier'
+            ? ['Creditors', 'Sundry Creditors']
+            : ['Debtors', 'Sundry Debtors'];
+
+        for (const name of accountNames) {
+          if (await this.fyo.db.exists('Account', name)) {
+            return name;
+          }
         }
 
-        const accountExists = await this.fyo.db.exists('Account', accountName);
-        return accountExists ? accountName : '';
+        return '';
       },
       dependsOn: ['role'],
     },

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex bg-gray-25 dark:bg-gray-875 overflow-x-auto custom-scroll custom-scroll-thumb1"
+    class="flex bg-gray-50 dark:bg-gray-900 overflow-x-auto custom-scroll custom-scroll-thumb1"
   >
     <div class="flex flex-1 flex-col">
       <!-- Page Header (Title, Buttons, etc) -->
@@ -22,7 +22,7 @@
         :class="
           useFullWidth
             ? 'w-full border-t dark:border-gray-800'
-            : 'w-form border dark:border-gray-800 rounded-lg shadow-lg mb-4 mx-4'
+            : 'w-form border dark:border-gray-800 rounded-3xl shadow-xl mb-12 mx-4 overflow-hidden'
         "
       >
         <slot name="body" />

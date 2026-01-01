@@ -24,28 +24,15 @@
       <!-- Sidebar Items -->
       <div v-for="group in groups" :key="group.label" class="px-3">
         <div
-          class="px-3 flex items-center cursor-pointer hover:bg-gray-200/50 dark:hover:bg-gray-800/50 h-10 rounded-lg transition-colors duration-200"
+          class="px-3 flex items-center cursor-pointer hover:bg-gray-200/50 dark:hover:bg-gray-800/50 h-10 rounded-lg transition-all duration-300"
           :class="
             isGroupActive(group) && !group.items
-              ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 font-medium shadow-sm shadow-violet-200/50 dark:shadow-none'
-              : 'text-gray-700 dark:text-gray-300'
+              ? 'bg-white dark:bg-gray-800 text-violet-600 dark:text-violet-400 font-semibold shadow-sm border border-gray-100 dark:border-gray-700'
+              : 'text-gray-600 dark:text-gray-400 font-medium'
           "
           @click="routeToSidebarItem(group)"
         >
-          <Icon
-            class="flex-shrink-0"
-            :name="group.icon"
-            :size="group.iconSize || '18'"
-            :height="group.iconHeight ?? 0"
-            :active="!!isGroupActive(group)"
-            :darkMode="darkMode"
-            :class="
-              isGroupActive(group) && !group.items
-                ? 'text-violet-600 dark:text-violet-400'
-                : ''
-            "
-          />
-          <div class="ms-3 text-base">
+          <div class="text-base tracking-tight">
             {{ group.label }}
           </div>
         </div>
@@ -55,11 +42,11 @@
           <div
             v-for="item in group.items"
             :key="item.label"
-            class="text-base h-9 ps-11 pe-3 cursor-pointer flex items-center hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
+            class="text-[15px] h-9 ps-4 pe-3 cursor-pointer flex items-center hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-lg transition-all duration-300"
             :class="
               isItemActive(item)
-                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 font-medium shadow-sm shadow-violet-200/50 dark:shadow-none'
-                : 'text-gray-600 dark:text-gray-400'
+                ? 'bg-white dark:bg-gray-800 text-violet-600 dark:text-violet-400 font-semibold shadow-sm border border-gray-100 dark:border-gray-700'
+                : 'text-gray-500 dark:text-gray-400 font-medium'
             "
             @click="routeToSidebarItem(item)"
           >
@@ -71,38 +58,34 @@
 
     <!-- Report Issue and DB Switcher -->
     <div
-      class="window-no-drag flex flex-col gap-2 py-4 px-6 border-t dark:border-gray-800"
+      class="window-no-drag flex flex-col gap-3 py-6 px-6 border-t dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50"
     >
       <button
-        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
+        class="flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors duration-200"
         @click="openDocumentation"
       >
-        <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />
         <span>{{ t`Help` }}</span>
       </button>
 
       <button
-        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
+        class="flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors duration-200"
         @click="viewShortcuts = true"
       >
-        <feather-icon name="command" class="h-4 w-4 flex-shrink-0" />
         <span>{{ t`Shortcuts` }}</span>
       </button>
 
       <button
         data-testid="change-db"
-        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
+        class="flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors duration-200"
         @click="$emit('change-db-file')"
       >
-        <feather-icon name="database" class="h-4 w-4 flex-shrink-0" />
         <span>{{ t`Change DB` }}</span>
       </button>
 
       <button
-        class="flex text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 gap-2 items-center transition-colors duration-200"
+        class="flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors duration-200"
         @click="() => reportIssue()"
       >
-        <feather-icon name="flag" class="h-4 w-4 flex-shrink-0" />
         <span>{{ t`Report Issue` }}</span>
       </button>
 

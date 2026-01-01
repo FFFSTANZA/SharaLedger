@@ -1,6 +1,6 @@
 <template>
   <div
-    class="inline-block rounded-md px-2 py-1 truncate select-none"
+    class="inline-block rounded-full px-3 py-0.5 truncate select-none text-[11px] font-bold uppercase tracking-wider shadow-sm"
     :class="colorClass"
   >
     <slot></slot>

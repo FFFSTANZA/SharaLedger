@@ -6,7 +6,7 @@
       @click="$emit('closemodal')"
     >
       <div
-        class="bg-white dark:bg-gray-850 rounded-lg shadow-2xl border dark:border-gray-800 overflow-hidden inner"
+        class="bg-white/95 dark:bg-gray-850/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800 overflow-hidden inner"
         v-bind="$attrs"
         @click.stop
       >
