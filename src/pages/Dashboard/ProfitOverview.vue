@@ -50,6 +50,50 @@
         {{ marginText }}
       </div>
     </div>
+
+    <div class="mt-8 flex-1 flex flex-col justify-center">
+      <div class="space-y-5">
+        <div>
+          <div class="flex justify-between text-xs mb-2 font-medium">
+            <span
+              class="text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >{{ t`Revenue` }}</span
+            >
+            <span class="text-gray-900 dark:text-gray-100 tabular-nums">{{
+              formatCurrency(revenue)
+            }}</span>
+          </div>
+          <div
+            class="h-2.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden shadow-inner"
+          >
+            <div
+              class="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+              :style="{ width: `${revenuePercent}%` }"
+            ></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-2 font-medium">
+            <span
+              class="text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >{{ t`Expenses` }}</span
+            >
+            <span class="text-gray-900 dark:text-gray-100 tabular-nums">{{
+              formatCurrency(expenses)
+            }}</span>
+          </div>
+          <div
+            class="h-2.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden shadow-inner"
+          >
+            <div
+              class="h-full bg-red-500 dark:bg-red-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(239,68,68,0.3)]"
+              :style="{ width: `${expensePercent}%` }"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -80,6 +124,16 @@ export default defineComponent({
       }
 
       return `${((this.netProfit / this.revenue) * 100).toFixed(1)}%`;
+    },
+    revenuePercent(): number {
+      const max = Math.max(this.revenue, this.expenses);
+      if (!max) return 0;
+      return (this.revenue / max) * 100;
+    },
+    expensePercent(): number {
+      const max = Math.max(this.revenue, this.expenses);
+      if (!max) return 0;
+      return (this.expenses / max) * 100;
     },
   },
   methods: {
