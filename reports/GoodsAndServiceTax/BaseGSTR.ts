@@ -3,12 +3,14 @@ import { Action } from 'fyo/model/types';
 import { DateTime } from 'luxon';
 import { Invoice } from 'models/baseModels/Invoice/Invoice';
 import { Party } from 'models/regionalModels/in/Party';
+import { Money } from 'pesa';
 import { ModelNameEnum } from 'models/types';
 import { codeStateMap } from 'regional/in';
 import { Report } from 'reports/Report';
 import { ColumnField, ReportData, ReportRow } from 'reports/types';
 import { Field, OptionField } from 'schemas/types';
 import { isNumeric } from 'src/utils';
+import { safeParseFloat } from 'utils';
 import getGSTRExportActions from './gstExporter';
 import { GSTRRow, GSTRType, TransferType, TransferTypeEnum } from './types';
 
@@ -181,37 +183,56 @@ export abstract class BaseGSTR extends Report {
       place,
       invAmt: entry.grandTotal?.float ?? 0,
       taxVal: entry.netTotal?.float ?? 0,
+      igstAmt: 0,
+      cgstAmt: 0,
+      sgstAmt: 0,
     };
-
-    for (const tax of entry.taxes ?? []) {
-      gstrRow.rate += tax.rate ?? 0;
-    }
 
     this.setTaxValuesOnGSTRRow(entry, gstrRow);
     return gstrRow;
   }
 
   setTaxValuesOnGSTRRow(entry: Invoice, gstrRow: GSTRRow) {
+    gstrRow.rate = 0;
+
     for (const tax of entry.taxes ?? []) {
       const rate = tax.rate ?? 0;
       gstrRow.rate += rate;
-      const taxAmt = entry.netTotal!.percent(rate).float;
+
+      const amountValue = (tax.amount as unknown) ?? 0;
+      const taxAmt =
+        amountValue instanceof Money
+          ? amountValue.float
+          : safeParseFloat(amountValue);
 
       switch (tax.account) {
         case 'IGST': {
-          gstrRow.igstAmt = taxAmt;
+          gstrRow.igstAmt = (gstrRow.igstAmt ?? 0) + taxAmt;
           gstrRow.inState = false;
+          break;
         }
-        case 'CGST':
-          gstrRow.cgstAmt = taxAmt;
-        case 'SGST':
-          gstrRow.sgstAmt = taxAmt;
-        case 'Nil Rated':
+        case 'CGST': {
+          gstrRow.cgstAmt = (gstrRow.cgstAmt ?? 0) + taxAmt;
+          break;
+        }
+        case 'SGST': {
+          gstrRow.sgstAmt = (gstrRow.sgstAmt ?? 0) + taxAmt;
+          break;
+        }
+        case 'Nil Rated': {
           gstrRow.nilRated = true;
-        case 'Exempt':
+          break;
+        }
+        case 'Exempt': {
           gstrRow.exempt = true;
-        case 'Non GST':
+          break;
+        }
+        case 'Non GST': {
           gstrRow.nonGST = true;
+          break;
+        }
+        default:
+          break;
       }
     }
   }
