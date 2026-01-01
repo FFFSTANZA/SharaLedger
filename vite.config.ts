@@ -37,5 +37,8 @@ export default () => {
         fixtures: path.resolve(__dirname, './fixtures'),
       },
     },
+    build: {
+      sourcemap: false,
+    },
   });
 };
