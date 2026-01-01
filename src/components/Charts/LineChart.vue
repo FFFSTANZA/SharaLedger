@@ -59,97 +59,143 @@
         </text>
       </template>
 
-      <!-- Gradient Mask -->
+      <!-- Gradient Definitions -->
       <defs>
-        <linearGradient id="grad" x1="0" y1="0" x2="0" y2="85%">
-          <stop offset="0%" stop-color="rgba(139, 92, 246, 0.3)" />
-          <stop offset="40%" stop-color="rgba(139, 92, 246, 0.15)" />
-          <stop offset="70%" stop-color="rgba(139, 92, 246, 0.05)" />
+        <linearGradient
+          v-for="(color, idx) in colors"
+          :id="'grad-' + idx"
+          :key="'grad-' + idx"
+          x1="0"
+          y1="0"
+          x2="0"
+          y2="100%"
+        >
+          <stop offset="0%" :stop-color="color" stop-opacity="0.45" />
+          <stop offset="50%" :stop-color="color" stop-opacity="0.2" />
+          <stop offset="100%" :stop-color="color" stop-opacity="0.02" />
         </linearGradient>
 
-        <mask v-for="(i, j) in num" :id="'rect-mask-' + i" :key="j + '-mask'">
-          <rect
-            x="0"
-            :y="gradY(j)"
-            :height="viewBoxHeight - gradY(j)"
-            width="100%"
-            fill="url('#grad')"
+        <!-- Drop shadow filter for lines -->
+        <filter id="line-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow
+            dx="0"
+            dy="2"
+            stdDeviation="2"
+            flood-color="rgba(0, 0, 0, 0.15)"
           />
-        </mask>
+        </filter>
+
+        <!-- Glow filter for active points -->
+        <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
       <g v-for="(i, j) in num" :key="j + '-gpath'">
-        <!-- Gradient Paths -->
+        <!-- Gradient Fill Areas -->
         <path
           stroke-linejoin="round"
           :d="getGradLine(i - 1)"
-          :stroke-width="getThickness(i - 1)"
-          stroke-linecap="round"
-          :fill="colors[i - 1] || getRandomColor()"
-          :mask="`url('#rect-mask-${i}')`"
+          fill="url('#grad-' + (i - 1))"
+          fill-opacity="1"
+          stroke="none"
         />
 
-        <!-- Lines -->
+        <!-- Lines with shadow -->
         <path
           stroke-linejoin="round"
           :d="getLine(i - 1)"
           :stroke="colors[i - 1] || getRandomColor()"
           :stroke-width="getThickness(i - 1)"
           stroke-linecap="round"
-          fill="transparent"
+          fill="none"
+          filter="url('#line-shadow')"
+          style="opacity: 0.95"
         />
+
+        <!-- Data Point Markers -->
+        <g v-if="showPoints">
+          <circle
+            v-for="(xVal, k) in xs"
+            :key="'point-' + j + '-' + k"
+            :cx="xVal"
+            :cy="ys[i - 1]?.[k]"
+            :r="getPointRadius(i - 1)"
+            :fill="darkMode ? '#1f2937' : '#ffffff'"
+            :stroke="colors[i - 1] || getRandomColor()"
+            stroke-width="2.5"
+            style="opacity: 0.8; transition: all 0.2s"
+          />
+        </g>
       </g>
 
       <!-- Tooltip Reference -->
-      <circle
-        v-if="xi > -1 && yi > -1"
-        r="12"
-        :cx="cx"
-        :cy="cy"
-        :fill="colors[yi]"
-        style="
-          filter: brightness(115%) drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.25));
-        "
-      />
+      <g v-if="xi > -1 && yi > -1">
+        <!-- Outer glow ring -->
+        <circle
+          r="16"
+          :cx="cx"
+          :cy="cy"
+          :fill="colors[yi]"
+          fill-opacity="0.25"
+          filter="url('#glow')"
+        />
+        <!-- Inner solid circle -->
+        <circle
+          r="8"
+          :cx="cx"
+          :cy="cy"
+          :fill="darkMode ? '#1f2937' : '#ffffff'"
+          :stroke="colors[yi]"
+          stroke-width="3"
+        />
+      </g>
     </svg>
     <Tooltip
       v-if="showTooltip"
       ref="tooltip"
       :offset="15"
       placement="top"
-      class="text-[13px] shadow-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl border border-gray-100 dark:border-gray-700 transition-all duration-200"
+      class="text-[13px] shadow-2xl px-4 py-3.5 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-2xl border border-gray-100/50 dark:border-gray-700/50 transition-all duration-300"
       :style="{
-        borderLeft: `4px solid ${colors[yi] || colors[0] || '#d1d5db'}`,
+        borderTop: `3px solid ${colors[yi] || colors[0] || '#d1d5db'}`,
       }"
     >
-      <div class="min-w-[160px]">
+      <div class="min-w-[180px]">
         <p
-          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-2 uppercase tracking-wider text-center"
+          class="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-3 uppercase tracking-wider text-center"
         >
           {{ xi > -1 ? formatX(xLabels[xi]) : '' }}
         </p>
 
-        <div v-if="showAllSeriesInTooltip" class="space-y-1 tabular-nums">
+        <div v-if="showAllSeriesInTooltip" class="space-y-2 tabular-nums">
           <div
             v-for="(label, sIdx) in tooltipSeriesLabels"
             :key="label + sIdx"
-            class="flex items-center gap-2"
+            class="flex items-center gap-2.5 px-1 py-0.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
           >
             <span
-              class="w-2 h-2 rounded-full flex-shrink-0"
-              :style="{ backgroundColor: colors[sIdx] }"
+              class="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm"
+              :style="{
+                backgroundColor: colors[sIdx],
+                boxShadow: `0 0 8px ${colors[sIdx]}40`,
+              }"
             />
-            <span class="text-gray-600 dark:text-gray-300">{{ label }}</span>
-            <span
-              class="ms-auto font-semibold text-gray-900 dark:text-gray-100"
-            >
+            <span class="text-gray-600 dark:text-gray-300 font-medium">{{
+              label
+            }}</span>
+            <span class="ms-auto font-bold text-gray-900 dark:text-gray-100">
               {{ xi > -1 ? format(points[sIdx]?.[xi] ?? 0) : '' }}
             </span>
           </div>
 
           <p
             v-if="tooltipExtraText"
-            class="mt-2 text-xs text-gray-600 dark:text-gray-300 text-center"
+            class="mt-3 pt-2.5 text-xs text-gray-600 dark:text-gray-300 text-center border-t border-gray-200 dark:border-gray-700/50"
           >
             {{ tooltipExtraText }}
           </p>
@@ -206,6 +252,8 @@ export default {
     seriesLabels: { type: Array, default: () => [] },
     tooltipExtra: { type: Function, default: null },
     showTooltip: { type: Boolean, default: true },
+    showPoints: { type: Boolean, default: true },
+    darkMode: { type: Boolean, default: false },
   },
   data() {
     return { cx: -1, cy: -1, xi: -1, yi: -1 };
@@ -319,6 +367,11 @@ export default {
     getThickness(seriesIndex) {
       const t = this.thicknesses?.[seriesIndex];
       return typeof t === 'number' ? t : this.thickness;
+    },
+    getPointRadius(seriesIndex) {
+      // Smaller points for thicker lines, larger for thinner lines
+      const thickness = this.getThickness(seriesIndex);
+      return Math.max(3, 5 - thickness / 3);
     },
     gradY(i) {
       return Math.min(...this.ys[i]).toFixed();
