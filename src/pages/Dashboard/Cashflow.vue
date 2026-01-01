@@ -84,6 +84,8 @@
       :show-all-series-in-tooltip="true"
       :series-labels="chartData.seriesLabels"
       :tooltip-extra="getTooltipExtra"
+      :show-points="true"
+      :dark-mode="darkMode"
     />
 
     <div v-else class="flex-1 w-full h-full flex-center my-20">
