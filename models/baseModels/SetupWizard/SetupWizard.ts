@@ -22,36 +22,7 @@ function getCurrencyList(): { countryCode: string; name: string }[] {
 export function getCOAList() {
   return [
     { name: t`Standard Chart of Accounts`, countryCode: '' },
-
-    { countryCode: 'ae', name: 'U.A.E - Chart of Accounts' },
-    {
-      countryCode: 'ca',
-      name: 'Canada - Plan comptable pour les provinces francophones',
-    },
-    { countryCode: 'gt', name: 'Guatemala - Cuentas' },
-    { countryCode: 'hu', name: 'Hungary - Chart of Accounts' },
-    { countryCode: 'id', name: 'Indonesia - Chart of Accounts' },
     { countryCode: 'in', name: 'India - Chart of Accounts' },
-    { countryCode: 'mx', name: 'Mexico - Plan de Cuentas' },
-    { countryCode: 'ni', name: 'Nicaragua - Catalogo de Cuentas' },
-    { countryCode: 'nl', name: 'Netherlands - Grootboekschema' },
-    { countryCode: 'sg', name: 'Singapore - Chart of Accounts' },
-    { countryCode: 'fr', name: 'France - Plan Comptable General' },
-    /*  
-    { countryCode: 'th', name: 'Thailand - Chart of Accounts' },
-    { countryCode: 'us', name: 'United States - Chart of Accounts' },
-    { countryCode: 've', name: 'Venezuela - Plan de Cuentas' },
-    { countryCode: 'za', name: 'South Africa - Chart of Accounts' },
-    { countryCode: 'de', name: 'Germany - Kontenplan' },
-    { countryCode: 'it', name: 'Italy - Piano dei Conti' },
-    { countryCode: 'es', name: 'Spain - Plan de Cuentas' },
-    { countryCode: 'pt', name: 'Portugal - Plan de Contas' },
-    { countryCode: 'pl', name: 'Poland - Rejestr Kont' },
-    { countryCode: 'ro', name: 'Romania - Contabilitate' },
-    { countryCode: 'ru', name: 'Russia - Chart of Accounts' },
-    { countryCode: 'se', name: 'Sweden - Kontoplan' },
-    { countryCode: 'ch', name: 'Switzerland - Kontenplan' },
-    { countryCode: 'tr', name: 'Turkey - Chart of Accounts' },*/
   ];
 }
 
