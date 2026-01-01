@@ -176,6 +176,21 @@ async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   return entries;
 }
 
+async function getAccountName(fyo: Fyo, name: string) {
+  if (name === 'Debtors') {
+    const exists = await fyo.db.exists('Account', 'Debtors');
+    if (!exists && (await fyo.db.exists('Account', 'Sundry Debtors'))) {
+      return 'Sundry Debtors';
+    }
+  } else if (name === 'Creditors') {
+    const exists = await fyo.db.exists('Account', 'Creditors');
+    if (!exists && (await fyo.db.exists('Account', 'Sundry Creditors'))) {
+      return 'Sundry Creditors';
+    }
+  }
+  return name;
+}
+
 async function getPayments(fyo: Fyo, invoices: Invoice[]) {
   const payments = [];
   for (const invoice of invoices) {
@@ -192,11 +207,11 @@ async function getPayments(fyo: Fyo, invoices: Invoice[]) {
       .plus({ hours: 1 })
       .toJSDate();
     if (doc.paymentType === 'Receive') {
-      doc.account = 'Debtors';
+      doc.account = await getAccountName(fyo, 'Debtors');
       doc.paymentAccount = 'Cash';
     } else {
       doc.account = 'Cash';
-      doc.paymentAccount = 'Creditors';
+      doc.paymentAccount = await getAccountName(fyo, 'Creditors');
     }
     doc.amount = invoice.outstandingAmount;
 
@@ -271,7 +286,7 @@ async function getSalesInvoices(
 
     await doc.set('party', customer!.name);
     if (!doc.account) {
-      doc.account = 'Debtors';
+      doc.account = await getAccountName(fyo, 'Debtors');
     }
     /**
      * Add `numItems` number of items to the invoice.
@@ -416,7 +431,7 @@ async function getSalesPurchaseInvoices(
 
       await doc.set('party', supplier);
       if (!doc.account) {
-        doc.account = 'Creditors';
+        doc.account = await getAccountName(fyo, 'Creditors');
       }
 
       /**
@@ -473,7 +488,7 @@ async function getNonSalesPurchaseInvoices(
       const party = purchaseItemPartyMap[name];
       await doc.set('party', party);
       if (!doc.account) {
-        doc.account = 'Creditors';
+        doc.account = await getAccountName(fyo, 'Creditors');
       }
       await doc.append('items', {});
       const row = doc.items!.at(-1)!;
@@ -514,7 +529,11 @@ async function generateItems(fyo: Fyo) {
 
 async function generateParties(fyo: Fyo) {
   for (const party of parties) {
-    const doc = fyo.doc.getNewDoc('Party', party, false);
+    const data = { ...party };
+    if (data.defaultAccount) {
+      data.defaultAccount = await getAccountName(fyo, data.defaultAccount);
+    }
+    const doc = fyo.doc.getNewDoc('Party', data, false);
     await doc.sync();
   }
 }

@@ -2,7 +2,7 @@
   <div>
     <!-- Search Bar Button -->
     <Button
-      class="px-3 py-2 rounded-r-none dark:bg-gray-900"
+      class="px-3 h-8 rounded-xl dark:bg-gray-800 border dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
       :padding="false"
       @click="open"
     >
@@ -21,7 +21,7 @@
   >
     <div class="w-form">
       <!-- Search Input -->
-      <div class="p-1">
+      <div class="p-4">
         <input
           ref="input"
           v-model="inputValue"
@@ -29,7 +29,7 @@
           autocomplete="off"
           spellcheck="false"
           :placeholder="t`Type to search...`"
-          class="bg-gray-100 dark:bg-gray-800 text-2xl focus:outline-none w-full placeholder-gray-500 text-gray-900 dark:text-gray-100 rounded-md p-3"
+          class="bg-gray-50 dark:bg-gray-800 text-2xl focus:outline-none w-full placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 transition-all focus:ring-2 focus:ring-violet-500/20"
           @keydown.up="up"
           @keydown.down="down"
           @keydown.enter="() => select()"
@@ -47,12 +47,8 @@
           v-for="(si, i) in suggestions"
           :key="`${i}-${si.label}`"
           :data-index="`search-suggestion-${i}`"
-          class="hover:bg-gray-50 dark:hover:bg-gray-875 cursor-pointer"
-          :class="
-            idx === i
-              ? 'border-gray-700 dark:border-gray-200 bg-gray-50 dark:bg-gray-875 border-s-4'
-              : ''
-          "
+          class="hover:bg-violet-50 dark:hover:bg-violet-900/10 cursor-pointer transition-colors"
+          :class="idx === i ? 'bg-violet-50 dark:bg-violet-900/20' : ''"
           @click="select(i)"
         >
           <!-- Search List Item -->
@@ -60,14 +56,14 @@
             class="flex w-full justify-between px-3 items-center"
             style="height: var(--h-row-mid)"
           >
-            <div class="flex items-center">
+            <div class="flex items-center ps-4">
               <p
+                class="font-medium"
                 :class="
                   idx === i
-                    ? 'text-gray-900 dark:text-gray-100'
+                    ? 'text-violet-600 dark:text-violet-400'
                     : 'text-gray-700 dark:text-gray-400'
                 "
-                :style="idx === i ? 'margin-left: -4px' : ''"
               >
                 {{ si.label }}
               </p>

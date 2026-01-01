@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded-md flex justify-center items-center text-sm"
+    class="rounded-xl flex justify-center items-center text-sm"
     :disabled="disabled"
     :class="_class"
     v-bind="$attrs"

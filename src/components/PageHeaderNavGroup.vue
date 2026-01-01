@@ -1,30 +1,30 @@
 <template>
-  <div class="flex">
+  <div class="flex items-center gap-1">
     <SearchBar />
     <!-- Back Button -->
     <a
       ref="backlink"
-      class="nav-link border-l border-r border-white dark:border-gray-850 dark:bg-gray-900"
+      class="nav-link rounded-l-xl dark:bg-gray-800"
       :class="
         historyState.back
-          ? 'text-gray-700 dark:text-gray-300 cursor-pointer'
-          : 'text-gray-400 dark:text-gray-700'
+          ? 'text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+          : 'text-gray-300 dark:text-gray-600'
       "
       @click="$router.back()"
     >
-      <feather-icon name="chevron-left" class="w-4 h-4" />
+      <feather-icon name="arrow-left" class="w-4 h-4" />
     </a>
     <!-- Forward Button -->
     <a
-      class="nav-link rounded-md rounded-l-none dark:bg-gray-900"
+      class="nav-link rounded-r-xl dark:bg-gray-800"
       :class="
         historyState.forward
-          ? 'text-gray-700 dark:text-gray-400 cursor-pointer'
-          : 'text-gray-400 dark:text-gray-700'
+          ? 'text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+          : 'text-gray-300 dark:text-gray-600'
       "
       @click="$router.forward()"
     >
-      <feather-icon name="chevron-right" class="w-4 h-4" />
+      <feather-icon name="arrow-right" class="w-4 h-4" />
     </a>
   </div>
 </template>
@@ -69,6 +69,6 @@ export default defineComponent({
 
 <style scoped>
 .nav-link {
-  @apply flex items-center bg-gray-200 px-3;
+  @apply flex items-center h-8 bg-gray-50 px-2 transition-all duration-200 border dark:border-gray-700;
 }
 </style>

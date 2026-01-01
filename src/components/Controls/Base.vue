@@ -80,7 +80,7 @@ export default defineComponent({
       return 'text';
     },
     labelClasses(): string {
-      return 'text-gray-600 dark:text-gray-500 text-sm mb-1';
+      return 'text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-wider mb-1.5 ms-1';
     },
     inputClasses(): string[] {
       /**
@@ -104,18 +104,18 @@ export default defineComponent({
         'text-base',
         'focus:outline-none',
         'w-full',
-        'placeholder-gray-500',
+        'placeholder-gray-300 dark:placeholder-gray-700 font-medium',
       ];
     },
     sizeClasses(): string {
       if (this.size === 'small') {
         return 'px-2 py-1';
       }
-      return 'px-3 py-2';
+      return 'px-4 py-2.5';
     },
     inputReadOnlyClasses(): string {
       if (this.isReadOnly) {
-        return 'text-gray-800 dark:text-gray-300 cursor-default';
+        return 'text-gray-400 dark:text-gray-500 cursor-default';
       }
 
       return 'text-gray-900 dark:text-gray-100';
@@ -132,11 +132,11 @@ export default defineComponent({
       return classes.filter(Boolean);
     },
     baseContainerClasses(): string[] {
-      return ['rounded'];
+      return ['rounded-xl'];
     },
     containerReadOnlyClasses(): string {
       if (!this.isReadOnly) {
-        return 'focus-within:bg-gray-100 dark:focus-within:bg-gray-850';
+        return 'focus-within:bg-white dark:focus-within:bg-gray-800';
       }
 
       return '';
@@ -146,10 +146,11 @@ export default defineComponent({
         return '';
       }
 
-      const border = 'border border-gray-200 dark:border-gray-800';
-      let background = 'bg-gray-25 dark:bg-gray-875';
+      const border =
+        'border border-gray-100 dark:border-gray-800 focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-500/5 transition-all duration-200';
+      let background = 'bg-gray-50 dark:bg-gray-900/50';
       if (this.isReadOnly) {
-        background = 'bg-gray-50 dark:bg-gray-850';
+        background = 'bg-gray-50/50 dark:bg-gray-850/50';
       }
 
       return border + ' ' + background;

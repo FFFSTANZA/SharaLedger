@@ -1,153 +1,155 @@
 <template>
   <div
-    class="flex-1 flex justify-center items-center bg-gray-25 dark:bg-gray-900"
+    class="flex-1 flex justify-center items-center bg-gradient-to-br from-violet-50 to-teal-50 dark:from-gray-950 dark:to-gray-900"
     :class="{
       'pointer-events-none': loadingDatabase,
       'window-drag': platform !== 'Windows',
     }"
   >
     <div
-      class="w-full w-form shadow-lg rounded-lg border dark:border-gray-800 relative bg-white dark:bg-gray-875"
-      style="height: 700px"
+      class="w-full w-form shadow-2xl rounded-3xl border border-white dark:border-gray-800 relative bg-white/90 dark:bg-gray-875/90 backdrop-blur-md overflow-hidden"
+      style="height: 720px"
     >
       <!-- Welcome to SharaLedger -->
-      <div class="px-4 py-4">
-        <h1 class="text-2xl font-semibold select-none dark:text-gray-25">
+      <div class="px-8 pt-10 pb-6">
+        <h1
+          class="text-3xl font-bold select-none text-gray-900 dark:text-gray-25 tracking-tight"
+        >
           {{ t`Welcome to SharaLedger` }}
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 text-base select-none">
-          {{
-            t`Create a new company or select an existing one from your computer`
-          }}
+        <p class="text-gray-500 dark:text-gray-400 text-lg mt-2 select-none">
+          {{ t`Your premium accounting companion` }}
         </p>
       </div>
 
-      <hr class="dark:border-gray-800" />
-
-      <!-- New File (Blue Icon) -->
-      <div
-        data-testid="create-new-file"
-        class="px-4 h-row-largest flex flex-row items-center gap-4 p-2"
-        :class="
-          creatingDemo
-            ? ''
-            : 'hover:bg-gray-50 dark:hover:bg-gray-890 cursor-pointer'
-        "
-        @click="newDatabase"
-      >
-        <div class="w-8 h-8 rounded-full bg-blue-500 relative flex-center">
-          <feather-icon
-            name="plus"
-            class="text-white dark:text-gray-900 w-5 h-5"
-          />
-        </div>
-
-        <div>
-          <p class="font-medium dark:text-gray-200">
-            {{ t`New Company` }}
-          </p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ t`Create a new company and store it on your computer` }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Existing File (Green Icon) -->
-      <div
-        class="px-4 h-row-largest flex flex-row items-center gap-4 p-2"
-        :class="
-          creatingDemo
-            ? ''
-            : 'hover:bg-gray-50 dark:hover:bg-gray-890 cursor-pointer'
-        "
-        @click="existingDatabase"
-      >
+      <!-- Action items -->
+      <div class="px-4 space-y-2">
+        <!-- New File -->
         <div
-          class="w-8 h-8 rounded-full bg-green-500 dark:bg-green-600 relative flex-center"
+          data-testid="create-new-file"
+          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
+          :class="
+            creatingDemo
+              ? 'opacity-50'
+              : 'hover:bg-violet-50 dark:hover:bg-violet-900/20 cursor-pointer'
+          "
+          @click="newDatabase"
         >
-          <feather-icon
-            name="upload"
-            class="w-4 h-4 text-white dark:text-gray-900"
-          />
+          <div
+            class="w-12 h-12 rounded-2xl bg-violet-600 shadow-lg shadow-violet-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
+          >
+            <feather-icon name="plus" class="text-white w-6 h-6" />
+          </div>
+
+          <div>
+            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
+              {{ t`New Company` }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ t`Start a fresh journey with a new company` }}
+            </p>
+          </div>
         </div>
-        <div>
-          <p class="font-medium dark:text-gray-200">
-            {{ t`Existing Company` }}
-          </p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ t`Load an existing company from your computer` }}
-          </p>
+
+        <!-- Existing File -->
+        <div
+          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
+          :class="
+            creatingDemo
+              ? 'opacity-50'
+              : 'hover:bg-teal-50 dark:hover:bg-teal-900/20 cursor-pointer'
+          "
+          @click="existingDatabase"
+        >
+          <div
+            class="w-12 h-12 rounded-2xl bg-teal-600 shadow-lg shadow-teal-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
+          >
+            <feather-icon name="upload" class="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
+              {{ t`Existing Company` }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ t`Import your data from an existing file` }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Create Demo -->
+        <div
+          v-if="!files?.length"
+          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
+          :class="
+            creatingDemo
+              ? 'opacity-50'
+              : 'hover:bg-amber-50 dark:hover:bg-amber-900/20 cursor-pointer'
+          "
+          @click="createDemo"
+        >
+          <div
+            class="w-12 h-12 rounded-2xl bg-amber-500 shadow-lg shadow-amber-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
+          >
+            <feather-icon name="monitor" class="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
+              {{ t`Explore with Demo` }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ t`Experience SharaLedger with pre-loaded data` }}
+            </p>
+          </div>
         </div>
       </div>
 
-      <!-- Create Demo (Pink Icon) -->
-      <div
-        v-if="!files?.length"
-        class="px-4 h-row-largest flex flex-row items-center gap-4 p-2"
-        :class="
-          creatingDemo
-            ? ''
-            : 'hover:bg-gray-50 dark:hover:bg-gray-890 cursor-pointer'
-        "
-        @click="createDemo"
-      >
-        <div
-          class="w-8 h-8 rounded-full bg-pink-500 dark:bg-pink-600 relative flex-center"
+      <div class="px-8 mt-8 mb-4">
+        <h3
+          class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest"
         >
-          <feather-icon name="monitor" class="w-4 h-4 text-white" />
-        </div>
-        <div>
-          <p class="font-medium dark:text-gray-200">
-            {{ t`Create Demo` }}
-          </p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ t`Create a demo company to try out SharaLedger` }}
-          </p>
-        </div>
+          {{ files?.length ? t`Recent Companies` : '' }}
+        </h3>
       </div>
-      <hr class="dark:border-gray-800" />
 
       <!-- File List -->
-      <div class="overflow-y-auto" style="max-height: 340px">
+      <div class="overflow-y-auto px-4" style="max-height: 280px">
         <div
           v-for="(file, i) in files"
           :key="file.dbPath"
-          class="h-row-largest px-4 flex gap-4 items-center"
+          class="h-20 px-4 flex gap-5 items-center rounded-xl transition-all duration-200 mb-1"
           :class="
             creatingDemo
-              ? ''
-              : 'hover:bg-gray-50 dark:hover:bg-gray-890 cursor-pointer'
+              ? 'opacity-50'
+              : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer'
           "
           :title="t`${file.companyName} stored at ${file.dbPath}`"
           @click="selectFile(file)"
         >
           <div
-            class="w-8 h-8 rounded-full flex justify-center items-center bg-gray-200 dark:bg-gray-800 text-gray-500 font-semibold flex-shrink-0 text-base"
+            class="w-10 h-10 rounded-xl flex justify-center items-center bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 font-bold flex-shrink-0 text-base"
           >
-            {{ i + 1 }}
+            {{ file.companyName.charAt(0).toUpperCase() }}
           </div>
-          <div class="w-full">
-            <div class="flex justify-between overflow-x-auto items-baseline">
-              <h2 class="font-medium dark:text-gray-200">
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline">
+              <h2 class="font-bold text-gray-900 dark:text-gray-100 truncate">
                 {{ file.companyName }}
               </h2>
               <p
-                class="whitespace-nowrap text-sm text-gray-600 dark:text-gray-400"
+                class="whitespace-nowrap text-xs font-medium text-gray-400 dark:text-gray-500"
               >
                 {{ formatDate(file.modified) }}
               </p>
             </div>
-            <p
-              class="text-sm text-gray-600 dark:text-gray-400 overflow-x-auto no-scrollbar whitespace-nowrap"
-            >
-              {{ truncate(file.dbPath) }}
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {{ file.dbPath }}
             </p>
           </div>
           <button
-            class="ms-auto p-2 hover:bg-red-200 dark:hover:bg-red-900 dark:hover:bg-opacity-40 rounded-full w-8 h-8 text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-200"
+            class="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
             @click.stop="() => deleteDb(i)"
           >
-            <feather-icon name="x" class="w-4 h-4" />
+            <feather-icon name="trash-2" class="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -155,17 +157,16 @@
 
       <!-- Language Selector -->
       <div
-        class="w-full flex justify-between items-center absolute p-4 text-gray-900 dark:text-gray-100"
-        style="top: 100%; transform: translateY(-100%)"
+        class="w-full flex justify-between items-center absolute bottom-0 left-0 p-6 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-t dark:border-gray-800"
       >
-        <LanguageSelector v-show="!creatingDemo" class="text-sm w-28" />
+        <LanguageSelector v-show="!creatingDemo" class="text-sm w-32" />
         <button
           v-if="files?.length"
-          class="text-sm bg-gray-100 dark:bg-gray-890 hover:bg-gray-200 dark:hover:bg-gray-900 rounded px-4 py-1.5 w-auto h-8 no-scrollbar overflow-x-auto whitespace-nowrap"
+          class="text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-xl px-6 py-2 transition-all shadow-md shadow-violet-200 dark:shadow-none"
           :disabled="creatingDemo"
           @click="createDemo"
         >
-          {{ creatingDemo ? t`Please Wait` : t`Create Demo` }}
+          {{ creatingDemo ? t`Please Wait` : t`Create Another Demo` }}
         </button>
       </div>
     </div>

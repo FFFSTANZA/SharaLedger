@@ -4,11 +4,17 @@
       {{ df.label }}
     </div>
 
-    <div :class="border ? 'border dark:border-gray-800 rounded-md' : ''">
+    <div
+      :class="
+        border
+          ? 'border dark:border-gray-800 rounded-xl overflow-hidden shadow-sm'
+          : ''
+      "
+    >
       <!-- Title Row -->
       <Row
         :ratio="ratio"
-        class="border-b dark:border-gray-800 px-2 text-gray-600 dark:text-gray-400 w-full flex items-center"
+        class="border-b dark:border-gray-800 px-2 text-gray-400 dark:text-gray-500 w-full flex items-center bg-gray-50/50 dark:bg-gray-800/50 font-bold uppercase text-[10px] tracking-widest"
       >
         <div class="flex items-center ps-2">#</div>
         <div
