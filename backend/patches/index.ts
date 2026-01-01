@@ -6,7 +6,10 @@ import testPatch from './testPatch';
 import updateSchemas from './updateSchemas';
 import setPaymentReferenceType from './setPaymentReferenceType';
 import fixLedgerDateTime from './v0_21_0/fixLedgerDateTime';
+import fixInvoiceItemHSNField from './fixInvoiceItemHSNField';
 import fixItemHSNField from './fixItemHSNField';
+import setIndiaDefaultDateFormat from './setIndiaDefaultDateFormat';
+import setIndiaDefaultLocale from './setIndiaDefaultLocale';
 import createPaymentMethods from './createPaymentMethods';
 
 export default [
@@ -43,6 +46,21 @@ export default [
     patch: fixLedgerDateTime,
   },
   { name: 'fixItemHSNField', version: '0.24.0', patch: fixItemHSNField },
+  {
+    name: 'fixInvoiceItemHSNField',
+    version: '0.36.1',
+    patch: fixInvoiceItemHSNField,
+  },
+  {
+    name: 'setIndiaDefaultDateFormat',
+    version: '0.36.1',
+    patch: setIndiaDefaultDateFormat,
+  },
+  {
+    name: 'setIndiaDefaultLocale',
+    version: '0.36.1',
+    patch: setIndiaDefaultLocale,
+  },
   {
     name: 'createPaymentMethods',
     version: '0.25.1',

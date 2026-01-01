@@ -248,7 +248,7 @@ async function generateB2bData(report: BaseGSTR): Promise<B2BCustomer[]> {
     });
 
     items.forEach((item) => {
-      const hsnCode = item.hsnCode as number;
+      const hsnCode = parseInt(String(item.hsnCode ?? ''), 10) || 0;
       const tax = item.tax as string;
       const baseAmount = fyo
         .pesa((item.amount as string) ?? 0)
@@ -333,7 +333,7 @@ async function generateB2clData(
     });
 
     items.forEach((item) => {
-      const hsnCode = item.hsnCode as number;
+      const hsnCode = parseInt(String(item.hsnCode ?? ''), 10) || 0;
       const tax = item.tax as string;
       const baseAmount = fyo
         .pesa((item.amount as string) ?? 0)

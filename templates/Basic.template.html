@@ -22,7 +22,7 @@
     <!-- Company Address & GSTIN -->
     <section class="w-1/3">
       <div v-if="print.address">{{ print.links.address.addressDisplay }}</div>
-      <div v-if="print.gstin">GSTIN: {{ print.gstin }}</div>
+      <div v-if="doc.isIndian">GSTIN: {{ print.gstin || '-' }}</div>
     </section>
   </header>
 
@@ -47,11 +47,11 @@
       >
         {{ doc.links.party.links.address.addressDisplay }}
       </p>
-      <p
-        v-if="doc.links.party.gstin"
-        class="mt-1 text-xs text-gray-600 text-right"
-      >
-        GSTIN: {{ doc.partyGSTIN }}
+      <p v-if="doc.isIndian" class="mt-1 text-xs text-gray-600 text-right">
+        GSTIN: {{ doc.links.party.gstin || '-' }}
+      </p>
+      <p v-if="doc.isIndian" class="mt-1 text-xs text-gray-600 text-right">
+        Place of Supply: {{ doc.placeOfSupply || '-' }}
       </p>
     </section>
   </section>

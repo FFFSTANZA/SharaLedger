@@ -160,19 +160,28 @@ function formatNumber(value: unknown, fyo: Fyo): string {
 }
 
 function getNumberFormatter(fyo: Fyo) {
-  if (fyo.currencyFormatter) {
-    return fyo.currencyFormatter;
-  }
-
   const locale =
     (fyo.singles.SystemSettings?.locale as string) ?? DEFAULT_LOCALE;
   const display =
     (fyo.singles.SystemSettings?.displayPrecision as number) ??
     DEFAULT_DISPLAY_PRECISION;
 
+  const existing = fyo.currencyFormatter;
+  if (existing) {
+    const options = existing.resolvedOptions();
+    if (
+      options.locale === locale &&
+      options.minimumFractionDigits === display &&
+      options.maximumFractionDigits === display
+    ) {
+      return existing;
+    }
+  }
+
   return (fyo.currencyFormatter = Intl.NumberFormat(locale, {
     style: 'decimal',
     minimumFractionDigits: display,
+    maximumFractionDigits: display,
   }));
 }
 

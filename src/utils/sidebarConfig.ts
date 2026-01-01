@@ -49,6 +49,11 @@ function getRegionalSidebar(): SidebarRoot[] {
           name: 'gstr2',
           route: '/report/GSTR2',
         },
+        {
+          label: t`GSTR3B`,
+          name: 'gstr3b',
+          route: '/report/GSTR3B',
+        },
       ],
     },
   ];
@@ -137,6 +142,16 @@ function getReportSidebar() {
         label: t`Trial Balance`,
         name: 'trial-balance',
         route: '/report/TrialBalance',
+      },
+      {
+        label: t`Receivables Ageing`,
+        name: 'receivables-ageing',
+        route: '/report/ReceivablesAgeing',
+      },
+      {
+        label: t`Payables Ageing`,
+        name: 'payables-ageing',
+        route: '/report/PayablesAgeing',
       },
     ],
   };

@@ -16,8 +16,8 @@
         <p class="text-sm text-gray-800" v-if="print.address">
           {{ print.links.address.addressDisplay }}
         </p>
-        <p class="text-sm text-gray-800" v-if="print.gstin">
-          GSTIN: {{ print.gstin }}
+        <p class="text-sm text-gray-800" v-if="doc.isIndian">
+          GSTIN: {{ print.gstin || '-' }}
         </p>
       </div>
     </section>
@@ -50,7 +50,10 @@
           <p v-if="doc.links.party.address">
             {{ doc.links.party.links.address.addressDisplay }}
           </p>
-          <p v-if="doc.links.party.gstin">GSTIN: {{ doc.links.party.gstin }}</p>
+          <p v-if="doc.isIndian">GSTIN: {{ doc.links.party.gstin || '-' }}</p>
+          <p v-if="doc.isIndian">
+            Place of Supply: {{ doc.placeOfSupply || '-' }}
+          </p>
         </div>
       </section>
     </div>
