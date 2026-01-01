@@ -14,23 +14,28 @@
     </PageHeader>
 
     <div
-      class="no-scrollbar overflow-auto dark:bg-gradient-to-b dark:from-gray-875 dark:to-gray-900"
+      class="no-scrollbar overflow-auto dark:bg-gradient-to-br dark:from-gray-875 dark:via-gray-900 dark:to-gray-950"
       style="height: calc(100vh - var(--h-row-largest) - 1px)"
     >
-      <div style="min-width: var(--w-desk-fixed)" class="p-4">
-        <div class="grid grid-cols-12 gap-4">
+      <div style="min-width: var(--w-desk-fixed)" class="p-6">
+        <div class="grid grid-cols-12 gap-6">
           <div class="col-span-12">
             <KpiSummaryStrip v-if="summary" :summary="summary" class="w-full" />
-            <div v-else class="dashboard-card p-4">
-              <p class="text-sm text-gray-600 dark:text-gray-300">
-                {{ t`Loading dashboard...` }}
-              </p>
+            <div v-else class="dashboard-card p-6">
+              <div class="flex items-center justify-center py-8">
+                <div class="text-center">
+                  <div class="text-4xl mb-3">📊</div>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">
+                    {{ t`Loading dashboard...` }}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="col-span-12 xl:col-span-9 space-y-4">
+          <div class="col-span-12 xl:col-span-9 space-y-6">
             <div
-              class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+              class="dashboard-card p-8 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Cashflow :dark-mode="darkMode" />
             </div>
@@ -41,14 +46,14 @@
               :period-label="periodLabel"
             />
 
-            <div v-if="summary" class="grid grid-cols-2 gap-4">
+            <div v-if="summary" class="grid grid-cols-2 gap-6">
               <div
-                class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+                class="dashboard-card p-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <ProfitOverview :summary="summary" />
               </div>
               <div
-                class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg"
+                class="dashboard-card p-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <ExpenseBreakdown
                   :summary="summary"
@@ -63,7 +68,7 @@
           <div class="col-span-12 xl:col-span-3">
             <div
               v-if="summary"
-              class="dashboard-card p-4 xl:sticky xl:top-4 transition-all duration-300 hover:shadow-lg"
+              class="dashboard-card p-6 xl:sticky xl:top-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <AlertsPanel :summary="summary" />
             </div>
@@ -186,6 +191,19 @@ export default defineComponent({
 
 <style>
 .dashboard-card {
-  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.dark .dashboard-card {
+  background-color: rgba(31, 41, 55, 0.95);
+  border-color: rgba(75, 85, 99, 0.5);
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 </style>
