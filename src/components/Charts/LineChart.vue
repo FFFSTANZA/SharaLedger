@@ -347,15 +347,27 @@ export default {
       const xi = Math.round((x / rect.width) * (this.xs.length - 1));
       if (xi < 0 || xi >= this.xs.length) return;
 
-      const dists = this.ys.map((s, i) =>
-        euclideanDistance(x, y, this.xs[xi], s[xi])
-      );
+      // Ensure ys array exists and has data
+      if (!this.ys || !this.ys.length) return;
 
-      const yi = dists.indexOf(Math.min(...dists));
+      const dists = this.ys.map((s, i) => {
+        // Check if series exists and has the xi-th element
+        if (!s || !s[xi]) return Infinity;
+        return euclideanDistance(x, y, this.xs[xi], s[xi]);
+      });
+
+      const minDist = Math.min(...dists);
+      if (minDist === Infinity) return;
+
+      const yi = dists.indexOf(minDist);
       this.xi = xi;
       this.yi = yi;
       this.cx = this.xs[xi];
-      this.cy = this.ys[yi][xi];
+
+      // Additional safety check for ys[yi] and ys[yi][xi]
+      if (this.ys[yi] && this.ys[yi][xi] !== undefined) {
+        this.cy = this.ys[yi][xi];
+      }
 
       this.$refs.tooltip?.update(e);
     },
