@@ -246,7 +246,13 @@ export default {
     },
 
     ys() {
-      const flat = this.points.flat();
+      const flat = this.points
+        .flat()
+        .filter((v) => v !== undefined && v !== null && !isNaN(v));
+      if (!flat.length) {
+        flat.push(0);
+      }
+
       const min = Math.min(...flat, 0);
       const max = Math.max(...flat, 1);
 
@@ -257,12 +263,16 @@ export default {
       }
 
       return this.points.map((series) =>
-        series.map(
-          (v) =>
+        series.map((v) => {
+          if (v === undefined || v === null || isNaN(v)) {
+            return this.viewBoxHeight - this.padding - this.bottom;
+          }
+          return (
             this.padding +
             (1 - (v - min) / (max - min)) *
               (this.viewBoxHeight - this.padding * 2 - this.bottom)
-        )
+          );
+        })
       );
     },
 
@@ -327,16 +337,35 @@ export default {
     },
 
     getLinePath(i) {
+      if (!this.ys[i] || !this.xs.length) return '';
+
       return this.xs
-        .map((x, idx) => `${idx === 0 ? 'M' : 'L'} ${x} ${this.ys[i][idx]}`)
+        .map((x, idx) => {
+          const y = this.ys[i][idx];
+          if (y === undefined || y === null || isNaN(y)) {
+            return '';
+          }
+          return `${idx === 0 ? 'M' : 'L'} ${x} ${y}`;
+        })
+        .filter((path) => path !== '')
         .join(' ');
     },
 
     getAreaPath(i) {
+      if (!this.ys[i] || !this.xs.length) return '';
+
+      const linePath = this.getLinePath(i);
+      if (!linePath) return '';
+
       const base = this.viewBoxHeight - this.padding - this.bottom;
-      return `${this.getLinePath(i)}
-              L ${this.xs.at(-1)} ${base}
-              L ${this.xs[0]} ${base} Z`;
+      const lastX = this.xs.at(-1);
+      const firstX = this.xs[0];
+
+      if (lastX === undefined || firstX === undefined) return '';
+
+      return `${linePath}
+              L ${lastX} ${base}
+              L ${firstX} ${base} Z`;
     },
 
     update(e) {
