@@ -181,25 +181,34 @@
 
     <!-- Base Count Selection when Dev -->
     <Modal :open-modal="openModal" @closemodal="openModal = false">
-      <div class="p-4 text-gray-900 dark:text-gray-100 w-form">
-        <h2 class="text-xl font-semibold select-none">Set Base Count</h2>
-        <p class="text-base mt-2">
+      <div
+        class="p-8 text-gray-900 dark:text-gray-100 w-form bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl border border-gray-100 dark:border-gray-700 shadow-2xl"
+      >
+        <h2 class="text-2xl font-bold select-none mb-2">Set Base Count</h2>
+        <p class="text-base mt-2 text-gray-600 dark:text-gray-400">
           Base Count is a lower bound on the number of entries made when
           creating the dummy instance.
         </p>
-        <div class="flex my-12 justify-center items-baseline gap-4 text-base">
-          <label for="basecount" class="text-gray-600 dark:text-gray-400"
+        <div class="flex my-8 justify-center items-baseline gap-4 text-base">
+          <label
+            for="basecount"
+            class="text-gray-700 dark:text-gray-300 font-medium"
             >Base Count</label
           >
           <input
             v-model="baseCount"
             type="number"
             name="basecount"
-            class="bg-gray-100 dark:bg-gray-875 focus:bg-gray-200 dark:focus:bg-gray-890 rounded-md px-2 py-1 outline-none"
+            class="bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 border border-gray-200 dark:border-gray-600 focus:border-violet-500 dark:focus:border-violet-400 rounded-lg px-4 py-2 outline-none transition-all duration-200 w-24 text-center font-semibold text-gray-900 dark:text-gray-100"
           />
         </div>
-        <div class="flex justify-between">
-          <Button @click="openModal = false">Cancel</Button>
+        <div class="flex justify-between gap-4">
+          <Button
+            @click="openModal = false"
+            class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-all duration-200"
+          >
+            Cancel
+          </Button>
           <Button
             type="primary"
             @click="
@@ -208,8 +217,10 @@
                 startDummyInstanceSetup();
               }
             "
-            >Create</Button
+            class="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md"
           >
+            Create Demo
+          </Button>
         </div>
       </div>
     </Modal>

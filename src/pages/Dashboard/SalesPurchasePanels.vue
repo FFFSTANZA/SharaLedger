@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 gap-4">
     <!-- Sales -->
     <div
-      class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg border-t-4 border-t-violet-500 dark:border-t-violet-600"
+      class="dashboard-card p-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5 border-t-4 border-t-violet-500 dark:border-t-violet-600"
     >
       <div class="flex items-start justify-between">
         <div>
@@ -21,7 +21,7 @@
           </p>
         </div>
         <span
-          class="w-2.5 h-2.5 rounded-full mt-1 bg-violet-500/80 dark:bg-violet-600/80 shadow-sm"
+          class="w-3 h-3 rounded-full mt-1 bg-violet-500/80 dark:bg-violet-600/80 shadow-md"
         />
       </div>
 
@@ -81,13 +81,13 @@
 
       <div class="mt-5 flex items-center gap-4 text-sm">
         <button
-          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors px-3 py-1.5 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20"
           @click="routeToOverdueSales"
         >
           {{ t`View overdue bills` }}
         </button>
         <button
-          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+          class="text-violet-600 dark:text-violet-400 font-semibold hover:text-violet-700 dark:hover:text-violet-300 transition-colors px-3 py-1.5 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20"
           @click="routeToOverdueSales"
         >
           {{ t`Send reminders` }}
@@ -97,7 +97,7 @@
 
     <!-- Purchases -->
     <div
-      class="dashboard-card p-6 transition-all duration-300 hover:shadow-lg border-t-4 border-t-teal-500 dark:border-t-teal-600"
+      class="dashboard-card p-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5 border-t-4 border-t-teal-500 dark:border-t-teal-600"
     >
       <div class="flex items-start justify-between">
         <div>
@@ -116,7 +116,7 @@
           </p>
         </div>
         <span
-          class="w-2.5 h-2.5 rounded-full mt-1 bg-teal-500/80 dark:bg-teal-600/80 shadow-sm"
+          class="w-3 h-3 rounded-full mt-1 bg-teal-500/80 dark:bg-teal-600/80 shadow-md"
         />
       </div>
 
@@ -173,13 +173,13 @@
 
       <div class="mt-5 flex items-center gap-4 text-sm">
         <button
-          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors px-3 py-1.5 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20"
           @click="routeToUnpaidPurchases"
         >
           {{ t`Pay bills` }}
         </button>
         <button
-          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+          class="text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 transition-colors px-3 py-1.5 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20"
           @click="routeToOverduePurchases"
         >
           {{ t`View overdue vendors` }}

@@ -33,10 +33,10 @@ export async function setupDummyInstance(
   notifier?.(fyo.t`Setting Up Instance`, -1);
   const options = {
     logo: null,
-    companyName: "Flo's Clothes",
+    companyName: 'SharaLedger',
     country: 'India',
     fullname: 'Lin Florentine',
-    email: 'lin@flosclothes.com',
+    email: 'lin@sharaledger.com',
     bankName: 'Supreme Bank',
     currency: 'INR',
     fiscalYearStart: getFiscalYear('04-01', true)!.toISOString(),

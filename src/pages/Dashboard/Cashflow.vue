@@ -40,28 +40,28 @@
       </div>
     </div>
 
-    <div v-if="hasData" class="mt-4 flex flex-wrap gap-5 text-sm">
-      <div class="flex items-center gap-2">
+    <div v-if="hasData" class="mt-6 flex flex-wrap gap-6 text-sm">
+      <div class="flex items-center gap-3">
         <span
-          class="w-2.5 h-2.5 rounded-full inline-block bg-violet-500 dark:bg-violet-600"
+          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
         />
-        <span class="text-gray-600 dark:text-gray-300 font-medium">
+        <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Inflow` }}
         </span>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <span
-          class="w-2.5 h-2.5 rounded-full inline-block bg-teal-500 dark:bg-teal-600"
+          class="w-3 h-3 rounded-full inline-block bg-teal-500 dark:bg-teal-400 shadow-md"
         />
-        <span class="text-gray-600 dark:text-gray-300 font-medium">
+        <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Outflow` }}
         </span>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <span
-          class="w-2.5 h-2.5 rounded-full inline-block bg-gray-700 dark:bg-gray-200"
+          class="w-3 h-3 rounded-full inline-block bg-violet-500 dark:bg-violet-400 shadow-md"
         />
-        <span class="text-gray-600 dark:text-gray-300 font-medium">
+        <span class="text-gray-700 dark:text-gray-300 font-medium">
           {{ t`Net Cashflow` }}
         </span>
       </div>
@@ -170,9 +170,9 @@ export default defineComponent({
       ];
 
       const colors = [
-        uicolors.violet[this.darkMode ? '600' : '500'],
-        uicolors.teal[this.darkMode ? '600' : '500'],
-        this.darkMode ? uicolors.gray['200'] : uicolors.gray['700'],
+        uicolors.violet[this.darkMode ? '400' : '500'],
+        uicolors.teal[this.darkMode ? '400' : '500'],
+        this.darkMode ? '#a78bfa' : '#8b5cf6', // Violet color for net cashflow instead of gray
       ];
 
       const thicknesses = [3, 3, 6];

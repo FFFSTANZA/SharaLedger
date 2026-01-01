@@ -75,10 +75,6 @@ export enum ModelNameEnum {
   POSProfile = 'POSProfile',
   POSOpeningShift = 'POSOpeningShift',
   POSClosingShift = 'POSClosingShift',
-
-  ERPNextSyncSettings = 'ERPNextSyncSettings',
-  ERPNextSyncQueue = 'ERPNextSyncQueue',
-  FetchFromERPNextQueue = 'FetchFromERPNextQueue',
 }
 
 export type ModelName = keyof typeof ModelNameEnum;
