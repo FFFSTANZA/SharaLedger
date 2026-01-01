@@ -62,9 +62,9 @@
       <!-- Gradient Mask -->
       <defs>
         <linearGradient id="grad" x1="0" y1="0" x2="0" y2="85%">
-          <stop offset="0%" stop-color="rgba(255, 255, 255, 0.5)" />
-          <stop offset="40%" stop-color="rgba(255, 255, 255, 0.1)" />
-          <stop offset="70%" stop-color="rgba(255, 255, 255, 0)" />
+          <stop offset="0%" stop-color="rgba(139, 92, 246, 0.3)" />
+          <stop offset="40%" stop-color="rgba(139, 92, 246, 0.15)" />
+          <stop offset="70%" stop-color="rgba(139, 92, 246, 0.05)" />
         </linearGradient>
 
         <mask v-for="(i, j) in num" :id="'rect-mask-' + i" :key="j + '-mask'">

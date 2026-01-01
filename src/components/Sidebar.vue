@@ -22,31 +22,31 @@
       </div>
 
       <!-- Sidebar Items -->
-      <div v-for="group in groups" :key="group.label" class="px-3">
+      <div v-for="group in groups" :key="group.label" class="px-2">
         <div
-          class="px-4 flex items-center cursor-pointer hover:bg-gradient-to-r hover:from-violet-50 hover:to-teal-50 dark:hover:from-violet-900/20 dark:hover:to-teal-900/20 h-12 rounded-xl transition-all duration-300 group border border-transparent hover:border-violet-100 dark:hover:border-violet-800"
+          class="px-3 flex items-center cursor-pointer hover:bg-violet-50 dark:hover:bg-violet-900/20 h-10 rounded-lg transition-all duration-200 group"
           :class="
             isGroupActive(group) && !group.items
-              ? 'bg-gradient-to-r from-violet-500 to-teal-500 text-white shadow-lg transform scale-[1.02] border-white/20'
-              : 'text-gray-700 dark:text-gray-300 font-medium'
+              ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 font-semibold'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           "
           @click="routeToSidebarItem(group)"
         >
-          <div class="text-base tracking-tight font-medium">
+          <div class="text-sm font-medium tracking-tight">
             {{ group.label }}
           </div>
         </div>
 
         <!-- Expanded Group -->
-        <div v-if="group.items && isGroupActive(group)" class="mt-2 space-y-1">
+        <div v-if="group.items && isGroupActive(group)" class="mt-1 space-y-1">
           <div
             v-for="item in group.items"
             :key="item.label"
-            class="text-[15px] h-10 ps-8 pe-3 cursor-pointer flex items-center hover:bg-gradient-to-r hover:from-violet-50 hover:to-teal-50 dark:hover:from-violet-900/20 dark:hover:to-teal-900/20 rounded-lg transition-all duration-300 group border border-transparent hover:border-violet-100 dark:hover:border-violet-800"
+            class="text-sm h-9 ps-6 pe-3 cursor-pointer flex items-center hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-md transition-all duration-200 group"
             :class="
               isItemActive(item)
-                ? 'bg-gradient-to-r from-violet-500 to-teal-500 text-white shadow-md font-semibold transform scale-[1.02] border-white/20'
-                : 'text-gray-600 dark:text-gray-400 font-medium'
+                ? 'text-violet-600 dark:text-violet-400 font-medium'
+                : 'text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
             "
             @click="routeToSidebarItem(item)"
           >
@@ -58,17 +58,17 @@
 
     <!-- Report Issue and DB Switcher -->
     <div
-      class="window-no-drag flex flex-col gap-4 py-8 px-6 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-t from-gray-50/80 to-transparent dark:from-gray-900/80 dark:to-transparent"
+      class="window-no-drag flex flex-col gap-2 py-6 px-4 border-t border-gray-100 dark:border-gray-800"
     >
       <button
-        class="flex text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-all duration-200 px-3 py-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 group"
+        class="flex text-xs text-gray-500 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors px-2 py-1 rounded hover:bg-violet-50 dark:hover:bg-violet-900/20"
         @click="openDocumentation"
       >
         <span>{{ t`Help` }}</span>
       </button>
 
       <button
-        class="flex text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-all duration-200 px-3 py-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 group"
+        class="flex text-xs text-gray-500 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors px-2 py-1 rounded hover:bg-violet-50 dark:hover:bg-violet-900/20"
         @click="viewShortcuts = true"
       >
         <span>{{ t`Shortcuts` }}</span>
@@ -76,14 +76,14 @@
 
       <button
         data-testid="change-db"
-        class="flex text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-all duration-200 px-3 py-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 group"
+        class="flex text-xs text-gray-500 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 items-center transition-colors px-2 py-1 rounded hover:bg-violet-50 dark:hover:bg-violet-900/20"
         @click="$emit('change-db-file')"
       >
         <span>{{ t`Change DB` }}</span>
       </button>
 
       <button
-        class="flex text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 items-center transition-all duration-200 px-3 py-2 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 group"
+        class="flex text-xs text-gray-500 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 items-center transition-colors px-2 py-1 rounded hover:bg-amber-50 dark:hover:bg-amber-900/20"
         @click="() => reportIssue()"
       >
         <span>{{ t`Report Issue` }}</span>
@@ -91,7 +91,7 @@
 
       <p
         v-if="showDevMode"
-        class="text-[10px] uppercase tracking-wider text-gray-400 select-none cursor-pointer mt-3 px-3 py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        class="text-[10px] text-gray-400 dark:text-gray-600 px-2 py-1 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
         @click="showDevMode = false"
         title="Open dev tools with Ctrl+Shift+I"
       >
@@ -101,7 +101,7 @@
 
     <!-- Hide Sidebar Button -->
     <button
-      class="absolute bottom-6 end-4 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-violet-600 dark:hover:text-violet-400 rounded-xl p-2.5 transition-all duration-200 rtl-rotate-180 shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg"
+      class="absolute bottom-4 end-3 text-gray-400 dark:text-gray-600 hover:text-violet-600 dark:hover:text-violet-400 rounded-lg p-2 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20"
       @click="() => toggleSidebar()"
     >
       <feather-icon name="chevrons-left" class="w-4 h-4" />
