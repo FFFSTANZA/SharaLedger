@@ -142,6 +142,15 @@
         <h3>{{ t`Grand Total` }}</h3>
         <p>{{ doc.grandTotal }}</p>
       </div>
+
+      <!-- Amount in Words -->
+      <div
+        v-if="print.amountInWords"
+        class="flex pl-2 justify-between py-3 border-t"
+      >
+        <h3 class="font-semibold">{{ t`Grand Total In Words` }}</h3>
+        <p class="text-right">{{ doc.grandTotalInWords }}</p>
+      </div>
     </section>
   </footer>
 
