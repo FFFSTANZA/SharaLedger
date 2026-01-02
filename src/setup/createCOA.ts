@@ -6,7 +6,6 @@ import {
   COATree,
 } from 'models/baseModels/Account/types';
 import { getCOAList } from 'models/baseModels/SetupWizard/SetupWizard';
-import { getStandardCOA } from './standardCOA';
 
 const accountFields = ['accountType', 'accountNumber', 'rootType', 'isGroup'];
 
@@ -89,7 +88,7 @@ async function getCOA(chartOfAccounts: string): Promise<COATree> {
 
   const conCode = coa?.countryCode;
   if (!conCode) {
-    return getStandardCOA();
+    return getIndianCOA();
   }
 
   try {
@@ -98,8 +97,184 @@ async function getCOA(chartOfAccounts: string): Promise<COATree> {
       .default as { tree: COATree };
     return countryCoa.tree;
   } catch (e) {
-    return getStandardCOA();
+    return getIndianCOA();
   }
+}
+
+function getIndianCOA(): COATree {
+  // India-specific Chart of Accounts with GST tax accounts
+  return {
+    'Application of Funds (Assets)': {
+      'Current Assets': {
+        'Accounts Receivable': {
+          'Sundry Debtors': {
+            isGroup: false,
+            accountType: 'Receivable',
+          },
+        },
+        'Bank Accounts': {
+          accountType: 'Bank',
+          isGroup: true,
+        },
+        'Cash In Hand': {
+          Cash: {
+            accountType: 'Cash',
+          },
+          accountType: 'Cash',
+        },
+        'Loans and Advances (Assets)': {
+          isGroup: true,
+        },
+        'Securities and Deposits': {
+          'Earnest Money': {},
+        },
+        'Stock Assets': {
+          'Stock-in-hand': {
+            accountType: 'Stock',
+          },
+          accountType: 'Stock',
+        },
+        'Tax Assets': {
+          isGroup: true,
+        },
+      },
+      'Fixed Assets': {
+        'Capital Equipment': {
+          accountType: 'Fixed Asset',
+        },
+        'Electronic Equipment': {
+          accountType: 'Fixed Asset',
+        },
+        'Furniture and Fixtures': {
+          accountType: 'Fixed Asset',
+        },
+        'Office Equipment': {
+          accountType: 'Fixed Asset',
+        },
+        'Plant and Machinery': {
+          accountType: 'Fixed Asset',
+        },
+        Buildings: {
+          accountType: 'Fixed Asset',
+        },
+        'Accumulated Depreciations': {
+          accountType: 'Accumulated Depreciation',
+        },
+      },
+      Investments: {
+        isGroup: true,
+      },
+      'Temporary Accounts': {
+        'Temporary Opening': {
+          accountType: 'Temporary',
+        },
+      },
+      rootType: 'Asset',
+    },
+    Expenses: {
+      'Direct Expenses': {
+        'Stock Expenses': {
+          'Cost of Goods Sold': {
+            accountType: 'Cost of Goods Sold',
+          },
+          'Expenses Included In Valuation': {
+            accountType: 'Expenses Included In Valuation',
+          },
+          'Stock Adjustment': {
+            accountType: 'Stock Adjustment',
+          },
+        },
+      },
+      'Indirect Expenses': {
+        'Administrative Expenses': {},
+        'Commission on Sales': {},
+        Depreciation: {
+          accountType: 'Depreciation',
+        },
+        'Entertainment Expenses': {},
+        'Freight and Forwarding Charges': {
+          accountType: 'Chargeable',
+        },
+        'Legal Expenses': {},
+        'Marketing Expenses': {},
+        'Miscellaneous Expenses': {},
+        'Office Maintenance Expenses': {},
+        'Office Rent': {},
+        'Postal Expenses': {},
+        'Printing and Stationery': {},
+        'Rounded Off': {
+          accountType: 'Round Off',
+        },
+        Salary: {},
+        'Sales Expenses': {},
+        'Telephone Expenses': {},
+        'Travel Expenses': {},
+        'Utility Expenses': {},
+        'Write Off': {},
+        'Exchange Gain/Loss': {},
+        'Gain/Loss on Asset Disposal': {},
+      },
+      rootType: 'Expense',
+    },
+    Income: {
+      'Direct Income': {
+        Sales: {
+          accountType: 'Income Account',
+        },
+        Service: {
+          accountType: 'Income Account',
+        },
+        accountType: 'Income Account',
+      },
+      'Indirect Income': {
+        accountType: 'Income Account',
+        isGroup: true,
+      },
+      rootType: 'Income',
+    },
+    'Source of Funds (Liabilities)': {
+      'Capital Account': {
+        'Reserves and Surplus': {},
+        'Shareholders Funds': {},
+      },
+      'Current Liabilities': {
+        'Accounts Payable': {
+          'Sundry Creditors': {
+            accountType: 'Payable',
+          },
+          'Payroll Payable': {},
+        },
+        'Stock Liabilities': {
+          'Stock Received But Not Billed': {
+            accountType: 'Stock Received But Not Billed',
+          },
+        },
+        'Duties and Taxes': {
+          TDS: {
+            accountType: 'Tax',
+          },
+          IGST: {
+            accountType: 'Tax',
+          },
+          CGST: {
+            accountType: 'Tax',
+          },
+          SGST: {
+            accountType: 'Tax',
+          },
+          Exempt: {
+            accountType: 'Tax',
+          },
+        },
+        'Loans (Liabilities)': {
+          'Secured Loans': {},
+          'Unsecured Loans': {},
+          'Bank Overdraft Account': {},
+        },
+      },
+      rootType: 'Liability',
+    },
+  };
 }
 
 function getAccountName(accountName: string, accountNumber?: string) {

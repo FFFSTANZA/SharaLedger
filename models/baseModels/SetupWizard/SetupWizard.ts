@@ -21,7 +21,6 @@ function getCurrencyList(): { countryCode: string; name: string }[] {
 
 export function getCOAList() {
   return [
-    { name: t`Standard Chart of Accounts`, countryCode: '' },
     { countryCode: 'in', name: 'India - Chart of Accounts' },
   ];
 }
@@ -112,14 +111,8 @@ export class SetupWizard extends Doc {
           return;
         }
 
-        const countryInfo = getCountryInfo();
-        const code = countryInfo[country]?.code;
-        if (!code) {
-          return;
-        }
         const coaList = getCOAList();
-        const coa = coaList.find(({ countryCode }) => countryCode === code);
-        return coa?.name ?? coaList[0].name;
+        return coaList[0]?.name;
       },
       dependsOn: ['country'],
     },

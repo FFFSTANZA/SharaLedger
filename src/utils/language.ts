@@ -4,26 +4,12 @@ import { fyo } from 'src/initFyo';
 import { systemLanguageRef } from './refs';
 
 // Language: Language Code in books/translations
+// Only Indian languages for India market
 export const languageCodeMap: Record<string, string> = {
-  Arabic: 'ar',
-  Catalan: 'ca-ES',
-  Danish: 'da',
-  Dutch: 'nl',
   English: 'en',
-  French: 'fr',
-  German: 'de',
   Gujarati: 'gu',
   Hindi: 'hi',
-  Indonesian: 'id',
-  Korean: 'ko',
   Nepali: 'np',
-  Persian: 'fa',
-  Portuguese: 'pt',
-  'Simplified Chinese': 'zh-CN',
-  'Traditional Chinese': 'zh-Hant',
-  Spanish: 'es',
-  Swedish: 'sv',
-  Turkish: 'tr',
 };
 
 export async function setLanguageMap(
