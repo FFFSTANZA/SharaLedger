@@ -166,10 +166,10 @@ If you want to contribute code then you can fork this repo, make changes and rai
 
 ## Translation Contributors
 
-| Language | Contributors |
-| -------- | ------------ |
+| Language | Contributors                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------ |
 | Gujarati | [dhruvilxcode](https://github.com/dhruvilxcode), [4silvertooth](https://github.com/4silvertooth) |
-| Hindi | [bnsinghgit](https://github.com/bnsinghgit) |
+| Hindi    | [bnsinghgit](https://github.com/bnsinghgit)                                                      |
 
 ## Learn and connect
 
