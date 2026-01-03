@@ -20,9 +20,7 @@ function getCurrencyList(): { countryCode: string; name: string }[] {
 }
 
 export function getCOAList() {
-  return [
-    { countryCode: 'in', name: 'India - Chart of Accounts' },
-  ];
+  return [{ countryCode: 'in', name: 'India - Chart of Accounts' }];
 }
 
 export class SetupWizard extends Doc {
