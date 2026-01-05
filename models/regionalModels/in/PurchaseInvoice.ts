@@ -11,6 +11,49 @@ import { Money } from 'pesa';
 
 export class PurchaseInvoice extends BasePurchaseInvoice {
   /**
+   * Override afterSubmit so that the party outstanding amount reflects
+   * the net payable (after TDS), while keeping the expense booked at gross.
+   */
+  override async afterSubmit() {
+    const tdsDetails = await this.calculateTDS();
+    const hasTDS = !this.isReturn && tdsDetails.tdsAmount.gt(0);
+
+    const originalMakeAutoPayment = this.makeAutoPayment;
+
+    if (hasTDS) {
+      this.makeAutoPayment = false;
+    }
+
+    await super.afterSubmit();
+
+    if (hasTDS) {
+      const netOutstanding = this.baseGrandTotal!.sub(tdsDetails.tdsAmount);
+
+      await this.fyo.db.update(this.schemaName, {
+        name: this.name as string,
+        outstandingAmount: netOutstanding,
+      });
+
+      const party = (await this.fyo.doc.getDoc(
+        ModelNameEnum.Party,
+        this.party
+      )) as Party;
+
+      await party.updateOutstandingAmount();
+      await this.load();
+
+      if (originalMakeAutoPayment && this.autoPaymentAccount) {
+        const payment = this.getPayment();
+        await payment?.sync();
+        await payment?.submit();
+        await this.load();
+      }
+
+      this.makeAutoPayment = originalMakeAutoPayment;
+    }
+  }
+
+  /**
    * Override getPosting to add TDS entries
    */
   async getPosting() {
@@ -141,7 +184,7 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
 
   /**
    * Get TDS Payable account from Accounting Settings
-   * If not found, will need to be created by user
+   * If not found, will try to find "TDS Payable" account
    */
   async getTDSPayableAccount(): Promise<string | null> {
     // Try to get from settings first
@@ -152,16 +195,10 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       return tdsPayableAccount;
     }
 
-    // Look for an account named "TDS Payable" in liabilities
-    const accounts = await this.fyo.db.getAll('Account', {
-      filters: {
-        accountType: 'Current Liability',
-        name: ['like', '%TDS%'],
-      },
-    });
-
-    if (accounts.length > 0) {
-      return accounts[0].name as string;
+    // Check if "TDS Payable" account exists
+    const accountExists = await this.fyo.db.exists('Account', 'TDS Payable');
+    if (accountExists) {
+      return 'TDS Payable';
     }
 
     // Return null - will need to be configured
