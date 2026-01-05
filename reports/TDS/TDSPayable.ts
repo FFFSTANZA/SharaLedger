@@ -218,6 +218,13 @@ export class TDSPayable extends Report {
         : (tdsSection.get('rateWithoutPan') as number);
 
       const grossAmount = invoice.baseGrandTotal as number;
+
+      // Check threshold
+      const threshold = tdsSection.get('threshold') as number | undefined;
+      if (threshold && grossAmount < threshold) {
+        continue; // Skip if below threshold
+      }
+
       const tdsAmount = (grossAmount * rate) / 100;
       const netPayable = grossAmount - tdsAmount;
 

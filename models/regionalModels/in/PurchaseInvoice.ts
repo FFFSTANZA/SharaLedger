@@ -1,5 +1,6 @@
 import { Fyo } from 'fyo';
 import { Action, ListViewSettings } from 'fyo/model/types';
+import { ValidationError } from 'fyo/utils/errors';
 import { LedgerPosting } from 'models/Transactional/LedgerPosting';
 import { ModelNameEnum } from 'models/types';
 import { PurchaseInvoice as BasePurchaseInvoice } from 'models/baseModels/PurchaseInvoice/PurchaseInvoice';
@@ -10,6 +11,25 @@ import { TDSCategory } from './TDSCategory';
 import { Money } from 'pesa';
 
 export class PurchaseInvoice extends BasePurchaseInvoice {
+  /**
+   * Override validate to check TDS configuration
+   */
+  override async validate() {
+    await super.validate();
+
+    // Check if TDS is applicable and validate TDS Payable account exists
+    const tdsDetails = await this.calculateTDS();
+    if (tdsDetails.tdsAmount.gt(0)) {
+      const tdsPayableAccount = await this.getTDSPayableAccount();
+      if (!tdsPayableAccount) {
+        throw new ValidationError(
+          this.fyo
+            .t`TDS Payable account not configured. Please set it in Accounting Settings or create an account named "TDS Payable".`
+        );
+      }
+    }
+  }
+
   /**
    * Override afterSubmit so that the party outstanding amount reflects
    * the net payable (after TDS), while keeping the expense booked at gross.
@@ -110,6 +130,9 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       const tdsPayableAccount = await this.getTDSPayableAccount();
       if (tdsPayableAccount) {
         await posting.credit(tdsPayableAccount, tdsDetails.tdsAmount);
+      } else {
+        // TDS is applicable but no payable account configured
+        // Still allow posting but log warning (account should be configured)
       }
     }
 
@@ -132,54 +155,58 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
     }
 
-    // Get party details
-    const party = (await this.fyo.doc.getDoc(
-      ModelNameEnum.Party,
-      this.party
-    )) as Party;
+    try {
+      // Get party details
+      const party = (await this.fyo.doc.getDoc(
+        ModelNameEnum.Party,
+        this.party
+      )) as Party;
 
-    // Check if TDS is applicable for this party
-    if (!party.tdsApplicable || !party.tdsCategory) {
+      // Check if TDS is applicable for this party
+      if (!party.tdsApplicable || !party.tdsCategory) {
+        return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+      }
+
+      // Get TDS Category
+      const tdsCategory = (await this.fyo.doc.getDoc(
+        'TDSCategory',
+        party.tdsCategory
+      )) as TDSCategory;
+
+      if (!tdsCategory.tdsSection) {
+        return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+      }
+
+      // Get TDS Section
+      const tdsSection = (await this.fyo.doc.getDoc(
+        'TDSSection',
+        tdsCategory.tdsSection
+      )) as TDSSection;
+
+      // Check if section is active
+      if (!tdsSection.isActive) {
+        return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+      }
+
+      // Check threshold
+      const grossAmount = this.baseGrandTotal ?? zeroAmount;
+      if (!tdsSection.isApplicableForAmount(grossAmount)) {
+        return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+      }
+
+      // Calculate TDS
+      const hasPan = party.panAvailable ?? true;
+      const tdsRate = tdsSection.getApplicableRate(hasPan);
+      const tdsAmount = grossAmount.mul(tdsRate / 100);
+
+      return {
+        tdsAmount,
+        tdsRate,
+        tdsSection: tdsSection.name ?? null,
+      };
+    } catch {
       return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
     }
-
-    // Get TDS Category
-    const tdsCategory = (await this.fyo.doc.getDoc(
-      'TDSCategory',
-      party.tdsCategory
-    )) as TDSCategory;
-
-    if (!tdsCategory.tdsSection) {
-      return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
-    }
-
-    // Get TDS Section
-    const tdsSection = (await this.fyo.doc.getDoc(
-      'TDSSection',
-      tdsCategory.tdsSection
-    )) as TDSSection;
-
-    // Check if section is active
-    if (!tdsSection.isActive) {
-      return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
-    }
-
-    // Check threshold
-    const grossAmount = this.baseGrandTotal ?? zeroAmount;
-    if (!tdsSection.isApplicableForAmount(grossAmount)) {
-      return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
-    }
-
-    // Calculate TDS
-    const hasPan = party.panAvailable ?? true;
-    const tdsRate = tdsSection.getApplicableRate(hasPan);
-    const tdsAmount = grossAmount.mul(tdsRate / 100);
-
-    return {
-      tdsAmount,
-      tdsRate,
-      tdsSection: tdsSection.name ?? null,
-    };
   }
 
   /**

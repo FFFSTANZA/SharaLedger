@@ -202,6 +202,13 @@ export class TDSSummary extends Report {
         : (tdsSection.get('rateWithoutPan') as number);
 
       const grossAmount = invoice.baseGrandTotal as number;
+
+      // Check threshold
+      const threshold = tdsSection.get('threshold') as number | undefined;
+      if (threshold && grossAmount < threshold) {
+        continue;
+      }
+
       const tdsAmount = (grossAmount * rate) / 100;
 
       const partyName = invoice.party as string;
