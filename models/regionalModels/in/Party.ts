@@ -8,6 +8,9 @@ export class Party extends BaseParty {
   role?: PartyRole;
   gstType?: GSTType;
   loyaltyProgram?: string;
+  tdsApplicable?: boolean;
+  tdsCategory?: string;
+  panAvailable?: boolean;
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
@@ -28,5 +31,7 @@ export class Party extends BaseParty {
       return this.role === 'Supplier';
     },
     loyaltyPoints: () => !this.loyaltyProgram || this.role === 'Supplier',
+    tdsCategory: () => !this.tdsApplicable,
+    panAvailable: () => !this.tdsApplicable,
   };
 }

@@ -1,0 +1,34 @@
+{
+  "name": "TDSCategory",
+  "label": "TDS Category",
+  "naming": "manual",
+  "isSingle": false,
+  "isChild": false,
+  "fields": [
+    {
+      "fieldname": "name",
+      "label": "Category Name",
+      "fieldtype": "Data",
+      "required": true,
+      "placeholder": "e.g., Contractor Payment",
+      "section": "Default"
+    },
+    {
+      "fieldname": "tdsSection",
+      "label": "TDS Section",
+      "fieldtype": "Link",
+      "target": "TDSSection",
+      "required": true,
+      "create": true,
+      "section": "Default"
+    },
+    {
+      "fieldname": "notes",
+      "label": "Notes",
+      "fieldtype": "Text",
+      "section": "Default"
+    }
+  ],
+  "keywordFields": ["name", "tdsSection"],
+  "quickEditFields": ["tdsSection", "notes"]
+}

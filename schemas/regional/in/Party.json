@@ -28,6 +28,28 @@
       "label": "GSTIN No.",
       "fieldtype": "Data",
       "section": "Billing"
+    },
+    {
+      "fieldname": "tdsApplicable",
+      "label": "TDS Applicable",
+      "fieldtype": "Check",
+      "default": false,
+      "section": "Billing"
+    },
+    {
+      "fieldname": "tdsCategory",
+      "label": "TDS Category",
+      "fieldtype": "Link",
+      "target": "TDSCategory",
+      "create": true,
+      "section": "Billing"
+    },
+    {
+      "fieldname": "panAvailable",
+      "label": "PAN Available",
+      "fieldtype": "Check",
+      "default": true,
+      "section": "Billing"
     }
   ],
   "quickEditFields": [
@@ -38,7 +60,10 @@
     "currency",
     "role",
     "gstType",
-    "gstin"
+    "gstin",
+    "tdsApplicable",
+    "tdsCategory",
+    "panAvailable"
   ],
   "removeFields": ["taxId"]
 }

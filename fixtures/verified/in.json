@@ -151,6 +151,9 @@
           "TDS": {
             "accountType": "Tax"
           },
+          "TDS Payable": {
+            "accountType": "Tax"
+          },
           "IGST": {
             "accountType": "Tax"
           },
