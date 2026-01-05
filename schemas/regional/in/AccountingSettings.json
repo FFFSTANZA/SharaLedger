@@ -7,6 +7,14 @@
       "fieldtype": "Data",
       "placeholder": "27AAAAA0000A1Z5",
       "section": "Default"
+    },
+    {
+      "fieldname": "tdsPayableAccount",
+      "label": "TDS Payable Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "create": true,
+      "section": "Accounts"
     }
   ],
   "quickEditFields": [
@@ -17,6 +25,7 @@
     "currency",
     "fiscalYearStart",
     "fiscalYearEnd",
-    "gstin"
+    "gstin",
+    "tdsPayableAccount"
   ]
 }

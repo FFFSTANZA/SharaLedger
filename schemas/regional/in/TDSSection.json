@@ -1,0 +1,81 @@
+{
+  "name": "TDSSection",
+  "label": "TDS Section",
+  "naming": "manual",
+  "isSingle": false,
+  "isChild": false,
+  "fields": [
+    {
+      "fieldname": "name",
+      "label": "Section Name",
+      "fieldtype": "Data",
+      "required": true,
+      "placeholder": "e.g., 194C, 194J",
+      "description": "TDS Section code (e.g., 194C for Contractor, 194J for Professional Services)",
+      "section": "Default"
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Text",
+      "placeholder": "Brief description of what this section covers",
+      "section": "Default"
+    },
+    {
+      "fieldname": "rate",
+      "label": "TDS Rate (%)",
+      "fieldtype": "Float",
+      "required": true,
+      "placeholder": "1.0",
+      "description": "Standard TDS rate for this section",
+      "section": "Rates"
+    },
+    {
+      "fieldname": "rateWithoutPan",
+      "label": "Rate without PAN (%)",
+      "fieldtype": "Float",
+      "required": true,
+      "placeholder": "20.0",
+      "description": "Higher TDS rate when PAN is not available",
+      "section": "Rates"
+    },
+    {
+      "fieldname": "threshold",
+      "label": "Threshold Amount",
+      "fieldtype": "Currency",
+      "placeholder": "30000",
+      "description": "TDS is applicable only if transaction exceeds this amount",
+      "section": "Thresholds"
+    },
+    {
+      "fieldname": "cumulativeThreshold",
+      "label": "Cumulative Threshold",
+      "fieldtype": "Currency",
+      "placeholder": "100000",
+      "description": "Annual cumulative threshold for TDS applicability",
+      "section": "Thresholds"
+    },
+    {
+      "fieldname": "effectiveDate",
+      "label": "Effective From",
+      "fieldtype": "Date",
+      "description": "Date from which this rate is effective",
+      "section": "Default"
+    },
+    {
+      "fieldname": "isActive",
+      "label": "Active",
+      "fieldtype": "Check",
+      "default": true,
+      "section": "Default"
+    }
+  ],
+  "keywordFields": ["name", "description"],
+  "quickEditFields": [
+    "description",
+    "rate",
+    "rateWithoutPan",
+    "threshold",
+    "isActive"
+  ]
+}

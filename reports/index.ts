@@ -9,6 +9,8 @@ import { ReceivablesAgeing } from './ReceivablesAgeing';
 import { TrialBalance } from './TrialBalance/TrialBalance';
 import { StockBalance } from './inventory/StockBalance';
 import { StockLedger } from './inventory/StockLedger';
+import { TDSPayable } from './TDS/TDSPayable';
+import { TDSSummary } from './TDS/TDSSummary';
 
 export const reports = {
   GeneralLedger,
@@ -22,4 +24,6 @@ export const reports = {
   GSTR3B,
   StockLedger,
   StockBalance,
+  TDSPayable,
+  TDSSummary,
 } as const;
