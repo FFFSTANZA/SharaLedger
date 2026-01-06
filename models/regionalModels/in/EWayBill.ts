@@ -1,4 +1,5 @@
 import {
+  FiltersMap,
   HiddenMap,
   ListViewSettings,
   ReadOnlyMap,
@@ -34,6 +35,7 @@ export class EWayBill extends Doc {
   statusChangedBy?: string;
   statusChangedAt?: string;
   statusChangeReason?: string;
+  remarks?: string;
 
   validations: ValidationMap = {
     distanceKm: (value) => {
@@ -91,22 +93,18 @@ export class EWayBill extends Doc {
 
   async beforeInsert() {
     await this.populateFromInvoice();
-
-    if (!this.status) {
-      this.status = 'Draft';
-    }
-
     this.setValidUptoFromDistance();
+    this.updateStatus();
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
-    const previousStatus =
-      (this.get('status') as EWayBillStatus | undefined) ?? 'Draft';
+    const previousStatus = this.status;
 
     this.setValidUptoFromDistance();
+    this.updateStatus();
 
-    if (this.status && this.status !== previousStatus) {
+    if (previousStatus !== this.status) {
       this.statusChangedAt = DateTime.local().toISO();
       this.statusChangedBy =
         (this.fyo.singles.AccountingSettings?.fullname as string | undefined) ??
@@ -114,13 +112,41 @@ export class EWayBill extends Doc {
         'System';
     }
 
-    if (this.status === 'Active' && !this.ewayBillNo && this.invoiceValue) {
-      const threshold = this.fyo.pesa(50000);
-      if (this.invoiceValue.gte(threshold)) {
-        console.warn(
-          'Invoice value is ≥ ₹50,000. An E-Way Bill number is typically required.'
-        );
+    this.showEWayBillRequiredWarning();
+  }
+
+  updateStatus() {
+    if (this.cancelled) {
+      this.status = 'Cancelled';
+      return;
+    }
+
+    if (!this.submitted) {
+      this.status = 'Draft';
+      return;
+    }
+
+    if (this.validUpto) {
+      const validUptoDate = DateTime.fromISO(this.validUpto);
+      if (DateTime.local() > validUptoDate) {
+        this.status = 'Expired';
+        return;
       }
+    }
+
+    this.status = 'Active';
+  }
+
+  showEWayBillRequiredWarning() {
+    if (!this.invoiceValue || this.ewayBillNo) {
+      return;
+    }
+
+    const threshold = this.fyo.pesa(50000);
+    if (this.invoiceValue.gte(threshold)) {
+      console.warn(
+        'Invoice value is ≥ ₹50,000. An E-Way Bill number is typically required.'
+      );
     }
   }
 
@@ -163,6 +189,12 @@ export class EWayBill extends Doc {
       }
     }
   }
+
+  static filters: FiltersMap = {
+    salesInvoice: () => ({
+      submitted: true,
+    }),
+  };
 
   static getListViewSettings(): ListViewSettings {
     return {

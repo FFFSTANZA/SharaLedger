@@ -19,7 +19,14 @@ function getCreateEWayBillAction(fyo: Fyo): Action {
     label: t`E-Way Bill`,
     group: t`Create`,
     condition: (doc: Doc) => {
-      if (doc.notInserted || doc.isCancelled) {
+      if (doc.notInserted || doc.isCancelled || !doc.isSubmitted) {
+        return false;
+      }
+
+      const companyGstin = fyo.singles.AccountingSettings?.gstin as
+        | string
+        | undefined;
+      if (!companyGstin) {
         return false;
       }
 

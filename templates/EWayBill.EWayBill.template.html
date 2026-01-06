@@ -1,0 +1,127 @@
+<main class="bg-white h-full px-6" :style="{ 'font-family': print.font }">
+  <!-- Header -->
+  <header class="py-6 flex justify-between items-start border-b">
+    <section class="w-1/2">
+      <p class="text-xl font-semibold" :style="{ color: print.color }">
+        {{ print.companyName }}
+      </p>
+      <p class="text-sm text-gray-700" v-if="print.address">
+        {{ print.links.address.addressDisplay }}
+      </p>
+      <p class="text-sm text-gray-700" v-if="print.gstin">
+        GSTIN: {{ print.gstin }}
+      </p>
+    </section>
+
+    <section class="w-1/2 text-right">
+      <p class="text-2xl font-semibold">{{ t`E-Way Bill` }}</p>
+      <p class="text-sm text-gray-700">{{ doc.name }}</p>
+      <p class="text-sm text-gray-700">{{ doc.status || t`Draft` }}</p>
+    </section>
+  </header>
+
+  <!-- Main Details -->
+  <section class="mt-8 grid grid-cols-2 gap-8 text-sm">
+    <div class="border rounded p-4">
+      <p class="font-semibold text-base mb-3">{{ t`Invoice Reference` }}</p>
+      <p class="flex justify-between">
+        <span class="text-gray-600">{{ t`Invoice No` }}</span>
+        <span>{{ doc.invoiceNo || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Invoice Date` }}</span>
+        <span>{{ doc.invoiceDate || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Invoice Value` }}</span>
+        <span>{{ doc.invoiceValue || '-' }}</span>
+      </p>
+    </div>
+
+    <div class="border rounded p-4">
+      <p class="font-semibold text-base mb-3">{{ t`E-Way Bill Details` }}</p>
+      <p class="flex justify-between">
+        <span class="text-gray-600">{{ t`E-Way Bill No` }}</span>
+        <span>{{ doc.ewayBillNo || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`E-Way Bill Date` }}</span>
+        <span>{{ doc.ewayBillDate || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Valid Upto` }}</span>
+        <span>{{ doc.validUpto || '-' }}</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="mt-8 grid grid-cols-2 gap-8 text-sm">
+    <div class="border rounded p-4">
+      <p class="font-semibold text-base mb-3">{{ t`GST Details` }}</p>
+      <p class="flex justify-between">
+        <span class="text-gray-600">{{ t`Supply Type` }}</span>
+        <span>{{ doc.supplyType || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Sub Type` }}</span>
+        <span>{{ doc.subType || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`From GSTIN` }}</span>
+        <span>{{ doc.fromGstin || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`To GSTIN` }}</span>
+        <span>{{ doc.toGstin || '-' }}</span>
+      </p>
+    </div>
+
+    <div class="border rounded p-4">
+      <p class="font-semibold text-base mb-3">{{ t`Transport Details` }}</p>
+      <p class="flex justify-between">
+        <span class="text-gray-600">{{ t`Transport Mode` }}</span>
+        <span>{{ doc.transportMode || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Vehicle Number` }}</span>
+        <span>{{ doc.vehicleNo || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Transporter Name` }}</span>
+        <span>{{ doc.transporterName || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2">
+        <span class="text-gray-600">{{ t`Distance (KM)` }}</span>
+        <span>{{ doc.distanceKm || '-' }}</span>
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="mt-8 border rounded p-4 text-sm"
+    v-if="doc.statusChangeReason || doc.remarks || doc.statusChangedAt || doc.statusChangedBy"
+  >
+    <p class="font-semibold text-base mb-3">{{ t`Audit Trail` }}</p>
+    <p class="flex justify-between" v-if="doc.statusChangedBy">
+      <span class="text-gray-600">{{ t`Status Changed By` }}</span>
+      <span>{{ doc.statusChangedBy }}</span>
+    </p>
+    <p class="flex justify-between mt-2" v-if="doc.statusChangedAt">
+      <span class="text-gray-600">{{ t`Status Changed At` }}</span>
+      <span>{{ doc.statusChangedAt }}</span>
+    </p>
+    <p class="mt-3" v-if="doc.statusChangeReason">
+      <span class="text-gray-600">{{ t`Reason` }}:</span>
+      {{ doc.statusChangeReason }}
+    </p>
+    <p class="mt-3" v-if="doc.remarks">
+      <span class="text-gray-600">{{ t`Remarks` }}:</span>
+      {{ doc.remarks }}
+    </p>
+  </section>
+
+  <footer class="mt-10 pt-4 border-t text-xs text-gray-600">
+    {{ t`This document is for internal compliance tracking. Official E-Way Bill
+    must be generated from the GST Portal.` }}
+  </footer>
+</main>

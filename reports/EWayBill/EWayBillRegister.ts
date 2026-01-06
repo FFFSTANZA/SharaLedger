@@ -163,12 +163,12 @@ export class EWayBillRegister extends Report {
     const filters: QueryFilter = {};
 
     if (this.fromDate) {
-      filters.ewayBillDate = ['>=', this.fromDate];
+      filters.invoiceDate = ['>=', this.fromDate];
     }
 
     if (this.toDate) {
-      filters.ewayBillDate = filters.ewayBillDate
-        ? [...(filters.ewayBillDate as string[]), '<=', this.toDate]
+      filters.invoiceDate = filters.invoiceDate
+        ? [...(filters.invoiceDate as string[]), '<=', this.toDate]
         : ['<=', this.toDate];
     }
 
@@ -193,7 +193,7 @@ export class EWayBillRegister extends Report {
         'validUpto',
         'status',
       ],
-      orderBy: 'ewayBillDate',
+      orderBy: 'invoiceDate',
       order: 'desc',
     });
 
