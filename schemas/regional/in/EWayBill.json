@@ -12,7 +12,6 @@
       "fieldtype": "Link",
       "target": "SalesInvoice",
       "required": true,
-      "readOnly": true,
       "section": "Reference"
     },
     {
