@@ -1,9 +1,9 @@
 import { Fyo, t } from 'fyo';
+import { Doc } from 'fyo/model/doc';
 import { Action } from 'fyo/model/types';
 import { SalesInvoice as BaseSalesInvoice } from 'models/baseModels/SalesInvoice/SalesInvoice';
 import { getInvoiceActions } from 'models/helpers';
 import { ModelNameEnum } from 'models/types';
-import { Doc } from 'fyo/model/doc';
 
 export class SalesInvoice extends BaseSalesInvoice {
   static getActions(fyo: Fyo): Action[] {

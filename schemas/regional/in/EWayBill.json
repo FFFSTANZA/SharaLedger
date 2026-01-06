@@ -200,6 +200,37 @@
         }
       ],
       "section": "E-Way Bill Details"
+    },
+    {
+      "fieldname": "statusChangeReason",
+      "label": "Status Change Reason",
+      "fieldtype": "Text",
+      "placeholder": "Reason for status change (cancellation/expiry)",
+      "description": "Reason for changing the status of this E-Way Bill",
+      "section": "Audit Trail"
+    },
+    {
+      "fieldname": "statusChangedBy",
+      "label": "Status Changed By",
+      "fieldtype": "Data",
+      "readOnly": true,
+      "description": "User who changed the status",
+      "section": "Audit Trail"
+    },
+    {
+      "fieldname": "statusChangedAt",
+      "label": "Status Changed At",
+      "fieldtype": "Datetime",
+      "readOnly": true,
+      "description": "Timestamp of status change",
+      "section": "Audit Trail"
+    },
+    {
+      "fieldname": "remarks",
+      "label": "Remarks",
+      "fieldtype": "Text",
+      "placeholder": "Additional notes or comments",
+      "section": "Audit Trail"
     }
   ],
   "quickEditFields": [

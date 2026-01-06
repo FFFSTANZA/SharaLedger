@@ -94,6 +94,12 @@ export class EWayBillRegister extends Report {
         width: 1.2,
       },
       {
+        label: t`Status`,
+        fieldtype: 'Data',
+        fieldname: 'status',
+        width: 0.8,
+      },
+      {
         label: t`Invoice No`,
         fieldtype: 'Link',
         fieldname: 'invoiceNo',
@@ -118,15 +124,15 @@ export class EWayBillRegister extends Report {
         width: 1.2,
       },
       {
-        label: t`Vehicle No`,
-        fieldtype: 'Data',
-        fieldname: 'vehicleNo',
-        width: 1,
-      },
-      {
         label: t`Transport Mode`,
         fieldtype: 'Data',
         fieldname: 'transportMode',
+        width: 1,
+      },
+      {
+        label: t`Vehicle No`,
+        fieldtype: 'Data',
+        fieldname: 'vehicleNo',
         width: 1,
       },
       {
@@ -136,22 +142,10 @@ export class EWayBillRegister extends Report {
         width: 0.8,
       },
       {
-        label: t`E-Way Bill Date`,
-        fieldtype: 'Date',
-        fieldname: 'ewayBillDate',
-        width: 1,
-      },
-      {
         label: t`Valid Upto`,
         fieldtype: 'Date',
         fieldname: 'validUpto',
         width: 1,
-      },
-      {
-        label: t`Status`,
-        fieldtype: 'Data',
-        fieldname: 'status',
-        width: 0.8,
       },
     ];
   }
