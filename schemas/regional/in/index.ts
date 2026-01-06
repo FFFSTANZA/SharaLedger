@@ -6,6 +6,7 @@ import Item from './Item.json';
 import Party from './Party.json';
 import TDSSection from './TDSSection.json';
 import TDSCategory from './TDSCategory.json';
+import EWayBill from './EWayBill.json';
 
 export default [
   AccountingSettings,
@@ -15,4 +16,5 @@ export default [
   InvoiceItem,
   TDSSection,
   TDSCategory,
+  EWayBill,
 ] as SchemaStub[];

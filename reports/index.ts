@@ -11,6 +11,7 @@ import { StockBalance } from './inventory/StockBalance';
 import { StockLedger } from './inventory/StockLedger';
 import { TDSPayable } from './TDS/TDSPayable';
 import { TDSSummary } from './TDS/TDSSummary';
+import { EWayBillRegister } from './EWayBill/EWayBillRegister';
 
 export const reports = {
   GeneralLedger,
@@ -26,4 +27,5 @@ export const reports = {
   StockBalance,
   TDSPayable,
   TDSSummary,
+  EWayBillRegister,
 } as const;

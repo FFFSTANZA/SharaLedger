@@ -1,0 +1,218 @@
+{
+  "name": "EWayBill",
+  "label": "E-Way Bill",
+  "naming": "autoincrement",
+  "isSingle": false,
+  "isChild": false,
+  "isSubmittable": true,
+  "fields": [
+    {
+      "fieldname": "salesInvoice",
+      "label": "Sales Invoice",
+      "fieldtype": "Link",
+      "target": "SalesInvoice",
+      "required": true,
+      "readOnly": true,
+      "section": "Reference"
+    },
+    {
+      "fieldname": "invoiceNo",
+      "label": "Invoice No",
+      "fieldtype": "Data",
+      "readOnly": true,
+      "section": "Reference"
+    },
+    {
+      "fieldname": "invoiceDate",
+      "label": "Invoice Date",
+      "fieldtype": "Date",
+      "readOnly": true,
+      "section": "Reference"
+    },
+    {
+      "fieldname": "invoiceValue",
+      "label": "Invoice Value",
+      "fieldtype": "Currency",
+      "readOnly": true,
+      "section": "Reference"
+    },
+    {
+      "fieldname": "supplyType",
+      "label": "Supply Type",
+      "fieldtype": "Select",
+      "required": true,
+      "default": "Outward",
+      "options": [
+        {
+          "value": "Outward",
+          "label": "Outward"
+        },
+        {
+          "value": "Inward",
+          "label": "Inward"
+        }
+      ],
+      "section": "Details"
+    },
+    {
+      "fieldname": "subType",
+      "label": "Transaction Sub Type",
+      "fieldtype": "Select",
+      "required": true,
+      "default": "Supply",
+      "options": [
+        {
+          "value": "Supply",
+          "label": "Supply"
+        },
+        {
+          "value": "Export",
+          "label": "Export"
+        },
+        {
+          "value": "Job Work",
+          "label": "Job Work"
+        },
+        {
+          "value": "SKD-CKD",
+          "label": "SKD/CKD"
+        },
+        {
+          "value": "Recipient Not Known",
+          "label": "Recipient Not Known"
+        },
+        {
+          "value": "Line Sales",
+          "label": "Line Sales"
+        }
+      ],
+      "section": "Details"
+    },
+    {
+      "fieldname": "fromGstin",
+      "label": "From GSTIN",
+      "fieldtype": "Data",
+      "placeholder": "27AAAAA0000A1Z5",
+      "readOnly": true,
+      "section": "GST Details"
+    },
+    {
+      "fieldname": "toGstin",
+      "label": "To GSTIN",
+      "fieldtype": "Data",
+      "placeholder": "27BBBBB1111B1Z5",
+      "readOnly": true,
+      "section": "GST Details"
+    },
+    {
+      "fieldname": "transporterName",
+      "label": "Transporter Name",
+      "fieldtype": "Data",
+      "placeholder": "Enter transporter name",
+      "section": "Transport Details"
+    },
+    {
+      "fieldname": "transportMode",
+      "label": "Transport Mode",
+      "fieldtype": "Select",
+      "required": true,
+      "default": "Road",
+      "options": [
+        {
+          "value": "Road",
+          "label": "Road"
+        },
+        {
+          "value": "Rail",
+          "label": "Rail"
+        },
+        {
+          "value": "Air",
+          "label": "Air"
+        },
+        {
+          "value": "Ship",
+          "label": "Ship"
+        }
+      ],
+      "section": "Transport Details"
+    },
+    {
+      "fieldname": "vehicleNo",
+      "label": "Vehicle Number",
+      "fieldtype": "Data",
+      "placeholder": "e.g., MH12AB1234",
+      "description": "Vehicle registration number",
+      "section": "Transport Details"
+    },
+    {
+      "fieldname": "distanceKm",
+      "label": "Distance (KM)",
+      "fieldtype": "Int",
+      "placeholder": "Distance in kilometers",
+      "description": "Approximate distance from origin to destination",
+      "section": "Transport Details"
+    },
+    {
+      "fieldname": "ewayBillNo",
+      "label": "E-Way Bill Number",
+      "fieldtype": "Data",
+      "placeholder": "Enter 12-digit E-Way Bill number",
+      "description": "E-Way Bill number generated from GST portal",
+      "section": "E-Way Bill Details"
+    },
+    {
+      "fieldname": "ewayBillDate",
+      "label": "E-Way Bill Date",
+      "fieldtype": "Date",
+      "description": "Date when E-Way Bill was generated",
+      "section": "E-Way Bill Details"
+    },
+    {
+      "fieldname": "validUpto",
+      "label": "Valid Upto",
+      "fieldtype": "Date",
+      "description": "E-Way Bill expiry date",
+      "section": "E-Way Bill Details"
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "readOnly": true,
+      "default": "Draft",
+      "options": [
+        {
+          "value": "Draft",
+          "label": "Draft"
+        },
+        {
+          "value": "Active",
+          "label": "Active"
+        },
+        {
+          "value": "Cancelled",
+          "label": "Cancelled"
+        },
+        {
+          "value": "Expired",
+          "label": "Expired"
+        }
+      ],
+      "section": "E-Way Bill Details"
+    }
+  ],
+  "quickEditFields": [
+    "salesInvoice",
+    "supplyType",
+    "subType",
+    "transporterName",
+    "transportMode",
+    "vehicleNo",
+    "distanceKm",
+    "ewayBillNo",
+    "ewayBillDate",
+    "validUpto"
+  ],
+  "keywordFields": ["invoiceNo", "ewayBillNo", "vehicleNo"]
+}

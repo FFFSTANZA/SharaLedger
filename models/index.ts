@@ -130,8 +130,19 @@ export async function getRegionalModels(
   const { Party } = await import('./regionalModels/in/Party');
   const { TDSSection } = await import('./regionalModels/in/TDSSection');
   const { TDSCategory } = await import('./regionalModels/in/TDSCategory');
+  const { EWayBill } = await import('./regionalModels/in/EWayBill');
+  const { SalesInvoice } = await import('./regionalModels/in/SalesInvoice');
   const { PurchaseInvoice } = await import(
     './regionalModels/in/PurchaseInvoice'
   );
-  return { Address, Party, Item, TDSSection, TDSCategory, PurchaseInvoice };
+  return {
+    Address,
+    Party,
+    Item,
+    TDSSection,
+    TDSCategory,
+    EWayBill,
+    SalesInvoice,
+    PurchaseInvoice,
+  };
 }
