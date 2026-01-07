@@ -79,6 +79,8 @@ import IntegrationErrorLog from './app/IntegrationErrorLog.json';
 import ItemGroup from './app/ItemGroup.json';
 import { Schema, SchemaStub } from './types';
 import ItemEnquiry from './app/ItemEnquiry.json';
+import InsightQueryTemplate from './app/InsightQueryTemplate.json';
+import InsightNarrative from './app/InsightNarrative.json';
 
 export const coreSchemas: Schema[] = [
   PatchRun as Schema,
@@ -185,4 +187,7 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   POSShiftAmounts as Schema,
 
   IntegrationErrorLog as Schema,
+
+  InsightQueryTemplate as Schema,
+  InsightNarrative as Schema,
 ];
