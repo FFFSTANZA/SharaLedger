@@ -1,3 +1,5 @@
+import { AppliedParameters } from './parameterTypes';
+
 export interface InsightContext {
   contextType: string;
   contextField: string;
@@ -6,6 +8,7 @@ export interface InsightContext {
   toDate?: string;
   accountName?: string;
   partyName?: string;
+  appliedParameters?: AppliedParameters;
   [key: string]: unknown;
 }
 

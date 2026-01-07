@@ -12,6 +12,7 @@ export class InsightQueryTemplate extends Doc {
   isActive?: boolean;
   trustLevel?: string;
   displayOrder?: number;
+  availableParameters?: string;
 
   static getListViewSettings(): ListViewSettings {
     return {
