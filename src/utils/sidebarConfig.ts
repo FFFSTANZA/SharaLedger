@@ -54,6 +54,17 @@ function getRegionalSidebar(): SidebarRoot[] {
           name: 'gstr3b',
           route: '/report/GSTR3B',
         },
+        {
+          label: t`E-Way Bill Register`,
+          name: 'eway-bill-register',
+          route: '/report/EWayBillRegister',
+        },
+        {
+          label: t`E-Way Bills`,
+          name: 'eway-bills',
+          route: '/list/EWayBill',
+          schemaName: 'EWayBill',
+        },
       ],
     },
   ];

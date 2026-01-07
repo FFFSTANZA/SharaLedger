@@ -75,6 +75,7 @@ export enum ModelNameEnum {
   POSProfile = 'POSProfile',
   POSOpeningShift = 'POSOpeningShift',
   POSClosingShift = 'POSClosingShift',
+  EWayBill = 'EWayBill',
 }
 
 export type ModelName = keyof typeof ModelNameEnum;
