@@ -1,0 +1,137 @@
+{
+  "name": "InsightQueryTemplate",
+  "label": "Insight Query Template",
+  "naming": "manual",
+  "isSingle": false,
+  "isChild": false,
+  "isSubmittable": false,
+  "fields": [
+    {
+      "fieldname": "templateId",
+      "label": "Template ID",
+      "fieldtype": "Data",
+      "required": true,
+      "description": "Unique identifier for this query template"
+    },
+    {
+      "fieldname": "contextType",
+      "label": "Context Type",
+      "fieldtype": "Select",
+      "required": true,
+      "options": [
+        {
+          "value": "Report",
+          "label": "Report"
+        },
+        {
+          "value": "Ledger",
+          "label": "Ledger"
+        },
+        {
+          "value": "Customer",
+          "label": "Customer"
+        },
+        {
+          "value": "Vendor",
+          "label": "Vendor"
+        },
+        {
+          "value": "Item",
+          "label": "Item"
+        },
+        {
+          "value": "Account",
+          "label": "Account"
+        }
+      ],
+      "description": "Type of context where this query can be triggered"
+    },
+    {
+      "fieldname": "contextField",
+      "label": "Context Field",
+      "fieldtype": "Data",
+      "required": true,
+      "description": "Specific field this query applies to (e.g., profit_value, balance_amount)"
+    },
+    {
+      "fieldname": "questionText",
+      "label": "Question Text",
+      "fieldtype": "Text",
+      "required": true,
+      "description": "User-facing question text"
+    },
+    {
+      "fieldname": "queryFunction",
+      "label": "Query Function",
+      "fieldtype": "Data",
+      "required": true,
+      "description": "Name of the analysis function to run"
+    },
+    {
+      "fieldname": "answerTemplate",
+      "label": "Answer Template",
+      "fieldtype": "Text",
+      "required": true,
+      "description": "Narrative template with placeholders for data"
+    },
+    {
+      "fieldname": "requiredDoctypes",
+      "label": "Required Doctypes",
+      "fieldtype": "Text",
+      "description": "Comma-separated list of doctypes needed for this query"
+    },
+    {
+      "fieldname": "isActive",
+      "label": "Is Active",
+      "fieldtype": "Check",
+      "default": 1,
+      "description": "Whether this query template is enabled"
+    },
+    {
+      "fieldname": "trustLevel",
+      "label": "Trust Level",
+      "fieldtype": "Select",
+      "required": true,
+      "default": "1",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 - Safe"
+        },
+        {
+          "value": "2",
+          "label": "2 - Needs Review"
+        },
+        {
+          "value": "3",
+          "label": "3 - Experimental"
+        }
+      ],
+      "description": "Trust level: 1=Safe, 2=Needs review, 3=Experimental"
+    },
+    {
+      "fieldname": "displayOrder",
+      "label": "Display Order",
+      "fieldtype": "Int",
+      "default": 10,
+      "description": "Priority order in dropdown (lower = higher priority)"
+    },
+    {
+      "fieldname": "availableParameters",
+      "label": "Available Parameters",
+      "fieldtype": "Text",
+      "description": "JSON array of allowed follow-up parameters for refining insights"
+    }
+  ],
+  "quickEditFields": [
+    "templateId",
+    "contextType",
+    "contextField",
+    "questionText",
+    "queryFunction",
+    "isActive",
+    "trustLevel",
+    "displayOrder"
+  ],
+  "keywordFields": ["templateId", "questionText", "contextType"]
+}
