@@ -16,14 +16,26 @@ export class InsightNarrative extends Doc {
   sessionId?: string;
 
   static defaults: DefaultMap = {
-    timestamp: () => new Date().toISOString(),
+    user: () => 'Unknown',
   };
 
-  beforeInsert() {
-    this.narrativeId = this.name;
-    this.user = this.fyo.auth?.user ?? 'Unknown';
-    this.timestamp = new Date();
+  /* eslint-disable @typescript-eslint/require-await */
+  async beforeSync() {
+    // Auto-populate narrativeId and timestamp if not set
+    if (!this.narrativeId && this.name) {
+      this.narrativeId = this.name;
+    }
+
+    if (!this.timestamp) {
+      this.timestamp = new Date();
+    }
+
+    // Set user from auth if not already set
+    if (!this.user || this.user === 'Unknown') {
+      this.user = this.fyo.auth?.user ?? 'Unknown';
+    }
   }
+  /* eslint-enable @typescript-eslint/require-await */
 
   static getListViewSettings(): ListViewSettings {
     return {
