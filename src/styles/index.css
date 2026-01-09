@@ -261,3 +261,26 @@ input[type='number']::-webkit-inner-spin-button {
   width: fit-content;
   height: fit-content;
 }
+
+.group {
+  position: relative;
+}
+
+.cursor-context-menu {
+  cursor: context-menu;
+}
+
+.insight-icon {
+  @apply w-3 h-3 ml-1 align-middle opacity-0 transition-opacity duration-200;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group:hover .insight-icon {
+  @apply opacity-60;
+}
+
+.insight-icon:hover {
+  @apply opacity-100;
+}
