@@ -106,6 +106,10 @@ input[type='number']::-webkit-inner-spin-button {
   width: 24rem;
 }
 
+.w-dialog-lg {
+  width: 36rem;
+}
+
 .w-toast {
   width: 24rem;
 }
