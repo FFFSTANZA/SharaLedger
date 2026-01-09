@@ -277,6 +277,26 @@ export default defineComponent({
       // Show context menu
       this.$refs.contextMenu.open(event);
     },
+    handleCellClick(event, cell, row) {
+      // Handle regular cell click, not insight specific
+    },
+    handleInsightIconClick(event, cell, row) {
+      // Build context for the cell
+      const context = buildReportCellContext(cell, row, this.report?.title);
+
+      if (!context) {
+        return;
+      }
+
+      // Store context for the dialog
+      this.insightContext = context;
+      this.insightContextType = context.contextType;
+      this.insightContextField = context.contextField;
+      this.insightContextInfo = buildContextInfo(context);
+
+      // Open insight dialog directly
+      this.openInsightDialog();
+    },
     openInsightDialog() {
       this.showInsightDialog = true;
     },
