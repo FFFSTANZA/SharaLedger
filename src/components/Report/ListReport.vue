@@ -54,8 +54,17 @@
                 isInsightEligible(cell) ? 'cursor-context-menu' : '',
               ]"
               @contextmenu="(e) => onCellRightClick(e, cell, row)"
+              @click="(e) => handleCellClick(e, cell, row)"
             >
               {{ cell.value }}
+              <span
+                v-if="isInsightEligible(cell)"
+                class="insight-icon group-hover:opacity-100"
+                title="Click to ask a question about this value"
+                @click.stop="(e) => handleInsightIconClick(e, cell, row)"
+              >
+                <FeatherIcon name="help-circle" class="w-3 h-3" />
+              </span>
             </div>
           </div>
         </template>
@@ -278,6 +287,11 @@ export default defineComponent({
       this.insightContextField = null;
       this.insightContextInfo = null;
     },
+    hasInsightIcon() {
+      // Show insight icon on hover to improve discoverability
+      return true;
+    },
   },
 });
+</script>
 </script>
