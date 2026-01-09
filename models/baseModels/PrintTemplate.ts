@@ -60,6 +60,7 @@ export class PrintTemplate extends Doc {
         ModelNameEnum.Shipment,
         ModelNameEnum.PurchaseReceipt,
         ModelNameEnum.StockMovement,
+        ModelNameEnum.EWayBill,
       ];
 
       return models.map((value) => ({
