@@ -282,7 +282,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .insight-icon {
-  @apply w-4 h-4 align-middle transition-opacity duration-200 text-gray-600 dark:text-gray-400;
+  @apply w-4 h-4 align-middle transition-opacity duration-200 text-blue-500 dark:text-blue-400;
   position: absolute;
   right: 0.5rem;
   top: 50%;
@@ -290,9 +290,12 @@ input[type='number']::-webkit-inner-spin-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.35;
+  opacity: 0.6;
   z-index: 1;
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0.25rem;
+  padding: 0.125rem;
 }
 
 [dir='rtl'] .insight-icon {
@@ -301,9 +304,10 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .insight-cell:hover .insight-icon {
-  opacity: 0.8;
+  opacity: 1;
+  background: rgba(255, 255, 255, 1);
 }
 
 .insight-icon:hover {
-  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
 }
