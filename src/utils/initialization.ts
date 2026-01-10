@@ -33,6 +33,7 @@ export async function initializeInstance(
   await setInstanceId(fyo);
   await setOpenCount(fyo);
   await setCurrencySymbols(fyo);
+  await seedInsightTemplates(fyo);
 }
 
 async function closeDbIfConnected(fyo: Fyo) {
@@ -184,4 +185,37 @@ function getOpenCountFromFiles(fyo: Fyo) {
   }
 
   return null;
+}
+
+async function seedInsightTemplates(fyo: Fyo) {
+  // Check if InsightQueryTemplate model exists
+  if (!fyo.schemaMap.InsightQueryTemplate) {
+    return;
+  }
+
+  // Check if templates already exist
+  const existingTemplates = await fyo.db.getAll(
+    ModelNameEnum.InsightQueryTemplate
+  );
+  if (existingTemplates.length > 0) {
+    return;
+  }
+
+  // Load templates from fixture file
+  try {
+    const templates = (
+      await import('../../fixtures/insightQueryTemplates.json')
+    ).default;
+
+    // Create templates
+    for (const template of templates) {
+      const doc = fyo.doc.getNewDoc(
+        ModelNameEnum.InsightQueryTemplate,
+        template
+      );
+      await doc.sync();
+    }
+  } catch {
+    // Silently fail if templates cannot be loaded
+  }
 }

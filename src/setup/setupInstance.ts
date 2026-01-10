@@ -48,6 +48,7 @@ export default async function setupInstance(
   await createDefaultEntries(fyo);
   await createDefaultNumberSeries(fyo);
   await updateInventorySettings(fyo);
+  await createInsightQueryTemplates(fyo);
 
   if (fyo.isElectron) {
     const { updatePrintTemplates } = await import('src/utils/printTemplates');
@@ -383,4 +384,24 @@ async function updateInventorySettings(fyo: Fyo) {
   }
 
   await inventorySettings.sync();
+}
+
+async function createInsightQueryTemplates(fyo: Fyo) {
+  // Check if templates already exist
+  const existingTemplates = await fyo.db.getAll(
+    ModelNameEnum.InsightQueryTemplate
+  );
+  if (existingTemplates.length > 0) {
+    return;
+  }
+
+  // Load templates from fixture file
+  const templates = (await import('../../fixtures/insightQueryTemplates.json'))
+    .default;
+
+  // Create templates
+  for (const template of templates) {
+    const doc = fyo.doc.getNewDoc(ModelNameEnum.InsightQueryTemplate, template);
+    await doc.sync();
+  }
 }
