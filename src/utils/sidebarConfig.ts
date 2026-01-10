@@ -186,26 +186,6 @@ function getCompleteSidebar(): SidebarConfig {
       icon: 'dashboard',
     },
     {
-      label: t`Insights`,
-      name: 'insights',
-      icon: 'reports',
-      route: '/list/InsightNarrative',
-      items: [
-        {
-          label: t`Insight Narratives`,
-          name: 'insight-narratives',
-          route: '/list/InsightNarrative',
-          schemaName: 'InsightNarrative',
-        },
-        {
-          label: t`Query Templates`,
-          name: 'query-templates',
-          route: '/list/InsightQueryTemplate',
-          schemaName: 'InsightQueryTemplate',
-        },
-      ],
-    },
-    {
       label: t`Sales`,
       name: 'sales',
       icon: 'sales',
