@@ -51,20 +51,24 @@
               class="text-base px-3 flex-shrink-0 overflow-x-auto whitespace-nowrap no-scrollbar"
               :class="[
                 getCellColorClass(cell),
-                isInsightEligible(cell) ? 'cursor-context-menu' : '',
+                isInsightEligible(cell)
+                  ? 'cursor-context-menu insight-cell'
+                  : '',
               ]"
               @contextmenu="(e) => onCellRightClick(e, cell, row)"
               @click="(e) => handleCellClick(e, cell, row)"
             >
-              {{ cell.value }}
-              <span
+              <span>{{ cell.value }}</span>
+              <button
                 v-if="isInsightEligible(cell)"
-                class="insight-icon group-hover:opacity-100"
-                title="Click to ask a question about this value"
+                type="button"
+                class="insight-icon"
+                :aria-label="t`Ask a question about this value`"
+                :title="t`Ask a question about this value`"
                 @click.stop="(e) => handleInsightIconClick(e, cell, row)"
               >
                 <FeatherIcon name="help-circle" class="w-3 h-3" />
-              </span>
+              </button>
             </div>
           </div>
         </template>
@@ -210,10 +214,11 @@ export default defineComponent({
       }
 
       if (i === this.report.columns.length - 1) {
+        const insightCell = this.isInsightEligible(cell);
         if (this.languageDirection === 'rtl') {
-          styles['padding-left'] = '0px';
+          styles['padding-left'] = insightCell ? '1.75rem' : '0px';
         } else {
-          styles['padding-right'] = '0px';
+          styles['padding-right'] = insightCell ? '1.75rem' : '0px';
         }
       }
 
