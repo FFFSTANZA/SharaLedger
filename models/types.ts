@@ -75,6 +75,11 @@ export enum ModelNameEnum {
   POSProfile = 'POSProfile',
   POSOpeningShift = 'POSOpeningShift',
   POSClosingShift = 'POSClosingShift',
+
+  BankTransaction = 'BankTransaction',
+  BankImportBatch = 'BankImportBatch',
+  BankImportProfile = 'BankImportProfile',
+
   EWayBill = 'EWayBill',
 }
 

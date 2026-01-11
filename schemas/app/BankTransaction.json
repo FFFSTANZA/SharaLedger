@@ -1,0 +1,96 @@
+{
+  "name": "BankTransaction",
+  "label": "Bank Transaction",
+  "naming": "random",
+  "fields": [
+    {
+      "fieldname": "date",
+      "label": "Date",
+      "fieldtype": "Date",
+      "required": true,
+      "filter": true
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Text",
+      "filter": true
+    },
+    {
+      "fieldname": "debit",
+      "label": "Debit",
+      "fieldtype": "Currency",
+      "filter": true
+    },
+    {
+      "fieldname": "credit",
+      "label": "Credit",
+      "fieldtype": "Currency",
+      "filter": true
+    },
+    {
+      "fieldname": "balance",
+      "label": "Balance",
+      "fieldtype": "Currency"
+    },
+    {
+      "fieldname": "bankReference",
+      "label": "Bank Reference",
+      "fieldtype": "Data",
+      "filter": true
+    },
+    {
+      "fieldname": "modeOfPayment",
+      "label": "Mode of Payment",
+      "fieldtype": "Data",
+      "readOnly": true
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "create": true,
+      "filter": true
+    },
+    {
+      "fieldname": "importBatch",
+      "label": "Import Batch",
+      "fieldtype": "Link",
+      "target": "BankImportBatch",
+      "create": true,
+      "readOnly": true,
+      "filter": true
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "options": [
+        {
+          "value": "Unmatched",
+          "label": "Unmatched"
+        },
+        {
+          "value": "Matched",
+          "label": "Matched"
+        },
+        {
+          "value": "Posted",
+          "label": "Posted"
+        }
+      ],
+      "default": "Unmatched",
+      "filter": true
+    },
+    {
+      "fieldname": "dedupeKey",
+      "label": "Dedupe Key",
+      "fieldtype": "Data",
+      "hidden": true,
+      "readOnly": true
+    }
+  ],
+  "keywordFields": ["description", "bankReference"],
+  "titleField": "description"
+}

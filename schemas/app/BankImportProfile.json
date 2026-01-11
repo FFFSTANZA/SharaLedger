@@ -1,0 +1,78 @@
+{
+  "name": "BankImportProfile",
+  "label": "Bank Import Profile",
+  "naming": "random",
+  "fields": [
+    {
+      "fieldname": "bankName",
+      "label": "Bank Name",
+      "fieldtype": "Data",
+      "filter": true
+    },
+    {
+      "fieldname": "accountType",
+      "label": "Account Type",
+      "fieldtype": "Select",
+      "options": [
+        {
+          "value": "Savings",
+          "label": "Savings"
+        },
+        {
+          "value": "Current",
+          "label": "Current"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "default": "Other",
+      "filter": true
+    },
+    {
+      "fieldname": "dateFormat",
+      "label": "Date Format",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "debitCreditLogic",
+      "label": "Debit/Credit Logic",
+      "fieldtype": "Select",
+      "options": [
+        {
+          "value": "SeparateColumns",
+          "label": "Separate Columns"
+        },
+        {
+          "value": "SignedAmount",
+          "label": "Signed Amount"
+        },
+        {
+          "value": "IndicatorColumn",
+          "label": "Indicator Column"
+        }
+      ],
+      "default": "SeparateColumns"
+    },
+    {
+      "fieldname": "ignoreHeaderRowsCount",
+      "label": "Ignore Header Rows Count",
+      "fieldtype": "Int",
+      "default": 0
+    },
+    {
+      "fieldname": "columnMapping",
+      "label": "Column Mapping",
+      "fieldtype": "Text"
+    },
+    {
+      "fieldname": "headerSignature",
+      "label": "Header Signature",
+      "fieldtype": "Text",
+      "hidden": true
+    }
+  ],
+  "keywordFields": ["bankName"],
+  "titleField": "bankName"
+}

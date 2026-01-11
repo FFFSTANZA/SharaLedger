@@ -67,6 +67,24 @@
           @change="setImportType"
         />
 
+        <Link
+          v-if="isBankTransactionImport"
+          :df="{
+            fieldname: 'bankAccount',
+            label: t`Bank Account`,
+            fieldtype: 'Link',
+            target: 'Account',
+            create: true,
+            filters: { accountType: 'Bank' },
+          }"
+          class="w-60"
+          size="small"
+          :border="true"
+          :value="bankAccount"
+          :read-only="isMakingEntries"
+          @change="(value: string) => (bankAccount = value)"
+        />
+
         <p v-if="errorMessage.length > 0" class="text-base ms-2 text-red-500">
           {{ errorMessage }}
         </p>
@@ -382,11 +400,14 @@ import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import Check from 'src/components/Controls/Check.vue';
 import Data from 'src/components/Controls/Data.vue';
 import FormControl from 'src/components/Controls/FormControl.vue';
+import Link from 'src/components/Controls/Link.vue';
 import Select from 'src/components/Controls/Select.vue';
 import DropdownWithActions from 'src/components/DropdownWithActions.vue';
 import FormHeader from 'src/components/FormHeader.vue';
 import Modal from 'src/components/Modal.vue';
 import PageHeader from 'src/components/PageHeader.vue';
+import { BankStatementImporter } from 'src/banking/BankStatementImporter';
+import { parseStatementFile } from 'src/banking/statementParser';
 import { Importer, TemplateField, getColumnLabel } from 'src/importer';
 import { fyo } from 'src/initFyo';
 import { showDialog } from 'src/utils/interactive';
@@ -402,9 +423,15 @@ type ImportWizardData = {
   success: string[];
   successOldName: string[];
   failed: { name: string; error: Error }[];
-  file: null | { name: string; filePath: string; text: string };
+  file: null | {
+    name: string;
+    filePath: string;
+    text?: string;
+    data?: Uint8Array;
+  };
   nullOrImporter: null | Importer;
   importType: string;
+  bankAccount: string;
   isMakingEntries: boolean;
   percentLoading: number;
   messageLoading: string;
@@ -422,6 +449,7 @@ export default defineComponent({
     Modal,
     FormHeader,
     Check,
+    Link,
     Select,
   },
   data() {
@@ -434,6 +462,7 @@ export default defineComponent({
       file: null,
       nullOrImporter: null,
       importType: '',
+      bankAccount: '',
       isMakingEntries: false,
       percentLoading: 0,
       messageLoading: '',
@@ -510,6 +539,9 @@ export default defineComponent({
     canSelectFile(): boolean {
       return !this.file;
     },
+    isBankTransactionImport(): boolean {
+      return this.importType === ModelNameEnum.BankTransaction;
+    },
     columnCount(): number {
       if (!this.hasImporter) {
         return 0;
@@ -577,6 +609,7 @@ export default defineComponent({
         ModelNameEnum.Account,
         ModelNameEnum.Address,
         ModelNameEnum.NumberSeries,
+        ModelNameEnum.BankTransaction,
       ];
 
       const hasInventory = fyo.doc.singles.AccountingSettings?.enableInventory;
@@ -782,6 +815,7 @@ export default defineComponent({
       this.failed = [];
       this.nullOrImporter = null;
       this.importType = '';
+      this.bankAccount = '';
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
@@ -841,6 +875,11 @@ export default defineComponent({
         return;
       }
 
+      if (this.isBankTransactionImport) {
+        await this.importBankTransactions();
+        return;
+      }
+
       this.isMakingEntries = true;
       this.importer.populateDocs();
 
@@ -870,6 +909,117 @@ export default defineComponent({
       this.isMakingEntries = false;
       this.complete = true;
     },
+
+    async importBankTransactions(): Promise<void> {
+      if (!this.bankAccount) {
+        await showDialog({
+          title: this.t`Cannot Import`,
+          type: 'error',
+          detail: this.t`Please select a Bank Account.`,
+        });
+        return;
+      }
+
+      const fileName = this.file?.name ?? '';
+      const importer = this.importer as BankStatementImporter;
+
+      this.isMakingEntries = true;
+      let imported = 0;
+      let duplicates = 0;
+      let errors = 0;
+
+      const batch = this.fyo.doc.getNewDoc(ModelNameEnum.BankImportBatch, {
+        importedAt: new Date().toISOString(),
+        fileName,
+        bankAccount: this.bankAccount,
+        transactionsImported: 0,
+        duplicatesSkipped: 0,
+        errors: 0,
+      });
+
+      try {
+        await batch.sync();
+
+        importer.populateDocs();
+        for (const doc of importer.docs) {
+          const txn = doc as unknown as {
+            bankAccount?: string;
+            importBatch?: string;
+            status?: string;
+            dedupeKey?: string;
+            normalizeFields?: () => void;
+          };
+
+          txn.bankAccount = this.bankAccount;
+          txn.importBatch = batch.name;
+          txn.status = 'Unmatched';
+
+          txn.normalizeFields?.();
+        }
+
+        const keys = importer.docs
+          .map((d) => (d as { dedupeKey?: string }).dedupeKey)
+          .filter((k): k is string => typeof k === 'string' && k.length > 0);
+
+        const uniqueKeys = [...new Set(keys)];
+        const existing = uniqueKeys.length
+          ? await this.fyo.db.getAll(ModelNameEnum.BankTransaction, {
+              fields: ['dedupeKey'],
+              filters: { dedupeKey: ['in', uniqueKeys] },
+            })
+          : [];
+
+        const existingKeys = new Set(
+          (existing as { dedupeKey?: string }[])
+            .map((d) => d.dedupeKey)
+            .filter((k): k is string => typeof k === 'string' && k.length > 0)
+        );
+
+        const seenKeys = new Set<string>();
+
+        let doneCount = 0;
+        for (const doc of importer.docs) {
+          this.setLoadingStatus(doneCount, importer.docs.length);
+          doneCount += 1;
+
+          const key = (doc as { dedupeKey?: string }).dedupeKey;
+          if (key && (existingKeys.has(key) || seenKeys.has(key))) {
+            duplicates += 1;
+            continue;
+          }
+
+          if (key) {
+            seenKeys.add(key);
+          }
+
+          const oldName = doc.name ?? '';
+          try {
+            await doc.sync();
+            imported += 1;
+            this.success.push(doc.name!);
+            this.successOldName.push(oldName);
+          } catch (error) {
+            errors += 1;
+            if (error instanceof Error) {
+              this.failed.push({ name: doc.name!, error });
+            }
+          }
+        }
+
+        await batch.setAndSync({
+          transactionsImported: imported,
+          duplicatesSkipped: duplicates,
+          errors,
+        });
+
+        await importer.saveProfileIfNeeded();
+
+        this.fyo.telemetry.log(Verb.Imported, this.importer.schemaName);
+        this.complete = true;
+      } finally {
+        this.isMakingEntries = false;
+      }
+    },
     async askShouldSubmit(): Promise<boolean> {
       if (!this.fyo.schemaMap[this.importType]?.isSubmittable) {
         return false;
@@ -879,7 +1029,7 @@ export default defineComponent({
       await showDialog({
         title: this.t`Submit entries?`,
         type: 'info',
-        details: this.t`Should entries be submitted after syncing?`,
+        detail: this.t`Should entries be submitted after syncing?`,
         buttons: [
           {
             label: this.t`Yes`,
@@ -907,9 +1057,13 @@ export default defineComponent({
         (n) => n === nameFieldKey
       );
 
+      if (nameIndex < 0) {
+        return;
+      }
+
       const failedEntriesValueMatrix = this.importer.valueMatrix.filter(
         (row) => {
-          const value = row[nameIndex].value;
+          const value = row[nameIndex]?.value;
           if (typeof value !== 'string') {
             return false;
           }
@@ -928,7 +1082,12 @@ export default defineComponent({
       }
 
       this.importType = importType;
-      this.nullOrImporter = new Importer(importType, fyo);
+
+      if (importType === ModelNameEnum.BankTransaction) {
+        this.nullOrImporter = new BankStatementImporter(fyo);
+      } else {
+        this.nullOrImporter = new Importer(importType, fyo);
+      }
     },
     setLoadingStatus(entriesMade: number, totalEntries: number): void {
       this.percentLoading = entriesMade / totalEntries;
@@ -937,6 +1096,52 @@ export default defineComponent({
         : '';
     },
     async selectFile(): Promise<void> {
+      if (!this.hasImporter) {
+        return;
+      }
+
+      if (this.isBankTransactionImport) {
+        const { success, canceled, filePath, data, name } = await ipc.selectFile({
+          title: this.t`Select File`,
+          filters: [
+            { name: 'Statement', extensions: ['csv', 'xlsx', 'xls'] },
+          ],
+        });
+
+        if (canceled || !success || !filePath || !data) {
+          return;
+        }
+
+        const parsed = parseStatementFile(name, data);
+        if (!parsed.rows.length) {
+          await showDialog({
+            title: this.t`Cannot read file`,
+            detail: this.t`Bad import data, could not read file.`,
+            type: 'error',
+          });
+          return;
+        }
+
+        const importer = this.importer as BankStatementImporter;
+        await importer.selectStatement(parsed.rows, name);
+
+        if (importer.mappingConfidence < 0.7) {
+          await showDialog({
+            title: this.t`Confirm columns`,
+            type: 'info',
+            detail: this.t`We tried to detect Date/Description/Debit/Credit columns automatically. Please verify the assignments before importing.`,
+          });
+        }
+
+        this.file = {
+          name,
+          filePath,
+          data,
+        };
+
+        return;
+      }
+
       const { text, name, filePath } = await selectTextFile([
         { name: 'CSV', extensions: ['csv'] },
       ]);

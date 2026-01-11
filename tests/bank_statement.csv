@@ -1,0 +1,4 @@
+Txn Date,Narration,Withdrawal Amt.,Deposit Amt.,Balance,Ref No
+01/01/2024,UPI/1234/Amazon,500.00,,1000.00,RRN123
+02/01/2024,NEFT/Salary,,2000.00,3000.00,UTR456
+,,,,,
