@@ -387,6 +387,8 @@ import DropdownWithActions from 'src/components/DropdownWithActions.vue';
 import FormHeader from 'src/components/FormHeader.vue';
 import Modal from 'src/components/Modal.vue';
 import PageHeader from 'src/components/PageHeader.vue';
+import { BankStatementImporter } from 'src/banking/BankStatementImporter';
+import { parseStatementFile } from 'src/banking/statementParser';
 import { Importer, TemplateField, getColumnLabel } from 'src/importer';
 import { fyo } from 'src/initFyo';
 import { showDialog } from 'src/utils/interactive';
@@ -577,6 +579,7 @@ export default defineComponent({
         ModelNameEnum.Account,
         ModelNameEnum.Address,
         ModelNameEnum.NumberSeries,
+        ModelNameEnum.BankTransaction,
       ];
 
       const hasInventory = fyo.doc.singles.AccountingSettings?.enableInventory;

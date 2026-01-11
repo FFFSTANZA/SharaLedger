@@ -77,6 +77,9 @@ import POSClosingShift from './app/inventory/Point of Sale/POSClosingShift.json'
 import POSShiftAmounts from './app/inventory/Point of Sale/POSShiftAmounts.json';
 import IntegrationErrorLog from './app/IntegrationErrorLog.json';
 import ItemGroup from './app/ItemGroup.json';
+import BankImportBatch from './app/BankImportBatch.json';
+import BankImportProfile from './app/BankImportProfile.json';
+import BankTransaction from './app/BankTransaction.json';
 import { Schema, SchemaStub } from './types';
 import ItemEnquiry from './app/ItemEnquiry.json';
 
@@ -125,6 +128,10 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   Payment as Schema,
   PaymentMethod as Schema,
   PaymentFor as Schema,
+
+  BankTransaction as Schema,
+  BankImportBatch as Schema,
+  BankImportProfile as Schema,
 
   JournalEntry as Schema,
   JournalEntryAccount as Schema,

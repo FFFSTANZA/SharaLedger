@@ -1,0 +1,48 @@
+{
+  "name": "BankImportBatch",
+  "label": "Bank Import Batch",
+  "fields": [
+    {
+      "fieldname": "importedAt",
+      "label": "Imported At",
+      "fieldtype": "Datetime",
+      "readOnly": true,
+      "required": true
+    },
+    {
+      "fieldname": "fileName",
+      "label": "File Name",
+      "fieldtype": "Data",
+      "readOnly": true,
+      "filter": true
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "create": true,
+      "filter": true
+    },
+    {
+      "fieldname": "transactionsImported",
+      "label": "Transactions Imported",
+      "fieldtype": "Int",
+      "readOnly": true
+    },
+    {
+      "fieldname": "duplicatesSkipped",
+      "label": "Duplicates Skipped",
+      "fieldtype": "Int",
+      "readOnly": true
+    },
+    {
+      "fieldname": "errors",
+      "label": "Errors",
+      "fieldtype": "Int",
+      "readOnly": true
+    }
+  ],
+  "keywordFields": ["fileName"],
+  "titleField": "fileName"
+}
