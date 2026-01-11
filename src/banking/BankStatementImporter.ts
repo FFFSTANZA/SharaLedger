@@ -25,25 +25,44 @@ export class BankStatementImporter extends Importer {
   mappingConfidence = 0;
   headerRowIndex = 0;
   headerSignature = '';
+  headerRow: string[] = [];
+  fileName = '';
+  shouldSaveProfile = false;
   dateFormat?: string;
   matchedProfileName?: string;
 
   constructor(fyo: Fyo) {
     super(ModelNameEnum.BankTransaction, fyo);
+
+    const nameKey = `${this.schemaName}.name`;
+    const nameField = this.templateFieldsMap.get(nameKey);
+    if (nameField) {
+      nameField.required = false;
+    }
   }
 
   async selectStatement(rows: string[][], fileName: string) {
     this.valueMatrix = [];
     this.docs = [];
 
+    this.fileName = fileName;
+
     const headerRowIndex = detectHeaderRowIndex(rows);
     const headerRow = rows[headerRowIndex] ?? [];
 
     this.headerRowIndex = headerRowIndex;
+    this.headerRow = headerRow;
     this.headerSignature = getHeaderSignature(headerRow);
 
     const profiles = (await this.fyo.db.getAll(ModelNameEnum.BankImportProfile, {
-      fields: ['name', 'bankName', 'dateFormat', 'ignoreHeaderRowsCount', 'columnMapping', 'headerSignature'],
+      fields: [
+        'name',
+        'bankName',
+        'dateFormat',
+        'ignoreHeaderRowsCount',
+        'columnMapping',
+        'headerSignature',
+      ],
     })) as BankImportProfileRow[];
 
     const profile = findBestProfileMatch(
@@ -71,15 +90,15 @@ export class BankStatementImporter extends Importer {
     this.applyFieldIndexMap(fieldIndexMap, headerRow.length);
 
     const dataRows = rows.slice(headerRowIndex + 1);
+    if (!profile) {
+      this.dateFormat ??= inferDateFormatFromRows(dataRows);
+    }
+
     this.assignValueMatrixFromParsed(
       dataRows.filter((r) => r.some((v) => String(v ?? '').trim() !== ''))
     );
 
-    if (!profile) {
-      const mapped = getProfileMappingFromHeaderRow(headerRow, fieldIndexMap);
-      this.dateFormat ??= inferDateFormatFromRows(dataRows);
-      await this.saveOrUpdateProfile(fileName, mapped);
-    }
+    this.shouldSaveProfile = !profile;
   }
 
   applyFieldIndexMap(
@@ -98,7 +117,8 @@ export class BankStatementImporter extends Importer {
       bankReference: `${schemaName}.bankReference`,
     };
 
-    for (const field of Object.keys(templateKeyByField) as BankStatementField[]) {
+    const fields = Object.keys(templateKeyByField) as BankStatementField[];
+    for (const field of fields) {
       const index = fieldIndexMap[field];
       if (index == null || index < 0 || index >= columnCount) {
         continue;
@@ -145,6 +165,75 @@ export class BankStatementImporter extends Importer {
     }
 
     return super.getValueMatrixItem(index, rawValue);
+  }
+
+  override populateDocs() {
+    this.docs = [];
+
+    for (const row of this.valueMatrix) {
+      const data: Record<string, unknown> = {};
+
+      for (let i = 0; i < row.length; i++) {
+        const key = this.assignedTemplateFields[i];
+        if (!key) {
+          continue;
+        }
+
+        const tf = this.templateFieldsMap.get(key);
+        if (!tf) {
+          continue;
+        }
+
+        const value = row[i]?.value;
+        if (value == null) {
+          continue;
+        }
+
+        data[tf.fieldname] = value;
+      }
+
+      const doc = this.fyo.doc.getNewDoc(this.schemaName, data, false);
+      this.docs.push(doc);
+    }
+  }
+
+  getProfileMappingFromAssignments(): Partial<
+    Record<BankStatementField, string>
+  > {
+    const mapping: Partial<Record<BankStatementField, string>> = {};
+
+    const schemaName = this.schemaName;
+    const templateKeyByField: Record<BankStatementField, string> = {
+      date: `${schemaName}.date`,
+      description: `${schemaName}.description`,
+      debit: `${schemaName}.debit`,
+      credit: `${schemaName}.credit`,
+      balance: `${schemaName}.balance`,
+      bankReference: `${schemaName}.bankReference`,
+    };
+
+    const fields = Object.keys(templateKeyByField) as BankStatementField[];
+    for (const field of fields) {
+      const key = templateKeyByField[field];
+      const idx = this.assignedTemplateFields.findIndex((k) => k === key);
+      if (idx < 0) {
+        continue;
+      }
+
+      mapping[field] = normalizeHeader(this.headerRow[idx] ?? '');
+    }
+
+    return mapping;
+  }
+
+  async saveProfileIfNeeded(): Promise<void> {
+    if (!this.shouldSaveProfile) {
+      return;
+    }
+
+    const mapping = this.getProfileMappingFromAssignments();
+    await this.saveOrUpdateProfile(this.fileName, mapping);
+    this.shouldSaveProfile = false;
   }
 
   async saveOrUpdateProfile(
@@ -279,23 +368,6 @@ function inferDateFormatFromRows(rows: string[][]): string {
   return '';
 }
 
-function getProfileMappingFromHeaderRow(
-  headerRow: string[],
-  fieldIndexMap: Partial<Record<BankStatementField, number>>
-): Partial<Record<BankStatementField, string>> {
-  const mapping: Partial<Record<BankStatementField, string>> = {};
-
-  for (const key of Object.keys(fieldIndexMap) as BankStatementField[]) {
-    const idx = fieldIndexMap[key];
-    if (idx == null) {
-      continue;
-    }
-
-    mapping[key] = normalizeHeader(headerRow[idx] ?? '');
-  }
-
-  return mapping;
-}
 
 function findBestProfileMatch(
   profiles: BankImportProfileRow[],
@@ -335,7 +407,9 @@ function findBestProfileMatch(
     return best;
   }
 
-  const headerHasDates = headerRow.some((h) => normalizeHeader(h).includes('date'));
+  const headerHasDates = headerRow.some((h) =>
+    normalizeHeader(h).includes('date')
+  );
   if (headerHasDates) {
     return best;
   }

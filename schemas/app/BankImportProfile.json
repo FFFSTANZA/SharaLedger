@@ -1,6 +1,7 @@
 {
   "name": "BankImportProfile",
   "label": "Bank Import Profile",
+  "naming": "random",
   "fields": [
     {
       "fieldname": "bankName",

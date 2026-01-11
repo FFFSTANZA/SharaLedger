@@ -68,7 +68,8 @@ export class BankTransaction extends Doc {
   }
 
   getDedupeKeyValue(): string {
-    const dateISO = this.date instanceof Date ? this.date.toISOString() : '';
+    const dateISO =
+      this.date instanceof Date ? this.date.toISOString().slice(0, 10) : '';
     const debit = this.debit ?? this.fyo.pesa(0);
     const credit = this.credit ?? this.fyo.pesa(0);
 

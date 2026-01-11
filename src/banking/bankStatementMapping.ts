@@ -8,7 +8,13 @@ export type BankStatementField =
 
 const fieldKeywords: Record<BankStatementField, string[]> = {
   date: ['date', 'txn date', 'transaction date', 'value date', 'posting date'],
-  description: ['narration', 'description', 'remarks', 'particulars', 'details'],
+  description: [
+    'narration',
+    'description',
+    'remarks',
+    'particulars',
+    'details',
+  ],
   debit: ['debit', 'dr amount', 'withdrawal', 'withdraw', 'dr', 'paid out'],
   credit: ['credit', 'cr amount', 'deposit', 'cr', 'paid in', 'receipt'],
   balance: ['balance', 'running balance', 'closing balance'],

@@ -1,6 +1,7 @@
 {
   "name": "BankImportBatch",
   "label": "Bank Import Batch",
+  "naming": "random",
   "fields": [
     {
       "fieldname": "importedAt",

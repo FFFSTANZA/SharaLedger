@@ -1,6 +1,7 @@
 {
   "name": "BankTransaction",
   "label": "Bank Transaction",
+  "naming": "random",
   "fields": [
     {
       "fieldname": "date",
