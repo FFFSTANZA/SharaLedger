@@ -55,8 +55,6 @@ import { POSOpeningShift } from './inventory/Point of Sale/POSOpeningShift';
 import { POSClosingShift } from './inventory/Point of Sale/POSClosingShift';
 import { IntegrationErrorLog } from './baseModels/IntegrationErrorLog/IntegrationErrorLog';
 import { ItemEnquiry } from './baseModels/ItemEnquiry/ItemEnquiry';
-import { InsightQueryTemplate } from './baseModels/InsightQueryTemplate/InsightQueryTemplate';
-import { InsightNarrative } from './baseModels/InsightNarrative/InsightNarrative';
 
 export const models = {
   Account,
@@ -118,9 +116,6 @@ export const models = {
   POSClosingShift,
   // Error Log
   IntegrationErrorLog,
-  // Insights
-  InsightQueryTemplate,
-  InsightNarrative,
 } as ModelMap;
 
 export async function getRegionalModels(
