@@ -324,32 +324,6 @@ function getCompleteSidebar(): SidebarConfig {
         },
       ] as SidebarItem[],
     },
-    {
-      label: t`Banking`,
-      name: 'banking',
-      icon: 'common-entries',
-      route: '/list/BankTransaction',
-      items: [
-        {
-          label: t`Bank Transactions`,
-          name: 'bank-transactions',
-          route: '/list/BankTransaction',
-          schemaName: 'BankTransaction',
-        },
-        {
-          label: t`Import Batches`,
-          name: 'bank-import-batches',
-          route: '/list/BankImportBatch',
-          schemaName: 'BankImportBatch',
-        },
-        {
-          label: t`Import Profiles`,
-          name: 'bank-import-profiles',
-          route: '/list/BankImportProfile',
-          schemaName: 'BankImportProfile',
-        },
-      ] as SidebarItem[],
-    },
     getReportSidebar(),
     getInventorySidebar(),
     getPOSSidebar(),
