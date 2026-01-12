@@ -150,7 +150,9 @@ export default defineComponent({
     },
     selectOption(option: SelectOption) {
       this.triggerChange(option.value);
-      this.dropdownVisible = false;
+      if (this.closeDropDown) {
+        this.dropdownVisible = false;
+      }
     },
   },
 });
