@@ -50,39 +50,24 @@
       <div
         class="h-row-largest flex flex-row justify-start items-center w-full gap-2 border-b dark:border-gray-800 p-4"
       >
-        <AutoComplete
-          :df="{
-            fieldname: 'importType',
-            label: t`Import Type`,
-            fieldtype: 'AutoComplete',
-            options: importableSchemaNames.map((value) => ({
-              value,
-              label: fyo.schemaMap[value]?.label ?? value,
-            })),
-          }"
+        <Select
+          :df="importTypeDf"
           class="min-w-52"
           :border="true"
           :value="importType"
           size="small"
-          @change="setImportType"
+          @change="(value: string | null) => setImportType(value ?? '')"
         />
 
-        <Link
+        <Select
           v-if="isBankTransactionImport"
-          :df="{
-            fieldname: 'bankAccount',
-            label: t`Bank Account`,
-            fieldtype: 'Link',
-            target: 'Account',
-            create: true,
-            filters: { accountType: 'Bank' },
-          }"
+          :df="bankAccountDf"
           class="min-w-64"
           size="small"
           :border="true"
           :value="bankAccount"
           :read-only="isMakingEntries"
-          @change="(value: string) => (bankAccount = value)"
+          @change="(value: string | null) => (bankAccount = value ?? '')"
         />
 
         <p v-if="errorMessage.length > 0" class="text-base ms-2 text-red-500">
@@ -396,11 +381,9 @@ import { ValidationError } from 'fyo/utils/errors';
 import { ModelNameEnum } from 'models/types';
 import { OptionField, RawValue, SelectOption } from 'schemas/types';
 import Button from 'src/components/Button.vue';
-import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import Check from 'src/components/Controls/Check.vue';
 import Data from 'src/components/Controls/Data.vue';
 import FormControl from 'src/components/Controls/FormControl.vue';
-import Link from 'src/components/Controls/Link.vue';
 import Select from 'src/components/Controls/Select.vue';
 import DropdownWithActions from 'src/components/DropdownWithActions.vue';
 import FormHeader from 'src/components/FormHeader.vue';
@@ -432,6 +415,7 @@ type ImportWizardData = {
   nullOrImporter: null | Importer;
   importType: string;
   bankAccount: string;
+  bankAccountOptions: SelectOption[];
   isMakingEntries: boolean;
   percentLoading: number;
   messageLoading: string;
@@ -444,12 +428,10 @@ export default defineComponent({
     Button,
     DropdownWithActions,
     Loading,
-    AutoComplete,
     Data,
     Modal,
     FormHeader,
     Check,
-    Link,
     Select,
   },
   data() {
@@ -463,12 +445,42 @@ export default defineComponent({
       nullOrImporter: null,
       importType: '',
       bankAccount: '',
+      bankAccountOptions: [],
       isMakingEntries: false,
       percentLoading: 0,
       messageLoading: '',
     } as ImportWizardData;
   },
   computed: {
+    importTypeDf(): OptionField {
+      const options: SelectOption[] = this.importableSchemaNames.map((value) => ({
+        value,
+        label: fyo.schemaMap[value]?.label ?? value,
+      }));
+
+      options.unshift({ value: '', label: this.t`Select` });
+
+      return {
+        fieldname: 'importType',
+        label: this.t`Import Type`,
+        fieldtype: 'Select',
+        options,
+      } as OptionField;
+    },
+    bankAccountDf(): OptionField {
+      const options: SelectOption[] = [
+        { value: '', label: this.t`Select` },
+        ...this.bankAccountOptions,
+      ];
+
+      return {
+        fieldname: 'bankAccount',
+        label: this.t`Bank Account`,
+        placeholder: this.t`Select Bank Account`,
+        fieldtype: 'Select',
+        options,
+      } as OptionField;
+    },
     gridTemplateColumn(): string {
       return `grid-template-columns: 4rem repeat(${this.columnCount}, 10rem)`;
     },
@@ -816,6 +828,7 @@ export default defineComponent({
       this.nullOrImporter = null;
       this.importType = '';
       this.bankAccount = '';
+      this.bankAccountOptions = [];
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
@@ -1075,6 +1088,48 @@ export default defineComponent({
       this.setImportType(this.importType);
       this.importer.valueMatrix = failedEntriesValueMatrix;
     },
+    async loadBankAccountOptions(): Promise<void> {
+      try {
+        const accounts = (await fyo.db.getAll(ModelNameEnum.Account, {
+          fields: ['name', 'parentAccount', 'accountType', 'isGroup', 'rootType'],
+        })) as Array<{
+          name: string;
+          parentAccount?: string;
+          accountType?: string;
+          isGroup?: boolean | number;
+          rootType?: string;
+        }>;
+
+        const bankParents = new Set(
+          accounts
+            .filter((a) => a.accountType === 'Bank' && Boolean(a.isGroup))
+            .map((a) => a.name)
+        );
+
+        const options = accounts
+          .filter((a) => {
+            if (Boolean(a.isGroup)) {
+              return false;
+            }
+
+            if (a.accountType === 'Bank') {
+              return true;
+            }
+
+            if (a.parentAccount && bankParents.has(a.parentAccount)) {
+              return true;
+            }
+
+            return false;
+          })
+          .map((a) => ({ value: a.name, label: a.name }));
+
+        options.sort((a, b) => a.label.localeCompare(b.label));
+        this.bankAccountOptions = options;
+      } catch {
+        this.bankAccountOptions = [];
+      }
+    },
     setImportType(importType: string): void {
       this.clear();
       if (!importType) {
@@ -1085,6 +1140,7 @@ export default defineComponent({
 
       if (importType === ModelNameEnum.BankTransaction) {
         this.nullOrImporter = new BankStatementImporter(fyo);
+        void this.loadBankAccountOptions();
       } else {
         this.nullOrImporter = new Importer(importType, fyo);
       }
