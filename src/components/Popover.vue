@@ -7,17 +7,20 @@
         :handle-blur="handleBlur"
       ></slot>
     </div>
-    <Transition>
-      <div
-        v-show="isOpen"
-        ref="popover"
-        :class="popoverClass"
-        class="bg-white dark:bg-gray-850 rounded-md border dark:border-gray-875 shadow-lg popover-container relative z-10"
-        :style="{ 'transition-delay': `${isOpen ? entryDelay : exitDelay}ms` }"
-      >
-        <slot name="content" :toggle-popover="togglePopover"></slot>
-      </div>
-    </Transition>
+
+    <Teleport to="body">
+      <Transition>
+        <div
+          v-show="isOpen"
+          ref="popover"
+          :class="popoverClass"
+          class="bg-white dark:bg-gray-850 rounded-md border dark:border-gray-875 shadow-lg popover-container relative z-50"
+          :style="{ 'transition-delay': `${isOpen ? entryDelay : exitDelay}ms` }"
+        >
+          <slot name="content" :toggle-popover="togglePopover"></slot>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -85,6 +88,7 @@ export default {
       if (!this.popper) {
         this.popper = createPopper(this.$refs.reference, this.$refs.popover, {
           placement: this.placement,
+          strategy: 'fixed',
           modifiers: [{ name: 'offset', options: { offset: [0, 8] } }],
         });
       } else {
