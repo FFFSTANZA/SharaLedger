@@ -60,7 +60,7 @@
               label: fyo.schemaMap[value]?.label ?? value,
             })),
           }"
-          class="w-40"
+          class="min-w-52"
           :border="true"
           :value="importType"
           size="small"
@@ -77,7 +77,7 @@
             create: true,
             filters: { accountType: 'Bank' },
           }"
-          class="w-60"
+          class="min-w-64"
           size="small"
           :border="true"
           :value="bankAccount"
@@ -1101,12 +1101,13 @@ export default defineComponent({
       }
 
       if (this.isBankTransactionImport) {
-        const { success, canceled, filePath, data, name } = await ipc.selectFile({
-          title: this.t`Select File`,
-          filters: [
-            { name: 'Statement', extensions: ['csv', 'xlsx', 'xls'] },
-          ],
-        });
+        const { success, canceled, filePath, data, name } =
+          await ipc.selectFile({
+            title: this.t`Select File`,
+            filters: [
+              { name: 'Statement', extensions: ['csv', 'xlsx', 'xls'] },
+            ],
+          });
 
         if (canceled || !success || !filePath || !data) {
           return;
@@ -1129,7 +1130,8 @@ export default defineComponent({
           await showDialog({
             title: this.t`Confirm columns`,
             type: 'info',
-            detail: this.t`We tried to detect Date/Description/Debit/Credit columns automatically. Please verify the assignments before importing.`,
+            detail: this
+              .t`We tried to detect Date/Description/Debit/Credit columns automatically. Please verify the assignments before importing.`,
           });
         }
 
