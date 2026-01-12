@@ -7,17 +7,79 @@ export type BankStatementField =
   | 'bankReference';
 
 const fieldKeywords: Record<BankStatementField, string[]> = {
-  date: ['date', 'txn date', 'transaction date', 'value date', 'posting date'],
+  date: [
+    'date',
+    'txn date',
+    'transaction date',
+    'value date',
+    'posting date',
+    'txn dt',
+    'trans date',
+    'tran date',
+    'cheque date',
+    'value dt',
+    'booking date',
+    'post date',
+    'dt',
+  ],
   description: [
     'narration',
     'description',
     'remarks',
     'particulars',
     'details',
+    'transaction details',
+    'transaction particulars',
+    'chq details',
+    'mode',
+    'transaction remarks',
+    'narr',
+    'desc',
+    'remark',
   ],
-  debit: ['debit', 'dr amount', 'withdrawal', 'withdraw', 'dr', 'paid out'],
-  credit: ['credit', 'cr amount', 'deposit', 'cr', 'paid in', 'receipt'],
-  balance: ['balance', 'running balance', 'closing balance'],
+  debit: [
+    'debit',
+    'dr amount',
+    'withdrawal',
+    'withdraw',
+    'dr',
+    'paid out',
+    'withdrawal amt',
+    'withdrawals',
+    'amount dr',
+    'debit amount',
+    'debit amt',
+    'amt dr',
+    'payment',
+    'payments',
+  ],
+  credit: [
+    'credit',
+    'cr amount',
+    'deposit',
+    'cr',
+    'paid in',
+    'receipt',
+    'deposit amt',
+    'deposits',
+    'amount cr',
+    'credit amount',
+    'credit amt',
+    'amt cr',
+    'receipts',
+  ],
+  balance: [
+    'balance',
+    'running balance',
+    'closing balance',
+    'available balance',
+    'ledger balance',
+    'balance amt',
+    'balance amount',
+    'bal',
+    'closing bal',
+    'available bal',
+  ],
   bankReference: [
     'reference',
     'ref no',
@@ -27,6 +89,16 @@ const fieldKeywords: Record<BankStatementField, string[]> = {
     'chq',
     'cheque',
     'instrument',
+    'transaction id',
+    'txn id',
+    'ref number',
+    'reference no',
+    'cheque no',
+    'instrument no',
+    'reference number',
+    'chq no',
+    'transaction no',
+    'txn no',
   ],
 };
 
@@ -38,6 +110,13 @@ export function detectHeaderRowIndex(rows: string[][]): number {
 
   for (let i = 0; i < limit; i++) {
     const row = rows[i] ?? [];
+    
+    // Skip completely empty rows
+    const hasContent = row.some((cell) => String(cell ?? '').trim() !== '');
+    if (!hasContent) {
+      continue;
+    }
+
     const score = getHeaderScore(row);
     if (score > bestScore) {
       bestScore = score;
@@ -105,11 +184,18 @@ export function autoMapColumns(headerRow: string[]): {
   const requiredFields: BankStatementField[] = ['date', 'description'];
   const foundRequired = requiredFields.filter((f) => fieldIndexMap[f] != null);
   const hasAmount = fieldIndexMap.debit != null || fieldIndexMap.credit != null;
+  const hasBalance = fieldIndexMap.balance != null;
+  const hasReference = fieldIndexMap.bankReference != null;
 
   let confidence = 0;
   confidence += foundRequired.length / requiredFields.length;
   confidence += hasAmount ? 1 : 0;
-  confidence = confidence / 2;
+  
+  // Bonus points for having balance and reference columns
+  if (hasBalance) confidence += 0.2;
+  if (hasReference) confidence += 0.1;
+  
+  confidence = Math.min(confidence / 2, 1);
 
   return { fieldIndexMap, confidence, normalizedHeaders };
 }

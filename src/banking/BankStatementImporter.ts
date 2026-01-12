@@ -274,21 +274,45 @@ function parseBankMoney(value: RawValue, fyo: Fyo): Money | null {
     return fyo.pesa(value);
   }
 
-  const s = String(value)
-    .replaceAll(/,/g, '')
-    .replaceAll(/\s+/g, '')
-    .trim();
-
+  let s = String(value).trim();
   if (!s) {
     return null;
   }
 
+  // Remove currency symbols (₹, Rs, Rs., INR, $, etc.)
+  s = s.replaceAll(/[₹$£€¥]/g, '');
+  s = s.replaceAll(/Rs\.?|INR/gi, '');
+
+  // Remove commas and spaces
+  s = s.replaceAll(/,/g, '');
+  s = s.replaceAll(/\s+/g, '');
+
+  // Check for parentheses indicating negative amount
   const isParenNegative = s.startsWith('(') && s.endsWith(')');
-  const cleaned = isParenNegative ? s.slice(1, -1) : s;
+  let cleaned = isParenNegative ? s.slice(1, -1) : s;
+
+  // Check for trailing minus sign (some banks use this)
+  const hasTrailingMinus = cleaned.endsWith('-');
+  if (hasTrailingMinus) {
+    cleaned = cleaned.slice(0, -1);
+  }
+
+  // Check for Cr/Dr suffix
+  const hasCrSuffix = /Cr$/i.test(cleaned);
+  const hasDrSuffix = /Dr$/i.test(cleaned);
+  cleaned = cleaned.replace(/Cr$/i, '').replace(/Dr$/i, '');
+
+  if (!cleaned) {
+    return null;
+  }
 
   try {
     const money = fyo.pesa(cleaned);
-    return isParenNegative ? money.neg() : money;
+    // Apply negative sign if needed
+    if (isParenNegative || hasTrailingMinus || hasDrSuffix) {
+      return money.neg();
+    }
+    return money;
   } catch {
     return null;
   }
@@ -323,6 +347,16 @@ function parseBankDate(value: RawValue, dateFormat?: string): Date | null {
     'd-MMM-yyyy',
     'dd MMM yyyy',
     'd MMM yyyy',
+    'dd.MM.yyyy',
+    'd.M.yyyy',
+    'dd-MMM-yy',
+    'd-MMM-yy',
+    'dd MMM yy',
+    'd MMM yy',
+    'yyyy-MM-dd',
+    'yyyy/MM/dd',
+    'MM/dd/yyyy',
+    'M/d/yyyy',
   ].filter(Boolean) as string[];
 
   for (const fmt of formats) {
@@ -336,6 +370,25 @@ function parseBankDate(value: RawValue, dateFormat?: string): Date | null {
 }
 
 function inferDateFormatFromRows(rows: string[][]): string {
+  const commonFormats = [
+    'dd/MM/yyyy',
+    'dd-MM-yyyy',
+    'd/M/yyyy',
+    'd-M-yyyy',
+    'dd.MM.yyyy',
+    'd.M.yyyy',
+    'dd-MMM-yyyy',
+    'd-MMM-yyyy',
+    'dd MMM yyyy',
+    'd MMM yyyy',
+    'dd/MM/yy',
+    'd/M/yy',
+    'dd-MM-yy',
+    'd-M-yy',
+    'yyyy-MM-dd',
+    'yyyy/MM/dd',
+  ];
+
   for (const row of rows.slice(0, 50)) {
     for (const cell of row) {
       const c = String(cell ?? '').trim();
@@ -343,24 +396,16 @@ function inferDateFormatFromRows(rows: string[][]): string {
         continue;
       }
 
-      if (DateTime.fromFormat(c, 'dd/MM/yyyy').isValid) {
-        return 'dd/MM/yyyy';
-      }
-
-      if (DateTime.fromFormat(c, 'dd-MM-yyyy').isValid) {
-        return 'dd-MM-yyyy';
-      }
-
-      if (DateTime.fromFormat(c, 'd/M/yyyy').isValid) {
-        return 'd/M/yyyy';
-      }
-
-      if (DateTime.fromFormat(c, 'd-M-yyyy').isValid) {
-        return 'd-M-yyyy';
-      }
-
+      // Try ISO format first
       if (DateTime.fromISO(c).isValid) {
         return 'yyyy-MM-dd';
+      }
+
+      // Try common formats
+      for (const fmt of commonFormats) {
+        if (DateTime.fromFormat(c, fmt).isValid) {
+          return fmt;
+        }
       }
     }
   }
