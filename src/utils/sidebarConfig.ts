@@ -340,6 +340,11 @@ function getCompleteSidebar(): SidebarConfig {
           route: '/chart-of-accounts',
         },
         {
+          label: t`Banking`,
+          name: 'banking',
+          route: '/banking-setup',
+        },
+        {
           label: t`Tax Templates`,
           name: 'taxes',
           route: '/list/Tax',

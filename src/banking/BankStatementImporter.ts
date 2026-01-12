@@ -11,6 +11,7 @@ import {
   normalizeHeader,
   type BankStatementField,
 } from './bankStatementMapping';
+import { getCategorizer, type CategorizedTransaction } from './autoCategorize';
 
 type BankImportProfileRow = {
   name: string;
@@ -195,6 +196,35 @@ export class BankStatementImporter extends Importer {
       const doc = this.fyo.doc.getNewDoc(this.schemaName, data, false);
       this.docs.push(doc);
     }
+  }
+
+  async categorizeTransactions(): Promise<Map<number, CategorizedTransaction>> {
+    const categorizer = await getCategorizer(this.fyo);
+    const suggestions = new Map<number, CategorizedTransaction>();
+
+    for (let idx = 0; idx < this.docs.length; idx++) {
+      const doc = this.docs[idx];
+      const description = doc.description ?? '';
+      const debit = doc.debit ?? this.fyo.pesa(0);
+      const credit = doc.credit ?? this.fyo.pesa(0);
+      const isDebit = debit.isPositive();
+
+      if (!description || (debit.isZero() && credit.isZero())) {
+        continue;
+      }
+
+      const categorized = categorizer.categorize(
+        description,
+        isDebit ? debit : credit,
+        isDebit
+      );
+
+      if (categorized) {
+        suggestions.set(idx, categorized);
+      }
+    }
+
+    return suggestions;
   }
 
   getProfileMappingFromAssignments(): Partial<
