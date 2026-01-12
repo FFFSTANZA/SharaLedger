@@ -1,22 +1,5 @@
 import { parseCSV } from 'utils/csvParser';
-import * as XLSXImport from 'xlsx';
-
-type XLSXWorkBook = {
-  SheetNames: string[];
-  Sheets: Record<string, unknown>;
-};
-
-type XLSXModule = {
-  read: (data: Uint8Array, opts: Record<string, unknown>) => XLSXWorkBook;
-  utils: {
-    sheet_to_json: (
-      sheet: unknown,
-      opts: Record<string, unknown>
-    ) => unknown[];
-  };
-};
-
-const XLSX = XLSXImport as unknown as XLSXModule;
+import * as XLSX from 'xlsx';
 
 export type ParsedStatement = {
   rows: string[][];
