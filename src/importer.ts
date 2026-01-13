@@ -134,6 +134,10 @@ export class Importer {
     const docsToKeep: Doc[] = [];
 
     for (const doc of this.docs) {
+      // Ensure withdrawal and deposit are positive absolute values
+      if (doc.withdrawal) doc.withdrawal = Math.abs(doc.withdrawal as number);
+      if (doc.deposit) doc.deposit = Math.abs(doc.deposit as number);
+
       // 1. Calculate dedupe key
       const date = doc.date as string;
       const description = doc.description as string;
@@ -151,11 +155,11 @@ export class Importer {
         if (amt < 0) {
           doc.withdrawal = Math.abs(amt);
         } else {
-          doc.deposit = amt;
+          doc.deposit = Math.abs(amt);
         }
       }
 
-      const amount = (doc.deposit as number) - (doc.withdrawal as number);
+      const amount = (doc.deposit as number || 0) - (doc.withdrawal as number || 0);
       const dedupeKey = `${date}|${description}|${amount}`;
       doc.dedupeKey = dedupeKey;
 
@@ -483,13 +487,11 @@ export class Importer {
 
   updateValueMatrixColumn(index: number) {
     for (const row of this.valueMatrix) {
-      const vmi = this.getValueMatrixItem(index, row[index].rawValue ?? null);
-
-      if (index >= row.length) {
-        row.push(vmi);
-      } else {
-        row[index] = vmi;
+      while (row.length <= index) {
+        row.push({ rawValue: null });
       }
+      const rawValue = row[index].rawValue;
+      row[index] = this.getValueMatrixItem(index, rawValue ?? null);
     }
   }
 
