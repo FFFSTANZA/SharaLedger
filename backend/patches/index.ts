@@ -1,7 +1,6 @@
 import { Patch } from '../database/types';
 import addUOMs from './addUOMs';
 import createInventoryNumberSeries from './createInventoryNumberSeries';
-import createInsightSchemas from './createInsightSchemas';
 import fixRoundOffAccount from './fixRoundOffAccount';
 import testPatch from './testPatch';
 import updateSchemas from './updateSchemas';
@@ -66,10 +65,5 @@ export default [
     name: 'createPaymentMethods',
     version: '0.25.1',
     patch: createPaymentMethods,
-  },
-  {
-    name: 'createInsightSchemas',
-    version: '0.36.0',
-    patch: createInsightSchemas,
   },
 ] as Patch[];

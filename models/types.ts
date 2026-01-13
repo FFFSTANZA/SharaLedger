@@ -76,8 +76,6 @@ export enum ModelNameEnum {
   POSOpeningShift = 'POSOpeningShift',
   POSClosingShift = 'POSClosingShift',
   EWayBill = 'EWayBill',
-  InsightQueryTemplate = 'InsightQueryTemplate',
-  InsightNarrative = 'InsightNarrative',
 }
 
 export type ModelName = keyof typeof ModelNameEnum;

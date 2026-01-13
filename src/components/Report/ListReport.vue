@@ -49,23 +49,9 @@
               :key="`${c}-${r}-cell`"
               :style="getCellStyle(cell, c)"
               class="text-base px-3 flex-shrink-0 overflow-x-auto whitespace-nowrap no-scrollbar"
-              :class="[
-                getCellColorClass(cell),
-                isInsightEligible(cell) ? 'insight-cell cursor-context-menu' : '',
-              ]"
-              @contextmenu="(e) => handleCellContextMenu(e, cell, row)"
+              :class="[getCellColorClass(cell)]"
             >
               <span>{{ cell.value }}</span>
-              <button
-                v-if="isInsightEligible(cell)"
-                type="button"
-                class="insight-icon"
-                :aria-label="t`Explain this value`"
-                :title="t`Explain this value`"
-                @click.stop="(e) => handleInsightIconClick(e, cell, row)"
-              >
-                <FeatherIcon name="help-circle" class="w-3 h-3" />
-              </button>
             </div>
           </div>
         </template>
@@ -88,22 +74,6 @@
       />
     </div>
     <div v-else class="h-4" />
-
-    <!-- Insight Context Menu -->
-    <InsightContextMenu
-      ref="insightContextMenu"
-      @insight-requested="handleInsightFromContextMenu"
-    />
-
-    <!-- Insight Dialog -->
-    <InsightDialog
-      :show="showInsightDialog"
-      :context-type="insightContextType"
-      :context-field="insightContextField"
-      :context="insightContext"
-      :context-info="insightContextInfo"
-      @close="closeInsightDialog"
-    />
   </div>
 </template>
 <script lang="ts">
@@ -114,16 +84,9 @@ import { defineComponent } from 'vue';
 import Paginator from '../Paginator.vue';
 import WithScroll from '../WithScroll.vue';
 import { inject } from 'vue';
-import InsightDialog from '../InsightDialog.vue';
-import InsightContextMenu from '../InsightContextMenu.vue';
-import {
-  isInsightEligible as checkInsightEligible,
-  buildReportCellContext,
-  buildContextInfo,
-} from 'src/utils/insightContext';
 
 export default defineComponent({
-  components: { Paginator, WithScroll, InsightDialog, InsightContextMenu },
+  components: { Paginator, WithScroll },
   props: {
     report: Report,
   },
@@ -138,14 +101,6 @@ export default defineComponent({
       hconst: 48,
       pageStart: 0,
       pageEnd: 0,
-      showInsightDialog: false,
-      insightContextType: null,
-      insightContextField: null,
-      insightContext: null,
-      insightContextInfo: null,
-      // Context for right-click menu
-      contextMenuCell: null,
-      contextMenuRow: null,
     };
   },
   computed: {
@@ -213,15 +168,6 @@ export default defineComponent({
         styles['text-align'] = 'right';
       }
 
-      if (i === this.report.columns.length - 1) {
-        const insightCell = this.isInsightEligible(cell);
-        if (this.languageDirection === 'rtl') {
-          styles['padding-left'] = insightCell ? '1.75rem' : '0px';
-        } else {
-          styles['padding-right'] = insightCell ? '1.75rem' : '0px';
-        }
-      }
-
       if (cell.indent) {
         if (this.languageDirection === 'rtl') {
           styles['padding-right'] = `${cell.indent * 2}rem`;
@@ -257,77 +203,6 @@ export default defineComponent({
       }
 
       return 'text-gray-900 dark:text-gray-300';
-    },
-    isInsightEligible(cell) {
-      return checkInsightEligible(cell.fieldtype, cell.rawValue);
-    },
-    handleInsightIconClick(_event, cell, row) {
-      const context = buildReportCellContext(cell, row, this.report?.title);
-      if (!context) {
-        return;
-      }
-
-      this.insightContext = context;
-      this.insightContextType = context.contextType;
-      this.insightContextField = context.contextField;
-      this.insightContextInfo = buildContextInfo(context);
-      this.openInsightDialog();
-    },
-    openInsightDialog() {
-      this.showInsightDialog = true;
-    },
-    closeInsightDialog() {
-      this.showInsightDialog = false;
-      this.insightContext = null;
-      this.insightContextType = null;
-      this.insightContextField = null;
-      this.insightContextInfo = null;
-    },
-    handleCellContextMenu(event, cell, row) {
-      // Only show context menu for insight-eligible cells
-      if (!this.isInsightEligible(cell)) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      // Store context for the insight request
-      this.contextMenuCell = cell;
-      this.contextMenuRow = row;
-
-      // Open context menu at cursor position
-      const contextMenu = this.$refs.insightContextMenu as any;
-      if (contextMenu && contextMenu.open) {
-        contextMenu.open(event);
-      }
-    },
-    handleInsightFromContextMenu() {
-      // Handle insight request from context menu
-      if (!this.contextMenuCell || !this.contextMenuRow) {
-        return;
-      }
-
-      const context = buildReportCellContext(
-        this.contextMenuCell, 
-        this.contextMenuRow, 
-        this.report?.title
-      );
-      
-      if (!context) {
-        return;
-      }
-
-      this.insightContext = context;
-      this.insightContextType = context.contextType;
-      this.insightContextField = context.contextField;
-      this.insightContextInfo = buildContextInfo(context);
-      
-      // Clear context menu data
-      this.contextMenuCell = null;
-      this.contextMenuRow = null;
-      
-      this.openInsightDialog();
     },
   },
 });
