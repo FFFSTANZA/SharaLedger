@@ -16,11 +16,6 @@
             class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100"
           >
             {{ formatCurrency(summary.cashBalance) }}
-            <component
-              :is="icons.insight"
-              class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-              @click="triggerInsight('cash_balance')"
-            />
           </p>
         </div>
         <span
@@ -52,11 +47,6 @@
         :class="netProfitTextClass"
       >
         {{ formatCurrency(netProfit) }}
-        <component
-          :is="icons.insight"
-          class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-          @click="triggerInsight('net_profit')"
-        />
       </p>
       <div class="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums">
         <div class="text-gray-500 dark:text-gray-400 font-medium">
@@ -87,11 +77,6 @@
         class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100"
       >
         {{ formatCurrency(summary.receivables.outstanding) }}
-        <component
-          :is="icons.insight"
-          class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-          @click="triggerInsight('receivables')"
-        />
       </p>
       <div class="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums">
         <div class="text-gray-500 dark:text-gray-400 font-medium">
@@ -169,20 +154,14 @@
 </template>
 
 <script lang="ts">
-import { fyo } from 'src/initFyo';
-import type { DashboardSummary } from 'utils/db/types';
-import { defineComponent, PropType } from 'vue';
-import Icons from 'src/components/Icons/12';
+ import { fyo } from 'src/initFyo';
+ import type { DashboardSummary } from 'utils/db/types';
+ import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'KpiSummaryStrip',
   props: {
     summary: { type: Object as PropType<DashboardSummary>, required: true },
-  },
-  data() {
-    return {
-      icons: Icons,
-    };
   },
   computed: {
     netProfit(): number {
@@ -313,19 +292,6 @@ export default defineComponent({
   methods: {
     formatCurrency(value: number) {
       return fyo.format(value ?? 0, 'Currency');
-    },
-    async triggerInsight(contextField: string) {
-      // Placeholder for zero-argument accounting feature
-      // This will be connected to the backend insight system in Phase 2
-      console.log(`Triggering insight for: ${contextField}`);
-      
-      // TODO: Connect to InsightService when Phase 2 UI integration is implemented
-      // const insightService = createInsightService(fyo);
-      // const templates = await insightService.getTemplatesForContext('Dashboard', contextField);
-      // if (templates.length > 0) {
-      //   // Show insight modal or popup
-      //   this.showInsightModal(templates[0], contextField);
-      // }
     },
   },
 });

@@ -43,11 +43,6 @@
               class="ms-auto font-semibold text-gray-900 dark:text-gray-100 tabular-nums"
             >
               {{ formatCurrency(row.total) }}
-              <component
-                :is="icons.insight"
-                class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-                @click.stop="triggerInsight('expense', row.account)"
-              />
             </span>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
@@ -105,7 +100,6 @@ import { uicolors } from 'src/utils/colors';
 import { routeTo } from 'src/utils/ui';
 import type { DashboardSummary } from 'utils/db/types';
 import { defineComponent, PropType } from 'vue';
-import Icons from 'src/components/Icons/12';
 import DonutChart from 'src/components/Charts/DonutChart.vue';
 
 export default defineComponent({
@@ -119,7 +113,6 @@ export default defineComponent({
   },
   data: () => ({
     active: null as null | number,
-    icons: Icons,
   }),
   computed: {
     hasData(): boolean {
@@ -234,20 +227,6 @@ export default defineComponent({
           toDate: this.toDate,
         },
       });
-    },
-    async triggerInsight(contextType: string, account?: string) {
-      // Placeholder for zero-argument accounting feature
-      // This will be connected to the backend insight system in Phase 2
-      console.log(`Triggering insight for: ${contextType}${account ? ` (${account})` : ''}`);
-      
-      // TODO: Connect to InsightService when Phase 2 UI integration is implemented
-      // const insightService = createInsightService(fyo);
-      // const contextField = account ? `${contextType}:${account}` : contextType;
-      // const templates = await insightService.getTemplatesForContext('Dashboard', contextField);
-      // if (templates.length > 0) {
-      //   // Show insight modal or popup
-      //   this.showInsightModal(templates[0], contextField);
-      // }
     },
   },
 });

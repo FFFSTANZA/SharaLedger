@@ -22,11 +22,6 @@
         class="text-right font-semibold bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1"
       >
         {{ formatCurrency(revenue) }}
-        <component
-          :is="icons.insight"
-          class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-          @click="triggerInsight('revenue')"
-        />
       </div>
 
       <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -36,11 +31,6 @@
         class="text-right font-semibold bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1"
       >
         {{ formatCurrency(expenses) }}
-        <component
-          :is="icons.insight"
-          class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-          @click="triggerInsight('expenses')"
-        />
       </div>
 
       <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -55,11 +45,6 @@
         "
       >
         {{ formatCurrency(netProfit) }}
-        <component
-          :is="icons.insight"
-          class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-          @click="triggerInsight('net_profit')"
-        />
       </div>
 
       <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -123,7 +108,6 @@ import { fyo } from 'src/initFyo';
 import { routeTo } from 'src/utils/ui';
 import type { DashboardSummary } from 'utils/db/types';
 import { defineComponent, PropType } from 'vue';
-import Icons from 'src/components/Icons/12';
 
 export default defineComponent({
   name: 'ProfitOverview',
@@ -131,9 +115,7 @@ export default defineComponent({
     summary: { type: Object as PropType<DashboardSummary>, required: true },
   },
   data() {
-    return {
-      icons: Icons,
-    };
+    return {};
   },
   computed: {
     revenue(): number {
@@ -169,19 +151,6 @@ export default defineComponent({
     },
     async routeToProfitAndLoss() {
       await routeTo('/report/ProfitAndLoss');
-    },
-    async triggerInsight(contextField: string) {
-      // Placeholder for zero-argument accounting feature
-      // This will be connected to the backend insight system in Phase 2
-      console.log(`Triggering insight for: ${contextField}`);
-      
-      // TODO: Connect to InsightService when Phase 2 UI integration is implemented
-      // const insightService = createInsightService(fyo);
-      // const templates = await insightService.getTemplatesForContext('Dashboard', contextField);
-      // if (templates.length > 0) {
-      //   // Show insight modal or popup
-      //   this.showInsightModal(templates[0], contextField);
-      // }
     },
   },
 });
