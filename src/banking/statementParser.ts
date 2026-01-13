@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { parseCSV } from '../utils/csvParser';
+import { parseCSV } from 'utils/csvParser';
 
 export function getFileExtension(filename: string): string {
   return filename.split('.').pop()?.toLowerCase() || '';
