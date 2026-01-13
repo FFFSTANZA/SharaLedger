@@ -284,12 +284,11 @@ export default {
       this.isFocused = true;
     },
     onClick(e, toggleDropdown) {
-      if (this.isFocused) {
-        toggleDropdown(true);
-        this.updateSuggestions();
-        this.isDropdownOpen = true;
-        this.$emit('focus', e);
-      }
+      this.isFocused = true;
+      toggleDropdown(true);
+      this.updateSuggestions();
+      this.isDropdownOpen = true;
+      this.$emit('focus', e);
     },
     onFocus(e, toggleDropdown) {
       this.isFocused = true;

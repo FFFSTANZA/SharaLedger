@@ -125,7 +125,9 @@ export default defineComponent({
   watch: {
     dropdownVisible(val) {
       if (val) {
-        this.setupPopper();
+        nextTick(() => {
+          this.setupPopper();
+        });
       } else if (this.popper) {
         this.popper.destroy();
         this.popper = null;

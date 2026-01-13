@@ -117,7 +117,7 @@
             size="small"
             :border="true"
             :df="gridColumnTitleDf"
-            :value="importer.assignedTemplateFields[index]!"
+            :value="importer.assignedTemplateFields[index]"
             @change="(value: string | null) => importer.setTemplateField(index, value)"
           />
         </div>
@@ -182,7 +182,7 @@
                 :title="getFieldTitle(val)"
                 :df="
                     importer.templateFieldsMap.get(
-                      importer.assignedTemplateFields[cidx]!
+                      importer.assignedTemplateFields[cidx]
                     )
                   "
                 size="small"
@@ -191,8 +191,8 @@
                 :value="val.error ? null : val.value"
                 :read-only="false"
                 @change="(value: DocValue)=> {
-                    importer.valueMatrix[ridx][cidx]!.error = false
-                    importer.valueMatrix[ridx][cidx]!.value = value
+                    importer.valueMatrix[ridx][cidx].error = false
+                    importer.valueMatrix[ridx][cidx].value = value
                   }"
               />
             </template>
