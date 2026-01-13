@@ -51,8 +51,9 @@
               class="text-base px-3 flex-shrink-0 overflow-x-auto whitespace-nowrap no-scrollbar"
               :class="[
                 getCellColorClass(cell),
-                isInsightEligible(cell) ? 'insight-cell' : '',
+                isInsightEligible(cell) ? 'insight-cell cursor-context-menu' : '',
               ]"
+              @contextmenu="(e) => handleCellContextMenu(e, cell, row)"
             >
               <span>{{ cell.value }}</span>
               <button
@@ -88,6 +89,12 @@
     </div>
     <div v-else class="h-4" />
 
+    <!-- Insight Context Menu -->
+    <InsightContextMenu
+      ref="insightContextMenu"
+      @insight-requested="handleInsightFromContextMenu"
+    />
+
     <!-- Insight Dialog -->
     <InsightDialog
       :show="showInsightDialog"
@@ -108,6 +115,7 @@ import Paginator from '../Paginator.vue';
 import WithScroll from '../WithScroll.vue';
 import { inject } from 'vue';
 import InsightDialog from '../InsightDialog.vue';
+import InsightContextMenu from '../InsightContextMenu.vue';
 import {
   isInsightEligible as checkInsightEligible,
   buildReportCellContext,
@@ -115,7 +123,7 @@ import {
 } from 'src/utils/insightContext';
 
 export default defineComponent({
-  components: { Paginator, WithScroll, InsightDialog },
+  components: { Paginator, WithScroll, InsightDialog, InsightContextMenu },
   props: {
     report: Report,
   },
@@ -135,6 +143,9 @@ export default defineComponent({
       insightContextField: null,
       insightContext: null,
       insightContextInfo: null,
+      // Context for right-click menu
+      contextMenuCell: null,
+      contextMenuRow: null,
     };
   },
   computed: {
@@ -271,6 +282,52 @@ export default defineComponent({
       this.insightContextType = null;
       this.insightContextField = null;
       this.insightContextInfo = null;
+    },
+    handleCellContextMenu(event, cell, row) {
+      // Only show context menu for insight-eligible cells
+      if (!this.isInsightEligible(cell)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Store context for the insight request
+      this.contextMenuCell = cell;
+      this.contextMenuRow = row;
+
+      // Open context menu at cursor position
+      const contextMenu = this.$refs.insightContextMenu as any;
+      if (contextMenu && contextMenu.open) {
+        contextMenu.open(event);
+      }
+    },
+    handleInsightFromContextMenu() {
+      // Handle insight request from context menu
+      if (!this.contextMenuCell || !this.contextMenuRow) {
+        return;
+      }
+
+      const context = buildReportCellContext(
+        this.contextMenuCell, 
+        this.contextMenuRow, 
+        this.report?.title
+      );
+      
+      if (!context) {
+        return;
+      }
+
+      this.insightContext = context;
+      this.insightContextType = context.contextType;
+      this.insightContextField = context.contextField;
+      this.insightContextInfo = buildContextInfo(context);
+      
+      // Clear context menu data
+      this.contextMenuCell = null;
+      this.contextMenuRow = null;
+      
+      this.openInsightDialog();
     },
   },
 });
