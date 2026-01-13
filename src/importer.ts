@@ -160,12 +160,12 @@ export class Importer {
       }
 
       const amount = (doc.deposit as number || 0) - (doc.withdrawal as number || 0);
-      const dedupeKey = `${date}|${description}|${amount}`;
+      const dedupeKey = `${doc.bankAccount}|${date}|${description}|${amount}`;
       doc.dedupeKey = dedupeKey;
 
       // 2. Check for duplicates
       const exists = await this.fyo.db.exists('BankTransaction', { dedupeKey });
-      if (exists) {
+      if (exists || docsToKeep.some((d) => d.dedupeKey === dedupeKey)) {
         continue;
       }
 

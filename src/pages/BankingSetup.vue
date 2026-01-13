@@ -75,6 +75,7 @@
 import { defineComponent } from 'vue';
 import PageHeader from '../components/PageHeader.vue';
 import Button from '../components/Button.vue';
+import { routeTo } from 'src/utils/ui';
 
 export default defineComponent({
   components: {
@@ -83,19 +84,19 @@ export default defineComponent({
   },
   methods: {
     goToImport() {
-      this.$router.push({
+      routeTo({
         path: '/import-wizard',
         query: { importType: 'BankTransaction' }
       });
     },
     goToTransactions() {
-      this.$router.push('/list/BankTransaction');
+      routeTo('/list/BankTransaction');
     },
     goToBatches() {
-      this.$router.push('/list/BankImportBatch');
+      routeTo('/list/BankImportBatch');
     },
     goToProfiles() {
-      this.$router.push('/list/BankImportProfile');
+      routeTo('/list/BankImportProfile');
     },
   },
 });

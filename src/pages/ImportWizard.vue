@@ -525,6 +525,10 @@ export default defineComponent({
         )}`;
       }
 
+      if (this.importType === 'BankTransaction' && !this.bankAccount) {
+        return this.t`Select Bank Account`;
+      }
+
       return '';
     },
     canImportData(): boolean {
@@ -723,9 +727,18 @@ export default defineComponent({
       // @ts-ignore
       window.iw = this;
     }
+
+    const { importType } = this.$route.query;
+    if (typeof importType === 'string') {
+      this.setImportType(importType);
+    }
   },
   activated(): void {
     docsPathRef.value = docsPathMap.ImportWizard ?? '';
+    const { importType } = this.$route.query;
+    if (typeof importType === 'string' && importType !== this.importType) {
+      this.setImportType(importType);
+    }
   },
   deactivated(): void {
     docsPathRef.value = '';
@@ -810,6 +823,7 @@ export default defineComponent({
       this.failed = [];
       this.nullOrImporter = null;
       this.importType = '';
+      this.bankAccount = '';
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
@@ -897,7 +911,7 @@ export default defineComponent({
           fileName: this.file?.name,
           totalTransactions: this.importer.docs.length,
         });
-        await batch.save();
+        await batch.sync();
 
         for (const doc of this.importer.docs) {
           doc.importBatch = batch.name;
