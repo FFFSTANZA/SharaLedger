@@ -51,20 +51,16 @@
               class="text-base px-3 flex-shrink-0 overflow-x-auto whitespace-nowrap no-scrollbar"
               :class="[
                 getCellColorClass(cell),
-                isInsightEligible(cell)
-                  ? 'cursor-context-menu insight-cell'
-                  : '',
+                isInsightEligible(cell) ? 'insight-cell' : '',
               ]"
-              @contextmenu="(e) => onCellRightClick(e, cell, row)"
-              @click="(e) => handleCellClick(e, cell, row)"
             >
               <span>{{ cell.value }}</span>
               <button
                 v-if="isInsightEligible(cell)"
                 type="button"
                 class="insight-icon"
-                :aria-label="t`Ask a question about this value`"
-                :title="t`Ask a question about this value`"
+                :aria-label="t`Explain this value`"
+                :title="t`Explain this value`"
                 @click.stop="(e) => handleInsightIconClick(e, cell, row)"
               >
                 <FeatherIcon name="help-circle" class="w-3 h-3" />
@@ -92,12 +88,6 @@
     </div>
     <div v-else class="h-4" />
 
-    <!-- Insight Context Menu -->
-    <InsightContextMenu
-      ref="contextMenu"
-      @insight-requested="openInsightDialog"
-    />
-
     <!-- Insight Dialog -->
     <InsightDialog
       :show="showInsightDialog"
@@ -117,7 +107,6 @@ import { defineComponent } from 'vue';
 import Paginator from '../Paginator.vue';
 import WithScroll from '../WithScroll.vue';
 import { inject } from 'vue';
-import InsightContextMenu from '../InsightContextMenu.vue';
 import InsightDialog from '../InsightDialog.vue';
 import {
   isInsightEligible as checkInsightEligible,
@@ -126,7 +115,7 @@ import {
 } from 'src/utils/insightContext';
 
 export default defineComponent({
-  components: { Paginator, WithScroll, InsightContextMenu, InsightDialog },
+  components: { Paginator, WithScroll, InsightDialog },
   props: {
     report: Report,
   },
@@ -261,45 +250,16 @@ export default defineComponent({
     isInsightEligible(cell) {
       return checkInsightEligible(cell.fieldtype, cell.rawValue);
     },
-    onCellRightClick(event, cell, row) {
-      // Build context for the cell
+    handleInsightIconClick(_event, cell, row) {
       const context = buildReportCellContext(cell, row, this.report?.title);
-
       if (!context) {
         return;
       }
 
-      // Prevent default context menu
-      event.preventDefault();
-      event.stopPropagation();
-
-      // Store context for the dialog
       this.insightContext = context;
       this.insightContextType = context.contextType;
       this.insightContextField = context.contextField;
       this.insightContextInfo = buildContextInfo(context);
-
-      // Show context menu
-      this.$refs.contextMenu.open(event);
-    },
-    handleCellClick(event, cell, row) {
-      // Handle regular cell click, not insight specific
-    },
-    handleInsightIconClick(event, cell, row) {
-      // Build context for the cell
-      const context = buildReportCellContext(cell, row, this.report?.title);
-
-      if (!context) {
-        return;
-      }
-
-      // Store context for the dialog
-      this.insightContext = context;
-      this.insightContextType = context.contextType;
-      this.insightContextField = context.contextField;
-      this.insightContextInfo = buildContextInfo(context);
-
-      // Open insight dialog directly
       this.openInsightDialog();
     },
     openInsightDialog() {
@@ -311,10 +271,6 @@ export default defineComponent({
       this.insightContextType = null;
       this.insightContextField = null;
       this.insightContextInfo = null;
-    },
-    hasInsightIcon() {
-      // Show insight icon on hover to improve discoverability
-      return true;
     },
   },
 });
