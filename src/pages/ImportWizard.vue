@@ -389,10 +389,11 @@ import Modal from 'src/components/Modal.vue';
 import PageHeader from 'src/components/PageHeader.vue';
 import { Importer, TemplateField, getColumnLabel } from 'src/importer';
 import { fyo } from 'src/initFyo';
+import { parseStatementFile } from 'src/banking/statementParser';
 import { showDialog } from 'src/utils/interactive';
 import { docsPathMap } from 'src/utils/misc';
 import { docsPathRef } from 'src/utils/refs';
-import { getSavePath, selectTextFile } from 'src/utils/ui';
+import { getSavePath, selectTextFile, selectBinaryFile } from 'src/utils/ui';
 import { defineComponent } from 'vue';
 import Loading from '../components/Loading.vue';
 
@@ -577,6 +578,7 @@ export default defineComponent({
         ModelNameEnum.Account,
         ModelNameEnum.Address,
         ModelNameEnum.NumberSeries,
+        ModelNameEnum.BankTransaction,
       ];
 
       const hasInventory = fyo.doc.singles.AccountingSettings?.enableInventory;
@@ -843,6 +845,21 @@ export default defineComponent({
 
       this.isMakingEntries = true;
       this.importer.populateDocs();
+      await this.importer.runBankingHooks();
+
+      if (this.importType === 'BankTransaction' && this.importer.docs.length > 0) {
+        const batch = this.fyo.doc.getNewDoc('BankImportBatch', {
+          importDate: new Date().toISOString(),
+          bankAccount: this.importer.docs[0].bankAccount,
+          fileName: this.file?.name,
+          totalTransactions: this.importer.docs.length,
+        });
+        await batch.save();
+
+        for (const doc of this.importer.docs) {
+          doc.importBatch = batch.name;
+        }
+      }
 
       const shouldSubmit = await this.askShouldSubmit();
 
@@ -937,16 +954,18 @@ export default defineComponent({
         : '';
     },
     async selectFile(): Promise<void> {
-      const { text, name, filePath } = await selectTextFile([
+      const { data, name, filePath } = await selectBinaryFile([
         { name: 'CSV', extensions: ['csv'] },
+        { name: 'Excel', extensions: ['xlsx', 'xls'] },
       ]);
 
-      if (!text) {
+      if (!data || !name) {
         return;
       }
 
-      const isValid = this.importer.selectFile(text);
-      if (!isValid) {
+      const parsed = await parseStatementFile(name, data);
+      const isValid = this.importer.selectParsed(parsed);
+      if (isValid === false) {
         await showDialog({
           title: this.t`Cannot read file`,
           detail: this.t`Bad import data, could not read file.`,
@@ -957,8 +976,8 @@ export default defineComponent({
 
       this.file = {
         name,
-        filePath,
-        text,
+        filePath: filePath || '',
+        text: '', // Text not needed anymore as we use data
       };
     },
   },

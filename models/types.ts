@@ -76,6 +76,9 @@ export enum ModelNameEnum {
   POSOpeningShift = 'POSOpeningShift',
   POSClosingShift = 'POSClosingShift',
   EWayBill = 'EWayBill',
+  BankTransaction = 'BankTransaction',
+  BankImportBatch = 'BankImportBatch',
+  BankImportProfile = 'BankImportProfile',
 }
 
 export type ModelName = keyof typeof ModelNameEnum;

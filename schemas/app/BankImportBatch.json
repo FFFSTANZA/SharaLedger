@@ -1,0 +1,30 @@
+{
+  "name": "BankImportBatch",
+  "label": "Bank Import Batch",
+  "naming": "autoincrement",
+  "fields": [
+    {
+      "fieldname": "importDate",
+      "label": "Import Date",
+      "fieldtype": "Datetime",
+      "required": true
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "required": true
+    },
+    {
+      "fieldname": "fileName",
+      "label": "File Name",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "totalTransactions",
+      "label": "Total Transactions",
+      "fieldtype": "Int"
+    }
+  ]
+}

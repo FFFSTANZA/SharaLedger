@@ -505,6 +505,22 @@ export async function selectTextFile(filters?: SelectFileOptions['filters']) {
   return { text, filePath, name };
 }
 
+export async function selectBinaryFile(filters?: SelectFileOptions['filters']) {
+  const options = {
+    title: t`Select File`,
+    filters,
+  };
+  const { success, canceled, filePath, data, name } = await ipc.selectFile(
+    options
+  );
+
+  if (canceled || !success) {
+    return {};
+  }
+
+  return { data, name, filePath };
+}
+
 export enum ShortcutKey {
   enter = 'enter',
   ctrl = 'ctrl',
