@@ -106,7 +106,7 @@
     />
   </div>
 </template>
-<script>
+<script lang="ts">
 import { Report } from 'reports/Report';
 import { isNumeric } from 'src/utils';
 import { languageDirectionKey } from 'src/utils/injectionKeys';
