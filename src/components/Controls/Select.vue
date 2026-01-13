@@ -12,7 +12,7 @@
         dropdownVisible ? 'dark:hover:bg-gray-850' : '',
       ]"
     >
-      <div class="w-full" @click="toggleDropdown">
+      <div ref="triggerRef" class="w-full" @click="toggleDropdown">
         <div
           class="flex items-center justify-between bg-transparent w-full cursor-pointer custom-scroll custom-scroll-thumb2"
           :class="{
@@ -48,9 +48,13 @@
             />
           </svg>
         </div>
+      </div>
+      <Teleport to="body">
         <div
           v-if="dropdownVisible"
-          class="absolute z-10 mt-4 w-60 bg-white dark:bg-gray-850 border border-gray-300 dark:border-gray-700 cursor-pointer rounded-md shadow-lg"
+          ref="dropdownRef"
+          class="z-50 w-60 bg-white dark:bg-gray-850 border border-gray-300 dark:border-gray-700 cursor-pointer rounded-md shadow-lg"
+          style="min-width: 15rem"
         >
           <ul
             class="max-h-40 p-1 overflow-auto custom-scroll custom-scroll-thumb1"
@@ -74,22 +78,23 @@
                 class="mr-1"
               >
                 <path
-                  d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z"
+                  d="M 41.9375 8.625 C 41.273438 8.648438 40.664063 9, 40.3125 9.5625 L 21.5 38.34375 L 9.3125 27.8125 C 8.789063 27.269531 8.003906 27.066406 7.28125 27.292969 C 6.5625 27.515625 6.027344 28.125 5.902344 28.867188 C 5.777344 29.613281 6.078125 30.363281 6.6875 30.8125 L 20.625 42.875 C 21.0625 43.246094 21.640625 43.410156 22.207031 43.328125 C 22.777344 43.242188 23.28125 42.917969 23.59375 42.4375 L 43.6875 11.75 C 44.117188 11.121094 44.152344 10.308594 43.78125 9.644531 C 43.410156 8.984375 42.695313 8.589844 41.9375 8.625 Z"
                 ></path>
               </svg>
               {{ option.label }}
             </li>
           </ul>
         </div>
-      </div>
+      </Teleport>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { createPopper } from '@popperjs/core';
 import Base from './Base.vue';
 
-import { defineComponent } from 'vue';
+import { defineComponent, nextTick } from 'vue';
 import { SelectOption } from 'schemas/types';
 export default defineComponent({
   name: 'Select',
@@ -99,6 +104,7 @@ export default defineComponent({
     return {
       dropdownVisible: false,
       selectValue: this.value,
+      popper: null as any,
     };
   },
   props: {
@@ -116,7 +122,54 @@ export default defineComponent({
       return this.df.options;
     },
   },
+  watch: {
+    dropdownVisible(val) {
+      if (val) {
+        this.setupPopper();
+      } else if (this.popper) {
+        this.popper.destroy();
+        this.popper = null;
+      }
+    },
+  },
+  beforeUnmount() {
+    if (this.popper) {
+      this.popper.destroy();
+    }
+  },
   methods: {
+    setupPopper() {
+      if (!this.$refs.triggerRef || !this.$refs.dropdownRef) {
+        return;
+      }
+
+      if (this.popper) {
+        this.popper.destroy();
+      }
+
+      this.popper = createPopper(
+        this.$refs.triggerRef as Element,
+        this.$refs.dropdownRef as Element,
+        {
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              options: {
+                boundary: 'viewport',
+                padding: 8,
+              },
+            },
+            {
+              name: 'flip',
+              options: {
+                fallbackPlacements: ['top-start', 'top', 'top-end', 'bottom', 'bottom-end'],
+              },
+            },
+          ],
+        }
+      );
+    },
     toggleDropdown() {
       if (!this.closeDropDown) {
         this.dropdownVisible = true;
