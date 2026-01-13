@@ -84,10 +84,7 @@ export default defineComponent({
   },
   methods: {
     goToImport() {
-      routeTo({
-        path: '/import-wizard',
-        query: { importType: 'BankTransaction' }
-      });
+      routeTo('/bank-import');
     },
     goToTransactions() {
       routeTo('/list/BankTransaction');

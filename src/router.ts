@@ -3,6 +3,7 @@ import CommonForm from 'src/pages/CommonForm/CommonForm.vue';
 import Dashboard from 'src/pages/Dashboard/Dashboard.vue';
 import GetStarted from 'src/pages/GetStarted.vue';
 import BankingSetup from 'src/pages/BankingSetup.vue';
+import BankImport from 'src/pages/BankImport.vue';
 import ImportWizard from 'src/pages/ImportWizard.vue';
 import ListView from 'src/pages/ListView/ListView.vue';
 import PrintView from 'src/pages/PrintView/PrintView.vue';
@@ -30,6 +31,11 @@ const routes: RouteRecordRaw[] = [
     path: '/banking-setup',
     name: 'Banking Setup',
     component: BankingSetup,
+  },
+  {
+    path: '/bank-import',
+    name: 'Bank Import',
+    component: BankImport,
   },
   {
     path: `/edit/:schemaName/:name`,

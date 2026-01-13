@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col overflow-hidden w-full">
     <!-- Header -->
-    <PageHeader :title="t`Import Wizard`">
+    <PageHeader :title="t`Bank Statement Import`">
       <DropdownWithActions
         v-if="hasImporter"
         :actions="actions"
@@ -18,53 +18,46 @@
         <feather-icon name="plus" class="w-4 h-4" />
       </Button>
       <Button
-        v-if="hasImporter"
-        :title="t`Save Template`"
-        :icon="true"
-        @click="saveTemplate"
-      >
-        <feather-icon name="download" class="w-4 h-4" />
-      </Button>
-      <Button
         v-if="canImportData"
-        :title="t`Import Data`"
+        :title="t`Import Transactions`"
         type="primary"
         :disabled="errorMessage.length > 0 || isMakingEntries"
         @click="importData"
       >
-        {{ t`Import Data` }}
+        {{ t`Import Transactions` }}
       </Button>
       <Button
-        v-if="importType && !canImportData"
-        :title="t`Select File`"
+        v-if="!canImportData"
+        :title="t`Select Statement File`"
         type="primary"
+        :disabled="!bankAccount"
         @click="selectFile"
       >
-        {{ t`Select File` }}
+        {{ t`Select Statement File` }}
       </Button>
     </PageHeader>
 
-    <!-- Main Body of the Wizard -->
+    <!-- Main Body -->
     <div class="flex text-base w-full flex-col">
-      <!-- Select Import Type -->
+      <!-- Bank Account Selection Row -->
       <div
         class="h-row-largest flex flex-row justify-start items-center w-full gap-2 border-b dark:border-gray-800 p-4"
       >
         <AutoComplete
           :df="{
-            fieldname: 'importType',
-            label: t`Import Type`,
-            fieldtype: 'AutoComplete',
-            options: importableSchemaNames.map((value) => ({
-              value,
-              label: fyo.schemaMap[value]?.label ?? value,
-            })),
+            fieldname: 'bankAccount',
+            label: t`Bank Account`,
+            fieldtype: 'Link',
+            target: 'Account',
+            filters: { accountType: 'Bank' },
           }"
-          class="w-40"
+          class="min-w-64"
           :border="true"
-          :value="importType"
+          :value="bankAccount"
+          :placeholder="t`Select Bank Account`"
+          :required="true"
           size="small"
-          @change="setImportType"
+          @change="(val: string) => setBankAccount(val)"
         />
 
         <p v-if="errorMessage.length > 0" class="text-base ms-2 text-red-500">
@@ -83,7 +76,7 @@
           {{ helperMessage }}{{ fileName ? ',' : '' }}
           <span v-if="fileName" class="font-normal">
             {{ t`check values and click on` }} </span
-          >{{ ' ' }}<span v-if="fileName">{{ t`Import Data.` }}</span>
+          >{{ ' ' }}<span v-if="fileName">{{ t`Import Transactions.` }}</span>
           <span
             v-if="hasImporter && importer.valueMatrix.length > 0"
             class="font-normal"
@@ -204,7 +197,7 @@
           class="ps-4 text-gray-700 dark:text-gray-300 sticky left-0 flex items-center"
           style="height: 62.5px"
         >
-          {{ t`No rows added. Select a file or add rows.` }}
+          {{ t`No rows added. Select a statement file to import.` }}
         </div>
       </div>
     </div>
@@ -289,8 +282,8 @@
             <p class="text-sm text-gray-600 dark:text-gray-400">
               {{
                 success.length === 1
-                  ? t`${success.length} entry imported`
-                  : t`${success.length} entries imported`
+                  ? t`${success.length} transaction imported`
+                  : t`${success.length} transactions imported`
               }}
             </p>
           </div>
@@ -319,8 +312,8 @@
             <p class="text-sm text-gray-600 dark:text-gray-400">
               {{
                 failed.length === 1
-                  ? t`${failed.length} entry failed`
-                  : t`${failed.length} entries failed`
+                  ? t`${failed.length} transaction failed`
+                  : t`${failed.length} transactions failed`
               }}
             </p>
           </div>
@@ -349,7 +342,7 @@
           v-if="failed.length === 0 && success.length === 0"
           class="p-4 text-base dark:text-gray-200"
         >
-          {{ t`No entries were imported.` }}
+          {{ t`No transactions were imported.` }}
         </div>
 
         <!-- Footer Button -->
@@ -375,7 +368,6 @@ import { DocValue } from 'fyo/core/types';
 import { Action } from 'fyo/model/types';
 import { Verb } from 'fyo/telemetry/types';
 import { ValidationError } from 'fyo/utils/errors';
-import { ModelNameEnum } from 'models/types';
 import { OptionField, RawValue, SelectOption } from 'schemas/types';
 import Button from 'src/components/Button.vue';
 import AutoComplete from 'src/components/Controls/AutoComplete.vue';
@@ -389,22 +381,21 @@ import Modal from 'src/components/Modal.vue';
 import PageHeader from 'src/components/PageHeader.vue';
 import { Importer, TemplateField, getColumnLabel } from 'src/importer';
 import { fyo } from 'src/initFyo';
-import { showDialog } from 'src/utils/interactive';
-import { docsPathMap } from 'src/utils/misc';
-import { docsPathRef } from 'src/utils/refs';
-import { getSavePath, selectTextFile } from 'src/utils/ui';
+import { parseStatementFile } from 'src/banking/statementParser';
+import { showDialog, showToast } from 'src/utils/interactive';
+import { selectBinaryFile } from 'src/utils/ui';
 import { defineComponent } from 'vue';
 import Loading from '../components/Loading.vue';
 
-type ImportWizardData = {
+type BankImportData = {
   showColumnPicker: boolean;
   complete: boolean;
   success: string[];
   successOldName: string[];
   failed: { name: string; error: Error }[];
-  file: null | { name: string; filePath: string; text: string };
+  file: null | { name: string; filePath: string };
   nullOrImporter: null | Importer;
-  importType: string;
+  bankAccount: string;
   isMakingEntries: boolean;
   percentLoading: number;
   messageLoading: string;
@@ -433,11 +424,11 @@ export default defineComponent({
       failed: [],
       file: null,
       nullOrImporter: null,
-      importType: '',
+      bankAccount: '',
       isMakingEntries: false,
       percentLoading: 0,
       messageLoading: '',
-    } as ImportWizardData;
+    } as BankImportData;
   },
   computed: {
     gridTemplateColumn(): string {
@@ -482,6 +473,10 @@ export default defineComponent({
             return false;
           }
 
+          if (f.fieldname === 'bankAccount') {
+            return false;
+          }
+
           return f.required;
         })
         .map((f) => getColumnLabel(f));
@@ -498,6 +493,10 @@ export default defineComponent({
         )}`;
       }
 
+      if (!this.bankAccount) {
+        return this.t`Select Bank Account`;
+      }
+
       return '';
     },
     canImportData(): boolean {
@@ -506,9 +505,6 @@ export default defineComponent({
       }
 
       return this.importer.valueMatrix.length > 0;
-    },
-    canSelectFile(): boolean {
-      return !this.file;
     },
     columnCount(): number {
       if (!this.hasImporter) {
@@ -544,6 +540,10 @@ export default defineComponent({
       const map: Map<string, TemplateField[]> = new Map();
 
       for (const value of this.importer.templateFieldsMap.values()) {
+        if (value.fieldname === 'bankAccount') {
+          continue;
+        }
+
         let label = value.schemaLabel;
         if (value.parentSchemaChildField) {
           label = `${value.parentSchemaChildField.label} (${value.schemaLabel})`;
@@ -564,32 +564,6 @@ export default defineComponent({
       }
 
       return this.nullOrImporter as Importer;
-    },
-    importableSchemaNames(): ModelNameEnum[] {
-      const importables = [
-        ModelNameEnum.SalesInvoice,
-        ModelNameEnum.PurchaseInvoice,
-        ModelNameEnum.Payment,
-        ModelNameEnum.Party,
-        ModelNameEnum.Item,
-        ModelNameEnum.JournalEntry,
-        ModelNameEnum.Tax,
-        ModelNameEnum.Account,
-        ModelNameEnum.Address,
-        ModelNameEnum.NumberSeries,
-      ];
-
-      const hasInventory = fyo.doc.singles.AccountingSettings?.enableInventory;
-      if (hasInventory) {
-        importables.push(
-          ModelNameEnum.StockMovement,
-          ModelNameEnum.Shipment,
-          ModelNameEnum.PurchaseReceipt,
-          ModelNameEnum.Location
-        );
-      }
-
-      return importables;
     },
     actions(): Action[] {
       const actions: Action[] = [];
@@ -636,23 +610,23 @@ export default defineComponent({
       return this.file.name;
     },
     helperMessage(): string {
-      if (!this.importType) {
-        return this.t`Set an Import Type`;
+      if (!this.bankAccount) {
+        return this.t`Select a Bank Account`;
       } else if (!this.fileName) {
-        return '';
+        return this.t`Select a statement file`;
       }
 
       return this.fileName;
-    },
-    isSubmittable(): boolean {
-      const schemaName = this.importer.schemaName;
-      return fyo.schemaMap[schemaName]?.isSubmittable ?? false;
     },
     gridColumnTitleDf(): OptionField {
       const options: SelectOption[] = [];
       for (const field of this.importer.templateFieldsMap.values()) {
         const value = field.fieldKey;
         if (!this.importer.templateFieldsPicked.get(value)) {
+          continue;
+        }
+
+        if (field.fieldname === 'bankAccount') {
           continue;
         }
 
@@ -691,30 +665,12 @@ export default defineComponent({
     },
   },
   mounted() {
-    if (fyo.store.isDevelopment) {
-      // @ts-ignore
-      window.iw = this;
-    }
+    this.initializeBankImporter();
 
-    const { importType } = this.$route.query;
-    if (typeof importType === 'string') {
-      this.setImportType(importType);
+    const { bankAccount } = this.$route.query;
+    if (typeof bankAccount === 'string') {
+      this.bankAccount = bankAccount;
     }
-  },
-  activated(): void {
-    docsPathRef.value = docsPathMap.ImportWizard ?? '';
-    const { importType } = this.$route.query;
-    if (typeof importType === 'string' && importType !== this.importType) {
-      this.setImportType(importType);
-    }
-  },
-  deactivated(): void {
-    docsPathRef.value = '';
-    if (!this.complete) {
-      return;
-    }
-
-    this.clear();
   },
   methods: {
     getFieldTitle(vmi: {
@@ -780,9 +736,8 @@ export default defineComponent({
       }
     },
     async showMe(): Promise<void> {
-      const schemaName = this.importer.schemaName;
       this.clear();
-      await this.$router.push(`/list/${schemaName}`);
+      await this.$router.push('/list/BankTransaction');
     },
     clear(): void {
       this.file = null;
@@ -790,22 +745,18 @@ export default defineComponent({
       this.successOldName = [];
       this.failed = [];
       this.nullOrImporter = null;
-      this.importType = '';
+      this.bankAccount = '';
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
       this.messageLoading = '';
+      this.initializeBankImporter();
     },
-    async saveTemplate(): Promise<void> {
-      const template = this.importer.getCSVTemplate();
-      const templateName = this.importType + ' ' + this.t`Template`;
-      const { canceled, filePath } = await getSavePath(templateName, 'csv');
-
-      if (canceled || !filePath) {
-        return;
-      }
-
-      await ipc.saveData(template, filePath);
+    initializeBankImporter(): void {
+      this.nullOrImporter = new Importer('BankTransaction', fyo);
+    },
+    setBankAccount(value: string): void {
+      this.bankAccount = value;
     },
     async preImportValidations(): Promise<boolean> {
       const title = this.t`Cannot Import`;
@@ -853,7 +804,37 @@ export default defineComponent({
       this.isMakingEntries = true;
       this.importer.populateDocs();
 
-      const shouldSubmit = await this.askShouldSubmit();
+      if (this.bankAccount) {
+        for (const doc of this.importer.docs) {
+          doc.bankAccount = this.bankAccount;
+        }
+      }
+
+      const countBeforeHooks = this.importer.docs.length;
+      await this.importer.runBankingHooks();
+      const countAfterHooks = this.importer.docs.length;
+      const skippedCount = countBeforeHooks - countAfterHooks;
+
+      if (skippedCount > 0) {
+        showToast({
+          message: this.t`${skippedCount} duplicate transactions skipped.`,
+          type: 'info',
+        });
+      }
+
+      if (this.importer.docs.length > 0) {
+        const batch = this.fyo.doc.getNewDoc('BankImportBatch', {
+          importDate: new Date().toISOString(),
+          bankAccount: this.importer.docs[0].bankAccount,
+          fileName: this.file?.name,
+          totalTransactions: this.importer.docs.length,
+        });
+        await batch.sync();
+
+        for (const doc of this.importer.docs) {
+          doc.importBatch = batch.name;
+        }
+      }
 
       let doneCount = 0;
       for (const doc of this.importer.docs) {
@@ -861,9 +842,6 @@ export default defineComponent({
         const oldName = doc.name ?? '';
         try {
           await doc.sync();
-          if (shouldSubmit) {
-            await doc.submit();
-          }
           doneCount += 1;
 
           this.success.push(doc.name!);
@@ -875,43 +853,12 @@ export default defineComponent({
         }
       }
 
-      this.fyo.telemetry.log(Verb.Imported, this.importer.schemaName);
+      this.fyo.telemetry.log(Verb.Imported, 'BankTransaction');
       this.isMakingEntries = false;
       this.complete = true;
     },
-    async askShouldSubmit(): Promise<boolean> {
-      if (!this.fyo.schemaMap[this.importType]?.isSubmittable) {
-        return false;
-      }
-
-      let shouldSubmit = false;
-      await showDialog({
-        title: this.t`Submit entries?`,
-        type: 'info',
-        details: this.t`Should entries be submitted after syncing?`,
-        buttons: [
-          {
-            label: this.t`Yes`,
-            action() {
-              shouldSubmit = true;
-            },
-            isPrimary: true,
-          },
-          {
-            label: this.t`No`,
-            action() {
-              return null;
-            },
-            isEscape: true,
-          },
-        ],
-      });
-
-      return shouldSubmit;
-    },
     clearSuccessfullyImportedEntries() {
-      const schemaName = this.importer.schemaName;
-      const nameFieldKey = `${schemaName}.name`;
+      const nameFieldKey = 'BankTransaction.name';
       const nameIndex = this.importer.assignedTemplateFields.findIndex(
         (n) => n === nameFieldKey
       );
@@ -927,17 +874,8 @@ export default defineComponent({
         }
       );
 
-      this.setImportType(this.importType);
+      this.initializeBankImporter();
       this.importer.valueMatrix = failedEntriesValueMatrix;
-    },
-    setImportType(importType: string): void {
-      this.clear();
-      if (!importType) {
-        return;
-      }
-
-      this.importType = importType;
-      this.nullOrImporter = new Importer(importType, fyo);
     },
     setLoadingStatus(entriesMade: number, totalEntries: number): void {
       this.percentLoading = entriesMade / totalEntries;
@@ -946,33 +884,29 @@ export default defineComponent({
         : '';
     },
     async selectFile(): Promise<void> {
-      const options = {
-        title: this.t`Select File`,
-        filters: [{ name: 'CSV', extensions: ['csv', 'tsv', 'txt'] }],
-      };
+      const { data, name, filePath } = await selectBinaryFile([
+        { name: 'CSV', extensions: ['csv'] },
+        { name: 'Excel', extensions: ['xlsx', 'xls'] },
+      ]);
 
-      const { success, data, name, filePath } = await selectTextFile(
-        options,
-        fyo
-      );
-
-      if (!success) {
+      if (!data || !name) {
         return;
       }
 
-      this.file = { name: name ?? '', filePath: filePath ?? '', text: data };
-      const text = data;
-      const isJSON = name?.endsWith('.json') ?? false;
       try {
-        this.importer.selectFile(text, isJSON);
-      } catch (e) {
-        if (e instanceof Error) {
-          showDialog({
-            title: this.t`Could Not Select File`,
-            type: 'error',
-            detail: e.message,
-          });
-        }
+        const parsed = await parseStatementFile(name, data);
+        this.importer.selectParsed(parsed);
+
+        this.file = {
+          name,
+          filePath: filePath || '',
+        };
+      } catch (e: any) {
+        await showDialog({
+          title: this.t`Cannot read file`,
+          detail: e.message || this.t`Bad import data, could not read file.`,
+          type: 'error',
+        });
       }
     },
   },
