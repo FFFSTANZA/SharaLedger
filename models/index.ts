@@ -55,6 +55,9 @@ import { POSOpeningShift } from './inventory/Point of Sale/POSOpeningShift';
 import { POSClosingShift } from './inventory/Point of Sale/POSClosingShift';
 import { IntegrationErrorLog } from './baseModels/IntegrationErrorLog/IntegrationErrorLog';
 import { ItemEnquiry } from './baseModels/ItemEnquiry/ItemEnquiry';
+import { BankTransaction } from './baseModels/BankTransaction/BankTransaction';
+import { BankImportBatch } from './baseModels/BankImportBatch/BankImportBatch';
+import { BankImportProfile } from './baseModels/BankImportProfile/BankImportProfile';
 
 export const models = {
   Account,
@@ -116,6 +119,9 @@ export const models = {
   POSClosingShift,
   // Error Log
   IntegrationErrorLog,
+  BankTransaction,
+  BankImportBatch,
+  BankImportProfile,
 } as ModelMap;
 
 export async function getRegionalModels(

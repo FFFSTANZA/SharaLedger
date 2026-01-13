@@ -168,6 +168,34 @@ function getReportSidebar() {
   };
 }
 
+function getBankingSidebar() {
+  return {
+    label: t`Banking`,
+    name: 'banking',
+    icon: 'bank',
+    route: '/banking-setup',
+    items: [
+      {
+        label: t`Banking Dashboard`,
+        name: 'banking-setup',
+        route: '/banking-setup',
+      },
+      {
+        label: t`Bank Transactions`,
+        name: 'bank-transactions',
+        route: '/list/BankTransaction',
+        schemaName: 'BankTransaction',
+      },
+      {
+        label: t`Import Batches`,
+        name: 'bank-import-batches',
+        route: '/list/BankImportBatch',
+        schemaName: 'BankImportBatch',
+      },
+    ],
+  };
+}
+
 function getCompleteSidebar(): SidebarConfig {
   return [
     {
@@ -324,6 +352,7 @@ function getCompleteSidebar(): SidebarConfig {
         },
       ] as SidebarItem[],
     },
+    getBankingSidebar(),
     getReportSidebar(),
     getInventorySidebar(),
     getPOSSidebar(),

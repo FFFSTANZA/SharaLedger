@@ -1,0 +1,29 @@
+{
+  "name": "BankImportProfile",
+  "label": "Bank Import Profile",
+  "naming": "manual",
+  "fields": [
+    {
+      "fieldname": "name",
+      "label": "Profile Name",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Link",
+      "target": "Account"
+    },
+    {
+      "fieldname": "headerSignature",
+      "label": "Header Signature",
+      "fieldtype": "Small Text"
+    },
+    {
+      "fieldname": "columnMapping",
+      "label": "Column Mapping",
+      "fieldtype": "Small Text"
+    }
+  ]
+}

@@ -67,6 +67,22 @@
           @change="setImportType"
         />
 
+        <AutoComplete
+          v-if="importType === 'BankTransaction'"
+          :df="{
+            fieldname: 'bankAccount',
+            label: t`Bank Account`,
+            fieldtype: 'Link',
+            target: 'Account',
+            filters: { accountType: 'Bank' },
+          }"
+          class="w-48"
+          :border="true"
+          :value="bankAccount"
+          size="small"
+          @change="(val: string) => (bankAccount = val)"
+        />
+
         <p v-if="errorMessage.length > 0" class="text-base ms-2 text-red-500">
           {{ errorMessage }}
         </p>
@@ -389,10 +405,11 @@ import Modal from 'src/components/Modal.vue';
 import PageHeader from 'src/components/PageHeader.vue';
 import { Importer, TemplateField, getColumnLabel } from 'src/importer';
 import { fyo } from 'src/initFyo';
-import { showDialog } from 'src/utils/interactive';
+import { parseStatementFile } from 'src/banking/statementParser';
+import { showDialog, showToast } from 'src/utils/interactive';
 import { docsPathMap } from 'src/utils/misc';
 import { docsPathRef } from 'src/utils/refs';
-import { getSavePath, selectTextFile } from 'src/utils/ui';
+import { getSavePath, selectTextFile, selectBinaryFile } from 'src/utils/ui';
 import { defineComponent } from 'vue';
 import Loading from '../components/Loading.vue';
 
@@ -405,6 +422,7 @@ type ImportWizardData = {
   file: null | { name: string; filePath: string; text: string };
   nullOrImporter: null | Importer;
   importType: string;
+  bankAccount: string;
   isMakingEntries: boolean;
   percentLoading: number;
   messageLoading: string;
@@ -434,6 +452,7 @@ export default defineComponent({
       file: null,
       nullOrImporter: null,
       importType: '',
+      bankAccount: '',
       isMakingEntries: false,
       percentLoading: 0,
       messageLoading: '',
@@ -482,6 +501,14 @@ export default defineComponent({
             return false;
           }
 
+          if (
+            this.importType === 'BankTransaction' &&
+            f.fieldname === 'bankAccount' &&
+            this.bankAccount
+          ) {
+            return false;
+          }
+
           return f.required;
         })
         .map((f) => getColumnLabel(f));
@@ -496,6 +523,10 @@ export default defineComponent({
           .t`Required fields not selected: ${this.requiredNotSelected.join(
           ', '
         )}`;
+      }
+
+      if (this.importType === 'BankTransaction' && !this.bankAccount) {
+        return this.t`Select Bank Account`;
       }
 
       return '';
@@ -577,6 +608,7 @@ export default defineComponent({
         ModelNameEnum.Account,
         ModelNameEnum.Address,
         ModelNameEnum.NumberSeries,
+        ModelNameEnum.BankTransaction,
       ];
 
       const hasInventory = fyo.doc.singles.AccountingSettings?.enableInventory;
@@ -695,9 +727,18 @@ export default defineComponent({
       // @ts-ignore
       window.iw = this;
     }
+
+    const { importType } = this.$route.query;
+    if (typeof importType === 'string') {
+      this.setImportType(importType);
+    }
   },
   activated(): void {
     docsPathRef.value = docsPathMap.ImportWizard ?? '';
+    const { importType } = this.$route.query;
+    if (typeof importType === 'string' && importType !== this.importType) {
+      this.setImportType(importType);
+    }
   },
   deactivated(): void {
     docsPathRef.value = '';
@@ -782,6 +823,7 @@ export default defineComponent({
       this.failed = [];
       this.nullOrImporter = null;
       this.importType = '';
+      this.bankAccount = '';
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
@@ -843,6 +885,38 @@ export default defineComponent({
 
       this.isMakingEntries = true;
       this.importer.populateDocs();
+
+      if (this.importType === 'BankTransaction' && this.bankAccount) {
+        for (const doc of this.importer.docs) {
+          doc.bankAccount = this.bankAccount;
+        }
+      }
+
+      const countBeforeHooks = this.importer.docs.length;
+      await this.importer.runBankingHooks();
+      const countAfterHooks = this.importer.docs.length;
+      const skippedCount = countBeforeHooks - countAfterHooks;
+
+      if (skippedCount > 0) {
+        showToast({
+          message: this.t`${skippedCount} duplicate transactions skipped.`,
+          type: 'info',
+        });
+      }
+
+      if (this.importType === 'BankTransaction' && this.importer.docs.length > 0) {
+        const batch = this.fyo.doc.getNewDoc('BankImportBatch', {
+          importDate: new Date().toISOString(),
+          bankAccount: this.importer.docs[0].bankAccount,
+          fileName: this.file?.name,
+          totalTransactions: this.importer.docs.length,
+        });
+        await batch.sync();
+
+        for (const doc of this.importer.docs) {
+          doc.importBatch = batch.name;
+        }
+      }
 
       const shouldSubmit = await this.askShouldSubmit();
 
@@ -937,29 +1011,31 @@ export default defineComponent({
         : '';
     },
     async selectFile(): Promise<void> {
-      const { text, name, filePath } = await selectTextFile([
+      const { data, name, filePath } = await selectBinaryFile([
         { name: 'CSV', extensions: ['csv'] },
+        { name: 'Excel', extensions: ['xlsx', 'xls'] },
       ]);
 
-      if (!text) {
+      if (!data || !name) {
         return;
       }
 
-      const isValid = this.importer.selectFile(text);
-      if (!isValid) {
+      try {
+        const parsed = await parseStatementFile(name, data);
+        this.importer.selectParsed(parsed);
+
+        this.file = {
+          name,
+          filePath: filePath || '',
+          text: '', // Text not needed anymore as we use data
+        };
+      } catch (e: any) {
         await showDialog({
           title: this.t`Cannot read file`,
-          detail: this.t`Bad import data, could not read file.`,
+          detail: e.message || this.t`Bad import data, could not read file.`,
           type: 'error',
         });
-        return;
       }
-
-      this.file = {
-        name,
-        filePath,
-        text,
-      };
     },
   },
 });

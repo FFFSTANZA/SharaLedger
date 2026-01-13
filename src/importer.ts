@@ -15,6 +15,8 @@ import {
 } from 'schemas/types';
 import { generateCSV, parseCSV } from 'utils/csvParser';
 import { getValueMapFromList } from 'utils/index';
+import { detectColumnMapping, findHeaderRow, parseMoneyValue } from './banking/bankStatementMapping';
+import { TransactionCategorizer } from './banking/autoCategorize';
 
 export type TemplateField = Field & TemplateFieldProps;
 
@@ -121,6 +123,62 @@ export class Importer {
       this.templateFieldsMap.set(f.fieldKey, f);
       this.templateFieldsPicked.set(f.fieldKey, true);
     });
+  }
+
+  async runBankingHooks() {
+    if (this.schemaName !== 'BankTransaction') {
+      return;
+    }
+
+    const categorizer = new TransactionCategorizer(this.fyo);
+    const docsToKeep: Doc[] = [];
+
+    for (const doc of this.docs) {
+      // Ensure withdrawal and deposit are positive absolute values
+      if (doc.withdrawal) doc.withdrawal = Math.abs(doc.withdrawal as number);
+      if (doc.deposit) doc.deposit = Math.abs(doc.deposit as number);
+
+      // 1. Calculate dedupe key
+      const date = doc.date as string;
+      const description = doc.description as string;
+      
+      if (doc.amount && !doc.withdrawal && !doc.deposit) {
+        let amt = doc.amount as number;
+        const indicator = String(doc.indicator || '').toLowerCase();
+        
+        if (indicator.includes('dr') || indicator === 'd') {
+          amt = -Math.abs(amt);
+        } else if (indicator.includes('cr') || indicator === 'c') {
+          amt = Math.abs(amt);
+        }
+
+        if (amt < 0) {
+          doc.withdrawal = Math.abs(amt);
+        } else {
+          doc.deposit = Math.abs(amt);
+        }
+      }
+
+      const amount = (doc.deposit as number || 0) - (doc.withdrawal as number || 0);
+      const dedupeKey = `${doc.bankAccount}|${date}|${description}|${amount}`;
+      doc.dedupeKey = dedupeKey;
+
+      // 2. Check for duplicates
+      const exists = await this.fyo.db.exists('BankTransaction', { dedupeKey });
+      if (exists || docsToKeep.some((d) => d.dedupeKey === dedupeKey)) {
+        continue;
+      }
+
+      // 3. Auto-categorize (suggest suggestedAccount)
+      const suggestedAccount = await categorizer.suggestAccount(description);
+      if (suggestedAccount) {
+        doc.suggestedAccount = suggestedAccount;
+      }
+
+      docsToKeep.push(doc);
+    }
+
+    this.docs = docsToKeep;
   }
 
   selectFile(data: string): boolean {
@@ -354,6 +412,22 @@ export class Importer {
       }
     }
 
+    if (!templateFieldsAssigned && this.schemaName === 'BankTransaction') {
+      const { index, mapping } = findHeaderRow(parsed);
+      if (Object.keys(mapping).length >= 3) {
+        for (const [field, colIndex] of Object.entries(mapping)) {
+          const tf = [...this.templateFieldsMap.values()].find(
+            (f) => f.fieldname === field
+          );
+          if (tf) {
+            this.setTemplateField(colIndex, tf.fieldKey);
+          }
+        }
+        startIndex = index + 1;
+        templateFieldsAssigned = true;
+      }
+    }
+
     if (!templateFieldsAssigned) {
       this.clearAndResizeAssignedTemplateFields(parsed[0].length);
     }
@@ -413,13 +487,11 @@ export class Importer {
 
   updateValueMatrixColumn(index: number) {
     for (const row of this.valueMatrix) {
-      const vmi = this.getValueMatrixItem(index, row[index].rawValue ?? null);
-
-      if (index >= row.length) {
-        row.push(vmi);
-      } else {
-        row[index] = vmi;
+      while (row.length <= index) {
+        row.push({ rawValue: null });
       }
+      const rawValue = row[index].rawValue;
+      row[index] = this.getValueMatrixItem(index, rawValue ?? null);
     }
   }
 
@@ -445,7 +517,14 @@ export class Importer {
     }
 
     try {
-      vmi.value = Converter.toDocValue(rawValue, tf, this.fyo);
+      if (
+        this.schemaName === 'BankTransaction' &&
+        tf.fieldtype === FieldTypeEnum.Currency
+      ) {
+        vmi.value = parseMoneyValue(rawValue);
+      } else {
+        vmi.value = Converter.toDocValue(rawValue, tf, this.fyo);
+      }
     } catch {
       vmi.error = true;
     }
