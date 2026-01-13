@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-25">
-          {{ t`Ask a Question` }}
+          {{ t`Explain this value` }}
         </h2>
         <button
           class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
@@ -61,7 +61,7 @@
         v-else-if="!selectedTemplate && templates.length === 0"
         class="text-center py-8 text-gray-600 dark:text-gray-400"
       >
-        <p>{{ t`No insights available for this value.` }}</p>
+        <p>{{ t`No explanations available for this value.` }}</p>
       </div>
 
       <!-- Narrative Display -->
@@ -191,7 +191,7 @@ export default defineComponent({
         this.narrative = result.narrative;
       } catch (error) {
         console.error('Failed to generate insight:', error);
-        this.narrative = t`Unable to generate insight. Please try again.`;
+        this.narrative = t`Unable to generate explanation. Please try again.`;
       } finally {
         this.loading = false;
       }

@@ -24,11 +24,6 @@ export function isInsightEligible(
     return false;
   }
 
-  // Must be non-zero
-  if (typeof value === 'number' && value === 0) {
-    return false;
-  }
-
   return true;
 }
 
