@@ -85,7 +85,22 @@ export default {
       if (!this.popper) {
         this.popper = createPopper(this.$refs.reference, this.$refs.popover, {
           placement: this.placement,
-          modifiers: [{ name: 'offset', options: { offset: [0, 8] } }],
+          modifiers: [
+            { name: 'offset', options: { offset: [0, 8] } },
+            {
+              name: 'preventOverflow',
+              options: {
+                boundary: 'viewport',
+                padding: 8,
+              },
+            },
+            {
+              name: 'flip',
+              options: {
+                fallbackPlacements: ['top-start', 'top', 'top-end', 'bottom', 'bottom-end'],
+              },
+            },
+          ],
         });
       } else {
         this.popper.update();
