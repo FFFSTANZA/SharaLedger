@@ -31,6 +31,11 @@
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.sales.total) }}
+          <component
+            :is="icons.insight"
+            class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+            @click="triggerInsight('total_sales')"
+          />
         </div>
 
         <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -40,6 +45,11 @@
           class="text-right font-semibold text-violet-600 dark:text-violet-400"
         >
           {{ formatCurrency(salesReceived) }}
+          <component
+            :is="icons.insight"
+            class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+            @click="triggerInsight('sales_received')"
+          />
         </div>
 
         <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -47,6 +57,11 @@
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.receivables.outstanding) }}
+          <component
+            :is="icons.insight"
+            class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+            @click="triggerInsight('receivables')"
+          />
         </div>
 
         <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -126,6 +141,11 @@
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.purchases.total) }}
+          <component
+            :is="icons.insight"
+            class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+            @click="triggerInsight('total_purchases')"
+          />
         </div>
 
         <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -140,6 +160,11 @@
         </div>
         <div class="text-right font-semibold text-gray-900 dark:text-gray-100">
           {{ formatCurrency(summary.payables.outstanding) }}
+          <component
+            :is="icons.insight"
+            class="inline-block w-3 h-3 ml-1 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+            @click="triggerInsight('payables')"
+          />
         </div>
 
         <div class="text-gray-600 dark:text-gray-300 font-medium">
@@ -196,6 +221,7 @@ import { fyo } from 'src/initFyo';
 import { routeTo } from 'src/utils/ui';
 import type { DashboardSummary } from 'utils/db/types';
 import { defineComponent, PropType } from 'vue';
+import Icons from 'src/components/Icons/12';
 
 const DEFAULT_CREDIT_DAYS = 30;
 
@@ -204,6 +230,11 @@ export default defineComponent({
   props: {
     summary: { type: Object as PropType<DashboardSummary>, required: true },
     periodLabel: { type: String, required: true },
+  },
+  data() {
+    return {
+      icons: Icons,
+    };
   },
   computed: {
     salesReceived(): number {
@@ -286,6 +317,19 @@ export default defineComponent({
           }),
         },
       });
+    },
+    async triggerInsight(contextField: string) {
+      // Placeholder for zero-argument accounting feature
+      // This will be connected to the backend insight system in Phase 2
+      console.log(`Triggering insight for: ${contextField}`);
+      
+      // TODO: Connect to InsightService when Phase 2 UI integration is implemented
+      // const insightService = createInsightService(fyo);
+      // const templates = await insightService.getTemplatesForContext('Dashboard', contextField);
+      // if (templates.length > 0) {
+      //   // Show insight modal or popup
+      //   this.showInsightModal(templates[0], contextField);
+      // }
     },
   },
 });
