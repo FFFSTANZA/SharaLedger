@@ -21,6 +21,9 @@ import LoyaltyPointEntry from './app/LoyaltyPointEntry.json';
 import CollectionRulesItems from './app/CollectionRulesItems.json';
 import CouponCode from './app/CouponCode.json';
 import AppliedCouponCodes from './app/AppliedCouponCodes.json';
+import BankImportBatch from './app/BankImportBatch.json';
+import BankImportProfile from './app/BankImportProfile.json';
+import BankTransaction from './app/BankTransaction.json';
 import Payment from './app/Payment.json';
 import PaymentMethod from './app/PaymentMethod.json';
 import PaymentFor from './app/PaymentFor.json';
@@ -185,4 +188,7 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   POSShiftAmounts as Schema,
 
   IntegrationErrorLog as Schema,
+  BankTransaction as Schema,
+  BankImportBatch as Schema,
+  BankImportProfile as Schema,
 ];

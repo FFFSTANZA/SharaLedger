@@ -38,6 +38,7 @@
         v-if="importType && !canImportData"
         :title="t`Select File`"
         type="primary"
+        :disabled="importType === 'BankTransaction' && !bankAccount"
         @click="selectFile"
       >
         {{ t`Select File` }}
@@ -76,9 +77,11 @@
             target: 'Account',
             filters: { accountType: 'Bank' },
           }"
-          class="w-48"
+          class="w-64"
           :border="true"
           :value="bankAccount"
+          :placeholder="t`Select Bank Account`"
+          :required="true"
           size="small"
           @change="(val: string) => (bankAccount = val)"
         />
@@ -503,8 +506,7 @@ export default defineComponent({
 
           if (
             this.importType === 'BankTransaction' &&
-            f.fieldname === 'bankAccount' &&
-            this.bankAccount
+            f.fieldname === 'bankAccount'
           ) {
             return false;
           }
@@ -575,6 +577,13 @@ export default defineComponent({
       const map: Map<string, TemplateField[]> = new Map();
 
       for (const value of this.importer.templateFieldsMap.values()) {
+        if (
+          this.importType === 'BankTransaction' &&
+          value.fieldname === 'bankAccount'
+        ) {
+          continue;
+        }
+
         let label = value.schemaLabel;
         if (value.parentSchemaChildField) {
           label = `${value.parentSchemaChildField.label} (${value.schemaLabel})`;
@@ -685,6 +694,13 @@ export default defineComponent({
       for (const field of this.importer.templateFieldsMap.values()) {
         const value = field.fieldKey;
         if (!this.importer.templateFieldsPicked.get(value)) {
+          continue;
+        }
+
+        if (
+          this.importType === 'BankTransaction' &&
+          field.fieldname === 'bankAccount'
+        ) {
           continue;
         }
 
