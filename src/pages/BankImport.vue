@@ -365,6 +365,7 @@ export default defineComponent({
     /**
      * Convert various date formats to ISO format (YYYY-MM-DD)
      * Handles: dd/MM/yyyy, dd-MM-yyyy, dd.MM.yyyy, MM/dd/yyyy, yyyy-MM-dd
+     * Also handles Indian formats like dd-MM-yy
      */
     convertToISODate(dateStr: string): Date | null {
       if (!dateStr || !dateStr.trim()) {
@@ -373,7 +374,7 @@ export default defineComponent({
 
       const trimmed = dateStr.trim();
 
-      // Try ISO format first
+      // Try ISO format first (YYYY-MM-DD)
       if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
         return new Date(trimmed);
       }
@@ -389,7 +390,7 @@ export default defineComponent({
         }
       }
 
-      // Try MM/dd/yyyy
+      // Try MM/dd/yyyy (US format)
       const mdyMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (mdyMatch) {
         const [, month, day, year] = mdyMatch;
@@ -410,7 +411,19 @@ export default defineComponent({
         return naturalDate2;
       }
 
-      // Fallback to JavaScript's Date parsing
+      // Try "15-Jan-2024" format
+      const dashFormat = DateTime.fromFormat(trimmed, 'dd-MMM-yyyy').toJSDate();
+      if (!Number.isNaN(dashFormat.valueOf())) {
+        return dashFormat;
+      }
+
+      // Try "Jan-15-2024" format
+      const dashFormat2 = DateTime.fromFormat(trimmed, 'MMM-dd-yyyy').toJSDate();
+      if (!Number.isNaN(dashFormat2.valueOf())) {
+        return dashFormat2;
+      }
+
+      // Fallback to JavaScript's Date parsing (more permissive)
       const fallbackDate = new Date(trimmed);
       if (!Number.isNaN(fallbackDate.valueOf())) {
         return fallbackDate;
@@ -519,14 +532,17 @@ export default defineComponent({
             }
 
             const description = txn.description || '';
-            const dedupeKey = `${txn.date}-${description.slice(0, 50)}-${
+            // Use normalized date for dedupe key to avoid format issues
+            const normalizedDate = dateValue.toISOString().split('T')[0];
+            const dedupeKey = `${normalizedDate}-${description.slice(0, 50)}-${
               txn.amount
             }`;
 
-            const existing = await fyo.db.exists('BankTransaction', {
-              dedupeKey,
+            // Check for existing transactions with same dedupeKey
+            const existing = await fyo.db.getAll('BankTransaction', {
+              filters: { dedupeKey },
             });
-            if (existing) {
+            if (existing && existing.length > 0) {
               continue;
             }
 
@@ -534,7 +550,8 @@ export default defineComponent({
             doc.date = dateValue;
             doc.description = description;
             doc.amount = fyo.pesa(txn.amount);
-            doc.type = txn.type === 'credit' ? 'Credit' : 'Debit';
+            // Handle null type - default to 'Debit' for zero amount transactions
+            doc.type = txn.type === 'credit' ? 'Credit' : (txn.type === 'debit' ? 'Debit' : 'Debit');
             doc.balance = txn.balance ? fyo.pesa(txn.balance) : undefined;
             doc.bankName = this.selectedBank || this.detectedBank;
             doc.reference = txn.reference;
@@ -550,11 +567,13 @@ export default defineComponent({
           } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
             const desc = txn.description?.slice(0, 30) ?? 'N/A';
+            console.error(`Failed to import row ${i + 1}:`, error);
             this.importErrors.push(new Error(`Row ${i + 1}: ${errorMsg} - ${desc}`));
           }
         }
 
-        batch.status = this.importErrors.length > 0 ? 'Failed' : 'Completed';
+        // Update batch status - Partial success is still completed with errors
+        batch.status = this.importedCount > 0 ? 'Completed' : 'Failed';
         batch.matchedCount = 0;
         batch.unmatchedCount = this.importedCount;
         if (this.importErrors.length > 0) {
