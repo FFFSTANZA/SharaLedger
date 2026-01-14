@@ -143,6 +143,11 @@ const routes: RouteRecordRaw[] = [
     name: 'Bank Import',
     component: BankImport,
   },
+  {
+    path: '/bank-reconciliation',
+    name: 'Bank Reconciliation',
+    component: () => import('src/pages/BankReconciliation.vue'),
+  },
 ];
 
 const router = createRouter({ routes, history: createWebHistory() });

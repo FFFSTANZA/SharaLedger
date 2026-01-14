@@ -242,18 +242,38 @@
       <div class="w-form">
         <FormHeader :form-title="t`Import Complete`" />
         <hr class="dark:border-gray-800" />
-        <div class="p-6 text-center">
-          <feather-icon name="check-circle" class="w-12 h-12 mx-auto text-green-500 mb-3" />
-          <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ t`${importedCount} transactions imported` }}
-          </p>
-          <p v-if="importErrors.length > 0" class="text-sm text-red-600 mt-2">
-            {{ t`${importErrors.length} transactions failed` }}
-          </p>
+        <div class="p-6">
+          <div class="text-center mb-6">
+            <feather-icon name="check-circle" class="w-12 h-12 mx-auto text-green-500 mb-3" />
+            <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+              {{ t`Bank statement imported successfully` }}
+            </p>
+          </div>
+          
+          <div class="space-y-3">
+            <div class="flex justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded">
+              <span class="text-sm text-green-700 dark:text-green-400">{{ t`Transactions Added` }}</span>
+              <span class="text-sm font-semibold text-green-700 dark:text-green-400">{{ importedCount }}</span>
+            </div>
+            
+            <div v-if="duplicateCount > 0" class="flex justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+              <span class="text-sm text-blue-700 dark:text-blue-400">{{ t`Duplicates Skipped` }}</span>
+              <span class="text-sm font-semibold text-blue-700 dark:text-blue-400">{{ duplicateCount }}</span>
+            </div>
+            
+            <div v-if="importErrors.length > 0" class="flex justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded">
+              <span class="text-sm text-red-700 dark:text-red-400">{{ t`Failed to Import` }}</span>
+              <span class="text-sm font-semibold text-red-700 dark:text-red-400">{{ importErrors.length }}</span>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded text-xs text-blue-700 dark:text-blue-400">
+            {{ t`Next Step: Review transactions in Bank Reconciliation to post to GL` }}
+          </div>
         </div>
         <hr class="dark:border-gray-800" />
         <div class="flex justify-end p-4">
-          <Button type="primary" @click="resetImport">{{ t`Done` }}</Button>
+          <Button type="primary" @click="resetImport">{{ t`Go to Bank Reconciliation` }}</Button>
         </div>
       </div>
     </Modal>
@@ -309,6 +329,7 @@ export default defineComponent({
       isImporting: false,
       importProgress: 0,
       importedCount: 0,
+      duplicateCount: 0,
       importErrors: [] as Error[],
       importComplete: false,
       bankOptions: [
@@ -510,6 +531,7 @@ export default defineComponent({
       this.importProgress = 0;
       this.importedCount = 0;
       this.importErrors = [];
+      this.duplicateCount = 0;
 
       try {
         const batch = fyo.doc.getNewDoc('BankImportBatch');
@@ -532,17 +554,19 @@ export default defineComponent({
             }
 
             const description = txn.description || '';
+            const reference = txn.reference || txn.chequeNo || '';
             // Use normalized date for dedupe key to avoid format issues
             const normalizedDate = dateValue.toISOString().split('T')[0];
-            const dedupeKey = `${normalizedDate}-${description.slice(0, 50)}-${
-              txn.amount
-            }`;
+            // Duplicate check: Date + Amount + Reference/Cheque No
+            const dedupeKey = `${normalizedDate}-${txn.amount}-${reference.slice(0, 100)}`;
 
             // Check for existing transactions with same dedupeKey
             const existing = await fyo.db.getAll('BankTransaction', {
               filters: { dedupeKey },
+              fields: ['dedupeKey']
             });
             if (existing && existing.length > 0) {
+              this.duplicateCount++;
               continue;
             }
 
@@ -560,7 +584,7 @@ export default defineComponent({
             doc.dedupeKey = dedupeKey;
             doc.batch = batch.name;
             doc.importOrder = i + 1;
-            doc.status = 'Unmatched';
+            doc.status = 'Imported'; // Default status after import
 
             await doc.sync();
             this.importedCount++;
@@ -581,8 +605,29 @@ export default defineComponent({
         }
         await batch.sync();
 
+        // Show summary feedback
         this.isImporting = false;
         this.importComplete = true;
+
+        // Success toast with duplicate info
+        const successMessage = this.duplicateCount > 0
+          ? t`Bank statement imported. ${this.importedCount} transactions added, ${this.duplicateCount} duplicates skipped.`
+          : t`Bank statement imported successfully. ${this.importedCount} transactions added.`;
+        
+        if (this.importedCount > 0) {
+          showToast({
+            type: 'success',
+            message: successMessage,
+          });
+          
+          // Also show recommendation message
+          showToast({
+            type: 'info',
+            message: t`Review in Bank Reconciliation to post to GL and reconcile.`,
+            duration: 5000
+          });
+        }
+
       } catch (error) {
         this.isImporting = false;
         showToast({
@@ -594,6 +639,8 @@ export default defineComponent({
     resetImport() {
       this.importComplete = false;
       this.clearAll();
+      // Navigate to Bank Reconciliation
+      this.$router.push('/bank-reconciliation');
     },
     formatCurrency(amount: number): string {
       return fyo.format(amount, 'Currency');
