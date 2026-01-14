@@ -16,7 +16,7 @@
         </p>
       </div>
       <!-- View Toggle -->
-      <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded p-1">
+      <div v-show="!isLoading && !hasError" class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded p-1">
         <button
           @click="viewMode = 'grouped'"
           :class="[
@@ -46,6 +46,7 @@
 
     <!-- Search & Filters -->
     <div
+      v-show="!isLoading && !hasError"
       class="px-4 py-3 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
     >
       <!-- Search Bar -->
@@ -70,20 +71,21 @@
       </div>
 
       <!-- Filter Chips -->
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter options">
         <button
           v-for="filter in availableFilters"
           :key="filter.id"
           @click="toggleFilter(filter.id)"
+          :aria-pressed="activeFilters.includes(filter.id)"
           :class="[
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all',
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-1',
             activeFilters.includes(filter.id)
-              ? `${filter.bgClass} ${filter.textClass} ${filter.borderClass}`
-              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+              ? `${filter.bgClass} ${filter.textClass} ${filter.borderClass} ring-${filter.color}-500`
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 ring-gray-400 dark:ring-gray-600'
           ]"
         >
           <feather-icon :name="filter.icon" class="w-3 h-3" />
-          <span>{{ t(filter.label) }}</span>
+          <span>{{ filter.label }}</span>
           <span
             v-if="filter.count > 0"
             :class="[
@@ -92,6 +94,7 @@
                 ? 'bg-white dark:bg-gray-800 text-current'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-500'
             ]"
+            :aria-label="`${filter.count} ${filter.label}`"
           >
             {{ filter.count }}
           </span>
@@ -104,7 +107,7 @@
           class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
         >
           <feather-icon name="x-circle" class="w-3 h-3" />
-          <span>{{ t('Clear') }}</span>
+          <span>{{ t`Clear` }}</span>
         </button>
       </div>
     </div>
@@ -112,6 +115,7 @@
     <!-- Impact Summary -->
     <div
       v-if="showImpactSummary"
+      v-show="!isLoading && !hasError"
       class="px-4 py-3 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
     >
       <p class="text-xs font-semibold text-gray-500 dark:text-gray-500 mb-2">
@@ -150,6 +154,7 @@
     <!-- Timeline View -->
     <div
       v-if="viewMode === 'timeline' && filteredTimelineEntries.length"
+      v-show="!isLoading && !hasError"
       class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2"
     >
       <div class="relative px-4 py-6">
@@ -226,6 +231,7 @@
     <!-- Related Documents (entries without dates) -->
     <div
       v-if="viewMode === 'timeline' && filteredRelatedDocuments.length"
+      v-show="!isLoading && !hasError"
       class="w-full border-t dark:border-gray-800"
     >
       <div class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-800">
@@ -279,6 +285,7 @@
     <!-- Grouped Entry List -->
     <div
       v-if="viewMode === 'grouped' && filteredSequence.length"
+      v-show="!isLoading && !hasError"
       class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2 border-t dark:border-gray-800"
     >
       <div
@@ -437,9 +444,27 @@
       </div>
     </div>
 
+    <!-- Loading state -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400 dark:border-gray-600"></div>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="hasError" class="p-4 text-center py-12">
+      <feather-icon name="alert-circle" class="w-12 h-12 mx-auto mb-3 text-red-400" />
+      <p class="font-medium mb-2 text-gray-900 dark:text-gray-100">{{ t`Failed to load business events` }}</p>
+      <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">{{ t`Please try again later` }}</p>
+      <button
+        @click="isLoading = true; hasError = false; setLinkedEntries().finally(() => isLoading = false)"
+        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      >
+        {{ t`Retry` }}
+      </button>
+    </div>
+
     <!-- Empty state -->
     <div
-      v-if="
+      v-else-if="
         (viewMode === 'grouped' && !filteredSequence.length) ||
         (viewMode === 'timeline' && !filteredTimelineEntries.length && !filteredRelatedDocuments.length)
       "
@@ -501,6 +526,8 @@ export default defineComponent({
       viewMode: 'grouped' as 'grouped' | 'timeline',
       searchQuery: '',
       activeFilters: [] as LinkedEntryRelationship[],
+      isLoading: true,
+      hasError: false,
     } as {
       entries: Record<
         string,
@@ -510,6 +537,8 @@ export default defineComponent({
       viewMode: 'grouped' | 'timeline';
       searchQuery: string;
       activeFilters: LinkedEntryRelationship[];
+      isLoading: boolean;
+      hasError: boolean;
     };
   },
   computed: {
@@ -588,8 +617,8 @@ export default defineComponent({
         { id: 'payment', label: 'Payments', icon: 'arrow-down-circle', color: 'green' },
         { id: 'return', label: 'Returns', icon: 'corner-up-left', color: 'orange' },
         { id: 'stock_transfer', label: 'Stock', icon: 'truck', color: 'blue' },
-        { id: 'journal_entry', label: 'Journal', icon: 'book', color: 'purple' },
-        { id: 'ledger_entry', label: 'Ledger', icon: 'layers', color: 'gray' },
+        { id: 'journal_entry', label: 'Journal Entries', icon: 'book', color: 'purple' },
+        { id: 'ledger_entry', label: 'Ledger Entries', icon: 'layers', color: 'gray' },
         { id: 'reference', label: 'References', icon: 'link', color: 'gray' },
         { id: 'child_table', label: 'Details', icon: 'list', color: 'blue' },
         { id: 'other', label: 'Other', icon: 'more-horizontal', color: 'gray' },
@@ -616,8 +645,15 @@ export default defineComponent({
     },
   },
   async mounted() {
-    await this.setLinkedEntries();
     this.shortcuts?.set(COMPONENT_NAME, ['Escape'], () => this.$emit('close'));
+    try {
+      await this.setLinkedEntries();
+    } catch (error) {
+      console.error('Failed to load linked entries:', error);
+      this.hasError = true;
+    } finally {
+      this.isLoading = false;
+    }
   },
   unmounted() {
     this.shortcuts?.delete(COMPONENT_NAME);
