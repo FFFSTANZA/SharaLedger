@@ -17,8 +17,7 @@
       "fieldname": "importDate",
       "label": "Import Date",
       "fieldtype": "Datetime",
-      "required": true,
-      "default": "now"
+      "required": true
     },
     {
       "fieldname": "totalTransactions",
