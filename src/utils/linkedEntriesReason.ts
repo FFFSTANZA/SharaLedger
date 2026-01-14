@@ -426,10 +426,78 @@ async function getQuoteReason(
 function getDefaultReason(sourceDoc: Doc, linkedDoc: LinkedDoc): LinkedEntryReason {
   const schemaLabel =
     sourceDoc.fyo.schemaMap[linkedDoc.schemaName]?.label || linkedDoc.schemaName;
+  const name = linkedDoc.name as string | undefined;
+
+  // Handle reference documents (Party, Item, Account, Location)
+  if (linkedDoc.schemaName === ModelNameEnum.Party) {
+    const partyName = name;
+    const role = (linkedDoc as any).role as string | undefined;
+    return {
+      reason: role ? `${role}: ${partyName}` : partyName,
+      impact: 'Party record',
+      relationship: 'reference',
+      icon: 'user',
+      color: 'blue',
+    };
+  }
+
+  if (linkedDoc.schemaName === ModelNameEnum.Item) {
+    const itemName = name;
+    const itemType = (linkedDoc as any).itemType as string | undefined;
+    return {
+      reason: itemType ? `${itemType}: ${itemName}` : itemName,
+      impact: 'Item record',
+      relationship: 'reference',
+      icon: 'box',
+      color: 'blue',
+    };
+  }
+
+  if (linkedDoc.schemaName === ModelNameEnum.Account) {
+    const accountName = name;
+    const rootType = (linkedDoc as any).rootType as string | undefined;
+    return {
+      reason: rootType ? `${rootType}: ${accountName}` : accountName,
+      impact: 'Account record',
+      relationship: 'ledger_entry',
+      icon: 'layers',
+      color: 'purple',
+    };
+  }
+
+  if (linkedDoc.schemaName === ModelNameEnum.Location) {
+    const locationName = name;
+    return {
+      reason: locationName,
+      impact: 'Location record',
+      relationship: 'reference',
+      icon: 'map-pin',
+      color: 'blue',
+    };
+  }
+
+  // Default fallback for other types
+  const party = linkedDoc.party as string | undefined;
+  const item = linkedDoc.item as string | undefined;
+  const account = linkedDoc.account as string | undefined;
+
+  let reason = `Related ${schemaLabel.toLowerCase()}`;
+  let impact = 'Referenced document';
+
+  // Add context based on schema type
+  if (party) {
+    reason = `${schemaLabel} for ${party}`;
+  } else if (item) {
+    reason = `${schemaLabel}: ${item}`;
+  } else if (account) {
+    reason = `${schemaLabel}: ${account}`;
+  } else if (name) {
+    reason = `${schemaLabel}: ${name}`;
+  }
 
   return {
-    reason: `Related ${schemaLabel.toLowerCase()}`,
-    impact: 'Referenced document',
+    reason,
+    impact,
     relationship: 'reference',
     icon: 'link',
     color: 'gray',
