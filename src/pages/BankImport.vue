@@ -18,14 +18,6 @@
       >
         {{ t`Clear` }}
       </Button>
-      <Button
-        v-if="transactions.length === 0"
-        :title="t`Import Statement`"
-        type="primary"
-        @click="selectFile"
-      >
-        {{ t`Import Statement` }}
-      </Button>
     </PageHeader>
 
     <!-- Main Content -->
@@ -137,16 +129,16 @@
               {{ t`Import Bank Statement` }}
             </h3>
             <p class="text-gray-600 dark:text-gray-400 mb-6">
-              {{ t`Upload your bank statement (CSV or Excel) to import transactions directly into your accounting` }}
+              {{ t`Sample CSV template available for download` }}
             </p>
-            <Button type="primary" size="large" @click="selectFile">
+            <Button type="primary" size="large" @click="downloadSampleCSV">
               <template #icon>
-                <feather-icon name="upload" class="w-5 h-5 mr-2" />
+                <feather-icon name="download" class="w-5 h-5 mr-2" />
               </template>
-              {{ t`Select File` }}
+              {{ t`Download Sample CSV` }}
             </Button>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
-              {{ t`Supports CSV, XLSX and XLS formats` }}
+              {{ t`Import CSV, XLSX or XLS files with transactions` }}
             </p>
           </div>
         </div>
@@ -367,46 +359,43 @@ export default defineComponent({
     },
   },
   methods: {
-    async selectFile() {
-      const { success, canceled, data, name } = await ipc.selectFile({
-        title: t`Select Bank Statement`,
-        filters: [
-          { name: 'CSV Files', extensions: ['csv', 'txt'] },
-          { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
-          { name: 'All Files', extensions: ['*'] },
-        ],
-      });
-
-      if (canceled || !success || !data) {
-        return;
-      }
-
-      this.fileName = name;
-
+    async downloadSampleCSV() {
       try {
-        const result = parseStatementFile(name, data);
-        this.parsedHeaders = result.headers;
-        this.transactions = result.transactions;
-        this.detectedBank =
-          result.bankName || detectBankType(result.headers, result.rawRows);
-        this.selectedBank = this.detectedBank;
+        const result = await ipc.invoke('download-sample-file', 'bank-import-sample.csv');
+        
+        if (!result.success) {
+          showToast({
+            type: 'error',
+            message: t`Failed to download sample CSV`,
+          });
+          return;
+        }
 
-        const autoMapped = autoMapColumns(result.headers);
-        this.columnMapping = autoMapped;
+        // Save the file using the save dialog
+        const saveResult = await ipc.invoke('get-save-filepath', {
+          title: t`Save Sample CSV`,
+          defaultPath: result.fileName,
+          filters: [
+            { name: 'CSV Files', extensions: ['csv'] },
+            { name: 'All Files', extensions: ['*'] },
+          ],
+        });
 
-        this.displayTransactions = this.transactions.map((txn) => ({
-          ...txn,
-          category: '',
-        }));
+        if (saveResult.canceled || !saveResult.filePath) {
+          return;
+        }
+
+        // Write the file
+        await ipc.invoke('save-data', result.data.toString('utf-8'), saveResult.filePath);
 
         showToast({
           type: 'success',
-          message: t`Loaded ${this.transactions.length} transactions`,
+          message: t`Sample CSV downloaded successfully`,
         });
       } catch (error) {
         showToast({
           type: 'error',
-          message: t`Failed to parse file: ${(error as Error).message}`,
+          message: t`Failed to download sample CSV: ${(error as Error).message}`,
         });
       }
     },

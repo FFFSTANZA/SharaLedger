@@ -252,6 +252,53 @@ export default function registerIpcMainActionListeners(main: Main) {
   });
 
   ipcMain.handle(
+    IPC_ACTIONS.DOWNLOAD_SAMPLE_FILE,
+    async (_, fileName: string) => {
+      const response = {
+        success: false,
+        data: Buffer.from('', 'utf-8'),
+        fileName: '',
+      };
+
+      try {
+        // Map file names to their content
+        const sampleFiles: Record<string, string> = {
+          'bank-import-sample.csv': `Date,Description,Amount,Balance,Type,Reference,Cheque No
+2024-01-15,Payment from Customer ABC,50000.00,150000.00,Credit,INV-001,
+2024-01-16,Office Rent Payment,-25000.00,125000.00,Debit,RENT-001,
+2024-01-17,Purchase from Vendor XYZ,-15000.00,110000.00,Debit,PO-001,
+2024-01-18,Bank Charges,-500.00,109500.00,Debit,CHG-001,
+2024-01-19,Salary Payment,-75000.00,34500.00,Debit,SAL-001,
+2024-01-20,Electricity Bill Payment,-8000.00,26500.00,Debit,ELEC-001,
+2024-01-21,Payment from Customer DEF,25000.00,51500.00,Credit,INV-002,
+2024-01-22,Internet and Phone Bill,-2500.00,49000.00,Debit,NET-001,
+2024-01-23,Office Supplies Purchase,-3500.00,45500.00,Debit,SUP-001,
+2024-01-24,Fuel Expense,-2000.00,43500.00,Debit,FUEL-001,
+2024-01-25,Client Payment Received,40000.00,83500.00,Credit,CONS-001,
+2024-01-26,Tax Payment,-12000.00,71500.00,Debit,TAX-001,
+2024-01-27,Insurance Premium,-6000.00,65500.00,Debit,INS-001,
+2024-01-28,Maintenance Expense,-1500.00,64000.00,Debit,MAINT-001,
+2024-01-29,Professional Fees,-8000.00,56000.00,Debit,PROF-001,
+2024-01-30,Marketing Expense,-4000.00,52000.00,Debit,MARK-001,
+2024-01-31,Interest Income,250.00,52250.00,Credit,INT-001,`,
+        };
+
+        const fileContent = sampleFiles[fileName];
+        if (!fileContent) {
+          return response;
+        }
+
+        response.success = true;
+        response.data = Buffer.from(fileContent, 'utf-8');
+        response.fileName = fileName;
+        return response;
+      } catch (error) {
+        return response;
+      }
+    }
+  );
+
+  ipcMain.handle(
     IPC_ACTIONS.SEND_API_REQUEST,
     async (e, endpoint: string, options: RequestInit | undefined) => {
       return sendAPIRequest(endpoint, options);
