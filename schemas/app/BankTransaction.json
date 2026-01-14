@@ -53,18 +53,43 @@
       "fieldname": "status",
       "label": "Status",
       "fieldtype": "Select",
-      "default": "Unmatched",
+      "default": "Imported",
       "options": [
-        { "value": "Unmatched", "label": "Unmatched" },
-        { "value": "Matched", "label": "Matched" },
-        { "value": "Posted", "label": "Posted" }
+        { "value": "Imported", "label": "Imported" },
+        { "value": "Suggested", "label": "Suggested" },
+        { "value": "Posted", "label": "Posted" },
+        { "value": "Reconciled", "label": "Reconciled" }
       ]
     },
     {
       "fieldname": "matchedDocument",
       "label": "Matched Document",
       "fieldtype": "Link",
-      "target": "Payment"
+      "target": "Payment",
+      "hidden": true
+    },
+    {
+      "fieldname": "linkedVoucher",
+      "label": "Linked Voucher",
+      "fieldtype": "Dynamic Link",
+      "target": "DocType"
+    },
+    {
+      "fieldname": "suggestedLedger",
+      "label": "Suggested Ledger",
+      "fieldtype": "Link",
+      "target": "Account"
+    },
+    {
+      "fieldname": "suggestedVoucherType",
+      "label": "Suggested Voucher Type",
+      "fieldtype": "Select",
+      "options": [
+        { "value": "Payment", "label": "Payment" },
+        { "value": "Receipt", "label": "Receipt" },
+        { "value": "Transfer", "label": "Transfer" },
+        { "value": "Journal Entry", "label": "Journal Entry" }
+      ]
     },
     {
       "fieldname": "category",

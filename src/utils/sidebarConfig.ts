@@ -373,6 +373,11 @@ function getCompleteSidebar(): SidebarConfig {
               route: '/list/BankImportBatch',
               schemaName: 'BankImportBatch',
             },
+            {
+              label: t`Bank Reconciliation`,
+              name: 'bank-reconciliation',
+              route: '/bank-reconciliation',
+            },
           ] as SidebarItem[],
         },
         {
