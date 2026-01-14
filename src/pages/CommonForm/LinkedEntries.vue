@@ -12,7 +12,7 @@
           <feather-icon name="x" class="w-4 h-4" />
         </Button>
         <p class="text-xl font-semibold text-gray-600 dark:text-gray-400">
-          {{ t`Linked Entries` }}
+          {{ t`Business Event` }}
         </p>
       </div>
       <!-- View Toggle -->
@@ -40,6 +40,71 @@
         >
           <feather-icon name="clock" class="w-3 h-3 inline-block mr-1" />
           {{ t`Timeline` }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div
+      class="px-4 py-3 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
+    >
+      <!-- Search Bar -->
+      <div class="relative mb-3">
+        <feather-icon
+          name="search"
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+        />
+        <input
+          v-model="searchQuery"
+          type="text"
+          :placeholder="t`Search by name, party, or reason...`"
+          class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100"
+        />
+        <button
+          v-if="searchQuery"
+          @click="searchQuery = ''"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+        >
+          <feather-icon name="x" class="w-4 h-4" />
+        </button>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          v-for="filter in availableFilters"
+          :key="filter.id"
+          @click="toggleFilter(filter.id)"
+          :class="[
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all',
+            activeFilters.includes(filter.id)
+              ? `${filter.bgClass} ${filter.textClass} ${filter.borderClass}`
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+          ]"
+        >
+          <feather-icon :name="filter.icon" class="w-3 h-3" />
+          <span>{{ t(filter.label) }}</span>
+          <span
+            v-if="filter.count > 0"
+            :class="[
+              'ml-1 px-1.5 py-0.5 rounded-full text-[10px]',
+              activeFilters.includes(filter.id)
+                ? 'bg-white dark:bg-gray-800 text-current'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-500'
+            ]"
+          >
+            {{ filter.count }}
+          </span>
+        </button>
+
+        <!-- Clear Filters Button -->
+        <button
+          v-if="searchQuery || activeFilters.length"
+          @click="clearFilters"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+        >
+          <feather-icon name="x-circle" class="w-3 h-3" />
+          <span>{{ t('Clear') }}</span>
         </button>
       </div>
     </div>
@@ -84,7 +149,7 @@
 
     <!-- Timeline View -->
     <div
-      v-if="viewMode === 'timeline' && timelineEntries.length"
+      v-if="viewMode === 'timeline' && filteredTimelineEntries.length"
       class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2"
     >
       <div class="relative px-4 py-6">
@@ -95,7 +160,7 @@
 
         <!-- Timeline entries -->
         <div
-          v-for="(entry, index) of timelineEntries"
+          v-for="(entry, index) of filteredTimelineEntries"
           :key="entry.name + entry.schemaName"
           class="relative mb-6 pl-8"
         >
@@ -158,13 +223,66 @@
       </div>
     </div>
 
+    <!-- Related Documents (entries without dates) -->
+    <div
+      v-if="viewMode === 'timeline' && filteredRelatedDocuments.length"
+      class="w-full border-t dark:border-gray-800"
+    >
+      <div class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-800">
+        <p class="text-xs font-semibold text-gray-500 dark:text-gray-500">
+          {{ t`Related Documents` }}
+        </p>
+      </div>
+      <div class="p-4 grid grid-cols-1 gap-2">
+        <div
+          v-for="doc in filteredRelatedDocuments"
+          :key="doc.name + doc.schemaName"
+          class="flex items-center gap-3 p-3 bg-white dark:bg-gray-875 rounded-lg border dark:border-gray-800 cursor-pointer hover:shadow-md transition-shadow"
+          @click="routeTo(doc.schemaName, doc.name)"
+        >
+          <!-- Icon -->
+          <div
+            class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+            :class="`bg-${doc.reason.color}-100 dark:bg-${doc.reason.color}-900/30`"
+          >
+            <feather-icon
+              :name="doc.reason.icon"
+              :class="`text-${doc.reason.color}-600 dark:text-${doc.reason.color}-400`"
+              class="w-5 h-5"
+            />
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                {{ doc.name }}
+              </p>
+              <span class="text-xs text-gray-400 dark:text-gray-600 flex-shrink-0 ml-2">
+                {{ getSchemaLabel(doc.schemaName) }}
+              </span>
+            </div>
+            <p
+              v-if="doc.reason.reason"
+              class="text-xs text-gray-600 dark:text-gray-400 truncate"
+            >
+              {{ doc.reason.reason }}
+            </p>
+          </div>
+
+          <!-- Chevron -->
+          <feather-icon name="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0" />
+        </div>
+      </div>
+    </div>
+
     <!-- Grouped Entry List -->
     <div
-      v-if="viewMode === 'grouped' && sequence.length"
+      v-if="viewMode === 'grouped' && filteredSequence.length"
       class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2 border-t dark:border-gray-800"
     >
       <div
-        v-for="sn of sequence"
+        v-for="sn of filteredSequence"
         :key="sn"
         class="border-b dark:border-gray-800 p-4 overflow-auto"
       >
@@ -179,7 +297,7 @@
           >
             {{ fyo.schemaMap[sn]?.label ?? sn
             }}<span class="font-normal">{{
-              ` – ${entries[sn].details.length}`
+              ` – ${getFilteredDetails(sn).length}`
             }}</span>
           </h2>
           <feather-icon
@@ -195,7 +313,7 @@
         >
           <!-- Entry -->
           <div
-            v-for="e of entries[sn].details"
+            v-for="e of getFilteredDetails(sn)"
             :key="String(e.name) + sn"
             class="p-3 text-sm cursor-pointer border-b last:border-0 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-875"
             @click="routeTo(sn, String(e.name))"
@@ -322,12 +440,21 @@
     <!-- Empty state -->
     <div
       v-if="
-        (viewMode === 'grouped' && !sequence.length) ||
-        (viewMode === 'timeline' && !timelineEntries.length)
+        (viewMode === 'grouped' && !filteredSequence.length) ||
+        (viewMode === 'timeline' && !filteredTimelineEntries.length && !filteredRelatedDocuments.length)
       "
       class="p-4 text-sm text-gray-600 dark:text-gray-400"
     >
-      {{ t`No linked entries found` }}
+      <div v-if="searchQuery || activeFilters.length" class="text-center py-8">
+        <feather-icon name="search" class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+        <p class="font-medium mb-2">{{ t`No matching business events` }}</p>
+        <p class="text-xs">{{ t`Try adjusting your filters or search query` }}</p>
+      </div>
+      <div v-else class="text-center py-8">
+        <feather-icon name="link" class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+        <p class="font-medium mb-2">{{ t`No business events found` }}</p>
+        <p class="text-xs">{{ t`This document has no related entries` }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -344,10 +471,11 @@ import {
   getLinkedEntryReason,
   getLinkedEntriesImpactSummary,
   LinkedEntryReason,
+  LinkedEntryRelationship,
 } from 'src/utils/linkedEntriesReason';
 import { PropType, defineComponent, inject } from 'vue';
 
-const COMPONENT_NAME = 'LinkedEntries';
+const COMPONENT_NAME = 'BusinessEvent';
 
 interface EntryDetail extends Record<string, unknown> {
   name: string;
@@ -371,6 +499,8 @@ export default defineComponent({
       entries: {},
       allReasons: [] as LinkedEntryReason[],
       viewMode: 'grouped' as 'grouped' | 'timeline',
+      searchQuery: '',
+      activeFilters: [] as LinkedEntryRelationship[],
     } as {
       entries: Record<
         string,
@@ -378,6 +508,8 @@ export default defineComponent({
       >;
       allReasons: LinkedEntryReason[];
       viewMode: 'grouped' | 'timeline';
+      searchQuery: string;
+      activeFilters: LinkedEntryRelationship[];
     };
   },
   computed: {
@@ -394,6 +526,11 @@ export default defineComponent({
       }
 
       return seq;
+    },
+    filteredSequence(): string[] {
+      return this.sequence.filter((schemaName) => {
+        return this.getFilteredDetails(schemaName).length > 0;
+      });
     },
     timelineEntries(): TimelineEntry[] {
       const allEntries: TimelineEntry[] = [];
@@ -419,6 +556,52 @@ export default defineComponent({
         const dateB = b.date ? new Date(b.date).getTime() : 0;
         return dateB - dateA;
       });
+    },
+    filteredTimelineEntries(): TimelineEntry[] {
+      return this.timelineEntries.filter((entry) => this.passesFilters(entry));
+    },
+    relatedDocuments(): TimelineEntry[] {
+      const allDocs: TimelineEntry[] = [];
+
+      // Collect all entries WITHOUT dates
+      for (const schemaName in this.entries) {
+        const entryGroup = this.entries[schemaName];
+        if (!entryGroup?.details) continue;
+
+        for (const detail of entryGroup.details) {
+          if (!detail.date) {
+            allDocs.push({
+              ...detail,
+              schemaName,
+            });
+          }
+        }
+      }
+
+      return allDocs;
+    },
+    filteredRelatedDocuments(): TimelineEntry[] {
+      return this.relatedDocuments.filter((doc) => this.passesFilters(doc));
+    },
+    availableFilters() {
+      const filterConfigs = [
+        { id: 'payment', label: 'Payments', icon: 'arrow-down-circle', color: 'green' },
+        { id: 'return', label: 'Returns', icon: 'corner-up-left', color: 'orange' },
+        { id: 'stock_transfer', label: 'Stock', icon: 'truck', color: 'blue' },
+        { id: 'journal_entry', label: 'Journal', icon: 'book', color: 'purple' },
+        { id: 'ledger_entry', label: 'Ledger', icon: 'layers', color: 'gray' },
+        { id: 'reference', label: 'References', icon: 'link', color: 'gray' },
+        { id: 'child_table', label: 'Details', icon: 'list', color: 'blue' },
+        { id: 'other', label: 'Other', icon: 'more-horizontal', color: 'gray' },
+      ] as const;
+
+      return filterConfigs.map((config) => ({
+        ...config,
+        count: this.getFilterCount(config.id),
+        bgClass: `bg-${config.color}-100 dark:bg-${config.color}-900/30`,
+        textClass: `text-${config.color}-700 dark:text-${config.color}-300`,
+        borderClass: `border-${config.color}-300 dark:border-${config.color}-700`,
+      }));
     },
     impactSummary() {
       return getLinkedEntriesImpactSummary(this.allReasons);
@@ -489,6 +672,68 @@ export default defineComponent({
       }
 
       this.allReasons = allReasons;
+    },
+    getFilteredDetails(schemaName: string): EntryDetail[] {
+      const details = this.entries[schemaName]?.details || [];
+      return details.filter((detail) => this.passesFilters({ ...detail, schemaName }));
+    },
+    passesFilters(entry: EntryDetail & { schemaName: string }): boolean {
+      const { reason, name, party, account, item } = entry;
+
+      // Check relationship filter
+      if (this.activeFilters.length > 0 && reason?.relationship) {
+        if (!this.activeFilters.includes(reason.relationship)) {
+          return false;
+        }
+      }
+
+      // Check search query
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        const searchableText = [
+          name,
+          party,
+          account,
+          item,
+          reason?.reason,
+          reason?.impact,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        if (!searchableText.includes(query)) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    getFilterCount(filterId: LinkedEntryRelationship): number {
+      let count = 0;
+
+      for (const schemaName in this.entries) {
+        const details = this.entries[schemaName]?.details || [];
+        for (const detail of details) {
+          if (detail.reason?.relationship === filterId) {
+            count++;
+          }
+        }
+      }
+
+      return count;
+    },
+    toggleFilter(filterId: LinkedEntryRelationship) {
+      const index = this.activeFilters.indexOf(filterId);
+      if (index > -1) {
+        this.activeFilters.splice(index, 1);
+      } else {
+        this.activeFilters.push(filterId);
+      }
+    },
+    clearFilters() {
+      this.searchQuery = '';
+      this.activeFilters = [];
     },
   },
 });
@@ -579,6 +824,11 @@ const linkEntryDisplayFields: Record<string, string[]> = {
     'location',
     'quantity',
   ],
+  // Reference Documents (no dates)
+  [ModelNameEnum.Party]: ['name', 'role'],
+  [ModelNameEnum.Item]: ['name', 'itemType'],
+  [ModelNameEnum.Account]: ['name', 'rootType'],
+  [ModelNameEnum.Location]: ['name'],
 };
 </script>
 <style scoped>

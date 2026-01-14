@@ -31,7 +31,7 @@
       <Button
         v-if="canShowLinks"
         :icon="true"
-        :title="t`View linked entries`"
+        :title="t`View business event`"
         @click="showLinks = true"
       >
         <feather-icon name="link" class="w-4 h-4"></feather-icon>
