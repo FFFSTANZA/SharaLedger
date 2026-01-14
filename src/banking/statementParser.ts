@@ -135,6 +135,7 @@ function parseRowToTransaction(
     return null;
   }
 
+  // Allow 0 amount transactions (some banks have these)
   const amount = parseAmount(amountStr);
   if (isNaN(amount)) {
     return null;
@@ -161,6 +162,8 @@ function findDateColumn(row: string[], headers: string[]): number {
     'value date',
     'dt',
     'datetime',
+    'trans date',
+    'tran date',
   ];
 
   // First try to find by header
@@ -171,12 +174,13 @@ function findDateColumn(row: string[], headers: string[]): number {
     }
   }
 
-  // Try to detect by content
+  // Try to detect by content - be more flexible with date patterns
   const datePatterns = [
-    /^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/,
-    /^\d{4}[\/\-\.]\d{1,2}[\/\-\.]\d{1,2}$/,
-    /^\d{1,2}\s+\w+\s+\d{2,4}$/,
-    /^\w+\s+\d{1,2},?\s+\d{2,4}$/,
+    /^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/, // dd/mm/yyyy, dd-mm-yyyy
+    /^\d{4}[\/\-\.]\d{1,2}[\/\-\.]\d{1,2}$/, // yyyy/mm/dd
+    /^\d{1,2}\s+\w{3}\s+\d{2,4}$/, // 15 Jan 2024
+    /^\w{3}\s+\d{1,2},?\s+\d{2,4}$/, // Jan 15, 2024
+    /^\d{1,2}\-\w{3}\-\d{2,4}$/, // 15-Jan-2024
   ];
 
   for (let i = 0; i < row.length; i++) {
@@ -199,6 +203,8 @@ function findDescriptionColumn(row: string[], headers: string[]): number {
     'remarks',
     'narration',
     'transaction',
+    'description of transaction',
+    'transaction details',
   ];
 
   for (let i = 0; i < headers.length; i++) {
@@ -214,7 +220,8 @@ function findDescriptionColumn(row: string[], headers: string[]): number {
 
   for (let i = 0; i < row.length; i++) {
     const cell = row[i]?.trim() || '';
-    if (cell.length > maxLength && !/^\d+[\.\,\-]?\d*$/.test(cell)) {
+    // Skip date, amount, and balance columns when looking for description
+    if (cell.length > maxLength && !/^\d+[\.\,\-]?\d*$/.test(cell) && !/^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/.test(cell)) {
       maxLength = cell.length;
       maxLengthIndex = i;
     }
@@ -231,10 +238,12 @@ function findAmountColumn(row: string[], headers: string[]): number {
     'rs',
     'inr',
     '₹',
-    'credit',
-    'debit',
+    'debit amount',
+    'credit amount',
     'withdrawal',
     'deposit',
+    'debit',
+    'credit',
   ];
 
   for (let i = 0; i < headers.length; i++) {
@@ -247,10 +256,12 @@ function findAmountColumn(row: string[], headers: string[]): number {
     }
   }
 
-  // Try to detect by content
+  // Try to detect by content - be more flexible with amount patterns
   for (let i = 0; i < row.length; i++) {
     const cell = row[i]?.trim() || '';
-    if (/^[\-\+]?[\d,]+\.?\d*$/.test(cell.replace(/[₹$€£]/g, '').trim())) {
+    // Match numbers with optional decimal, commas, currency symbols, Cr/Dr, parentheses
+    const cleaned = cell.replace(/[₹$€£]/g, '').trim();
+    if (/^[\-\+\(]?[\d,]+\.?\d*[\)]?(?:cr|dr)?$/i.test(cleaned)) {
       return i;
     }
   }
@@ -286,14 +297,14 @@ function parseAmount(value: string): number {
     .replace(/\s/g, '')
     .trim();
 
-  // Handle Cr/Dr notation
+  // Handle Cr/Dr notation (common in Indian banks)
   if (cleaned.toLowerCase().endsWith('cr')) {
     cleaned = cleaned.slice(0, -2);
   } else if (cleaned.toLowerCase().endsWith('dr')) {
     cleaned = '-' + cleaned.slice(0, -2);
   }
 
-  // Handle parentheses for negative
+  // Handle parentheses for negative numbers: (123.45) -> -123.45
   if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
     cleaned = '-' + cleaned.slice(1, -1);
   }
@@ -331,6 +342,7 @@ function parseAmount(value: string): number {
 function getTransactionType(amount: number): 'credit' | 'debit' | null {
   if (amount > 0) return 'credit';
   if (amount < 0) return 'debit';
+  // For zero amount transactions, return null - will need to be determined from context
   return null;
 }
 
