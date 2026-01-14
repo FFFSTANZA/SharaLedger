@@ -1,0 +1,49 @@
+{
+  "name": "BankImportProfile",
+  "label": "Bank Import Profile",
+  "fields": [
+    {
+      "fieldname": "bankName",
+      "label": "Bank Name",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "columnMapping",
+      "label": "Column Mapping",
+      "fieldtype": "Text",
+      "required": true
+    },
+    {
+      "fieldname": "headerSignature",
+      "label": "Header Signature",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "dateFormat",
+      "label": "Date Format",
+      "fieldtype": "Data",
+      "default": "dd/MM/yyyy"
+    },
+    {
+      "fieldname": "lastUsed",
+      "label": "Last Used",
+      "fieldtype": "Datetime"
+    },
+    {
+      "fieldname": "useCount",
+      "label": "Use Count",
+      "fieldtype": "Int",
+      "default": 0
+    },
+    {
+      "fieldname": "isActive",
+      "label": "Is Active",
+      "fieldtype": "Check",
+      "default": true
+    }
+  ],
+  "keywordFields": ["bankName", "headerSignature"],
+  "linkDisplayField": "bankName",
+  "naming": "bankName"
+}

@@ -79,6 +79,9 @@ import IntegrationErrorLog from './app/IntegrationErrorLog.json';
 import ItemGroup from './app/ItemGroup.json';
 import { Schema, SchemaStub } from './types';
 import ItemEnquiry from './app/ItemEnquiry.json';
+import BankTransaction from './app/BankTransaction.json';
+import BankImportBatch from './app/BankImportBatch.json';
+import BankImportProfile from './app/BankImportProfile.json';
 
 export const coreSchemas: Schema[] = [
   PatchRun as Schema,
@@ -185,4 +188,8 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   POSShiftAmounts as Schema,
 
   IntegrationErrorLog as Schema,
+
+  BankTransaction as Schema,
+  BankImportBatch as Schema,
+  BankImportProfile as Schema,
 ];

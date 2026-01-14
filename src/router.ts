@@ -12,6 +12,8 @@ import Settings from 'src/pages/Settings/Settings.vue';
 import TemplateBuilder from 'src/pages/TemplateBuilder/TemplateBuilder.vue';
 import CustomizeForm from 'src/pages/CustomizeForm/CustomizeForm.vue';
 import POS from 'src/pages/POS/POS.vue';
+import BankImport from 'src/pages/BankImport.vue';
+import BankingSetup from 'src/pages/BankingSetup.vue';
 import type { HistoryState } from 'vue-router';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { historyState } from './utils/refs';
@@ -136,6 +138,16 @@ const routes: RouteRecordRaw[] = [
       default: true,
       edit: (route) => route.query,
     },
+  },
+  {
+    path: '/bank-import',
+    name: 'Bank Import',
+    component: BankImport,
+  },
+  {
+    path: '/banking-setup',
+    name: 'Banking Setup',
+    component: BankingSetup,
   },
 ];
 

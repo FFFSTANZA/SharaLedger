@@ -4,6 +4,7 @@ import Invoice from './invoice.vue';
 import Mail from './mail.vue';
 import Privacy from './privacy.vue';
 import System from './system.vue';
+import Bank from './bank.vue';
 
 // prettier-ignore
 export default {
@@ -12,5 +13,6 @@ export default {
   'invoice': Invoice,
   'mail': Mail,
   'privacy': Privacy,
-  'system': System, 
+  'system': System,
+  'bank': Bank,
 }
