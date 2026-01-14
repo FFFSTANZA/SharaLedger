@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { parseCSV } from '../../../utils/csvParser';
+import { parseCSV } from 'utils/csvParser';
 
 export interface ParsedTransaction {
   date: string;
