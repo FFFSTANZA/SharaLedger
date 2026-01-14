@@ -146,7 +146,7 @@ async function createJournalEntry(
 ): Promise<{ name: string; type: string }> {
   const journalEntry = fyo.doc.getNewDoc('JournalEntry');
   
-  journalEntry.entryDate = date;
+  journalEntry.date = date;
   journalEntry.description = description;
 
   // Determine debit/credit based on transaction type (Credit = income, Debit = expense)
