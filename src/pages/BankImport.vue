@@ -32,11 +32,12 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar for mapping and profiles -->
       <div
-        class="w-80 border-e border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
+        class="w-80 border-e border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden bg-gray-50/50 dark:bg-gray-900/50"
       >
         <!-- Bank Selection / Info -->
-        <div class="p-4 border-b border-gray-200 dark:border-gray-800">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+            <feather-icon name="credit-card" class="w-4 h-4 mr-2 text-violet-600 dark:text-violet-400" />
             {{ t`Bank Information` }}
           </h3>
           <AutoComplete
@@ -54,34 +55,36 @@
             size="small"
             @change="setBank"
           />
-          <div v-else class="text-sm text-gray-600 dark:text-gray-400">
-            <p>
-              <span class="font-medium">{{ t`Bank:` }}</span>
-              {{ detectedBank || t`Unknown` }}
-            </p>
-            <p>
-              <span class="font-medium">{{ t`Transactions:` }}</span>
-              {{ transactions.length }}
-            </p>
-            <p>
-              <span class="font-medium">{{ t`File:` }}</span> {{ fileName }}
-            </p>
+          <div v-else class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t`Bank:` }}</span>
+              <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ detectedBank || t`Unknown` }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t`Transactions:` }}</span>
+              <span class="text-sm font-bold text-violet-600 dark:text-violet-400">{{ transactions.length }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t`File:` }}</span>
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate ml-2" :title="fileName">{{ fileName }}</span>
+            </div>
           </div>
         </div>
 
         <!-- Column Mapping -->
         <div
           v-if="transactions.length > 0"
-          class="p-4 border-b border-gray-200 dark:border-gray-800 overflow-y-auto"
+          class="p-6 border-b border-gray-200 dark:border-gray-800 overflow-y-auto bg-white/50 dark:bg-gray-800/50"
           style="max-height: 300px"
         >
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+            <feather-icon name="settings" class="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
             {{ t`Column Mapping` }}
           </h3>
-          <div class="space-y-3">
-            <div v-for="field in mappingFields" :key="field.key">
+          <div class="space-y-4">
+            <div v-for="field in mappingFields" :key="field.key" class="space-y-2">
               <label
-                class="text-xs text-gray-500 dark:text-gray-400 block mb-1"
+                class="text-xs font-medium text-gray-600 dark:text-gray-400 block"
               >
                 {{ field.label }}
               </label>
@@ -94,6 +97,7 @@
                 :value="columnMapping[field.key]"
                 :border="true"
                 size="small"
+                class="w-full"
                 @change="(value) => updateMapping(field.key, value)"
               />
             </div>
@@ -101,31 +105,36 @@
         </div>
 
         <!-- Import Profile -->
-        <div v-if="transactions.length > 0" class="p-4 flex-1 overflow-y-auto">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <div v-if="transactions.length > 0" class="p-6 flex-1 overflow-y-auto bg-white/30 dark:bg-gray-800/30">
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+            <feather-icon name="bookmark" class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" />
             {{ t`Saved Profiles` }}
           </h3>
-          <div v-if="savedProfiles.length > 0" class="space-y-2">
+          <div v-if="savedProfiles.length > 0" class="space-y-3">
             <div
               v-for="profile in savedProfiles"
               :key="profile.name"
-              class="p-2 rounded cursor-pointer text-sm"
+              class="p-3 rounded-lg cursor-pointer text-sm transition-all duration-200 hover:shadow-md"
               :class="
                 selectedProfile?.name === profile.name
-                  ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
-                  : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700'
+                  : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               "
               @click="applyProfile(profile)"
             >
-              <div class="font-medium">{{ profile.bankName }}</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="font-semibold mb-1">{{ profile.bankName }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                <feather-icon name="clock" class="w-3 h-3 mr-1" />
                 {{ t`Used ${profile.useCount} times` }}
               </div>
             </div>
           </div>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">
-            {{ t`No saved profiles` }}
-          </p>
+          <div v-else class="text-center py-8">
+            <feather-icon name="bookmark" class="w-8 h-8 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ t`No saved profiles` }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -133,26 +142,85 @@
       <div class="flex-1 overflow-hidden flex flex-col">
         <div
           v-if="transactions.length === 0"
-          class="flex-1 flex items-center justify-center"
+          class="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
         >
-          <div class="text-center p-8">
-            <feather-icon
-              name="upload-cloud"
-              class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4"
-            />
-            <h3
-              class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
+          <div class="text-center max-w-md mx-auto p-12">
+            <!-- Enhanced Icon Container -->
+            <div class="relative mb-8">
+              <div class="w-24 h-24 mx-auto bg-gradient-to-br from-violet-100 to-blue-100 dark:from-violet-900/30 dark:to-blue-900/30 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                <feather-icon
+                  name="upload-cloud"
+                  class="w-12 h-12 text-violet-600 dark:text-violet-400"
+                />
+              </div>
+              <div class="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <feather-icon name="plus" class="w-4 h-4 text-white" />
+              </div>
+            </div>
+            
+            <!-- Enhanced Typography -->
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3">
               {{ t`Import Bank Statement` }}
             </h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p class="text-base text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
               {{
-                t`Upload your bank statement (CSV, XLSX, or XLS) to import transactions`
+                t`Upload your bank statement (CSV, XLSX, or XLS) to automatically import and categorize transactions`
               }}
             </p>
-            <Button type="primary" @click="selectFile">
-              {{ t`Select File` }}
-            </Button>
+            
+            <!-- Enhanced Button -->
+            <div class="space-y-4">
+              <Button 
+                type="primary" 
+                size="large"
+                class="px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                @click="selectFile"
+              >
+                <template #icon>
+                  <feather-icon name="file-text" class="w-5 h-5 mr-2" />
+                </template>
+                {{ t`Select File` }}
+              </Button>
+              
+              <!-- Sample File Button -->
+              <div class="text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  {{ t`Try with a sample file` }}
+                </p>
+                <Button 
+                  variant="ghost" 
+                  size="small"
+                  class="text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                  @click="loadSampleFile"
+                >
+                  <template #icon>
+                    <feather-icon name="download" class="w-4 h-4 mr-1" />
+                  </template>
+                  {{ t`Download Sample CSV` }}
+                </Button>
+              </div>
+            </div>
+            
+            <!-- File Format Info -->
+            <div class="mt-8 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
+              <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">
+                {{ t`Supported formats` }}
+              </p>
+              <div class="flex justify-center space-x-4 text-xs text-gray-600 dark:text-gray-400">
+                <span class="flex items-center">
+                  <feather-icon name="file-text" class="w-3 h-3 mr-1" />
+                  CSV
+                </span>
+                <span class="flex items-center">
+                  <feather-icon name="file" class="w-3 h-3 mr-1" />
+                  XLSX
+                </span>
+                <span class="flex items-center">
+                  <feather-icon name="file" class="w-3 h-3 mr-1" />
+                  XLS
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -162,14 +230,27 @@
         >
           <!-- Preview Header -->
           <div
-            class="sticky top-0 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4"
+            class="sticky top-0 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700 p-6 shadow-sm"
           >
             <div class="flex justify-between items-center">
-              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ t`Preview (${transactions.length} transactions)` }}
-              </h3>
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-violet-100 dark:bg-violet-900/30 rounded-lg flex items-center justify-center">
+                  <feather-icon name="eye" class="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  {{ t`Preview (${transactions.length} transactions)` }}
+                </h3>
+              </div>
               <div class="flex gap-2">
-                <Button size="small" @click="reparse">
+                <Button 
+                  size="small" 
+                  variant="outline"
+                  class="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  @click="reparse"
+                >
+                  <template #icon>
+                    <feather-icon name="refresh-cw" class="w-4 h-4 mr-1" />
+                  </template>
                   {{ t`Reparse` }}
                 </Button>
               </div>
@@ -178,40 +259,40 @@
 
           <!-- Transaction Table -->
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900">
+            <thead class="bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm">
               <tr>
                 <th
-                  class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-16"
+                  class="text-left p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-16"
                 >
                   #
                 </th>
                 <th
-                  class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-28"
+                  class="text-left p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-32"
                 >
                   {{ t`Date` }}
                 </th>
                 <th
-                  class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700"
+                  class="text-left p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700"
                 >
                   {{ t`Description` }}
                 </th>
                 <th
-                  class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-28"
+                  class="text-right p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-32"
                 >
                   {{ t`Amount` }}
                 </th>
                 <th
-                  class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-28"
+                  class="text-right p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-32"
                 >
                   {{ t`Balance` }}
                 </th>
                 <th
-                  class="text-center p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-24"
+                  class="text-center p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-24"
                 >
                   {{ t`Type` }}
                 </th>
                 <th
-                  class="p-3 font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 w-32"
+                  class="p-4 font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-40"
                 >
                   {{ t`Category` }}
                 </th>
@@ -221,48 +302,55 @@
               <tr
                 v-for="(txn, index) in displayTransactions"
                 :key="index"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                class="hover:bg-violet-50/50 dark:hover:bg-gray-800/50 transition-colors duration-150"
               >
                 <td
-                  class="p-3 border-b border-gray-200 dark:border-gray-700 text-gray-500"
+                  class="p-4 border-b border-gray-100 dark:border-gray-800 text-gray-500 font-medium"
                 >
                   {{ index + 1 }}
                 </td>
-                <td class="p-3 border-b border-gray-200 dark:border-gray-700">
-                  {{ txn.date }}
+                <td class="p-4 border-b border-gray-100 dark:border-gray-800">
+                  <span class="font-medium text-gray-800 dark:text-gray-200">
+                    {{ txn.date }}
+                  </span>
                 </td>
-                <td class="p-3 border-b border-gray-200 dark:border-gray-700">
+                <td class="p-4 border-b border-gray-100 dark:border-gray-800">
                   <input
                     :value="txn.description"
-                    class="w-full bg-transparent border-none focus:ring-0 p-0 text-sm"
+                    class="w-full bg-transparent border-none focus:ring-2 focus:ring-violet-500/20 focus:outline-none p-2 rounded text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors"
                     @input="updateDescription(index, $event)"
                   />
                 </td>
                 <td
-                  class="p-3 border-b border-gray-200 dark:border-gray-700 text-right font-mono"
+                  class="p-4 border-b border-gray-100 dark:border-gray-800 text-right font-mono font-semibold"
+                  :class="txn.type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                 >
                   {{ formatCurrency(txn.amount) }}
                 </td>
                 <td
-                  class="p-3 border-b border-gray-200 dark:border-gray-700 text-right font-mono text-gray-500"
+                  class="p-4 border-b border-gray-100 dark:border-gray-800 text-right font-mono text-gray-500 dark:text-gray-400"
                 >
                   {{ txn.balance ? formatCurrency(txn.balance) : '-' }}
                 </td>
                 <td
-                  class="p-3 border-b border-gray-200 dark:border-gray-700 text-center"
+                  class="p-4 border-b border-gray-100 dark:border-gray-800 text-center"
                 >
                   <span
-                    class="px-2 py-0.5 rounded text-xs font-medium"
+                    class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center"
                     :class="
                       txn.type === 'credit'
                         ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                         : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                     "
                   >
+                    <feather-icon 
+                      :name="txn.type === 'credit' ? 'arrow-up-circle' : 'arrow-down-circle'" 
+                      class="w-3 h-3 mr-1" 
+                    />
                     {{ txn.type === 'credit' ? t`CR` : t`DR` }}
                   </span>
                 </td>
-                <td class="p-3 border-b border-gray-200 dark:border-gray-700">
+                <td class="p-4 border-b border-gray-100 dark:border-gray-800">
                   <Select
                     :df="{
                       fieldname: `category-${index}`,
@@ -529,6 +617,61 @@ export default defineComponent({
         }));
       } catch {
         // Ignore errors
+      }
+    },
+    async loadSampleFile() {
+      try {
+        // Sample bank statement data (matching the CSV structure)
+        const sampleData = `Date,Description,Amount,Balance,Type,Reference,Cheque No
+01/01/2024,Opening Balance,50000.00,50000.00,Credit,,,
+02/01/2024,UPI/501234567890@upi,5000.00,45000.00,Debit,UPI/501234567890,
+03/01/2024,SALARY JAN 2024,25000.00,70000.00,Credit,TRF20240103001,
+05/01/2024,UPI/987654321098@upi,1500.00,68500.00,Debit,UPI/987654321098,
+08/01/2024,NEFT TRANSFER TO HDFC BANK 1234,5000.00,63500.00,Debit,NEFT230108123456,
+10/01/2024,ELECTRICITY BILL PAYMENT,2500.00,61000.00,Debit,EB202401100123,
+12/01/2024,RENT PAYMENT,15000.00,46000.00,Debit,RNT20240112001,
+15/01/2024,UPI/555555555555@upi,750.00,45250.00,Debit,UPI/555555555555,
+18/01/2024,INTEREST CREDIT,150.00,45400.00,Credit,INT20240118001,
+20/01/2024,ATM WITHDRAWAL,2000.00,43400.00,Debit,ATM1234567890,
+22/01/2024,FUEL STATION PAYMENT,3000.00,40400.00,Debit,FUEL20240122001,
+25/01/2024,ONLINE SHOPPING,4500.00,35900.00,Debit,SHOP20240125001,
+28/01/2024,UPI/111111111111@upi,2000.00,33900.00,Debit,UPI/111111111111,
+30/01/2024,MOBILE RECHARGE,199.00,33701.00,Debit,REC20240130001,`;
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(sampleData);
+        this.fileName = 'sample_bank_statement.csv';
+
+        const result = parseStatementFile(this.fileName, data);
+        this.transactions = result.transactions;
+        this.detectedBank = 'HDFC Bank'; // Sample bank
+        this.selectedBank = this.detectedBank;
+
+        // Auto-map columns
+        const autoMapped = autoMapColumns(result.headers);
+        this.columnMapping = autoMapped;
+
+        // Get category suggestions
+        this.suggestions = await getCategorizedSuggestions(
+          this.transactions,
+          fyo
+        );
+
+        // Update display transactions with suggestions
+        this.displayTransactions = this.transactions.map((txn, index) => ({
+          ...txn,
+          category: this.suggestions[index]?.category || '',
+        }));
+
+        showToast({
+          type: 'success',
+          message: t`Loaded sample data with ${this.transactions.length} transactions`,
+        });
+      } catch (error) {
+        showToast({
+          type: 'error',
+          message: t`Failed to load sample file: ${(error as Error).message}`,
+        });
       }
     },
     checkForSavedProfile(headers: string[]) {
