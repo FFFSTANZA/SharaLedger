@@ -351,6 +351,31 @@ function getCompleteSidebar(): SidebarConfig {
           route: '/import-wizard',
         },
         {
+          label: t`Banking`,
+          name: 'banking',
+          icon: 'bank',
+          route: '/banking-setup',
+          items: [
+            {
+              label: t`Bank Statement Import`,
+              name: 'bank-import',
+              route: '/bank-import',
+            },
+            {
+              label: t`Bank Transactions`,
+              name: 'bank-transactions',
+              route: '/list/BankTransaction',
+              schemaName: 'BankTransaction',
+            },
+            {
+              label: t`Import History`,
+              name: 'import-history',
+              route: '/list/BankImportBatch',
+              schemaName: 'BankImportBatch',
+            },
+          ] as SidebarItem[],
+        },
+        {
           label: t`Print Templates`,
           name: 'print-template',
           route: `/list/PrintTemplate/${t`Print Templates`}`,

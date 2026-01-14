@@ -1,0 +1,112 @@
+{
+  "name": "BankTransaction",
+  "label": "Bank Transaction",
+  "fields": [
+    {
+      "fieldname": "date",
+      "label": "Date",
+      "fieldtype": "Date",
+      "required": true
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "amount",
+      "label": "Amount",
+      "fieldtype": "Currency",
+      "required": true
+    },
+    {
+      "fieldname": "type",
+      "label": "Type",
+      "fieldtype": "Select",
+      "options": [
+        { "value": "Credit", "label": "Credit" },
+        { "value": "Debit", "label": "Debit" }
+      ]
+    },
+    {
+      "fieldname": "balance",
+      "label": "Balance",
+      "fieldtype": "Currency"
+    },
+    {
+      "fieldname": "bankName",
+      "label": "Bank Name",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "reference",
+      "label": "Reference",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "chequeNo",
+      "label": "Cheque No",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "default": "Unmatched",
+      "options": [
+        { "value": "Unmatched", "label": "Unmatched" },
+        { "value": "Matched", "label": "Matched" },
+        { "value": "Posted", "label": "Posted" }
+      ]
+    },
+    {
+      "fieldname": "matchedDocument",
+      "label": "Matched Document",
+      "fieldtype": "Link",
+      "target": "Payment"
+    },
+    {
+      "fieldname": "category",
+      "label": "Category",
+      "fieldtype": "Select",
+      "options": [
+        { "value": "Income", "label": "Income" },
+        { "value": "Expense", "label": "Expense" },
+        { "value": "Transfer", "label": "Transfer" }
+      ]
+    },
+    {
+      "fieldname": "account",
+      "label": "Account",
+      "fieldtype": "Link",
+      "target": "Account"
+    },
+    {
+      "fieldname": "party",
+      "label": "Party",
+      "fieldtype": "Link",
+      "target": "Party"
+    },
+    {
+      "fieldname": "dedupeKey",
+      "label": "Dedupe Key",
+      "fieldtype": "Data",
+      "hidden": true
+    },
+    {
+      "fieldname": "batch",
+      "label": "Import Batch",
+      "fieldtype": "Link",
+      "target": "BankImportBatch"
+    },
+    {
+      "fieldname": "importOrder",
+      "label": "Import Order",
+      "fieldtype": "Int"
+    }
+  ],
+  "keywordFields": ["description", "bankName", "reference"],
+  "linkDisplayField": "description",
+  "naming": "random"
+}
