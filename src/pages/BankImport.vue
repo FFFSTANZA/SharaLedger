@@ -139,12 +139,6 @@
             <p class="text-gray-600 dark:text-gray-400 mb-6">
               {{ t`Upload your bank statement (CSV or Excel) to import transactions directly into your accounting` }}
             </p>
-            <Button type="primary" size="large" @click="selectFile">
-              <template #icon>
-                <feather-icon name="upload" class="w-5 h-5 mr-2" />
-              </template>
-              {{ t`Select File` }}
-            </Button>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
               {{ t`Supports CSV, XLSX and XLS formats` }}
             </p>
@@ -451,6 +445,7 @@ export default defineComponent({
         const batch = fyo.doc.getNewDoc('BankImportBatch');
         batch.fileName = this.fileName;
         batch.bankName = this.selectedBank || this.detectedBank;
+        batch.importDate = new Date();
         batch.totalTransactions = this.transactions.length;
         batch.status = 'In Progress';
         await batch.sync();
