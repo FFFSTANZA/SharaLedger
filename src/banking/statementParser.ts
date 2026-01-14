@@ -283,7 +283,7 @@ function parseAmount(value: string): number {
   // Remove currency symbols and spaces
   let cleaned = value
     .replace(/[₹$€£]/g, '')
-    .replace(/[,\s]/g, '')
+    .replace(/\s/g, '')
     .trim();
 
   // Handle Cr/Dr notation
@@ -296,6 +296,32 @@ function parseAmount(value: string): number {
   // Handle parentheses for negative
   if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
     cleaned = '-' + cleaned.slice(1, -1);
+  }
+
+  // Handle Indian number format (1,00,000 = 100000) and Western format (1,000 = 1000)
+  // Indian format uses commas after every 2 digits from right (lakhs notation)
+  // If we have pattern like 1,23,456 or 12,34,567 - remove commas to get 123456 or 1234567
+  // If we have pattern like 1,234.56 - this is Western format with thousand separators
+  // We need to detect which format is being used
+
+  // Check for Indian format: has comma after 2 digits from right (e.g., 1,23,456 or 12,34,567)
+  const indianFormatPattern = /^\d{1,2},\d{2},\d{3}(,\d{2})*$/;
+  // Check for Western format: has comma after every 3 digits from right (e.g., 1,234,567)
+  const westernFormatPattern = /^\d{1,3}(,\d{3})+$/;
+
+  if (indianFormatPattern.test(cleaned)) {
+    // Indian format: remove all commas
+    cleaned = cleaned.replace(/,/g, '');
+  } else if (westernFormatPattern.test(cleaned)) {
+    // Western format: remove all commas
+    cleaned = cleaned.replace(/,/g, '');
+  } else if (/^\d{1,3},\d{2}$/.test(cleaned)) {
+    // Likely Indian format like 1,00 or 12,34
+    cleaned = cleaned.replace(/,/g, '');
+  } else {
+    // Mixed or other formats: remove commas only if followed by 3 digits pattern
+    // This handles cases like "1,234.56" -> "1234.56" correctly
+    cleaned = cleaned.replace(/,(?=\d{3})/g, '');
   }
 
   const parsed = parseFloat(cleaned);
