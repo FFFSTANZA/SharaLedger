@@ -262,6 +262,7 @@
 
 <script lang="ts">
 import { t } from 'fyo';
+import { DateTime } from 'luxon';
 import {
   ParsedTransaction,
   parseStatementFile,
@@ -361,6 +362,62 @@ export default defineComponent({
     },
   },
   methods: {
+    /**
+     * Convert various date formats to ISO format (YYYY-MM-DD)
+     * Handles: dd/MM/yyyy, dd-MM-yyyy, dd.MM.yyyy, MM/dd/yyyy, yyyy-MM-dd
+     */
+    convertToISODate(dateStr: string): Date | null {
+      if (!dateStr || !dateStr.trim()) {
+        return null;
+      }
+
+      const trimmed = dateStr.trim();
+
+      // Try ISO format first
+      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+        return new Date(trimmed);
+      }
+
+      // Try dd/MM/yyyy or dd-MM-yyyy or dd.MM.yyyy
+      const dmyMatch = trimmed.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+      if (dmyMatch) {
+        const [, day, month, year] = dmyMatch;
+        const fullYear = year.length === 2 ? (parseInt(year) > 50 ? '19' + year : '20' + year) : year;
+        const date = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+        if (!Number.isNaN(date.valueOf())) {
+          return date;
+        }
+      }
+
+      // Try MM/dd/yyyy
+      const mdyMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (mdyMatch) {
+        const [, month, day, year] = mdyMatch;
+        const date = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+        if (!Number.isNaN(date.valueOf())) {
+          return date;
+        }
+      }
+
+      // Try natural language formats like "15 Jan 2024" or "Jan 15, 2024"
+      const naturalDate = DateTime.fromFormat(trimmed, 'dd MMM yyyy').toJSDate();
+      if (!Number.isNaN(naturalDate.valueOf())) {
+        return naturalDate;
+      }
+
+      const naturalDate2 = DateTime.fromFormat(trimmed, 'MMM dd, yyyy').toJSDate();
+      if (!Number.isNaN(naturalDate2.valueOf())) {
+        return naturalDate2;
+      }
+
+      // Fallback to JavaScript's Date parsing
+      const fallbackDate = new Date(trimmed);
+      if (!Number.isNaN(fallbackDate.valueOf())) {
+        return fallbackDate;
+      }
+
+      return null;
+    },
     async selectFile() {
       const { success, canceled, data, name } = await ipc.selectFile({
         title: t`Select Bank Statement`,
@@ -455,7 +512,14 @@ export default defineComponent({
           this.importProgress = i + 1;
 
           try {
-            const dedupeKey = `${txn.date}-${txn.description.slice(0, 50)}-${
+            // Convert date to proper format
+            const dateValue = this.convertToISODate(txn.date);
+            if (!dateValue) {
+              throw new Error(`Invalid date: ${txn.date}`);
+            }
+
+            const description = txn.description || '';
+            const dedupeKey = `${txn.date}-${description.slice(0, 50)}-${
               txn.amount
             }`;
 
@@ -467,11 +531,11 @@ export default defineComponent({
             }
 
             const doc = fyo.doc.getNewDoc('BankTransaction');
-            doc.date = txn.date;
-            doc.description = txn.description;
-            doc.amount = txn.amount;
+            doc.date = dateValue;
+            doc.description = description;
+            doc.amount = fyo.pesa(txn.amount);
             doc.type = txn.type === 'credit' ? 'Credit' : 'Debit';
-            doc.balance = txn.balance;
+            doc.balance = txn.balance ? fyo.pesa(txn.balance) : undefined;
             doc.bankName = this.selectedBank || this.detectedBank;
             doc.reference = txn.reference;
             doc.chequeNo = txn.chequeNo;
@@ -484,13 +548,18 @@ export default defineComponent({
             await doc.sync();
             this.importedCount++;
           } catch (error) {
-            this.importErrors.push(error as Error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            const desc = txn.description?.slice(0, 30) ?? 'N/A';
+            this.importErrors.push(new Error(`Row ${i + 1}: ${errorMsg} - ${desc}`));
           }
         }
 
         batch.status = this.importErrors.length > 0 ? 'Failed' : 'Completed';
         batch.matchedCount = 0;
         batch.unmatchedCount = this.importedCount;
+        if (this.importErrors.length > 0) {
+          batch.errorLog = this.importErrors.map(e => e.message).join('\n');
+        }
         await batch.sync();
 
         this.isImporting = false;
