@@ -4,16 +4,43 @@
   >
     <!-- Page Header -->
     <div
-      class="flex items-center justify-between px-4 h-row-largest sticky top-0 bg-white dark:bg-gray-850"
+      class="flex items-center justify-between px-4 h-row-largest sticky top-0 bg-white dark:bg-gray-850 border-b dark:border-gray-800"
       style="z-index: 1"
     >
-      <div class="flex items-center justify-between w-full">
+      <div class="flex items-center gap-3 flex-1">
         <Button :icon="true" @click="$emit('close')">
           <feather-icon name="x" class="w-4 h-4" />
         </Button>
         <p class="text-xl font-semibold text-gray-600 dark:text-gray-400">
           {{ t`Linked Entries` }}
         </p>
+      </div>
+      <!-- View Toggle -->
+      <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded p-1">
+        <button
+          @click="viewMode = 'grouped'"
+          :class="[
+            'px-3 py-1 rounded text-xs font-medium transition-colors',
+            viewMode === 'grouped'
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+          ]"
+        >
+          <feather-icon name="list" class="w-3 h-3 inline-block mr-1" />
+          {{ t`Grouped` }}
+        </button>
+        <button
+          @click="viewMode = 'timeline'"
+          :class="[
+            'px-3 py-1 rounded text-xs font-medium transition-colors',
+            viewMode === 'timeline'
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+          ]"
+        >
+          <feather-icon name="clock" class="w-3 h-3 inline-block mr-1" />
+          {{ t`Timeline` }}
+        </button>
       </div>
     </div>
 
@@ -55,9 +82,85 @@
       </div>
     </div>
 
-    <!-- Linked Entry List -->
+    <!-- Timeline View -->
     <div
-      v-if="sequence.length"
+      v-if="viewMode === 'timeline' && timelineEntries.length"
+      class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2"
+    >
+      <div class="relative px-4 py-6">
+        <!-- Timeline vertical line -->
+        <div
+          class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"
+        ></div>
+
+        <!-- Timeline entries -->
+        <div
+          v-for="(entry, index) of timelineEntries"
+          :key="entry.name + entry.schemaName"
+          class="relative mb-6 pl-8"
+        >
+          <!-- Timeline dot -->
+          <div
+            class="absolute left-6 w-4 h-4 rounded-full border-2 border-white dark:border-gray-850 shadow-sm"
+            :class="`bg-${entry.reason.color}-500`"
+          ></div>
+
+          <!-- Timeline content -->
+          <div
+            class="ml-6 p-3 bg-white dark:bg-gray-875 rounded-lg border dark:border-gray-800 cursor-pointer hover:shadow-md transition-shadow"
+            @click="routeTo(entry.schemaName, entry.name)"
+          >
+            <!-- Date header -->
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-500">
+                {{ fyo.format(entry.date, 'Date') }}
+              </span>
+              <span class="text-xs text-gray-400 dark:text-gray-600">
+                {{ getSchemaLabel(entry.schemaName) }}
+              </span>
+            </div>
+
+            <!-- Reason & Icon -->
+            <div class="flex items-start gap-2 mb-2">
+              <div
+                class="flex-shrink-0 mt-0.5"
+                :class="`text-${entry.reason.color}-600 dark:text-${entry.reason.color}-400`"
+              >
+                <feather-icon :name="entry.reason.icon" class="w-4 h-4" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-medium text-gray-900 dark:text-gray-100 leading-tight"
+                >
+                  {{ entry.reason.reason }}
+                </p>
+                <p
+                  v-if="entry.reason.impact"
+                  class="text-xs text-gray-600 dark:text-gray-400 mt-0.5"
+                >
+                  {{ entry.reason.impact }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Document name -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                {{ entry.name }}
+              </span>
+              <feather-icon
+                name="chevron-right"
+                class="w-3 h-3 text-gray-400"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grouped Entry List -->
+    <div
+      v-if="viewMode === 'grouped' && sequence.length"
       class="w-full overflow-y-auto custom-scroll custom-scroll-thumb2 border-t dark:border-gray-800"
     >
       <div
@@ -215,9 +318,17 @@
         </div>
       </div>
     </div>
-    <p v-else class="p-4 text-sm text-gray-600 dark:text-gray-400">
+
+    <!-- Empty state -->
+    <div
+      v-if="
+        (viewMode === 'grouped' && !sequence.length) ||
+        (viewMode === 'timeline' && !timelineEntries.length)
+      "
+      class="p-4 text-sm text-gray-600 dark:text-gray-400"
+    >
       {{ t`No linked entries found` }}
-    </p>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -240,7 +351,12 @@ const COMPONENT_NAME = 'LinkedEntries';
 
 interface EntryDetail extends Record<string, unknown> {
   name: string;
+  date?: Date;
   reason?: LinkedEntryReason;
+}
+
+interface TimelineEntry extends EntryDetail {
+  schemaName: string;
 }
 
 export default defineComponent({
@@ -254,12 +370,14 @@ export default defineComponent({
     return {
       entries: {},
       allReasons: [] as LinkedEntryReason[],
+      viewMode: 'grouped' as 'grouped' | 'timeline',
     } as {
       entries: Record<
         string,
         { collapsed: boolean; details: EntryDetail[] }
       >;
       allReasons: LinkedEntryReason[];
+      viewMode: 'grouped' | 'timeline';
     };
   },
   computed: {
@@ -276,6 +394,31 @@ export default defineComponent({
       }
 
       return seq;
+    },
+    timelineEntries(): TimelineEntry[] {
+      const allEntries: TimelineEntry[] = [];
+
+      // Collect all entries with their schema names
+      for (const schemaName in this.entries) {
+        const entryGroup = this.entries[schemaName];
+        if (!entryGroup?.details) continue;
+
+        for (const detail of entryGroup.details) {
+          if (detail.date) {
+            allEntries.push({
+              ...detail,
+              schemaName,
+            });
+          }
+        }
+      }
+
+      // Sort by date in descending order (most recent first)
+      return allEntries.sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA;
+      });
     },
     impactSummary() {
       return getLinkedEntriesImpactSummary(this.allReasons);
@@ -302,6 +445,9 @@ export default defineComponent({
     async routeTo(schemaName: string, name: string) {
       const route = getFormRoute(schemaName, name);
       await routeTo(route);
+    },
+    getSchemaLabel(schemaName: string): string {
+      return this.fyo.schemaMap[schemaName]?.label || schemaName;
     },
     async setLinkedEntries() {
       const linkedEntries = await getLinkedEntries(this.doc);
