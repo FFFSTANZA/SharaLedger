@@ -17,6 +17,44 @@
       </div>
     </div>
 
+    <!-- Impact Summary -->
+    <div
+      v-if="showImpactSummary"
+      class="px-4 py-3 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
+    >
+      <p class="text-xs font-semibold text-gray-500 dark:text-gray-500 mb-2">
+        {{ t`Document Impact` }}
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <div
+          v-if="impactSummary.totalPayments"
+          class="flex items-center gap-1 text-xs text-green-600 dark:text-green-400"
+        >
+          <feather-icon name="check-circle" class="w-3 h-3" />
+          <span
+            >{{ t`Paid` }}
+            {{ fyo.format(impactSummary.totalPayments, 'Currency') }}</span
+          >
+        </div>
+        <div
+          v-if="impactSummary.hasReturns"
+          class="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400"
+        >
+          <feather-icon name="corner-up-left" class="w-3 h-3" />
+          <span>{{ t`Has Returns` }}</span>
+        </div>
+        <div
+          v-if="impactSummary.itemsTransferred > 0"
+          class="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400"
+        >
+          <feather-icon name="truck" class="w-3 h-3" />
+          <span
+            >{{ impactSummary.itemsTransferred }} {{ t`items transferred` }}</span
+          >
+        </div>
+      </div>
+    </div>
+
     <!-- Linked Entry List -->
     <div
       v-if="sequence.length"
@@ -56,12 +94,38 @@
           <div
             v-for="e of entries[sn].details"
             :key="String(e.name) + sn"
-            class="p-2 text-sm cursor-pointer border-b last:border-0 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-875"
+            class="p-3 text-sm cursor-pointer border-b last:border-0 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-875"
             @click="routeTo(sn, String(e.name))"
           >
-            <div class="flex justify-between">
+            <!-- Reason & Icon -->
+            <div
+              v-if="e.reason"
+              class="flex items-start gap-2 mb-2"
+            >
+              <div
+                class="flex-shrink-0 mt-0.5"
+                :class="`text-${e.reason.color}-600 dark:text-${e.reason.color}-400`"
+              >
+                <feather-icon :name="e.reason.icon" class="w-4 h-4" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-medium text-gray-900 dark:text-gray-100 leading-tight"
+                >
+                  {{ e.reason.reason }}
+                </p>
+                <p
+                  v-if="e.reason.impact"
+                  class="text-xs text-gray-600 dark:text-gray-400 mt-0.5"
+                >
+                  {{ e.reason.impact }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center">
               <!-- Name -->
-              <p class="font-semibold dark:text-gray-25">
+              <p class="font-semibold dark:text-gray-25 text-xs">
                 {{ e.name }}
               </p>
 
@@ -165,9 +229,19 @@ import { getBgTextColorClass } from 'src/utils/colors';
 import { getLinkedEntries } from 'src/utils/doc';
 import { shortcutsKey } from 'src/utils/injectionKeys';
 import { getFormRoute, routeTo } from 'src/utils/ui';
+import {
+  getLinkedEntryReason,
+  getLinkedEntriesImpactSummary,
+  LinkedEntryReason,
+} from 'src/utils/linkedEntriesReason';
 import { PropType, defineComponent, inject } from 'vue';
 
 const COMPONENT_NAME = 'LinkedEntries';
+
+interface EntryDetail extends Record<string, unknown> {
+  name: string;
+  reason?: LinkedEntryReason;
+}
 
 export default defineComponent({
   components: { Button },
@@ -177,11 +251,15 @@ export default defineComponent({
     return { shortcuts: inject(shortcutsKey) };
   },
   data() {
-    return { entries: {} } as {
+    return {
+      entries: {},
+      allReasons: [] as LinkedEntryReason[],
+    } as {
       entries: Record<
         string,
-        { collapsed: boolean; details: Record<string, unknown>[] }
+        { collapsed: boolean; details: EntryDetail[] }
       >;
+      allReasons: LinkedEntryReason[];
     };
   },
   computed: {
@@ -198,6 +276,17 @@ export default defineComponent({
       }
 
       return seq;
+    },
+    impactSummary() {
+      return getLinkedEntriesImpactSummary(this.allReasons);
+    },
+    showImpactSummary(): boolean {
+      const summary = this.impactSummary;
+      return !!(
+        summary.totalPayments ||
+        summary.hasReturns ||
+        summary.itemsTransferred > 0
+      );
     },
   },
   async mounted() {
@@ -216,6 +305,8 @@ export default defineComponent({
     },
     async setLinkedEntries() {
       const linkedEntries = await getLinkedEntries(this.doc);
+      const allReasons: LinkedEntryReason[] = [];
+
       for (const key in linkedEntries) {
         const collapsed = false;
         const entryNames = linkedEntries[key];
@@ -229,24 +320,45 @@ export default defineComponent({
           filters: { name: ['in', entryNames] },
         });
 
+        // Add business reason to each entry
+        const detailsWithReasons = await Promise.all(
+          details.map(async (detail) => {
+            const reason = await getLinkedEntryReason(this.doc, {
+              name: detail.name as string,
+              schemaName: key,
+              ...detail,
+            });
+            allReasons.push(reason);
+            return {
+              ...detail,
+              reason,
+            };
+          })
+        );
+
         this.entries[key] = {
           collapsed,
-          details,
+          details: detailsWithReasons,
         };
       }
+
+      this.allReasons = allReasons;
     },
   },
 });
 
 const linkSequence = [
+  // Payments first (most important for cash flow)
+  ModelNameEnum.Payment,
   // Invoices
   ModelNameEnum.SalesInvoice,
   ModelNameEnum.PurchaseInvoice,
-  // Stock Transfers
+  // Quotes (pre-sales)
+  'SalesQuote',
+  // Stock Transfers (important for fulfillment)
   ModelNameEnum.Shipment,
   ModelNameEnum.PurchaseReceipt,
   // Other Transactional
-  ModelNameEnum.Payment,
   ModelNameEnum.JournalEntry,
   ModelNameEnum.StockMovement,
   // Non Transfers
@@ -254,7 +366,7 @@ const linkSequence = [
   ModelNameEnum.Item,
   ModelNameEnum.Account,
   ModelNameEnum.Location,
-  // Ledgers
+  // Ledgers (technical details, less important)
   ModelNameEnum.AccountingLedgerEntry,
   ModelNameEnum.StockLedgerEntry,
 ];
@@ -268,6 +380,7 @@ const linkEntryDisplayFields: Record<string, string[]> = {
     'grandTotal',
     'outstandingAmount',
     'stockNotTransferred',
+    'returnAgainst',
   ],
   [ModelNameEnum.PurchaseInvoice]: [
     'name',
@@ -276,12 +389,33 @@ const linkEntryDisplayFields: Record<string, string[]> = {
     'grandTotal',
     'outstandingAmount',
     'stockNotTransferred',
+    'returnAgainst',
   ],
+  // Quotes
+  SalesQuote: ['name', 'date', 'party', 'grandTotal'],
   // Stock Transfers
-  [ModelNameEnum.Shipment]: ['name', 'date', 'party', 'grandTotal'],
-  [ModelNameEnum.PurchaseReceipt]: ['name', 'date', 'party', 'grandTotal'],
+  [ModelNameEnum.Shipment]: [
+    'name',
+    'date',
+    'party',
+    'grandTotal',
+    'returnAgainst',
+  ],
+  [ModelNameEnum.PurchaseReceipt]: [
+    'name',
+    'date',
+    'party',
+    'grandTotal',
+    'returnAgainst',
+  ],
   // Other Transactional
-  [ModelNameEnum.Payment]: ['name', 'date', 'party', 'amount'],
+  [ModelNameEnum.Payment]: [
+    'name',
+    'date',
+    'party',
+    'amount',
+    'paymentType',
+  ],
   [ModelNameEnum.JournalEntry]: ['name', 'date', 'entryType'],
   [ModelNameEnum.StockMovement]: ['name', 'date', 'amount'],
   // Ledgers
