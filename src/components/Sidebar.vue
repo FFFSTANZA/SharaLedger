@@ -15,7 +15,7 @@
       >
         <h6
           data-testid="company-name"
-          class="font-bold text-xl dark:text-gray-100 whitespace-nowrap overflow-auto no-scrollbar select-none tracking-tight bg-gradient-to-r from-violet-600 to-teal-600 bg-clip-text text-transparent"
+          class="font-bold text-xl text-gray-900 dark:text-gray-100 whitespace-nowrap overflow-auto no-scrollbar select-none tracking-tight"
         >
           {{ companyName }}
         </h6>
