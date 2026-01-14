@@ -354,7 +354,7 @@ function getCompleteSidebar(): SidebarConfig {
           label: t`Banking`,
           name: 'banking',
           icon: 'bank',
-          route: '/banking-setup',
+          route: '/bank-import',
           items: [
             {
               label: t`Bank Statement Import`,
