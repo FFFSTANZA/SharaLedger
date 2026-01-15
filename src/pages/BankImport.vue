@@ -1,32 +1,37 @@
 <template>
   <div class="flex flex-col overflow-hidden w-full h-full">
-    <!-- Header -->
-    <PageHeader :title="t`Bank Statement Import`">
-      <Button
-        v-if="transactions.length > 0"
-        :title="t`Import`"
-        type="primary"
-        :disabled="!canImport"
-        @click="importTransactions"
-      >
-        {{ t`Import` }}
-      </Button>
-      <Button
-        v-if="transactions.length > 0"
-        :title="t`Clear`"
-        @click="clearAll"
-      >
-        {{ t`Clear` }}
-      </Button>
-      <Button
-        v-if="transactions.length === 0"
-        :title="t`Import Statement`"
-        type="primary"
-        @click="selectFile"
-      >
-        {{ t`Import Statement` }}
-      </Button>
-    </PageHeader>
+    <!-- Header Bar -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {{ t`Import Bank Statement` }}
+      </h2>
+      <div class="flex space-x-2">
+        <Button
+          v-if="transactions.length > 0"
+          :title="t`Import`"
+          type="primary"
+          :disabled="!canImport"
+          @click="importTransactions"
+        >
+          {{ t`Import` }}
+        </Button>
+        <Button
+          v-if="transactions.length > 0"
+          :title="t`Clear`"
+          @click="clearAll"
+        >
+          {{ t`Clear` }}
+        </Button>
+        <Button
+          v-if="transactions.length === 0"
+          :title="t`Import Statement`"
+          type="primary"
+          @click="selectFile"
+        >
+          {{ t`Import Statement` }}
+        </Button>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <div class="flex flex-1 overflow-hidden">
@@ -268,12 +273,12 @@
           </div>
 
           <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded text-xs text-blue-700 dark:text-blue-400">
-            {{ t`Next Step: Review transactions in Bank Reconciliation to post to GL` }}
+            {{ t`Next Step: Review transactions in Reconciliation tab to post to GL` }}
           </div>
         </div>
         <hr class="dark:border-gray-800" />
         <div class="flex justify-end p-4">
-          <Button type="primary" @click="resetImport">{{ t`Go to Bank Reconciliation` }}</Button>
+          <Button type="primary" @click="resetImport">{{ t`Go to Reconciliation` }}</Button>
         </div>
       </div>
     </Modal>
@@ -297,7 +302,6 @@ import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import Select from 'src/components/Controls/Select.vue';
 import FormHeader from 'src/components/FormHeader.vue';
 import Modal from 'src/components/Modal.vue';
-import PageHeader from 'src/components/PageHeader.vue';
 import { fyo } from 'src/initFyo';
 import { showToast } from 'src/utils/interactive';
 import { defineComponent } from 'vue';
@@ -314,7 +318,6 @@ export default defineComponent({
     Select,
     FormHeader,
     Modal,
-    PageHeader,
   },
   data() {
     return {
@@ -623,7 +626,7 @@ export default defineComponent({
           // Also show recommendation message
           showToast({
             type: 'info',
-            message: t`Review in Bank Reconciliation to post to GL and reconcile.`,
+            message: t`Review in Reconciliation tab to post to GL and reconcile.`,
             duration: 5000
           });
         }
@@ -639,8 +642,8 @@ export default defineComponent({
     resetImport() {
       this.importComplete = false;
       this.clearAll();
-      // Navigate to Bank Reconciliation
-      this.$router.push('/bank-reconciliation');
+      // Switch to Reconciliation tab
+      this.$emit('switch-tab', 'reconciliation');
     },
     formatCurrency(amount: number): string {
       return fyo.format(amount, 'Currency');

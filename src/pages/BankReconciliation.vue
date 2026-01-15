@@ -1,30 +1,35 @@
 <template>
   <div class="flex flex-col overflow-hidden w-full h-full">
-    <!-- Header -->
-    <PageHeader :title="t`Bank Reconciliation`">
-      <Button
-        v-if="selectedTransactions.length > 0"
-        :title="t`Post Selected`"
-        type="primary"
-        @click="postSelected"
-      >
-        {{ t`Post Selected (${selectedTransactions.length})` }}
-      </Button>
-      <Button
-        v-if="postedSelectedTransactions.length > 0"
-        :title="t`Reconcile Selected`"
-        type="secondary"
-        @click="reconcileSelected"
-      >
-        {{ t`Reconcile (${postedSelectedTransactions.length})` }}
-      </Button>
-      <Button
-        :title="t`Refresh`"
-        @click="loadTransactions"
-      >
-        {{ t`Refresh` }}
-      </Button>
-    </PageHeader>
+    <!-- Header Bar -->
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {{ t`Bank Reconciliation` }}
+      </h2>
+      <div class="flex space-x-2">
+        <Button
+          v-if="selectedTransactions.length > 0"
+          :title="t`Post Selected`"
+          type="primary"
+          @click="postSelected"
+        >
+          {{ t`Post Selected (${selectedTransactions.length})` }}
+        </Button>
+        <Button
+          v-if="postedSelectedTransactions.length > 0"
+          :title="t`Reconcile Selected`"
+          type="secondary"
+          @click="reconcileSelected"
+        >
+          {{ t`Reconcile (${postedSelectedTransactions.length})` }}
+        </Button>
+        <Button
+          :title="t`Refresh`"
+          @click="loadTransactions"
+        >
+          {{ t`Refresh` }}
+        </Button>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <div class="flex flex-1 overflow-hidden">
@@ -323,7 +328,6 @@ import { t } from 'fyo';
 import Button from 'src/components/Button.vue';
 import FormHeader from 'src/components/FormHeader.vue';
 import Modal from 'src/components/Modal.vue';
-import PageHeader from 'src/components/PageHeader.vue';
 import Select from 'src/components/Controls/Select.vue';
 import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import { fyo } from 'src/initFyo';
@@ -345,7 +349,6 @@ interface BankTransaction {
   suggestedVoucherType?: string;
   suggestedLedgerName?: string;
   account?: string;
-  linkedVoucher?: string;
 }
 
 interface Filters {
@@ -361,7 +364,6 @@ export default defineComponent({
     Button,
     FormHeader,
     Modal,
-    PageHeader,
     Select,
     AutoComplete,
   },
@@ -451,7 +453,6 @@ export default defineComponent({
             'suggestedLedger',
             'suggestedVoucherType',
             'account',
-            'linkedVoucher',
           ],
           orderBy: 'date desc, importOrder desc'
         });

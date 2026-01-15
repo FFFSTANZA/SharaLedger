@@ -354,12 +354,17 @@ function getCompleteSidebar(): SidebarConfig {
           label: t`Banking`,
           name: 'banking',
           icon: 'bank',
-          route: '/bank-import',
+          route: '/banking',
           items: [
             {
-              label: t`Bank Statement Import`,
+              label: t`Statement Import`,
               name: 'bank-import',
-              route: '/bank-import',
+              route: '/banking',
+            },
+            {
+              label: t`Reconciliation`,
+              name: 'bank-reconciliation',
+              route: '/banking?tab=reconciliation',
             },
             {
               label: t`Bank Transactions`,
@@ -372,11 +377,6 @@ function getCompleteSidebar(): SidebarConfig {
               name: 'import-history',
               route: '/list/BankImportBatch',
               schemaName: 'BankImportBatch',
-            },
-            {
-              label: t`Bank Reconciliation`,
-              name: 'bank-reconciliation',
-              route: '/bank-reconciliation',
             },
           ] as SidebarItem[],
         },

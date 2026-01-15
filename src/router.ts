@@ -12,7 +12,7 @@ import Settings from 'src/pages/Settings/Settings.vue';
 import TemplateBuilder from 'src/pages/TemplateBuilder/TemplateBuilder.vue';
 import CustomizeForm from 'src/pages/CustomizeForm/CustomizeForm.vue';
 import POS from 'src/pages/POS/POS.vue';
-import BankImport from 'src/pages/BankImport.vue';
+import Banking from 'src/pages/Banking.vue';
 import type { HistoryState } from 'vue-router';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { historyState } from './utils/refs';
@@ -139,14 +139,17 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/banking',
+    name: 'Banking',
+    component: Banking,
+  },
+  {
     path: '/bank-import',
-    name: 'Bank Import',
-    component: BankImport,
+    redirect: '/banking',
   },
   {
     path: '/bank-reconciliation',
-    name: 'Bank Reconciliation',
-    component: () => import('src/pages/BankReconciliation.vue'),
+    redirect: '/banking?tab=reconciliation',
   },
 ];
 
