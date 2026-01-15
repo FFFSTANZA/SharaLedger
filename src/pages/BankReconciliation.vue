@@ -193,6 +193,7 @@
               <th class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Amount` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Status` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Suggested Ledger` }}</th>
+              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Party` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Voucher Type` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Actions` }}</th>
             </tr>
@@ -248,6 +249,9 @@
               </td>
               <td class="p-3 text-gray-700 dark:text-gray-300">
                 {{ txn.suggestedLedgerName || '-' }}
+              </td>
+              <td class="p-3 text-gray-700 dark:text-gray-300">
+                {{ txn.partyName || txn.party || '-' }}
               </td>
               <td class="p-3 text-gray-700 dark:text-gray-300">
                 {{ txn.suggestedVoucherType || '-' }}
@@ -492,8 +496,9 @@ interface BankTransaction {
   suggestedLedger?: string;
   suggestedVoucherType?: string;
   suggestedLedgerName?: string;
-  account?: string;
   party?: string;
+  partyName?: string;
+  account?: string;
   matchedDocument?: string;
   matchedDocumentType?: string;
   potentialMatches?: any[];
@@ -542,7 +547,7 @@ export default defineComponent({
         suggestedLedger: '',
         suggestedVoucherType: '',
         party: '',
-      },
+      } as { suggestedLedger: string; suggestedVoucherType: string; party: string },
     };
   },
   computed: {
@@ -635,7 +640,7 @@ export default defineComponent({
           order: 'desc'
         });
 
-        // Get suggested ledger names and find matches
+        // Get suggested ledger names and party names, and find matches
         for (const txn of results) {
           if (txn.suggestedLedger) {
             try {
@@ -645,7 +650,16 @@ export default defineComponent({
               txn.suggestedLedgerName = txn.suggestedLedger;
             }
           }
-          
+
+          if (txn.party) {
+            try {
+              const party = await fyo.db.getDoc('Party', txn.party);
+              txn.partyName = party?.name || txn.party;
+            } catch {
+              txn.partyName = txn.party;
+            }
+          }
+
           if (txn.status === 'Imported' || txn.status === 'Suggested') {
             txn.potentialMatches = await this.findMatches(txn);
           }
@@ -812,21 +826,54 @@ export default defineComponent({
       try {
         const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
         const suggestion = await autoCategorizeTransaction(txn, fyo);
-        
+
         // Get fresh doc instance
         const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-        
+
         doc.status = 'Suggested';
-        doc.suggestedLedger = suggestion.account;
+
+        // Only set suggestedLedger if we have a valid account
+        if (suggestion.account) {
+          // Verify the account exists before setting
+          try {
+            const accountExists = await fyo.db.exists('Account', suggestion.account);
+            if (accountExists) {
+              doc.suggestedLedger = suggestion.account;
+            } else {
+              console.warn(`Account ${suggestion.account} does not exist, skipping suggestion`);
+              doc.suggestedLedger = '';
+            }
+          } catch (e) {
+            console.warn(`Error checking account existence for ${suggestion.account}:`, e);
+            doc.suggestedLedger = '';
+          }
+        } else {
+          doc.suggestedLedger = '';
+        }
+
+        // Set party if suggested
+        if (suggestion.party) {
+          try {
+            const partyExists = await fyo.db.exists('Party', suggestion.party);
+            if (partyExists) {
+              doc.party = suggestion.party;
+            } else {
+              console.warn(`Party ${suggestion.party} does not exist, skipping party assignment`);
+            }
+          } catch (e) {
+            console.warn(`Error checking party existence for ${suggestion.party}:`, e);
+          }
+        }
+
         doc.suggestedVoucherType = suggestion.voucherType;
-        
+
         // Set bank account if not set
         if (!doc.account) {
           doc.account = doc.bankName || 'Bank Account';
         }
-        
+
         await doc.sync();
-        
+
         showToast({
           type: 'success',
           message: t`Suggestion generated for ${txn.name}`,
@@ -887,26 +934,58 @@ export default defineComponent({
           try {
             // Get fresh doc instance to avoid validation errors
             const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-            
+
             if (txn.status === 'Imported') {
               // Step 1: Suggest
               const suggestion = await autoCategorizeTransaction(txn, fyo);
-              
+
               doc.status = 'Suggested';
-              doc.suggestedLedger = suggestion.account;
+
+              // Only set suggestedLedger if we have a valid account
+              if (suggestion.account) {
+                try {
+                  const accountExists = await fyo.db.exists('Account', suggestion.account);
+                  if (accountExists) {
+                    doc.suggestedLedger = suggestion.account;
+                  } else {
+                    console.warn(`Account ${suggestion.account} does not exist for ${txn.name}`);
+                    doc.suggestedLedger = '';
+                  }
+                } catch (e) {
+                  console.warn(`Error checking account existence for ${suggestion.account}:`, e);
+                  doc.suggestedLedger = '';
+                }
+              } else {
+                doc.suggestedLedger = '';
+              }
+
+              // Set party if suggested
+              if (suggestion.party) {
+                try {
+                  const partyExists = await fyo.db.exists('Party', suggestion.party);
+                  if (partyExists) {
+                    doc.party = suggestion.party;
+                  } else {
+                    console.warn(`Party ${suggestion.party} does not exist for ${txn.name}`);
+                  }
+                } catch (e) {
+                  console.warn(`Error checking party existence for ${suggestion.party}:`, e);
+                }
+              }
+
               doc.suggestedVoucherType = suggestion.voucherType;
-              
+
               // Set bank account if not set
               if (!doc.account) {
                 doc.account = doc.bankName || 'Bank Account';
               }
-              
+
               await doc.sync();
               successCount++;
             } else if (txn.status === 'Suggested') {
               // Step 2: Post to GL
               const result = await createGLVoucher(doc, fyo);
-              
+
               if (result.success) {
                 doc.status = 'Posted';
                 doc.matchedDocument = result.voucherName;
@@ -1024,9 +1103,42 @@ export default defineComponent({
       if (!this.currentTransaction) return;
       try {
         const doc = await fyo.doc.getDoc('BankTransaction', this.currentTransaction.name);
-        doc.suggestedLedger = this.editForm.suggestedLedger;
+
+        // Only set suggestedLedger if we have a valid account
+        if (this.editForm.suggestedLedger) {
+          try {
+            const accountExists = await fyo.db.exists('Account', this.editForm.suggestedLedger);
+            if (accountExists) {
+              doc.suggestedLedger = this.editForm.suggestedLedger;
+            } else {
+              throw new Error(`Account ${this.editForm.suggestedLedger} does not exist`);
+            }
+          } catch (e) {
+            console.warn(`Error checking account existence for ${this.editForm.suggestedLedger}:`, e);
+            throw new Error(`Invalid account: ${this.editForm.suggestedLedger}`);
+          }
+        } else {
+          doc.suggestedLedger = '';
+        }
+
+        // Only set party if we have a valid party
+        if (this.editForm.party) {
+          try {
+            const partyExists = await fyo.db.exists('Party', this.editForm.party);
+            if (partyExists) {
+              doc.party = this.editForm.party;
+            } else {
+              throw new Error(`Party ${this.editForm.party} does not exist`);
+            }
+          } catch (e) {
+            console.warn(`Error checking party existence for ${this.editForm.party}:`, e);
+            throw new Error(`Invalid party: ${this.editForm.party}`);
+          }
+        } else {
+          doc.party = '';
+        }
+
         doc.suggestedVoucherType = this.editForm.suggestedVoucherType;
-        doc.party = this.editForm.party;
         doc.status = 'Suggested';
         await doc.sync();
 
