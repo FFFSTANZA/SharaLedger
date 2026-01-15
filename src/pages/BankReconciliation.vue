@@ -454,7 +454,8 @@ export default defineComponent({
             'suggestedVoucherType',
             'account',
           ],
-          orderBy: 'date desc, importOrder desc'
+          orderBy: ['date', 'importOrder'],
+          order: 'desc'
         });
 
         // Get suggested ledger names
