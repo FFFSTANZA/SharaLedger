@@ -34,7 +34,7 @@ export class TransactionCategorizer {
     return [
       // Income patterns
       {
-        pattern: /interest received|int\.?\s+received|interest credit|int\s+cr|interest paid by bank/i,
+        pattern: /interest received|int\.?\s+received|interest credit|int\s+cr|interest paid by bank|\binterest income\b/i,
         category: 'income',
         account: 'Interest Income',
         reason: 'Interest income',
@@ -62,6 +62,13 @@ export class TransactionCategorizer {
         priority: 10,
       },
       {
+        pattern: /payment\s+from\s+client|payment\s+from\s+customer|payment\s+received\s+from/i,
+        category: 'income',
+        account: 'Sales',
+        reason: 'Client payment received',
+        priority: 10,
+      },
+      {
         pattern: /service\s+income|service\s+charge|service\s+fee|professional\s+fee|consulting\s+fee/i,
         category: 'income',
         account: 'Service Income',
@@ -78,6 +85,7 @@ export class TransactionCategorizer {
       {
         pattern: /refund|cashback|cash\s+back/i,
         category: 'income',
+        account: 'Other Income',
         reason: 'Refund received',
         priority: 8,
       },
@@ -156,13 +164,27 @@ export class TransactionCategorizer {
         priority: 10,
       },
       
-      // Vendor Payments
+      // Vendor Payments & Purchases
       {
         pattern: /vendor\s+payment|supplier\s+payment|purchase|procurement/i,
         category: 'expense',
         account: 'Purchase',
         reason: 'Vendor payment',
         priority: 10,
+      },
+      {
+        pattern: /equipment\s+purchase|office\s+equipment|asset\s+purchase|machinery|computer|laptop|furniture|fixture/i,
+        category: 'expense',
+        account: 'Purchase',
+        reason: 'Asset/equipment purchase',
+        priority: 10,
+      },
+      {
+        pattern: /miscellaneous\s+business\s+expense|misc\s+expense|general\s+expense|other\s+expense/i,
+        category: 'expense',
+        account: 'General Expense',
+        reason: 'Miscellaneous expense',
+        priority: 9,
       },
       {
         pattern: /upi\/?\s*dr|upi\s+debit|upi\s+out|upi\s+payment|upi\s+to|pay\s+to/i,
@@ -543,6 +565,11 @@ export class TransactionCategorizer {
           account = await this.findMatchingAccount(rule.category, description);
         }
 
+        // If we have an account, ensure it exists in the database
+        if (account) {
+          await this.ensureAccountExists(account);
+        }
+
         const party = await this.findPartyFromDescription(description);
 
         return {
@@ -562,7 +589,7 @@ export class TransactionCategorizer {
       if (!account) {
         // Create a default income account if none exists
         account = 'Other Income';
-        await this.createDefaultAccount(account, 'income');
+        await this.ensureAccountExists(account);
       }
       return {
         category: 'income',
@@ -575,7 +602,7 @@ export class TransactionCategorizer {
       if (!account) {
         // Create a default expense account if none exists
         account = 'General Expense';
-        await this.createDefaultAccount(account, 'expense');
+        await this.ensureAccountExists(account);
       }
       return {
         category: 'expense',
@@ -589,7 +616,7 @@ export class TransactionCategorizer {
     let account = await this.findDefaultAccount('expense');
     if (!account) {
       account = 'General Expense';
-      await this.createDefaultAccount(account, 'expense');
+      await this.ensureAccountExists(account);
     }
     return {
       category: 'expense',
@@ -643,18 +670,59 @@ export class TransactionCategorizer {
         fields: ['name'],
       });
 
+      // Sort parties by length (longer names first) to avoid false positives
+      const sortedParties = parties.sort((a, b) => {
+        const nameA = (a.name || '').length;
+        const nameB = (b.name || '').length;
+        return nameB - nameA;
+      });
+
       // Try to find party name in description
-      for (const party of parties) {
-        const partyName = party.name?.toLowerCase() ?? '';
-        if (description.includes(partyName)) {
+      for (const party of sortedParties) {
+        const partyName = party.name?.trim();
+        if (!partyName) continue;
+
+        const partyNameLower = partyName.toLowerCase();
+
+        // Check for exact word match
+        const partyNameRegex = new RegExp(`\\b${partyNameLower}\\b`, 'i');
+        if (partyNameRegex.test(description)) {
+          this.partiesCache.set(description, party.name);
+          return party.name;
+        }
+
+        // Check for substring match (less strict)
+        if (description.includes(partyNameLower)) {
           this.partiesCache.set(description, party.name);
           return party.name;
         }
       }
-    } catch {
+
+      // Try to extract potential party name from common patterns
+      // Pattern: "Payment from/to [Party Name]" or "Client [Name]" etc.
+      const fromMatch = description.match(/(?:from|to|client|customer|vendor|supplier)\s+([A-Za-z\s]+?)(?:\s+(?:via|by|using|through)|$)/i);
+      if (fromMatch && fromMatch[1] && fromMatch[1].trim().length > 2) {
+        const potentialParty = fromMatch[1].trim();
+
+        // Check if this potential party name matches any existing party
+        const matchingParty = parties.find(p => {
+          const name = p.name?.toLowerCase() || '';
+          return name.includes(potentialParty.toLowerCase()) ||
+                 potentialParty.toLowerCase().includes(name);
+        });
+
+        if (matchingParty) {
+          this.partiesCache.set(description, matchingParty.name);
+          return matchingParty.name;
+        }
+      }
+
+    } catch (error) {
       // Ignore errors
+      console.warn('Error finding party from description:', error);
     }
 
+    this.partiesCache.set(description, undefined);
     return undefined;
   }
 
@@ -678,6 +746,126 @@ export class TransactionCategorizer {
       return undefined;
     } catch {
       return undefined;
+    }
+  }
+
+  // Account type mappings for different categories
+  private accountTypeMapping: Record<string, { rootType: string; accountType: string; parentAccount?: string }> = {
+    // Income Accounts
+    'Interest Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Dividend Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Commission Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Sales': { rootType: 'Income', accountType: 'Income Account' },
+    'Service Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Rental Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Other Income': { rootType: 'Income', accountType: 'Income Account' },
+    'Discounts': { rootType: 'Income', accountType: 'Income Account' },
+    'Cash': { rootType: 'Asset', accountType: 'Cash' },
+    'Gain/Loss on Asset Disposal': { rootType: 'Income', accountType: 'Income Account' },
+
+    // Expense Accounts - Bank & Financial
+    'Cash Withdrawals': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Bank Charges': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Interest Expense': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Payments
+    'Purchase': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Payments': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Card Payments': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Loans & Credit
+    'Loan Repayment': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Credit Card Payments': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Salaries & Staff
+    'Salaries and Wages': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Employee Benefits': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Office & Operations
+    'Rent': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Utilities': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Internet & Communication': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Telephone': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Office Supplies': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Maintenance': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Office Expenses': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Insurance
+    'Insurance': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Travel & Transport
+    'Fuel': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Travel': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Professional Services
+    'Legal & Professional': { rootType: 'Expense', accountType: 'Expense Account' },
+    'Professional Fees': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Marketing & IT
+    'Marketing': { rootType: 'Expense', accountType: 'Expense Account' },
+    'IT & Software': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Training
+    'Training': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Expense Accounts - Taxes
+    'Taxes': { rootType: 'Expense', accountType: 'Expense Account' },
+
+    // Default Expense
+    'General Expense': { rootType: 'Expense', accountType: 'Expense Account' },
+  };
+
+  private async ensureAccountExists(accountName: string): Promise<boolean> {
+    try {
+      // Check if account already exists
+      const existing = await this.fyo.db.getDoc('Account', accountName);
+      if (existing) return true;
+
+      // Get account configuration
+      const config = this.accountTypeMapping[accountName];
+      if (!config) {
+        console.warn(`No configuration for account: ${accountName}, will try to create with defaults`);
+        // Try to create with defaults based on name
+        const isExpense = /expense|charge|payment|tax|fee|wages|salary/i.test(accountName);
+        const defaultConfig: any = {
+          rootType: isExpense ? 'Expense' : 'Income',
+          accountType: isExpense ? 'Expense Account' : 'Income Account',
+        };
+        await this.createAccount(accountName, defaultConfig);
+        return true;
+      }
+
+      // Create the account (without parent for simplicity)
+      await this.createAccount(accountName, config);
+      return true;
+    } catch (error) {
+      console.error(`Failed to ensure account exists: ${accountName}`, error);
+      return false;
+    }
+  }
+
+  private async createAccount(
+    accountName: string,
+    config: { rootType: string; accountType: string; parentAccount?: string }
+  ): Promise<void> {
+    try {
+      const account = this.fyo.doc.getNewDoc('Account');
+      account.name = accountName;
+      account.rootType = config.rootType;
+      account.accountType = config.accountType;
+      account.isGroup = false;
+      if (config.parentAccount) {
+        account.parentAccount = config.parentAccount;
+      }
+      await account.sync();
+      console.log(`Created account: ${accountName} (${config.rootType} - ${config.accountType})`);
+    } catch (error: any) {
+      // If the error is that the account already exists, that's OK
+      if (error.message?.includes('already exists') || error.message?.includes('duplicate')) {
+        console.log(`Account ${accountName} already exists (created by another process)`);
+        return;
+      }
+      throw error;
     }
   }
 
@@ -714,7 +902,7 @@ export class TransactionCategorizer {
 export async function autoCategorizeTransaction(
   transaction: any,
   fyo: Fyo
-): Promise<{ account: string | undefined; voucherType: string }> {
+): Promise<{ account: string | undefined; voucherType: string; party?: string }> {
   const categorizer = new TransactionCategorizer(fyo);
   const suggestion = await categorizer.suggestCategory({
     date: transaction.date || new Date(),
@@ -725,6 +913,7 @@ export async function autoCategorizeTransaction(
 
   return {
     account: suggestion.account,
+    party: suggestion.party,
     voucherType:
       suggestion.category === 'income'
         ? 'Receipt'
