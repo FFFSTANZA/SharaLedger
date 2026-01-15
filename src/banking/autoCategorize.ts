@@ -558,23 +558,44 @@ export class TransactionCategorizer {
     // Default categorization based on transaction type
     const txType = transaction.type?.toLowerCase();
     if (txType === 'credit') {
+      let account = await this.findDefaultAccount('income');
+      if (!account) {
+        // Create a default income account if none exists
+        account = 'Other Income';
+        await this.createDefaultAccount(account, 'income');
+      }
       return {
         category: 'income',
+        account,
         confidence: 0.3,
-        reason: 'Credit transaction',
+        reason: 'Credit transaction - default income account',
       };
     } else if (txType === 'debit') {
+      let account = await this.findDefaultAccount('expense');
+      if (!account) {
+        // Create a default expense account if none exists
+        account = 'General Expense';
+        await this.createDefaultAccount(account, 'expense');
+      }
       return {
         category: 'expense',
+        account,
         confidence: 0.3,
-        reason: 'Debit transaction',
+        reason: 'Debit transaction - default expense account',
       };
     }
 
+    // Ultimate fallback
+    let account = await this.findDefaultAccount('expense');
+    if (!account) {
+      account = 'General Expense';
+      await this.createDefaultAccount(account, 'expense');
+    }
     return {
       category: 'expense',
+      account,
       confidence: 0.1,
-      reason: 'Uncategorized transaction',
+      reason: 'Uncategorized transaction - default account',
     };
   }
 
@@ -635,6 +656,52 @@ export class TransactionCategorizer {
     }
 
     return undefined;
+  }
+
+  private async findDefaultAccount(category: 'income' | 'expense'): Promise<string | undefined> {
+    try {
+      const accountType = category === 'income' ? 'Income' : 'Expense';
+      const accounts = await this.fyo.db.getAll<{ name: string; rootType: string }>('Account', {
+        fields: ['name', 'rootType'],
+        filters: { isGroup: false },
+      });
+
+      // Look for accounts matching the category type
+      const matchingAccounts = accounts.filter(
+        (a) => a.rootType === accountType
+      );
+
+      if (matchingAccounts.length > 0) {
+        return matchingAccounts[0].name;
+      }
+
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async createDefaultAccount(accountName: string, category: 'income' | 'expense'): Promise<void> {
+    try {
+      const accountType = category === 'income' ? 'Income Account' : 'Expense Account';
+      const rootType = category === 'income' ? 'Income' : 'Expense';
+
+      // Check if account already exists
+      const existing = await this.fyo.db.getDoc('Account', accountName);
+      if (existing) return;
+
+      // Create the account
+      const account = this.fyo.doc.getNewDoc('Account');
+      account.name = accountName;
+      account.rootType = rootType;
+      account.accountType = accountType;
+      account.isGroup = false;
+      await account.sync();
+
+      console.log(`Created default account: ${accountName} (${rootType} - ${accountType})`);
+    } catch (error) {
+      console.error(`Failed to create default account ${accountName}:`, error);
+    }
   }
 
   async categorizeTransactions(
