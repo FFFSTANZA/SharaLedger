@@ -7,28 +7,21 @@
       </h2>
       <div class="flex space-x-2">
         <Button
-          v-if="availableMatchesCount > 0"
-          :title="t`Auto-match All`"
+          :title="t`Auto-categorize All`"
           type="secondary"
-          @click="autoMatchAll"
+          @click="autoCategorizeAll"
+          :loading="loading"
         >
-          {{ t`Auto-match All` }}
+          {{ t`Auto-categorize All` }}
         </Button>
         <Button
-          v-if="postableSelectedCount > 0"
-          :title="t`Post Selected`"
+          v-if="selectedCount > 0"
+          :title="t`Post Selected to GL`"
           type="primary"
           @click="postSelected"
+          :loading="posting"
         >
-          {{ t`Post Selected (${postableSelectedCount})` }}
-        </Button>
-        <Button
-          v-if="reconcilableSelectedCount > 0"
-          :title="t`Reconcile Selected`"
-          type="secondary"
-          @click="reconcileSelected"
-        >
-          {{ t`Reconcile (${reconcilableSelectedCount})` }}
+          {{ t`Post to GL (${selectedCount})` }}
         </Button>
         <Button
           :title="t`Refresh`"
@@ -77,8 +70,6 @@
                   options: [
                     { value: '', label: t`All` },
                     { value: 'Imported', label: t`Imported` },
-                    { value: 'Suggested', label: t`Suggested` },
-                    { value: 'Posted', label: t`Posted` },
                     { value: 'Reconciled', label: t`Reconciled` }
                   ]
                 }"
@@ -118,20 +109,16 @@
           </h3>
           <div class="space-y-3">
             <div class="flex justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
-              <span class="text-sm text-blue-700 dark:text-blue-400">{{ t`Imported` }}</span>
+              <span class="text-sm text-blue-700 dark:text-blue-400">{{ t`Total Imported` }}</span>
               <span class="text-sm font-semibold text-blue-700 dark:text-blue-400">{{ summary.imported }}</span>
-            </div>
-            <div class="flex justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-              <span class="text-sm text-yellow-700 dark:text-yellow-400">{{ t`Suggested` }}</span>
-              <span class="text-sm font-semibold text-yellow-700 dark:text-yellow-400">{{ summary.suggested }}</span>
-            </div>
-            <div class="flex justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded">
-              <span class="text-sm text-orange-700 dark:text-orange-400">{{ t`Posted` }}</span>
-              <span class="text-sm font-semibold text-orange-700 dark:text-orange-400">{{ summary.posted }}</span>
             </div>
             <div class="flex justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded">
               <span class="text-sm text-green-700 dark:text-green-400">{{ t`Reconciled` }}</span>
               <span class="text-sm font-semibold text-green-700 dark:text-green-400">{{ summary.reconciled }}</span>
+            </div>
+            <div class="flex justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded">
+              <span class="text-sm text-purple-700 dark:text-purple-400">{{ t`Pending` }}</span>
+              <span class="text-sm font-semibold text-purple-700 dark:text-purple-400">{{ summary.pending }}</span>
             </div>
             <div class="flex justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded mt-4">
               <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">{{ t`Total` }}</span>
@@ -143,10 +130,11 @@
           <div class="mt-6 p-3 bg-blue-50 dark:bg-blue-900/10 rounded">
             <h4 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">{{ t`How it works` }}</h4>
             <div class="text-xs text-blue-700 dark:text-blue-400 space-y-1">
-              <p>{{ t`1. Transactions are Imported` }}</p>
-              <p>{{ t`2. System Suggests ledgers` }}</p>
-              <p>{{ t`3. Confirm to Post to GL` }}</p>
-              <p>{{ t`4. Mark as Reconciled` }}</p>
+              <p>{{ t`1. Import bank statements` }}</p>
+              <p>{{ t`2. Auto-categorize transactions` }}</p>
+              <p>{{ t`3. Review & edit suggestions` }}</p>
+              <p>{{ t`4. Post to General Ledger` }}</p>
+              <p>{{ t`5. Mark as Reconciled` }}</p>
             </div>
           </div>
         </div>
@@ -191,11 +179,11 @@
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400">{{ t`Description` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-20">{{ t`Ref No` }}</th>
               <th class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Amount` }}</th>
-              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Status` }}</th>
-              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Suggested Ledger` }}</th>
-              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Party` }}</th>
+              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Ledger Account` }}</th>
               <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Voucher Type` }}</th>
-              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-32">{{ t`Actions` }}</th>
+              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Party` }}</th>
+              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-24">{{ t`Status` }}</th>
+              <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-20">{{ t`Actions` }}</th>
             </tr>
           </thead>
           <tbody>
@@ -206,11 +194,11 @@
             >
               <td class="p-3">
                 <input
-                  v-if="txn.status === 'Imported' || txn.status === 'Posted'"
+                  v-if="txn.status !== 'Reconciled'"
                   type="checkbox"
                   class="rounded border-gray-300 dark:border-gray-600"
                   :checked="isSelected(txn.name)"
-                  @change="toggleSelection(txn.name, txn.status)"
+                  @change="toggleSelection(txn.name)"
                 />
               </td>
               <td class="p-3 text-gray-800 dark:text-gray-200 font-medium">
@@ -218,14 +206,12 @@
               </td>
               <td class="p-3">
                 <div class="text-gray-800 dark:text-gray-200">{{ txn.description }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap items-center gap-2">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   <span>{{ txn.bankName }}</span>
                   <span
                     v-if="txn.matchedDocument"
-                    class="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-700 dark:text-blue-400 font-mono text-[10px] flex items-center cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                    @click="viewMatchedDocument(txn)"
+                    class="ml-2 px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-700 dark:text-blue-400 font-mono text-[10px]"
                   >
-                    <feather-icon name="link" class="w-2.5 h-2.5 mr-1" />
                     {{ txn.matchedDocumentType }}: {{ txn.matchedDocument }}
                   </span>
                 </div>
@@ -240,6 +226,42 @@
                 {{ formatCurrency(txn.amount) }}
               </td>
               <td class="p-3">
+                <input
+                  v-if="txn.status !== 'Reconciled'"
+                  type="text"
+                  class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  :value="txn.suggestedLedger || ''"
+                  @change="updateTransaction(txn, 'suggestedLedger', $event.target.value)"
+                  :placeholder="t`Account name`"
+                />
+                <span v-else class="text-gray-700 dark:text-gray-300">{{ txn.suggestedLedger || '-' }}</span>
+              </td>
+              <td class="p-3">
+                <select
+                  v-if="txn.status !== 'Reconciled'"
+                  class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  :value="txn.suggestedVoucherType || (txn.type === 'Credit' ? 'Receipt' : 'Payment')"
+                  @change="updateTransaction(txn, 'suggestedVoucherType', $event.target.value)"
+                >
+                  <option value="Payment">{{ t`Payment` }}</option>
+                  <option value="Receipt">{{ t`Receipt` }}</option>
+                  <option value="Transfer">{{ t`Transfer` }}</option>
+                  <option value="Journal Entry">{{ t`Journal Entry` }}</option>
+                </select>
+                <span v-else class="text-gray-700 dark:text-gray-300">{{ txn.suggestedVoucherType || '-' }}</span>
+              </td>
+              <td class="p-3">
+                <input
+                  v-if="txn.status !== 'Reconciled'"
+                  type="text"
+                  class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  :value="txn.party || ''"
+                  @change="updateTransaction(txn, 'party', $event.target.value)"
+                  :placeholder="t`Party name`"
+                />
+                <span v-else class="text-gray-700 dark:text-gray-300">{{ txn.party || '-' }}</span>
+              </td>
+              <td class="p-3">
                 <span
                   class="px-2 py-1 rounded text-xs font-medium"
                   :class="getStatusClass(txn.status)"
@@ -247,49 +269,25 @@
                   {{ txn.status }}
                 </span>
               </td>
-              <td class="p-3 text-gray-700 dark:text-gray-300">
-                {{ txn.suggestedLedgerName || '-' }}
-              </td>
-              <td class="p-3 text-gray-700 dark:text-gray-300">
-                {{ txn.partyName || txn.party || '-' }}
-              </td>
-              <td class="p-3 text-gray-700 dark:text-gray-300">
-                {{ txn.suggestedVoucherType || '-' }}
-              </td>
               <td class="p-3">
                 <div class="flex space-x-2">
                   <Button
-                    v-if="(txn.status === 'Imported' || txn.status === 'Suggested') && txn.potentialMatches?.length"
+                    v-if="txn.status !== 'Reconciled' && !txn.suggestedLedger"
                     size="small"
                     type="secondary"
-                    class="!bg-green-50 !text-green-700 !border-green-200"
-                    @click="showMatch(txn)"
-                  >
-                    {{ t`Match` }}
-                  </Button>
-                  <Button
-                    v-if="txn.status === 'Imported'"
-                    size="small"
-                    type="secondary"
-                    @click="suggestSingle(txn)"
+                    @click="autoCategorizeSingle(txn)"
+                    :loading="loadingSingle === txn.name"
                   >
                     {{ t`Suggest` }}
                   </Button>
                   <Button
-                    v-if="txn.status === 'Suggested'"
+                    v-if="txn.status !== 'Reconciled' && txn.suggestedLedger"
                     size="small"
                     type="primary"
-                    @click="postTransaction(txn)"
+                    @click="postSingle(txn)"
+                    :loading="postingSingle === txn.name"
                   >
                     {{ t`Post` }}
-                  </Button>
-                  <Button
-                    v-if="txn.status === 'Posted'"
-                    size="small"
-                    type="secondary"
-                    @click="reconcileTransaction(txn)"
-                  >
-                    {{ t`Reconcile` }}
                   </Button>
                   <Button
                     v-if="txn.status === 'Reconciled'"
@@ -298,24 +296,6 @@
                     @click="unreconcileTransaction(txn)"
                   >
                     {{ t`Unreconcile` }}
-                  </Button>
-                  <Button
-                    v-if="txn.status === 'Posted'"
-                    size="small"
-                    variant="ghost"
-                    class="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    @click="unmatchTransaction(txn)"
-                  >
-                    <feather-icon name="link-2" class="w-3 h-3 mr-1" />
-                    {{ t`Unmatch` }}
-                  </Button>
-                  <Button
-                    v-if="txn.status === 'Imported' || txn.status === 'Suggested'"
-                    size="small"
-                    variant="ghost"
-                    @click="editSuggestion(txn)"
-                  >
-                    <feather-icon name="edit-2" class="w-3 h-3" />
                   </Button>
                 </div>
               </td>
@@ -331,140 +311,20 @@
       @closemodal="showPostModal = false"
     >
       <div class="w-form">
-        <FormHeader :form-title="t`Confirm Posting`" />
+        <FormHeader :form-title="t`Post to General Ledger`" />
         <hr class="dark:border-gray-800" />
         <div class="p-6">
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
             {{ t`Post ${selectedCount} transaction(s) to General Ledger?` }}
           </p>
           <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs text-blue-700 dark:text-blue-400">
-            {{ t`This will create Journal Entries and update your GL, Trial Balance, and P&L.` }}
+            {{ t`This will create Journal Entries and update your GL, Trial Balance, and P&L. Make sure all ledger accounts and parties exist.` }}
           </div>
         </div>
         <hr class="dark:border-gray-800" />
         <div class="flex justify-end p-4 space-x-2">
           <Button @click="showPostModal = false">{{ t`Cancel` }}</Button>
-          <Button type="primary" @click="confirmPost">{{ t`Post to GL` }}</Button>
-        </div>
-      </div>
-    </Modal>
-
-    <!-- Reconcile Confirmation Modal -->
-    <Modal
-      :open-modal="showReconcileModal"
-      @closemodal="showReconcileModal = false"
-    >
-      <div class="w-form">
-        <FormHeader :form-title="t`Confirm Reconciliation`" />
-        <hr class="dark:border-gray-800" />
-        <div class="p-6">
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {{ t`Mark ${reconcileCount} transaction(s) as reconciled with bank statement?` }}
-          </p>
-        </div>
-        <hr class="dark:border-gray-800" />
-        <div class="flex justify-end p-4 space-x-2">
-          <Button @click="showReconcileModal = false">{{ t`Cancel` }}</Button>
-          <Button type="primary" @click="confirmReconcile">{{ t`Reconcile` }}</Button>
-        </div>
-      </div>
-    </Modal>
-
-    <!-- Edit Suggestion Modal -->
-    <Modal
-      :open-modal="showEditModal"
-      @closemodal="showEditModal = false"
-    >
-      <div class="w-[500px]">
-        <FormHeader :form-title="t`Edit Suggestion`" />
-        <hr class="dark:border-gray-800" />
-        <div class="p-6 space-y-4">
-          <div>
-            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Ledger` }}</label>
-            <AutoComplete
-              :df="{
-                fieldname: 'suggestedLedger',
-                label: t`Ledger`,
-                fieldtype: 'Link',
-                target: 'Account'
-              }"
-              :value="editForm.suggestedLedger"
-              @change="editForm.suggestedLedger = $event"
-            />
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Voucher Type` }}</label>
-            <Select
-              :df="{
-                fieldname: 'suggestedVoucherType',
-                label: t`Voucher Type`,
-                fieldtype: 'Select',
-                options: [
-                  { value: 'Payment', label: t`Payment` },
-                  { value: 'Receipt', label: t`Receipt` },
-                  { value: 'Journal Entry', label: t`Journal Entry` },
-                  { value: 'Transfer', label: t`Transfer` }
-                ]
-              }"
-              :value="editForm.suggestedVoucherType"
-              @change="editForm.suggestedVoucherType = $event"
-            />
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Party (Optional)` }}</label>
-            <AutoComplete
-              :df="{
-                fieldname: 'party',
-                label: t`Party`,
-                fieldtype: 'Link',
-                target: 'Party'
-              }"
-              :value="editForm.party"
-              @change="editForm.party = $event"
-            />
-          </div>
-        </div>
-        <hr class="dark:border-gray-800" />
-        <div class="flex justify-end p-4 space-x-2">
-          <Button @click="showEditModal = false">{{ t`Cancel` }}</Button>
-          <Button type="primary" @click="saveSuggestion">{{ t`Save` }}</Button>
-        </div>
-      </div>
-    </Modal>
-
-    <!-- Match Modal -->
-    <Modal
-      :open-modal="showMatchModal"
-      @closemodal="showMatchModal = false"
-    >
-      <div class="w-[600px]">
-        <FormHeader :form-title="t`Potential Matches Found`" />
-        <hr class="dark:border-gray-800" />
-        <div class="p-6">
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {{ t`We found existing transactions that match this bank entry.` }}
-          </p>
-          <div class="space-y-2 max-h-60 overflow-y-auto">
-            <div
-              v-for="m in matchingTransactions"
-              :key="m.name"
-              class="p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer flex items-center justify-between"
-              @click="confirmMatch(m)"
-            >
-              <div>
-                <div class="font-medium text-gray-900 dark:text-gray-100">{{ m.name }}</div>
-                <div class="text-xs text-gray-500">{{ formatDate(m.date) }} • {{ m.type }}</div>
-              </div>
-              <div class="text-right">
-                <div class="font-mono font-medium">{{ formatCurrency(m.amount) }}</div>
-                <div class="text-xs text-blue-600">{{ t`Select to Match` }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <hr class="dark:border-gray-800" />
-        <div class="flex justify-end p-4">
-          <Button @click="showMatchModal = false">{{ t`Cancel` }}</Button>
+          <Button type="primary" @click="confirmPost" :loading="posting">{{ t`Post to GL` }}</Button>
         </div>
       </div>
     </Modal>
@@ -495,13 +355,9 @@ interface BankTransaction {
   status: string;
   suggestedLedger?: string;
   suggestedVoucherType?: string;
-  suggestedLedgerName?: string;
   party?: string;
-  partyName?: string;
-  account?: string;
   matchedDocument?: string;
   matchedDocumentType?: string;
-  potentialMatches?: any[];
 }
 
 interface Filters {
@@ -523,82 +379,39 @@ export default defineComponent({
   data() {
     return {
       transactions: [] as BankTransaction[],
-      loading: true,
-      filters: {
-        status: 'Imported',
-      } as Filters,
       selectedTransactions: [] as string[],
+      filters: {} as Filters,
       summary: {
         imported: 0,
-        suggested: 0,
-        posted: 0,
         reconciled: 0,
+        pending: 0,
         total: 0,
       },
+      loading: false,
+      loadingSingle: '',
+      posting: false,
+      postingSingle: '',
       showPostModal: false,
-      showReconcileModal: false,
-      showEditModal: false,
-      showMatchModal: false,
-      postAction: '' as 'selected' | 'single',
-      reconcileAction: '' as 'selected' | 'single',
-      currentTransaction: null as BankTransaction | null,
-      matchingTransactions: [] as any[],
-      editForm: {
-        suggestedLedger: '',
-        suggestedVoucherType: '',
-        party: '',
-      } as { suggestedLedger: string; suggestedVoucherType: string; party: string },
     };
   },
   computed: {
     allSelected(): boolean {
-      const selectable = this.transactions.filter(
-        t => t.status === 'Imported' || t.status === 'Suggested' || t.status === 'Posted'
-      );
-      return (
-        selectable.length > 0 &&
-        selectable.every(t => this.selectedTransactions.includes(t.name))
-      );
+      const selectable = this.transactions.filter(t => t.status !== 'Reconciled');
+      return selectable.length > 0 && selectable.every(t => this.selectedTransactions.includes(t.name));
     },
     selectedCount(): number {
       return this.selectedTransactions.length;
     },
-    postableSelectedCount(): number {
-      return this.transactions.filter(
-        t => (t.status === 'Imported' || t.status === 'Suggested') && this.selectedTransactions.includes(t.name)
-      ).length;
-    },
-    reconcilableSelectedCount(): number {
-      return this.postedSelectedTransactions.length;
-    },
-    postedSelectedTransactions(): BankTransaction[] {
-      return this.transactions.filter(
-        t => t.status === 'Posted' && this.selectedTransactions.includes(t.name)
-      );
-    },
-    availableMatchesCount(): number {
-      return this.transactions.filter(
-        t => (t.status === 'Imported' || t.status === 'Suggested') && t.potentialMatches?.length === 1
-      ).length;
-    },
-    matchableTransactions(): BankTransaction[] {
-      return this.transactions.filter(
-        t => (t.status === 'Imported' || t.status === 'Suggested')
-      );
-    },
-    reconcileCount(): number {
-      return this.postedSelectedTransactions.length;
-    },
   },
-  mounted() {
-    this.loadTransactions();
-    this.loadSummary();
+  async mounted() {
+    await this.loadTransactions();
+    await this.loadSummary();
   },
   methods: {
     async loadTransactions() {
       this.loading = true;
       try {
-        const filters: Record<string, any> = {};
+        let filters: any = {};
         
         if (this.filters.bankAccount) {
           filters.account = this.filters.bankAccount;
@@ -606,149 +419,33 @@ export default defineComponent({
         if (this.filters.status) {
           filters.status = this.filters.status;
         }
-        if (this.filters.dateFrom || this.filters.dateTo) {
-          const dateFilter: any = {};
-          if (this.filters.dateFrom) {
-            dateFilter['>='] = this.filters.dateFrom;
-          }
-          if (this.filters.dateTo) {
-            dateFilter['<='] = this.filters.dateTo;
-          }
-          filters.date = dateFilter;
+        if (this.filters.dateFrom) {
+          filters.date = ['>=', this.filters.dateFrom];
+        }
+        if (this.filters.dateTo) {
+          filters.date = [...(filters.date || []), '<=', this.filters.dateTo];
         }
 
-        const results = await fyo.db.getAll('BankTransaction', {
-          filters,
+        const transactions = await fyo.db.getAll('BankTransaction', {
           fields: [
-            'name',
-            'date',
-            'description',
-            'type',
-            'amount',
-            'reference',
-            'chequeNo',
-            'bankName',
-            'status',
-            'suggestedLedger',
-            'suggestedVoucherType',
-            'account',
-            'party',
-            'matchedDocument',
-            'matchedDocumentType',
+            'name', 'date', 'description', 'amount', 'type', 'reference', 
+            'chequeNo', 'bankName', 'status', 'suggestedLedger', 
+            'suggestedVoucherType', 'party', 'matchedDocument', 'matchedDocumentType'
           ],
-          orderBy: ['date', 'importOrder'],
-          order: 'desc'
+          filters: Object.keys(filters).length > 0 ? filters : undefined,
+          orderBy: 'date',
+          order: 'desc',
         });
 
-        // Get suggested ledger names and party names, and find matches
-        for (const txn of results) {
-          if (txn.suggestedLedger) {
-            try {
-              const account = await fyo.db.getDoc('Account', txn.suggestedLedger);
-              txn.suggestedLedgerName = account?.name || txn.suggestedLedger;
-            } catch {
-              txn.suggestedLedgerName = txn.suggestedLedger;
-            }
-          }
-
-          if (txn.party) {
-            try {
-              const party = await fyo.db.getDoc('Party', txn.party);
-              txn.partyName = party?.name || txn.party;
-            } catch {
-              txn.partyName = txn.party;
-            }
-          }
-
-          if (txn.status === 'Imported' || txn.status === 'Suggested') {
-            txn.potentialMatches = await this.findMatches(txn);
-          }
-        }
-
-        this.transactions = results;
+        this.transactions = transactions as BankTransaction[];
       } catch (error) {
+        console.error('Failed to load transactions:', error);
         showToast({
           type: 'error',
-          message: t`Failed to load transactions: ${(error as Error).message}`,
+          message: t`Failed to load transactions`,
         });
       } finally {
         this.loading = false;
-      }
-    },
-    async findMatches(txn: BankTransaction) {
-      // Try multiple account field names
-      const account = txn.account || txn.bankAccount || txn.bankName;
-      if (!account || account === 'Generic') return [];
-      
-      try {
-        const amount = Math.abs(txn.amount);
-        const results = await fyo.db.getAll('Payment', {
-          filters: {
-            amount: amount,
-          },
-        });
-        
-        return results
-          .filter(p => p.account === account || p.paymentAccount === account)
-          .map(p => ({
-            name: p.name,
-            date: p.date,
-            amount: p.amount,
-            type: 'Payment',
-          }));
-      } catch (e) {
-        console.error('Match search failed', e);
-        return [];
-      }
-    },
-    showMatch(txn: BankTransaction) {
-      this.currentTransaction = txn;
-      this.matchingTransactions = txn.potentialMatches || [];
-      this.showMatchModal = true;
-    },
-    async confirmMatch(match: any) {
-      if (!this.currentTransaction) return;
-      await this.confirmMatchInternal(this.currentTransaction, match);
-      this.showMatchModal = false;
-      this.loadTransactions();
-      this.loadSummary();
-    },
-    async confirmMatchInternal(txn: BankTransaction, match: any) {
-      try {
-        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-        doc.status = 'Posted';
-        doc.matchedDocument = match.name;
-        doc.matchedDocumentType = match.type;
-        await doc.sync();
-
-        showToast({
-          type: 'success',
-          message: t`Transaction matched with ${match.name}`,
-        });
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to match transaction ${txn.name}: ${(error as Error).message}`,
-        });
-      }
-    },
-    async autoMatchAll() {
-      let matchedCount = 0;
-      for (const txn of this.matchableTransactions) {
-        if (txn.potentialMatches?.length === 1) {
-          const match = txn.potentialMatches[0];
-          await this.confirmMatchInternal(txn, match);
-          matchedCount++;
-        }
-      }
-      if (matchedCount > 0) {
-        this.loadTransactions();
-        this.loadSummary();
-      } else {
-        showToast({
-          type: 'info',
-          message: t`No definite matches found`,
-        });
       }
     },
     async loadSummary() {
@@ -759,13 +456,197 @@ export default defineComponent({
 
         this.summary = {
           imported: summary.filter(s => s.status === 'Imported').length,
-          suggested: summary.filter(s => s.status === 'Suggested').length,
-          posted: summary.filter(s => s.status === 'Posted').length,
           reconciled: summary.filter(s => s.status === 'Reconciled').length,
+          pending: summary.filter(s => s.status === 'Imported').length,
           total: summary.length,
         };
       } catch (error) {
         console.error('Failed to load summary:', error);
+      }
+    },
+    async autoCategorizeAll() {
+      if (this.transactions.length === 0) return;
+      
+      this.loading = true;
+      let successCount = 0;
+      const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
+
+      for (const txn of this.transactions) {
+        if (txn.status === 'Imported' && !txn.suggestedLedger) {
+          try {
+            await this.autoCategorizeSingle(txn);
+            successCount++;
+          } catch (error) {
+            console.error(`Failed to categorize ${txn.name}:`, error);
+          }
+        }
+      }
+
+      showToast({
+        type: 'success',
+        message: t`Auto-categorized ${successCount} transactions`,
+      });
+      this.loading = false;
+    },
+    async autoCategorizeSingle(txn: BankTransaction) {
+      try {
+        this.loadingSingle = txn.name;
+        const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
+        const suggestion = await autoCategorizeTransaction(txn, fyo);
+
+        // Get fresh doc instance
+        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        
+        doc.suggestedLedger = suggestion.account || '';
+        doc.suggestedVoucherType = suggestion.voucherType || (txn.type === 'Credit' ? 'Receipt' : 'Payment');
+        doc.party = suggestion.party || '';
+        
+        await doc.sync();
+
+        // Update local transaction
+        txn.suggestedLedger = suggestion.account;
+        txn.suggestedVoucherType = suggestion.voucherType;
+        txn.party = suggestion.party;
+      } catch (error) {
+        console.error('Failed to auto-categorize:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to suggest: ${(error as Error).message}`,
+        });
+      } finally {
+        this.loadingSingle = '';
+      }
+    },
+    async updateTransaction(txn: BankTransaction, field: string, value: any) {
+      try {
+        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        (doc as any)[field] = value;
+        await doc.sync();
+
+        // Update local transaction
+        (txn as any)[field] = value;
+      } catch (error) {
+        console.error('Failed to update transaction:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to update transaction`,
+        });
+      }
+    },
+    async postSelected() {
+      if (this.selectedCount === 0) return;
+      this.showPostModal = true;
+    },
+    async postSingle(txn: BankTransaction) {
+      if (!txn.suggestedLedger) {
+        showToast({
+          type: 'error',
+          message: t`Please set a ledger account first`,
+        });
+        return;
+      }
+      this.postingSingle = txn.name;
+      try {
+        const result = await this.postTransactions([txn]);
+        if (result.successCount > 0) {
+          showToast({
+            type: 'success',
+            message: t`Transaction posted successfully`,
+          });
+          await this.loadTransactions();
+          await this.loadSummary();
+        }
+      } catch (error) {
+        console.error('Failed to post transaction:', error);
+      } finally {
+        this.postingSingle = '';
+      }
+    },
+    async confirmPost() {
+      this.showPostModal = false;
+      this.posting = true;
+      
+      try {
+        const selectedTxnList = this.transactions.filter(t => 
+          this.selectedTransactions.includes(t.name) && 
+          t.suggestedLedger &&
+          t.status !== 'Reconciled'
+        );
+
+        const result = await this.postTransactions(selectedTxnList);
+        
+        if (result.successCount > 0) {
+          showToast({
+            type: 'success',
+            message: t`${result.successCount} transaction(s) posted successfully`,
+          });
+          this.selectedTransactions = [];
+          await this.loadTransactions();
+          await this.loadSummary();
+        }
+
+        if (result.errorCount > 0) {
+          showToast({
+            type: 'error',
+            message: t`${result.errorCount} transaction(s) failed to post`,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to post transactions:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to post transactions: ${(error as Error).message}`,
+        });
+      } finally {
+        this.posting = false;
+      }
+    },
+    async postTransactions(transactions: BankTransaction[]): Promise<{ successCount: number; errorCount: number }> {
+      const { createGLVoucher } = await import('src/banking/glPosting');
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const txn of transactions) {
+        try {
+          const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+          const result = await createGLVoucher(doc, fyo);
+
+          if (result.success) {
+            doc.status = 'Reconciled';
+            doc.matchedDocument = result.voucherName;
+            doc.matchedDocumentType = result.voucherType;
+            await doc.sync();
+            successCount++;
+          } else {
+            throw new Error(result.error || 'Unknown error during posting');
+          }
+        } catch (error) {
+          console.error(`Failed to post transaction ${txn.name}:`, error);
+          errorCount++;
+        }
+      }
+
+      return { successCount, errorCount };
+    },
+    async unreconcileTransaction(txn: BankTransaction) {
+      try {
+        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        doc.status = 'Imported';
+        doc.matchedDocument = '';
+        doc.matchedDocumentType = '';
+        await doc.sync();
+
+        showToast({
+          type: 'success',
+          message: t`Transaction unreconciled`,
+        });
+        await this.loadTransactions();
+        await this.loadSummary();
+      } catch (error) {
+        showToast({
+          type: 'error',
+          message: t`Failed to unreconcile transaction: ${(error as Error).message}`,
+        });
       }
     },
     updateFilter(key: keyof Filters, value: any) {
@@ -779,13 +660,7 @@ export default defineComponent({
     isSelected(name: string): boolean {
       return this.selectedTransactions.includes(name);
     },
-    toggleSelection(name: string, status: string) {
-      if (status === 'Imported' || status === 'Suggested') {
-        this.postAction = 'selected';
-      } else if (status === 'Posted') {
-        this.reconcileAction = 'selected';
-      }
-
+    toggleSelection(name: string) {
       const index = this.selectedTransactions.indexOf(name);
       if (index > -1) {
         this.selectedTransactions.splice(index, 1);
@@ -794,9 +669,7 @@ export default defineComponent({
       }
     },
     toggleSelectAll() {
-      const selectable = this.transactions.filter(
-        t => t.status === 'Imported' || t.status === 'Suggested' || t.status === 'Posted'
-      );
+      const selectable = this.transactions.filter(t => t.status !== 'Reconciled');
       if (this.allSelected) {
         this.selectedTransactions = [];
       } else {
@@ -807,363 +680,11 @@ export default defineComponent({
       switch (status) {
         case 'Imported':
           return 'bg-blue-100 text-blue-700';
-        case 'Suggested':
-          return 'bg-yellow-100 text-yellow-700';
-        case 'Posted':
-          return 'bg-orange-100 text-orange-700';
         case 'Reconciled':
           return 'bg-green-100 text-green-700';
         default:
           return 'bg-gray-100 text-gray-700';
       }
-    },
-    postSelected() {
-      if (this.selectedTransactions.length === 0) return;
-      this.postAction = 'selected';
-      this.showPostModal = true;
-    },
-    async suggestSingle(txn: BankTransaction) {
-      try {
-        const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
-        const suggestion = await autoCategorizeTransaction(txn, fyo);
-
-        // Get fresh doc instance
-        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-
-        doc.status = 'Suggested';
-
-        // Only set suggestedLedger if we have a valid account
-        if (suggestion.account) {
-          // Verify the account exists before setting
-          try {
-            const accountExists = await fyo.db.exists('Account', suggestion.account);
-            if (accountExists) {
-              doc.suggestedLedger = suggestion.account;
-            } else {
-              console.warn(`Account ${suggestion.account} does not exist, skipping suggestion`);
-              doc.suggestedLedger = '';
-            }
-          } catch (e) {
-            console.warn(`Error checking account existence for ${suggestion.account}:`, e);
-            doc.suggestedLedger = '';
-          }
-        } else {
-          doc.suggestedLedger = '';
-        }
-
-        // Set party if suggested
-        if (suggestion.party) {
-          try {
-            const partyExists = await fyo.db.exists('Party', suggestion.party);
-            if (partyExists) {
-              doc.party = suggestion.party;
-            } else {
-              console.warn(`Party ${suggestion.party} does not exist, skipping party assignment`);
-            }
-          } catch (e) {
-            console.warn(`Error checking party existence for ${suggestion.party}:`, e);
-          }
-        }
-
-        doc.suggestedVoucherType = suggestion.voucherType;
-
-        // Set bank account if not set
-        if (!doc.account) {
-          doc.account = doc.bankName || 'Bank Account';
-        }
-
-        await doc.sync();
-
-        showToast({
-          type: 'success',
-          message: t`Suggestion generated for ${txn.name}`,
-        });
-        this.loadTransactions();
-      } catch (error) {
-        console.error('Failed to suggest:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to suggest: ${(error as Error).message}`,
-        });
-      }
-    },
-    async postTransaction(txn: BankTransaction) {
-      this.postAction = 'single';
-      this.currentTransaction = txn;
-      this.showPostModal = true;
-    },
-    async unmatchTransaction(txn: BankTransaction) {
-      try {
-        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-        doc.status = 'Imported';
-        doc.matchedDocument = '';
-        doc.matchedDocumentType = '';
-        await doc.sync();
-
-        showToast({
-          type: 'success',
-          message: t`Transaction unmatched`,
-        });
-        this.loadTransactions();
-        this.loadSummary();
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to unmatch transaction: ${(error as Error).message}`,
-        });
-      }
-    },
-    async confirmPost() {
-      this.showPostModal = false;
-      try {
-        let transactionsToProcess: BankTransaction[] = [];
-        
-        if (this.postAction === 'selected') {
-          transactionsToProcess = this.transactions.filter(
-            t => (t.status === 'Imported' || t.status === 'Suggested') && this.selectedTransactions.includes(t.name)
-          );
-        } else if (this.postAction === 'single' && this.currentTransaction) {
-          transactionsToProcess = [this.currentTransaction];
-        }
-
-        let successCount = 0;
-        const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
-        const { createGLVoucher } = await import('src/banking/glPosting');
-
-        for (const txn of transactionsToProcess) {
-          try {
-            // Get fresh doc instance to avoid validation errors
-            const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-
-            if (txn.status === 'Imported') {
-              // Step 1: Suggest
-              const suggestion = await autoCategorizeTransaction(txn, fyo);
-
-              doc.status = 'Suggested';
-
-              // Only set suggestedLedger if we have a valid account
-              if (suggestion.account) {
-                try {
-                  const accountExists = await fyo.db.exists('Account', suggestion.account);
-                  if (accountExists) {
-                    doc.suggestedLedger = suggestion.account;
-                  } else {
-                    console.warn(`Account ${suggestion.account} does not exist for ${txn.name}`);
-                    doc.suggestedLedger = '';
-                  }
-                } catch (e) {
-                  console.warn(`Error checking account existence for ${suggestion.account}:`, e);
-                  doc.suggestedLedger = '';
-                }
-              } else {
-                doc.suggestedLedger = '';
-              }
-
-              // Set party if suggested
-              if (suggestion.party) {
-                try {
-                  const partyExists = await fyo.db.exists('Party', suggestion.party);
-                  if (partyExists) {
-                    doc.party = suggestion.party;
-                  } else {
-                    console.warn(`Party ${suggestion.party} does not exist for ${txn.name}`);
-                  }
-                } catch (e) {
-                  console.warn(`Error checking party existence for ${suggestion.party}:`, e);
-                }
-              }
-
-              doc.suggestedVoucherType = suggestion.voucherType;
-
-              // Set bank account if not set
-              if (!doc.account) {
-                doc.account = doc.bankName || 'Bank Account';
-              }
-
-              await doc.sync();
-              successCount++;
-            } else if (txn.status === 'Suggested') {
-              // Step 2: Post to GL
-              const result = await createGLVoucher(doc, fyo);
-
-              if (result.success) {
-                doc.status = 'Posted';
-                doc.matchedDocument = result.voucherName;
-                doc.matchedDocumentType = result.voucherType;
-                await doc.sync();
-                successCount++;
-              } else {
-                throw new Error(result.error || 'Unknown error during posting');
-              }
-            }
-          } catch (error) {
-            console.error(`Failed to process transaction ${txn.name}:`, error);
-            // Continue with other transactions even if one fails
-            showToast({
-              type: 'error',
-              message: t`Failed to process transaction ${txn.name}: ${(error as Error).message}`,
-            });
-          }
-        }
-
-        if (successCount > 0) {
-          showToast({
-            type: 'success',
-            message: t`${successCount} transaction(s) processed successfully.`,
-          });
-          this.selectedTransactions = [];
-          this.loadTransactions();
-          this.loadSummary();
-        }
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to post transactions: ${(error as Error).message}`,
-        });
-      }
-    },
-    reconcileSelected() {
-      if (this.postedSelectedTransactions.length === 0) return;
-      this.reconcileAction = 'selected';
-      this.showReconcileModal = true;
-    },
-    async reconcileTransaction(txn: BankTransaction) {
-      this.reconcileAction = 'single';
-      this.currentTransaction = txn;
-      this.showReconcileModal = true;
-    },
-    async unreconcileTransaction(txn: BankTransaction) {
-      try {
-        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-        doc.status = 'Posted';
-        await doc.sync();
-
-        showToast({
-          type: 'success',
-          message: t`Transaction unreconciled`,
-        });
-        this.loadTransactions();
-        this.loadSummary();
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to unreconcile transaction: ${(error as Error).message}`,
-        });
-      }
-    },
-    async confirmReconcile() {
-      this.showReconcileModal = false;
-      try {
-        let transactionsToReconcile: BankTransaction[] = [];
-        
-        if (this.reconcileAction === 'selected') {
-          transactionsToReconcile = this.postedSelectedTransactions;
-        } else if (this.reconcileAction === 'single' && this.currentTransaction) {
-          transactionsToReconcile = [this.currentTransaction];
-        }
-
-        let successCount = 0;
-        for (const txn of transactionsToReconcile) {
-          try {
-            const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-            doc.status = 'Reconciled';
-            await doc.sync();
-            successCount++;
-          } catch (error) {
-            console.error(`Failed to reconcile transaction ${txn.name}:`, error);
-          }
-        }
-
-        if (successCount > 0) {
-          showToast({
-            type: 'success',
-            message: t`${successCount} transaction(s) marked as reconciled.`,
-          });
-          this.selectedTransactions = [];
-          this.loadTransactions();
-          this.loadSummary();
-        }
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to reconcile transactions: ${(error as Error).message}`,
-        });
-      }
-    },
-    async editSuggestion(txn: BankTransaction) {
-      this.currentTransaction = txn;
-      this.editForm = {
-        suggestedLedger: txn.suggestedLedger || '',
-        suggestedVoucherType: txn.suggestedVoucherType || (txn.type === 'Credit' ? 'Receipt' : 'Payment'),
-        party: txn.party || '',
-      };
-      this.showEditModal = true;
-    },
-    async saveSuggestion() {
-      if (!this.currentTransaction) return;
-      try {
-        const doc = await fyo.doc.getDoc('BankTransaction', this.currentTransaction.name);
-
-        // Only set suggestedLedger if we have a valid account
-        if (this.editForm.suggestedLedger) {
-          try {
-            const accountExists = await fyo.db.exists('Account', this.editForm.suggestedLedger);
-            if (accountExists) {
-              doc.suggestedLedger = this.editForm.suggestedLedger;
-            } else {
-              throw new Error(`Account ${this.editForm.suggestedLedger} does not exist`);
-            }
-          } catch (e) {
-            console.warn(`Error checking account existence for ${this.editForm.suggestedLedger}:`, e);
-            throw new Error(`Invalid account: ${this.editForm.suggestedLedger}`);
-          }
-        } else {
-          doc.suggestedLedger = '';
-        }
-
-        // Only set party if we have a valid party
-        if (this.editForm.party) {
-          try {
-            const partyExists = await fyo.db.exists('Party', this.editForm.party);
-            if (partyExists) {
-              doc.party = this.editForm.party;
-            } else {
-              throw new Error(`Party ${this.editForm.party} does not exist`);
-            }
-          } catch (e) {
-            console.warn(`Error checking party existence for ${this.editForm.party}:`, e);
-            throw new Error(`Invalid party: ${this.editForm.party}`);
-          }
-        } else {
-          doc.party = '';
-        }
-
-        doc.suggestedVoucherType = this.editForm.suggestedVoucherType;
-        doc.status = 'Suggested';
-        await doc.sync();
-
-        showToast({
-          type: 'success',
-          message: t`Suggestion updated successfully`,
-        });
-        this.showEditModal = false;
-        this.loadTransactions();
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to update suggestion: ${(error as Error).message}`,
-        });
-      }
-    },
-    viewMatchedDocument(txn: BankTransaction) {
-      if (txn.matchedDocument && txn.matchedDocumentType) {
-        window.location.href = `/edit/${txn.matchedDocumentType}/${txn.matchedDocument}`;
-      }
-    },
-    viewTransaction(txn: BankTransaction) {
-      // Navigate to the transaction form
-      const link = `/edit/BankTransaction/${txn.name}`;
-      window.location.href = link;
     },
     formatDate(date: Date | string): string {
       const dt = DateTime.fromJSDate(new Date(date));

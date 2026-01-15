@@ -565,9 +565,9 @@ export class TransactionCategorizer {
           account = await this.findMatchingAccount(rule.category, description);
         }
 
-        // If we have an account, ensure it exists in the database
+        // If we have an account, suggest it directly
         if (account) {
-          await this.ensureAccountExists(account);
+          // Just return the account name as text - no FK validation needed
         }
 
         const party = await this.findPartyFromDescription(description);
@@ -587,9 +587,7 @@ export class TransactionCategorizer {
     if (txType === 'credit') {
       let account = await this.findDefaultAccount('income');
       if (!account) {
-        // Create a default income account if none exists
         account = 'Other Income';
-        await this.ensureAccountExists(account);
       }
       return {
         category: 'income',
@@ -600,9 +598,7 @@ export class TransactionCategorizer {
     } else if (txType === 'debit') {
       let account = await this.findDefaultAccount('expense');
       if (!account) {
-        // Create a default expense account if none exists
         account = 'General Expense';
-        await this.ensureAccountExists(account);
       }
       return {
         category: 'expense',
@@ -612,11 +608,10 @@ export class TransactionCategorizer {
       };
     }
 
-    // Ultimate fallback
+    // Fallback
     let account = await this.findDefaultAccount('expense');
     if (!account) {
       account = 'General Expense';
-      await this.ensureAccountExists(account);
     }
     return {
       category: 'expense',
