@@ -1,6 +1,8 @@
 import { Knex } from 'knex';
+import { DatabaseManager } from '../database/manager';
 
-export default async function migrateBankTransactionsV2(knex: Knex) {
+async function execute(dm: DatabaseManager) {
+  const knex = dm.db!.knex!;
   console.log('Migrating BankTransaction schema to V2...');
   
   // Check if table exists
@@ -95,3 +97,5 @@ export default async function migrateBankTransactionsV2(knex: Knex) {
   
   console.log('BankTransaction migration to V2 completed successfully');
 }
+
+export default { execute, beforeMigrate: true };
