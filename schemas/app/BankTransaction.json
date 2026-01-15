@@ -69,12 +69,6 @@
       "hidden": true
     },
     {
-      "fieldname": "linkedVoucher",
-      "label": "Linked Voucher",
-      "fieldtype": "Dynamic Link",
-      "target": "DocType"
-    },
-    {
       "fieldname": "suggestedLedger",
       "label": "Suggested Ledger",
       "fieldtype": "Link",
