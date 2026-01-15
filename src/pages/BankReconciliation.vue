@@ -469,49 +469,91 @@ export default defineComponent({
       
       this.loading = true;
       let successCount = 0;
+      let errorCount = 0;
       const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
 
       for (const txn of this.transactions) {
         if (txn.status === 'Imported' && !txn.suggestedLedger) {
           try {
+            // Add a small delay to avoid overwhelming the system
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
             await this.autoCategorizeSingle(txn);
             successCount++;
           } catch (error) {
             console.error(`Failed to categorize ${txn.name}:`, error);
+            errorCount++;
           }
         }
       }
 
-      showToast({
-        type: 'success',
-        message: t`Auto-categorized ${successCount} transactions`,
-      });
+      // Show appropriate feedback
+      if (successCount > 0) {
+        showToast({
+          type: 'success',
+          message: t`Auto-categorized ${successCount} transactions${errorCount > 0 ? ` (${errorCount} failed)` : ''}`,
+        });
+        await this.loadTransactions();
+      } else if (errorCount > 0) {
+        showToast({
+          type: 'error',
+          message: t`Failed to categorize ${errorCount} transactions`,
+        });
+      } else {
+        showToast({
+          type: 'info',
+          message: t`No transactions needed categorization`,
+        });
+      }
+      
       this.loading = false;
     },
     async autoCategorizeSingle(txn: BankTransaction) {
       try {
         this.loadingSingle = txn.name;
+        
+        // Validate transaction
+        if (!txn.description || !txn.amount) {
+          showToast({
+            type: 'error',
+            message: t`Invalid transaction data`,
+          });
+          return;
+        }
+        
         const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
         const suggestion = await autoCategorizeTransaction(txn, fyo);
 
         // Get fresh doc instance
         const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
         
-        doc.suggestedLedger = suggestion.account || '';
+        // Set suggestion values with validation
+        if (suggestion.account) {
+          doc.suggestedLedger = suggestion.account.trim();
+        } else {
+          // Provide default based on transaction type
+          doc.suggestedLedger = txn.type === 'Credit' ? 'Other Income' : 'General Expense';
+        }
+        
         doc.suggestedVoucherType = suggestion.voucherType || (txn.type === 'Credit' ? 'Receipt' : 'Payment');
-        doc.party = suggestion.party || '';
+        doc.party = suggestion.party ? suggestion.party.trim() : '';
         
         await doc.sync();
 
         // Update local transaction
-        txn.suggestedLedger = suggestion.account;
-        txn.suggestedVoucherType = suggestion.voucherType;
-        txn.party = suggestion.party;
+        txn.suggestedLedger = doc.suggestedLedger;
+        txn.suggestedVoucherType = doc.suggestedVoucherType;
+        txn.party = doc.party;
+
+        showToast({
+          type: 'success',
+          message: t`Transaction auto-categorized successfully`,
+        });
       } catch (error) {
         console.error('Failed to auto-categorize:', error);
         showToast({
           type: 'error',
-          message: t`Failed to suggest: ${(error as Error).message}`,
+          message: t`Failed to categorize: ${(error as Error).message}`,
         });
       } finally {
         this.loadingSingle = '';
@@ -519,17 +561,37 @@ export default defineComponent({
     },
     async updateTransaction(txn: BankTransaction, field: string, value: any) {
       try {
+        // Sanitize input
+        const sanitizedValue = typeof value === 'string' ? value.trim() : value;
+        
+        // Validate required fields
+        if (field === 'suggestedLedger' && !sanitizedValue) {
+          showToast({
+            type: 'error',
+            message: t`Ledger account is required`,
+          });
+          return;
+        }
+
         const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-        (doc as any)[field] = value;
+        (doc as any)[field] = sanitizedValue;
         await doc.sync();
 
         // Update local transaction
-        (txn as any)[field] = value;
+        (txn as any)[field] = sanitizedValue;
+
+        // Show success feedback for important fields
+        if (field === 'suggestedLedger' || field === 'party') {
+          showToast({
+            type: 'success',
+            message: t`${field === 'suggestedLedger' ? 'Ledger' : 'Party'} updated`,
+          });
+        }
       } catch (error) {
         console.error('Failed to update transaction:', error);
         showToast({
           type: 'error',
-          message: t`Failed to update transaction`,
+          message: t`Failed to update transaction: ${(error as Error).message}`,
         });
       }
     },
@@ -605,9 +667,17 @@ export default defineComponent({
       const { createGLVoucher } = await import('src/banking/glPosting');
       let successCount = 0;
       let errorCount = 0;
+      const errors: string[] = [];
 
       for (const txn of transactions) {
         try {
+          // Validate transaction before posting
+          if (!txn.suggestedLedger || !txn.suggestedLedger.trim()) {
+            errors.push(`${txn.name}: Ledger account is required`);
+            errorCount++;
+            continue;
+          }
+
           const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
           const result = await createGLVoucher(doc, fyo);
 
@@ -618,12 +688,21 @@ export default defineComponent({
             await doc.sync();
             successCount++;
           } else {
-            throw new Error(result.error || 'Unknown error during posting');
+            const errorMsg = `${txn.name}: ${result.error || 'Unknown error during posting'}`;
+            errors.push(errorMsg);
+            errorCount++;
           }
         } catch (error) {
-          console.error(`Failed to post transaction ${txn.name}:`, error);
+          const errorMsg = `${txn.name}: ${(error as Error).message}`;
+          errors.push(errorMsg);
           errorCount++;
+          console.error(`Failed to post transaction ${txn.name}:`, error);
         }
+      }
+
+      // Show detailed error feedback if there were any failures
+      if (errors.length > 0) {
+        console.warn('Posting errors:', errors);
       }
 
       return { successCount, errorCount };
