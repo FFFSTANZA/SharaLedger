@@ -556,13 +556,14 @@ export class TransactionCategorizer {
     }
 
     // Default categorization based on transaction type
-    if (transaction.type === 'credit') {
+    const txType = transaction.type?.toLowerCase();
+    if (txType === 'credit') {
       return {
         category: 'income',
         confidence: 0.3,
         reason: 'Credit transaction',
       };
-    } else if (transaction.type === 'debit') {
+    } else if (txType === 'debit') {
       return {
         category: 'expense',
         confidence: 0.3,
@@ -641,6 +642,29 @@ export class TransactionCategorizer {
   ): Promise<CategorySuggestion[]> {
     return Promise.all(transactions.map((t) => this.suggestCategory(t)));
   }
+}
+
+export async function autoCategorizeTransaction(
+  transaction: any,
+  fyo: Fyo
+): Promise<{ account: string | undefined; voucherType: string }> {
+  const categorizer = new TransactionCategorizer(fyo);
+  const suggestion = await categorizer.suggestCategory({
+    date: transaction.date || new Date(),
+    description: transaction.description || '',
+    amount: transaction.amount || 0,
+    type: (transaction.type?.toLowerCase() as 'credit' | 'debit') || 'debit',
+  });
+
+  return {
+    account: suggestion.account,
+    voucherType:
+      suggestion.category === 'income'
+        ? 'Receipt'
+        : suggestion.category === 'transfer'
+        ? 'Transfer'
+        : 'Payment',
+  };
 }
 
 export async function getCategorizedSuggestions(

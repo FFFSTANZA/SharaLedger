@@ -65,6 +65,7 @@ export async function createGLVoucher(
         break;
       
       case 'Journal Entry':
+      case 'Transfer':
         ({ name: voucherName, type: voucherType } = await createJournalEntry(
           bankTransaction,
           amount,

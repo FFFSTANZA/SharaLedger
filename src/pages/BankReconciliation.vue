@@ -209,8 +209,11 @@
               </td>
               <td class="p-3">
                 <div class="text-gray-800 dark:text-gray-200">{{ txn.description }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {{ txn.bankName }}
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center">
+                  <span>{{ txn.bankName }}</span>
+                  <span v-if="txn.matchedDocument" class="ml-2 px-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-400 font-mono">
+                    {{ txn.matchedDocument }}
+                  </span>
                 </div>
               </td>
               <td class="p-3 text-gray-600 dark:text-gray-400 font-mono text-xs">
@@ -241,6 +244,14 @@
                   <Button
                     v-if="txn.status === 'Imported'"
                     size="small"
+                    type="secondary"
+                    @click="postTransaction(txn)"
+                  >
+                    {{ t`Suggest` }}
+                  </Button>
+                  <Button
+                    v-if="txn.status === 'Suggested'"
+                    size="small"
                     type="primary"
                     @click="postTransaction(txn)"
                   >
@@ -255,18 +266,12 @@
                     {{ t`Reconcile` }}
                   </Button>
                   <Button
-                    v-if="txn.status === 'Suggested'"
-                    size="small"
-                    @click="editSuggestion(txn)"
-                  >
-                    {{ t`Edit` }}
-                  </Button>
-                  <Button
+                    v-if="txn.status === 'Imported' || txn.status === 'Suggested'"
                     size="small"
                     variant="ghost"
-                    @click="viewTransaction(txn)"
+                    @click="editSuggestion(txn)"
                   >
-                    <feather-icon name="eye" class="w-3 h-3" />
+                    <feather-icon name="edit-2" class="w-3 h-3" />
                   </Button>
                 </div>
               </td>
@@ -320,6 +325,68 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Edit Suggestion Modal -->
+    <Modal
+      :open-modal="showEditModal"
+      @closemodal="showEditModal = false"
+    >
+      <div class="w-[500px]">
+        <FormHeader :form-title="t`Edit Suggestion`" />
+        <hr class="dark:border-gray-800" />
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Ledger` }}</label>
+            <AutoComplete
+              :df="{
+                fieldname: 'suggestedLedger',
+                label: t`Ledger`,
+                fieldtype: 'Link',
+                target: 'Account'
+              }"
+              :value="editForm.suggestedLedger"
+              @change="editForm.suggestedLedger = $event"
+            />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Voucher Type` }}</label>
+            <Select
+              :df="{
+                fieldname: 'suggestedVoucherType',
+                label: t`Voucher Type`,
+                fieldtype: 'Select',
+                options: [
+                  { value: 'Payment', label: t`Payment` },
+                  { value: 'Receipt', label: t`Receipt` },
+                  { value: 'Journal Entry', label: t`Journal Entry` },
+                  { value: 'Transfer', label: t`Transfer` }
+                ]
+              }"
+              :value="editForm.suggestedVoucherType"
+              @change="editForm.suggestedVoucherType = $event"
+            />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 dark:text-gray-400 block mb-2">{{ t`Party (Optional)` }}</label>
+            <AutoComplete
+              :df="{
+                fieldname: 'party',
+                label: t`Party`,
+                fieldtype: 'Link',
+                target: 'Party'
+              }"
+              :value="editForm.party"
+              @change="editForm.party = $event"
+            />
+          </div>
+        </div>
+        <hr class="dark:border-gray-800" />
+        <div class="flex justify-end p-4 space-x-2">
+          <Button @click="showEditModal = false">{{ t`Cancel` }}</Button>
+          <Button type="primary" @click="saveSuggestion">{{ t`Save` }}</Button>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -349,6 +416,8 @@ interface BankTransaction {
   suggestedVoucherType?: string;
   suggestedLedgerName?: string;
   account?: string;
+  party?: string;
+  matchedDocument?: string;
 }
 
 interface Filters {
@@ -384,15 +453,21 @@ export default defineComponent({
       },
       showPostModal: false,
       showReconcileModal: false,
+      showEditModal: false,
       postAction: '' as 'selected' | 'single',
       reconcileAction: '' as 'selected' | 'single',
       currentTransaction: null as BankTransaction | null,
+      editForm: {
+        suggestedLedger: '',
+        suggestedVoucherType: '',
+        party: '',
+      },
     };
   },
   computed: {
     allSelected(): boolean {
       const selectable = this.transactions.filter(
-        t => t.status === 'Imported' || t.status === 'Posted'
+        t => t.status === 'Imported' || t.status === 'Suggested' || t.status === 'Posted'
       );
       return (
         selectable.length > 0 &&
@@ -453,6 +528,8 @@ export default defineComponent({
             'suggestedLedger',
             'suggestedVoucherType',
             'account',
+            'party',
+            'matchedDocument',
           ],
           orderBy: ['date', 'importOrder'],
           order: 'desc'
@@ -505,7 +582,7 @@ export default defineComponent({
       return this.selectedTransactions.includes(name);
     },
     toggleSelection(name: string, status: string) {
-      if (status === 'Imported') {
+      if (status === 'Imported' || status === 'Suggested') {
         this.postAction = 'selected';
       } else if (status === 'Posted') {
         this.reconcileAction = 'selected';
@@ -520,7 +597,7 @@ export default defineComponent({
     },
     toggleSelectAll() {
       const selectable = this.transactions.filter(
-        t => t.status === 'Imported' || t.status === 'Posted'
+        t => t.status === 'Imported' || t.status === 'Suggested' || t.status === 'Posted'
       );
       if (this.allSelected) {
         this.selectedTransactions = [];
@@ -555,40 +632,54 @@ export default defineComponent({
     async confirmPost() {
       this.showPostModal = false;
       try {
-        let transactionsToPost: BankTransaction[] = [];
+        let transactionsToProcess: BankTransaction[] = [];
         
         if (this.postAction === 'selected') {
-          transactionsToPost = this.transactions.filter(
-            t => t.status === 'Imported' && this.selectedTransactions.includes(t.name)
+          transactionsToProcess = this.transactions.filter(
+            t => (t.status === 'Imported' || t.status === 'Suggested') && this.selectedTransactions.includes(t.name)
           );
         } else if (this.postAction === 'single' && this.currentTransaction) {
-          transactionsToPost = [this.currentTransaction];
+          transactionsToProcess = [this.currentTransaction];
         }
 
         let successCount = 0;
-        for (const txn of transactionsToPost) {
+        const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
+        const { createGLVoucher } = await import('src/banking/glPosting');
+
+        for (const txn of transactionsToProcess) {
           try {
-            // Use auto-categorization to suggest ledger
-            const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
-            const suggestion = await autoCategorizeTransaction(txn.description, fyo);
-            
-            // Update transaction with suggestion
-            const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
-            doc.status = 'Suggested';
-            doc.suggestedLedger = suggestion.account;
-            doc.suggestedVoucherType = suggestion.voucherType;
-            
-            await doc.sync();
-            successCount++;
+            if (txn.status === 'Imported') {
+              // Step 1: Suggest
+              const suggestion = await autoCategorizeTransaction(txn, fyo);
+              const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+              doc.status = 'Suggested';
+              doc.suggestedLedger = suggestion.account;
+              doc.suggestedVoucherType = suggestion.voucherType;
+              await doc.sync();
+              successCount++;
+            } else if (txn.status === 'Suggested') {
+              // Step 2: Post to GL
+              const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+              const result = await createGLVoucher(doc, fyo);
+              
+              if (result.success) {
+                doc.status = 'Posted';
+                doc.matchedDocument = result.voucherName;
+                await doc.sync();
+                successCount++;
+              } else {
+                throw new Error(result.error);
+              }
+            }
           } catch (error) {
-            console.error(`Failed to post transaction ${txn.name}:`, error);
+            console.error(`Failed to process transaction ${txn.name}:`, error);
           }
         }
 
         if (successCount > 0) {
           showToast({
             type: 'success',
-            message: t`${successCount} transaction(s) ready for confirmation.`,
+            message: t`${successCount} transaction(s) processed.`,
           });
           this.selectedTransactions = [];
           this.loadTransactions();
@@ -650,11 +741,37 @@ export default defineComponent({
         });
       }
     },
-    editSuggestion(txn: BankTransaction) {
-      showToast({
-        type: 'info',
-        message: t`Edit suggestion feature coming soon`,
-      });
+    async editSuggestion(txn: BankTransaction) {
+      this.currentTransaction = txn;
+      this.editForm = {
+        suggestedLedger: txn.suggestedLedger || '',
+        suggestedVoucherType: txn.suggestedVoucherType || (txn.type === 'Credit' ? 'Receipt' : 'Payment'),
+        party: txn.party || '',
+      };
+      this.showEditModal = true;
+    },
+    async saveSuggestion() {
+      if (!this.currentTransaction) return;
+      try {
+        const doc = await fyo.doc.getDoc('BankTransaction', this.currentTransaction.name);
+        doc.suggestedLedger = this.editForm.suggestedLedger;
+        doc.suggestedVoucherType = this.editForm.suggestedVoucherType;
+        doc.party = this.editForm.party;
+        doc.status = 'Suggested';
+        await doc.sync();
+
+        showToast({
+          type: 'success',
+          message: t`Suggestion updated successfully`,
+        });
+        this.showEditModal = false;
+        this.loadTransactions();
+      } catch (error) {
+        showToast({
+          type: 'error',
+          message: t`Failed to update suggestion: ${(error as Error).message}`,
+        });
+      }
     },
     viewTransaction(txn: BankTransaction) {
       // Navigate to the transaction form
