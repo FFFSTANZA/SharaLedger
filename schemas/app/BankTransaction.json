@@ -35,11 +35,6 @@
       "fieldtype": "Currency"
     },
     {
-      "fieldname": "bankName",
-      "label": "Bank Name",
-      "fieldtype": "Data"
-    },
-    {
       "fieldname": "reference",
       "label": "Reference",
       "fieldtype": "Data"
@@ -53,60 +48,44 @@
       "fieldname": "status",
       "label": "Status",
       "fieldtype": "Select",
-      "default": "Imported",
+      "default": "Unreconciled",
       "options": [
-        { "value": "Imported", "label": "Imported" },
-        { "value": "Suggested", "label": "Suggested" },
-        { "value": "Posted", "label": "Posted" },
+        { "value": "Unreconciled", "label": "Unreconciled" },
         { "value": "Reconciled", "label": "Reconciled" }
       ]
     },
     {
-      "fieldname": "matchedDocument",
-      "label": "Matched Document",
-      "fieldtype": "Data"
-    },
-    {
-      "fieldname": "matchedDocumentType",
-      "label": "Matched Document Type",
-      "fieldtype": "Data"
-    },
-    {
-      "fieldname": "suggestedLedger",
-      "label": "Suggested Ledger",
-      "fieldtype": "Data"
-    },
-    {
-      "fieldname": "suggestedVoucherType",
-      "label": "Suggested Voucher Type",
-      "fieldtype": "Select",
-      "options": [
-        { "value": "Payment", "label": "Payment" },
-        { "value": "Receipt", "label": "Receipt" },
-        { "value": "Transfer", "label": "Transfer" },
-        { "value": "Journal Entry", "label": "Journal Entry" }
-      ]
-    },
-    {
-      "fieldname": "category",
-      "label": "Category",
-      "fieldtype": "Select",
-      "options": [
-        { "value": "Income", "label": "Income" },
-        { "value": "Expense", "label": "Expense" },
-        { "value": "Transfer", "label": "Transfer" }
-      ]
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Data",
+      "required": true
     },
     {
       "fieldname": "account",
       "label": "Account",
-      "fieldtype": "Link",
-      "target": "Account"
+      "fieldtype": "Data"
     },
     {
       "fieldname": "party",
       "label": "Party",
       "fieldtype": "Data"
+    },
+    {
+      "fieldname": "notes",
+      "label": "Notes",
+      "fieldtype": "Text"
+    },
+    {
+      "fieldname": "postedVoucher",
+      "label": "Posted Voucher",
+      "fieldtype": "Data",
+      "readOnly": true
+    },
+    {
+      "fieldname": "postedVoucherType",
+      "label": "Voucher Type",
+      "fieldtype": "Data",
+      "readOnly": true
     },
     {
       "fieldname": "dedupeKey",
@@ -117,8 +96,7 @@
     {
       "fieldname": "batch",
       "label": "Import Batch",
-      "fieldtype": "Link",
-      "target": "BankImportBatch"
+      "fieldtype": "Data"
     },
     {
       "fieldname": "importOrder",
@@ -126,7 +104,7 @@
       "fieldtype": "Int"
     }
   ],
-  "keywordFields": ["description", "bankName", "reference"],
+  "keywordFields": ["description", "bankAccount", "reference"],
   "linkDisplayField": "description",
   "naming": "random"
 }

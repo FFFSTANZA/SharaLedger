@@ -11,6 +11,7 @@ import fixItemHSNField from './fixItemHSNField';
 import setIndiaDefaultDateFormat from './setIndiaDefaultDateFormat';
 import setIndiaDefaultLocale from './setIndiaDefaultLocale';
 import createPaymentMethods from './createPaymentMethods';
+import migrateBankTransactionsV2 from './migrateBankTransactionsV2';
 
 export default [
   { name: 'testPatch', version: '0.5.0-beta.0', patch: testPatch },
@@ -65,5 +66,11 @@ export default [
     name: 'createPaymentMethods',
     version: '0.25.1',
     patch: createPaymentMethods,
+  },
+  {
+    name: 'migrateBankTransactionsV2',
+    version: '0.37.0',
+    patch: migrateBankTransactionsV2,
+    priority: 90,
   },
 ] as Patch[];
