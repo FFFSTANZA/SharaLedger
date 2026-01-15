@@ -638,8 +638,12 @@ export default defineComponent({
         // Get suggested ledger names and find matches
         for (const txn of results) {
           if (txn.suggestedLedger) {
-            const account = await fyo.db.get('Account', txn.suggestedLedger, 'name, accountName');
-            txn.suggestedLedgerName = account?.accountName || txn.suggestedLedger;
+            try {
+              const account = await fyo.db.getDoc('Account', txn.suggestedLedger);
+              txn.suggestedLedgerName = account?.name || txn.suggestedLedger;
+            } catch {
+              txn.suggestedLedgerName = txn.suggestedLedger;
+            }
           }
           
           if (txn.status === 'Imported' || txn.status === 'Suggested') {
@@ -658,7 +662,10 @@ export default defineComponent({
       }
     },
     async findMatches(txn: BankTransaction) {
-      if (!txn.account) return [];
+      // Try multiple account field names
+      const account = txn.account || txn.bankAccount || txn.bankName;
+      if (!account || account === 'Generic') return [];
+      
       try {
         const amount = Math.abs(txn.amount);
         const results = await fyo.db.getAll('Payment', {
@@ -668,7 +675,7 @@ export default defineComponent({
         });
         
         return results
-          .filter(p => p.account === txn.account || p.paymentAccount === txn.account)
+          .filter(p => p.account === account || p.paymentAccount === account)
           .map(p => ({
             name: p.name,
             date: p.date,
@@ -805,10 +812,19 @@ export default defineComponent({
       try {
         const { autoCategorizeTransaction } = await import('src/banking/autoCategorize');
         const suggestion = await autoCategorizeTransaction(txn, fyo);
+        
+        // Get fresh doc instance
         const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        
         doc.status = 'Suggested';
         doc.suggestedLedger = suggestion.account;
         doc.suggestedVoucherType = suggestion.voucherType;
+        
+        // Set bank account if not set
+        if (!doc.account) {
+          doc.account = doc.bankName || 'Bank Account';
+        }
+        
         await doc.sync();
         
         showToast({
@@ -817,6 +833,7 @@ export default defineComponent({
         });
         this.loadTransactions();
       } catch (error) {
+        console.error('Failed to suggest:', error);
         showToast({
           type: 'error',
           message: t`Failed to suggest: ${(error as Error).message}`,
@@ -868,18 +885,26 @@ export default defineComponent({
 
         for (const txn of transactionsToProcess) {
           try {
+            // Get fresh doc instance to avoid validation errors
+            const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+            
             if (txn.status === 'Imported') {
               // Step 1: Suggest
               const suggestion = await autoCategorizeTransaction(txn, fyo);
-              const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+              
               doc.status = 'Suggested';
               doc.suggestedLedger = suggestion.account;
               doc.suggestedVoucherType = suggestion.voucherType;
+              
+              // Set bank account if not set
+              if (!doc.account) {
+                doc.account = doc.bankName || 'Bank Account';
+              }
+              
               await doc.sync();
               successCount++;
             } else if (txn.status === 'Suggested') {
               // Step 2: Post to GL
-              const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
               const result = await createGLVoucher(doc, fyo);
               
               if (result.success) {
@@ -889,18 +914,23 @@ export default defineComponent({
                 await doc.sync();
                 successCount++;
               } else {
-                throw new Error(result.error);
+                throw new Error(result.error || 'Unknown error during posting');
               }
             }
           } catch (error) {
             console.error(`Failed to process transaction ${txn.name}:`, error);
+            // Continue with other transactions even if one fails
+            showToast({
+              type: 'error',
+              message: t`Failed to process transaction ${txn.name}: ${(error as Error).message}`,
+            });
           }
         }
 
         if (successCount > 0) {
           showToast({
             type: 'success',
-            message: t`${successCount} transaction(s) processed.`,
+            message: t`${successCount} transaction(s) processed successfully.`,
           });
           this.selectedTransactions = [];
           this.loadTransactions();
