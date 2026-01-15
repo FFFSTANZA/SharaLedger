@@ -64,9 +64,12 @@
     {
       "fieldname": "matchedDocument",
       "label": "Matched Document",
-      "fieldtype": "Link",
-      "target": "Payment",
-      "hidden": true
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "matchedDocumentType",
+      "label": "Matched Document Type",
+      "fieldtype": "Data"
     },
     {
       "fieldname": "suggestedLedger",

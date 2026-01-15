@@ -110,22 +110,22 @@ async function createPaymentEntry(
   const payment = fyo.doc.getNewDoc('Payment');
   
   payment.paymentType = paymentType;
-  payment.account = bankTransaction.account;
-  payment.amount = fyo.pesa(amount);
   payment.date = date;
-  payment.description = description;
+  payment.amount = fyo.pesa(amount);
+  
+  if (paymentType === 'Receive') {
+    // Receiving money into bank account
+    payment.paymentAccount = bankTransaction.account; // To Account
+    payment.account = bankTransaction.suggestedLedger; // From Account
+  } else {
+    // Paying money from bank account
+    payment.account = bankTransaction.account; // From Account
+    payment.paymentAccount = bankTransaction.suggestedLedger; // To Account
+  }
   
   if (party) {
     payment.party = party;
   }
-
-  // Add payment accounts
-  const paymentAccount = {
-    account: bankTransaction.suggestedLedger,
-    amount: fyo.pesa(amount),
-  };
-  
-  payment.append('accounts', paymentAccount);
 
   await payment.sync();
 

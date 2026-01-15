@@ -4,48 +4,44 @@ The banking module in Frappe Books allows you to import bank statements, categor
 
 ## Workflow
 
-The banking workflow consists of four main steps:
+The banking workflow is designed to be flexible, allowing you to either match existing transactions or create new ones from your bank statement.
 
 1.  **Import**: Import your bank statement (CSV, XLS, or XLSX).
-2.  **Suggest**: The system analyzes transaction descriptions and suggests appropriate ledgers and voucher types.
-3.  **Post**: Confirm the suggestions and post them to the General Ledger. This creates Journal Entries or Payments.
-4.  **Reconcile**: Mark posted transactions as reconciled once they match your bank records.
+2.  **Match or Suggest**: 
+    - **Match**: If you have already recorded the transaction in Frappe Books (e.g., a Payment), the system will suggest matching it.
+    - **Suggest**: If it's a new transaction (e.g., bank charges), the system suggests the appropriate ledger.
+3.  **Post or Confirm Match**: 
+    - **Post**: Creates a new Journal Entry or Payment in Frappe Books.
+    - **Confirm Match**: Links the bank transaction to the existing record.
+4.  **Reconcile**: Finalize the process by marking the transaction as reconciled.
 
 ## Detailed Steps
 
 ### 1. Statement Import
 - Go to **Banking** -> **Statement Import**.
 - Select your bank account and upload your statement file.
-- Map the columns if necessary and click **Import**.
 - Transactions will appear in the **Bank Reconciliation** tab with the status `Imported`.
 
-### 2. Suggesting Ledgers
-- In the **Bank Reconciliation** tab, you will see your imported transactions.
-- For transactions with status `Imported`, click the **Suggest** button.
-- The system will use auto-categorization to find the best matching ledger (e.g., Sales, Rent, Bank Charges).
-- The transaction status will change to `Suggested`.
+### 2. Auto-Matching
+- The system automatically looks for matching Payments or Journal Entries based on amount and account.
+- If a match is found, a **Match** button appears.
+- Use **Auto-match All** in the header to bulk-confirm matches where only one definite match is found.
 
-### 3. Editing Suggestions
-- If the system's suggestion is incorrect, click the **Edit** icon on the transaction row.
-- You can manually select the correct **Ledger**, **Voucher Type** (Payment, Receipt, or Journal Entry), and **Party**.
-- Click **Save** to update the suggestion.
+### 3. Posting New Transactions
+- For transactions without matches, click **Suggest** to let the system categorize them.
+- You can **Edit** the suggestion to change the Ledger, Voucher Type, or Party.
+- Click **Post** to create the accounting entry in Frappe Books.
 
-### 4. Posting to General Ledger
-- Once a transaction has a correct suggestion, click the **Post** button.
-- You can also select multiple transactions and use the **Post Selected** button at the top.
-- Posting will create the actual accounting entries (Payments or Journal Entries) in Frappe Books.
-- The transaction status will change to `Posted`.
+### 4. Reconciliation
+- Once a transaction is **Posted** (created or matched), click **Reconcile**.
+- This marks the transaction as verified against your statement.
+- You can **Unmatch** or **Unreconcile** transactions if you need to make changes.
 
-### 5. Reconciliation
-- After posting, transactions are ready to be reconciled.
-- Click the **Reconcile** button on a `Posted` transaction.
-- This marks the transaction as `Reconciled`, indicating it has been verified against your bank statement.
+## Statuses and Actions
 
-## Summary of Statuses
-
-| Status | Meaning | Action Available |
+| Status | Meaning | Actions |
 | :--- | :--- | :--- |
-| **Imported** | Raw transaction from bank statement. | Suggest |
-| **Suggested** | System or user has assigned a ledger. | Edit / Post |
-| **Posted** | Accounting entry created in GL. | Reconcile |
-| **Reconciled** | Verified and finished. | None |
+| **Imported** | New from statement. | Match, Suggest, Edit |
+| **Suggested** | Ledger assigned. | Match, Post, Edit |
+| **Posted** | Linked to GL record. | Reconcile, Unmatch |
+| **Reconciled** | Verified. | Unreconcile |
