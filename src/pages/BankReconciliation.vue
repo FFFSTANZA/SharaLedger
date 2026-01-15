@@ -7,7 +7,7 @@
       </h2>
       <div class="flex space-x-2">
         <Button
-          v-if="importedTransactions.length > 0"
+          v-if="availableMatchesCount > 0"
           :title="t`Auto-match All`"
           type="secondary"
           @click="autoMatchAll"
@@ -15,20 +15,20 @@
           {{ t`Auto-match All` }}
         </Button>
         <Button
-          v-if="selectedTransactions.length > 0"
+          v-if="postableSelectedCount > 0"
           :title="t`Post Selected`"
           type="primary"
           @click="postSelected"
         >
-          {{ t`Post Selected (${selectedTransactions.length})` }}
+          {{ t`Post Selected (${postableSelectedCount})` }}
         </Button>
         <Button
-          v-if="postedSelectedTransactions.length > 0"
+          v-if="reconcilableSelectedCount > 0"
           :title="t`Reconcile Selected`"
           type="secondary"
           @click="reconcileSelected"
         >
-          {{ t`Reconcile (${postedSelectedTransactions.length})` }}
+          {{ t`Reconcile (${reconcilableSelectedCount})` }}
         </Button>
         <Button
           :title="t`Refresh`"
@@ -558,13 +558,28 @@ export default defineComponent({
     selectedCount(): number {
       return this.selectedTransactions.length;
     },
+    postableSelectedCount(): number {
+      return this.transactions.filter(
+        t => (t.status === 'Imported' || t.status === 'Suggested') && this.selectedTransactions.includes(t.name)
+      ).length;
+    },
+    reconcilableSelectedCount(): number {
+      return this.postedSelectedTransactions.length;
+    },
     postedSelectedTransactions(): BankTransaction[] {
       return this.transactions.filter(
         t => t.status === 'Posted' && this.selectedTransactions.includes(t.name)
       );
     },
-    importedTransactions(): BankTransaction[] {
-      return this.transactions.filter(t => t.status === 'Imported');
+    availableMatchesCount(): number {
+      return this.transactions.filter(
+        t => (t.status === 'Imported' || t.status === 'Suggested') && t.potentialMatches?.length === 1
+      ).length;
+    },
+    matchableTransactions(): BankTransaction[] {
+      return this.transactions.filter(
+        t => (t.status === 'Imported' || t.status === 'Suggested')
+      );
     },
     reconcileCount(): number {
       return this.postedSelectedTransactions.length;
@@ -698,7 +713,7 @@ export default defineComponent({
     },
     async autoMatchAll() {
       let matchedCount = 0;
-      for (const txn of this.importedTransactions) {
+      for (const txn of this.matchableTransactions) {
         if (txn.potentialMatches?.length === 1) {
           const match = txn.potentialMatches[0];
           await this.confirmMatchInternal(txn, match);

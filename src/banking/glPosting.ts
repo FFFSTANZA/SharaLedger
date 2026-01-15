@@ -112,15 +112,18 @@ async function createPaymentEntry(
   payment.paymentType = paymentType;
   payment.date = date;
   payment.amount = fyo.pesa(amount);
+  payment.referenceId = bankTransaction.reference || bankTransaction.chequeNo;
   
   if (paymentType === 'Receive') {
-    // Receiving money into bank account
-    payment.paymentAccount = bankTransaction.account; // To Account
-    payment.account = bankTransaction.suggestedLedger; // From Account
+    // Receiving money into bank account (Debit Bank, Credit suggestedLedger)
+    // In Payment doc: account = From (Credit), paymentAccount = To (Debit)
+    payment.paymentAccount = bankTransaction.account; // To Account (Bank)
+    payment.account = bankTransaction.suggestedLedger; // From Account (Income/Asset)
   } else {
-    // Paying money from bank account
-    payment.account = bankTransaction.account; // From Account
-    payment.paymentAccount = bankTransaction.suggestedLedger; // To Account
+    // Paying money from bank account (Credit Bank, Debit suggestedLedger)
+    // In Payment doc: account = From (Credit), paymentAccount = To (Debit)
+    payment.account = bankTransaction.account; // From Account (Bank)
+    payment.paymentAccount = bankTransaction.suggestedLedger; // To Account (Expense/Liability)
   }
   
   if (party) {
@@ -148,23 +151,26 @@ async function createJournalEntry(
   const journalEntry = fyo.doc.getNewDoc('JournalEntry');
   
   journalEntry.date = date;
-  journalEntry.description = description;
+  journalEntry.userRemark = description;
+  journalEntry.referenceNumber = bankTransaction.reference || bankTransaction.chequeNo;
 
-  // Determine debit/credit based on transaction type (Credit = income, Debit = expense)
-  const isIncome = bankTransaction.type === 'Credit';
+  // In your books:
+  // Deposit (Credit in Bank Statement) = Debit Bank Account (Increase in Asset)
+  // Withdrawal (Debit in Bank Statement) = Credit Bank Account (Decrease in Asset)
+  const isDeposit = bankTransaction.type === 'Credit';
   
   // Bank account entry
   const bankEntry = {
     account: bankTransaction.account,
-    debit: isIncome ? 0 : fyo.pesa(amount),
-    credit: isIncome ? fyo.pesa(amount) : 0,
+    debit: isDeposit ? fyo.pesa(amount) : 0,
+    credit: isDeposit ? 0 : fyo.pesa(amount),
   };
   
   // Counter entry to suggested ledger
   const ledgerEntry = {
     account: bankTransaction.suggestedLedger,
-    debit: isIncome ? fyo.pesa(amount) : 0,
-    credit: isIncome ? 0 : fyo.pesa(amount),
+    debit: isDeposit ? 0 : fyo.pesa(amount),
+    credit: isDeposit ? fyo.pesa(amount) : 0,
   };
 
   journalEntry.append('accounts', bankEntry);
