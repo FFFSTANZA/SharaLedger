@@ -304,13 +304,18 @@ export default defineComponent({
     await this.loadAccounts();
     await this.loadTransactions();
   },
+  beforeUnmount() {
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
+    }
+  },
   methods: {
     t,
     
     async loadBankAccounts() {
       try {
         const accounts = await fyo.db.getAllRaw('Account', {
-          filters: { accountType: 'Bank' },
+          filters: { accountType: 'Bank', isGroup: false },
           fields: ['name'],
         });
         this.bankAccountSuggestions = accounts.map((a: any) => a.name as string);
@@ -318,8 +323,12 @@ export default defineComponent({
         if (this.bankAccountSuggestions.length > 0 && !this.selectedBankAccount) {
           this.selectedBankAccount = this.bankAccountSuggestions[0];
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading bank accounts:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to load bank accounts: ${error.message || 'Unknown error'}`,
+        });
       }
     },
 
@@ -328,10 +337,16 @@ export default defineComponent({
         const accounts = await fyo.db.getAllRaw('Account', {
           filters: { isGroup: false },
           fields: ['name'],
+          orderBy: 'name',
+          order: 'asc',
         });
         this.accountSuggestions = accounts.map((a: any) => a.name as string);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading accounts:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to load accounts: ${error.message || 'Unknown error'}`,
+        });
       }
     },
 
@@ -393,8 +408,20 @@ export default defineComponent({
         const txn = this.transactions.find(t => t.name === name);
         if (!txn) return;
 
+        // Don't allow editing reconciled transactions
+        if (txn.status === 'Reconciled') {
+          showToast({
+            type: 'warning',
+            message: t`Cannot edit reconciled transactions`,
+          });
+          return;
+        }
+
+        // Sanitize value
+        const sanitizedValue = typeof value === 'string' ? value.trim() : value;
+
         // Update local state immediately
-        (txn as any)[field] = value;
+        (txn as any)[field] = sanitizedValue;
 
         // Debounce the database update
         if (this.updateTimeout) {
@@ -404,17 +431,34 @@ export default defineComponent({
         this.updateTimeout = setTimeout(async () => {
           try {
             const doc = await fyo.doc.getDoc('BankTransaction', name);
-            await doc.setAndSync({ [field]: value });
+            
+            // Verify it's still unreconciled
+            if (doc.status === 'Reconciled') {
+              showToast({
+                type: 'warning',
+                message: t`Transaction was reconciled, changes not saved`,
+              });
+              await this.loadTransactions();
+              return;
+            }
+
+            await doc.setAndSync({ [field]: sanitizedValue });
           } catch (error: any) {
             console.error('Error updating transaction:', error);
             showToast({
               type: 'error',
-              message: t`Failed to update: ${error.message}`,
+              message: t`Failed to update: ${error.message || 'Unknown error'}`,
             });
+            // Reload to get correct state
+            await this.loadTransactions();
           }
         }, 500);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error updating transaction:', error);
+        showToast({
+          type: 'error',
+          message: t`Failed to update: ${error.message || 'Unknown error'}`,
+        });
       }
     },
 
@@ -465,8 +509,16 @@ export default defineComponent({
           t => this.selectedTransactions.includes(t.name)
         );
 
+        if (selectedTxns.length === 0) {
+          showToast({
+            type: 'warning',
+            message: t`No transactions selected`,
+          });
+          return;
+        }
+
         // Validate all have accounts
-        const missingAccount = selectedTxns.find(t => !t.account);
+        const missingAccount = selectedTxns.find(t => !t.account || t.account.trim() === '');
         if (missingAccount) {
           showToast({
             type: 'error',
@@ -475,16 +527,28 @@ export default defineComponent({
           return;
         }
 
+        // Validate all have valid bank accounts
+        const missingBankAccount = selectedTxns.find(t => !t.bankAccount || t.bankAccount.trim() === '');
+        if (missingBankAccount) {
+          showToast({
+            type: 'error',
+            message: t`All transactions must have a bank account`,
+          });
+          return;
+        }
+
         const results = await postMultipleBankTransactions(fyo, selectedTxns);
         
         let successCount = 0;
         let errorCount = 0;
+        const errors: string[] = [];
         
         for (const [name, result] of results) {
           if (result.success) {
             successCount++;
           } else {
             errorCount++;
+            errors.push(result.error || 'Unknown error');
             console.error(`Failed to post ${name}:`, result.error);
           }
         }
@@ -496,18 +560,22 @@ export default defineComponent({
           showToast({
             type: 'success',
             message: t`Posted ${successCount} transactions to GL`,
+            duration: 3000,
           });
         } else {
+          const errorMsg = errors.length > 0 ? `\n${errors[0]}` : '';
           showToast({
             type: 'warning',
-            message: t`Posted ${successCount} transactions, ${errorCount} failed`,
+            message: t`Posted ${successCount} transactions, ${errorCount} failed${errorMsg}`,
+            duration: 5000,
           });
         }
       } catch (error: any) {
         console.error('Error posting to GL:', error);
         showToast({
           type: 'error',
-          message: t`Failed to post to GL: ${error.message}`,
+          message: t`Failed to post to GL: ${error.message || 'Unknown error'}`,
+          duration: 4000,
         });
       } finally {
         this.posting = false;

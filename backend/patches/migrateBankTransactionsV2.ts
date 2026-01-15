@@ -13,14 +13,23 @@ export default async function migrateBankTransactionsV2(knex: Knex) {
   // Get all columns
   const columns = await knex('BankTransaction').columnInfo();
   
-  // Rename status values: Imported/Suggested/Posted → Unreconciled, keep Reconciled
-  await knex.raw(`
-    UPDATE BankTransaction
-    SET status = 'Unreconciled'
-    WHERE status IN ('Imported', 'Suggested', 'Posted')
-  `);
+  // Check if migration already completed
+  if (columns['postedVoucher'] && !columns['suggestedLedger']) {
+    console.log('BankTransaction already migrated to V2, skipping');
+    return;
+  }
   
-  console.log('Updated status values to new schema');
+  // Rename status values: Imported/Suggested/Posted → Unreconciled, keep Reconciled
+  try {
+    await knex.raw(`
+      UPDATE BankTransaction
+      SET status = 'Unreconciled'
+      WHERE status IN ('Imported', 'Suggested', 'Posted')
+    `);
+    console.log('Updated status values to new schema');
+  } catch (error) {
+    console.error('Error updating status values:', error);
+  }
 
   // Drop columns that no longer exist
   const columnsToDrop = [

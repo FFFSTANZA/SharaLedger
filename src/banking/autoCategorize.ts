@@ -139,7 +139,7 @@ async function findAccountByName(fyo: Fyo, name: string): Promise<string | null>
   try {
     // Try exact match first
     const exactMatch = await fyo.db.getAllRaw('Account', {
-      filters: { name },
+      filters: { name, isGroup: false },
       fields: ['name'],
     });
 
@@ -147,12 +147,22 @@ async function findAccountByName(fyo: Fyo, name: string): Promise<string | null>
       return exactMatch[0].name as string;
     }
 
-    // Try partial match
+    // Try partial match with non-group accounts only
     const partialMatch = await fyo.db.getAllRaw('Account', {
-      filters: {},
+      filters: { isGroup: false },
       fields: ['name'],
     });
 
+    // First try to match with the exact name pattern
+    const exactPartial = partialMatch.find((acc: any) => 
+      acc.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (exactPartial) {
+      return exactPartial.name as string;
+    }
+
+    // Then try partial match
     const found = partialMatch.find((acc: any) => 
       acc.name.toLowerCase().includes(name.toLowerCase())
     );

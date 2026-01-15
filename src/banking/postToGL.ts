@@ -28,43 +28,67 @@ export async function postBankTransactionToGL(
   fyo: Fyo,
   transaction: BankTransaction
 ): Promise<PostResult> {
+  let createdVoucher: Doc | null = null;
+  
   try {
     // Validate required fields
-    if (!transaction.account) {
+    if (!transaction.account || transaction.account.trim() === '') {
       return {
         success: false,
         error: 'Account is required to post to GL'
       };
     }
 
-    if (!transaction.bankAccount) {
+    if (!transaction.bankAccount || transaction.bankAccount.trim() === '') {
       return {
         success: false,
         error: 'Bank account is required'
       };
     }
 
+    // Check if already reconciled
+    const bankTxn = await fyo.doc.getDoc('BankTransaction', transaction.name);
+    if (bankTxn.status === 'Reconciled') {
+      return {
+        success: false,
+        error: 'Transaction is already reconciled'
+      };
+    }
+
     // Determine if we should create Payment or Journal Entry
-    const shouldCreatePayment = !!transaction.party;
+    const shouldCreatePayment = !!transaction.party && transaction.party.trim() !== '';
 
     let voucher: Doc;
     
-    if (shouldCreatePayment) {
-      voucher = await createPaymentEntry(fyo, transaction);
-    } else {
-      voucher = await createJournalEntry(fyo, transaction);
+    try {
+      if (shouldCreatePayment) {
+        voucher = await createPaymentEntry(fyo, transaction);
+      } else {
+        voucher = await createJournalEntry(fyo, transaction);
+      }
+      createdVoucher = voucher;
+    } catch (error: any) {
+      throw new Error(`Failed to create voucher: ${error.message}`);
     }
 
     // Submit the voucher
-    await voucher.submit();
+    try {
+      await voucher.submit();
+    } catch (error: any) {
+      throw new Error(`Failed to submit voucher: ${error.message}`);
+    }
 
     // Update bank transaction with posted voucher info
-    const bankTxn = await fyo.doc.getDoc('BankTransaction', transaction.name);
-    await bankTxn.setAndSync({
-      status: 'Reconciled',
-      postedVoucher: voucher.name,
-      postedVoucherType: voucher.schemaName
-    });
+    try {
+      await bankTxn.setAndSync({
+        status: 'Reconciled',
+        postedVoucher: voucher.name,
+        postedVoucherType: voucher.schemaName
+      });
+    } catch (error: any) {
+      // Voucher is already submitted, log error but return success
+      console.error('Failed to update bank transaction status:', error);
+    }
 
     return {
       success: true,
@@ -72,6 +96,15 @@ export async function postBankTransactionToGL(
       voucherType: voucher.schemaName
     };
   } catch (error: any) {
+    // If we created a voucher but failed later, try to delete it
+    if (createdVoucher) {
+      try {
+        await createdVoucher.delete();
+      } catch (deleteError) {
+        console.error('Failed to cleanup failed voucher:', deleteError);
+      }
+    }
+    
     return {
       success: false,
       error: error.message || 'Failed to post transaction'
@@ -85,6 +118,23 @@ async function createPaymentEntry(
 ): Promise<Doc> {
   const isCredit = transaction.type === 'Credit';
   
+  // Validate party exists
+  if (!transaction.party) {
+    throw new Error('Party is required for payment entries');
+  }
+
+  // Check if party exists, if not create it
+  let partyExists = await fyo.db.exists('Party', transaction.party);
+  if (!partyExists) {
+    // Create party
+    const newParty = fyo.doc.getNewDoc('Party');
+    await newParty.set({
+      name: transaction.party,
+      role: isCredit ? 'Customer' : 'Supplier',
+    });
+    await newParty.sync();
+  }
+  
   // Create payment entry
   const payment = fyo.doc.getNewDoc(ModelNameEnum.Payment);
   
@@ -93,8 +143,8 @@ async function createPaymentEntry(
     party: transaction.party,
     date: DateTime.fromISO(transaction.date).toJSDate(),
     paymentType: isCredit ? 'Receive' : 'Pay',
-    amount: fyo.pesa(transaction.amount),
-    referenceId: transaction.reference || transaction.chequeNo,
+    amount: fyo.pesa(Math.abs(transaction.amount)),
+    referenceId: transaction.reference || transaction.chequeNo || undefined,
     paymentMethod: 'Bank',
   });
 
@@ -122,6 +172,22 @@ async function createJournalEntry(
   transaction: BankTransaction
 ): Promise<Doc> {
   const isCredit = transaction.type === 'Credit';
+  const amount = Math.abs(transaction.amount);
+  
+  // Validate account exists
+  if (!transaction.account) {
+    throw new Error('Account is required for journal entries');
+  }
+
+  const accountExists = await fyo.db.exists('Account', transaction.account);
+  if (!accountExists) {
+    throw new Error(`Account "${transaction.account}" does not exist`);
+  }
+
+  const bankAccountExists = await fyo.db.exists('Account', transaction.bankAccount);
+  if (!bankAccountExists) {
+    throw new Error(`Bank account "${transaction.bankAccount}" does not exist`);
+  }
   
   // Create journal entry
   const je = fyo.doc.getNewDoc(ModelNameEnum.JournalEntry);
@@ -129,35 +195,35 @@ async function createJournalEntry(
   await je.set({
     entryType: 'Bank Entry',
     date: DateTime.fromISO(transaction.date).toJSDate(),
-    referenceNumber: transaction.reference || transaction.chequeNo,
-    userRemark: transaction.notes || transaction.description,
+    referenceNumber: transaction.reference || transaction.chequeNo || undefined,
+    userRemark: transaction.notes || transaction.description || undefined,
   });
 
   // Add account entries
   const accounts = [];
   
   if (isCredit) {
-    // Money coming in (Credit to bank)
+    // Money coming in (Debit bank, Credit income/other account)
     accounts.push({
       account: transaction.bankAccount,
-      debit: fyo.pesa(transaction.amount),
+      debit: fyo.pesa(amount),
       credit: fyo.pesa(0),
     });
     accounts.push({
       account: transaction.account,
       debit: fyo.pesa(0),
-      credit: fyo.pesa(transaction.amount),
+      credit: fyo.pesa(amount),
     });
   } else {
-    // Money going out (Debit from bank)
+    // Money going out (Credit bank, Debit expense/other account)
     accounts.push({
       account: transaction.bankAccount,
       debit: fyo.pesa(0),
-      credit: fyo.pesa(transaction.amount),
+      credit: fyo.pesa(amount),
     });
     accounts.push({
       account: transaction.account,
-      debit: fyo.pesa(transaction.amount),
+      debit: fyo.pesa(amount),
       credit: fyo.pesa(0),
     });
   }
