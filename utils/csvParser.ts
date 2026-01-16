@@ -7,6 +7,13 @@ export interface CSVParseOptions {
   maxRows?: number;
 }
 
+export interface CSVGenerateOptions {
+  delimiter?: string;
+  quoteChar?: string;
+  eol?: string;
+  includeBOM?: boolean;
+}
+
 export interface CSVParseResult {
   headers: string[];
   rows: string[][];
@@ -286,6 +293,57 @@ export function parseCSV(
 
   // Return [headers, ...rows] format for backward compatibility
   return [result.headers, ...result.rows];
+}
+
+export function generateCSV(
+  matrix: unknown[][],
+  options: CSVGenerateOptions = {}
+): string {
+  const {
+    delimiter = ',',
+    quoteChar = '"',
+    eol = '\r\n',
+    includeBOM = false,
+  } = options;
+
+  const lines = (matrix ?? []).map((row) =>
+    (row ?? [])
+      .map((value) => formatCSVField(value, { delimiter, quoteChar }))
+      .join(delimiter)
+  );
+
+  const csv = lines.join(eol) + eol;
+  return includeBOM ? `\uFEFF${csv}` : csv;
+}
+
+function formatCSVField(
+  value: unknown,
+  { delimiter, quoteChar }: { delimiter: string; quoteChar: string }
+): string {
+  if (value == null) {
+    return '';
+  }
+
+  let str = '';
+  if (value instanceof Date) {
+    str = value.toISOString();
+  } else {
+    str = String(value);
+  }
+
+  const needsQuoting =
+    str.includes(delimiter) ||
+    str.includes('\n') ||
+    str.includes('\r') ||
+    str.includes(quoteChar) ||
+    /^\s|\s$/.test(str);
+
+  if (!needsQuoting) {
+    return str;
+  }
+
+  const escaped = str.replaceAll(quoteChar, quoteChar + quoteChar);
+  return `${quoteChar}${escaped}${quoteChar}`;
 }
 
 // Utility functions for better data processing

@@ -1,9 +1,23 @@
 <template>
   <div class="flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900">
     <PageHeader :title="t`Bank Reconciliation`">
-      <Button type="primary" @click="goToImport">
-        {{ t`Import Statement` }}
-      </Button>
+      <div class="flex items-center gap-3">
+        <FormControl
+          :df="{
+            fieldname: 'bankAccount',
+            fieldtype: 'Link',
+            target: 'Account',
+            filters: { accountType: 'Bank' },
+            placeholder: t`All Bank Accounts`,
+          }"
+          :value="bankAccount"
+          size="small"
+          @change="onBankAccountChange"
+        />
+        <Button type="primary" @click="goToImport">
+          {{ t`Import Statement` }}
+        </Button>
+      </div>
     </PageHeader>
 
     <div class="flex-1 overflow-auto">
@@ -89,6 +103,7 @@ export default defineComponent({
   components: { PageHeader, Button, FormControl },
   data() {
     return {
+      bankAccount: '' as string,
       transactions: [] as Doc[],
       loading: true,
     };
@@ -100,12 +115,21 @@ export default defineComponent({
     formatCurrency(value: unknown) {
       return this.fyo.format(value, 'Currency');
     },
+    async onBankAccountChange(val: string) {
+      this.bankAccount = val;
+      await this.loadTransactions();
+    },
     async loadTransactions() {
       this.loading = true;
       try {
+        const filters: Record<string, unknown> = { status: 'Unreconciled' };
+        if (this.bankAccount) {
+          filters.bankAccount = this.bankAccount;
+        }
+
         const docs = await this.fyo.doc.getDocs(ModelNameEnum.BankTransaction, {
-          filters: { status: 'Unreconciled' },
-          orderBy: { date: 'desc' }
+          filters,
+          orderBy: { date: 'desc' },
         });
         this.transactions = docs;
       } finally {

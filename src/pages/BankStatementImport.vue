@@ -425,7 +425,7 @@ import PageHeader from 'src/components/PageHeader.vue';
 import Button from 'src/components/Button.vue';
 import FormControl from 'src/components/Controls/FormControl.vue';
 import { ModelNameEnum } from 'models/types';
-import { parseCSV, parseCSVAdvanced, analyzeCSVStructure, sanitizeField, detectDataType, type CSVParseOptions, type CSVParseResult } from 'utils/csvParser';
+import { parseCSVAdvanced, analyzeCSVStructure, sanitizeField, detectDataType, type CSVParseOptions, type CSVParseResult } from 'utils/csvParser';
 import { autoCategorize, dedupeKey } from 'src/banking/autoCategorize';
 import { routeTo } from 'src/utils/ui';
 import { showToast } from 'src/utils/interactive';
