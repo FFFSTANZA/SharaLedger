@@ -356,6 +356,16 @@ function getCompleteSidebar(): SidebarConfig {
           route: `/list/PrintTemplate/${t`Print Templates`}`,
         },
         {
+          label: t`Bank Import`,
+          name: 'bank-import',
+          route: '/bank-import',
+        },
+        {
+          label: t`Bank Reconciliation`,
+          name: 'bank-reconciliation',
+          route: '/bank-reconciliation',
+        },
+        {
           label: t`Customize Form`,
           name: 'customize-form',
           // route: `/customize-form`,
