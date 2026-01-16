@@ -188,7 +188,7 @@ export default defineComponent({
               ...auto,
               dedupeKey: key
             });
-            await doc.save();
+            await doc.sync();
             count++;
           }
         }

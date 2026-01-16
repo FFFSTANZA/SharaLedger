@@ -16,7 +16,7 @@ test('Banking Flow: Import and Categorize', async (t) => {
         accountType: 'Bank',
         rootType: 'Asset'
     });
-    await bankAccount.save();
+    await bankAccount.sync();
 
     // 2. Mock a CSV import row
     const row = {
@@ -40,7 +40,7 @@ test('Banking Flow: Import and Categorize', async (t) => {
         dedupeKey: key
     });
 
-    await transaction.save();
+    await transaction.sync();
     t.ok(transaction.name, 'Bank transaction created');
     t.equal(transaction.account, 'Cash', 'Transaction should have auto-categorized account');
 });
@@ -73,7 +73,7 @@ test('Banking Flow: Post to GL (Payment with Party)', async (t) => {
         name: 'Test Supplier',
         type: 'Supplier'
     });
-    await party.save();
+    await party.sync();
 
     // 2. Create another bank transaction
     const transaction = fyo.doc.getNewDoc(ModelNameEnum.BankTransaction, {
@@ -86,7 +86,7 @@ test('Banking Flow: Post to GL (Payment with Party)', async (t) => {
         party: 'Test Supplier',
         status: 'Unreconciled'
     });
-    await transaction.save();
+    await transaction.sync();
 
     // 3. Post to GL
     await postBankTransactionToGL(transaction);

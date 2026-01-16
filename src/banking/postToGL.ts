@@ -50,7 +50,7 @@ export async function postBankTransactionToGL(transaction: Doc) {
       userRemark: description,
     });
 
-    await payment.save();
+    await payment.sync();
     postedVoucher = payment.name;
   } else {
     // Create Journal Entry
@@ -90,7 +90,7 @@ export async function postBankTransactionToGL(transaction: Doc) {
       referenceNumber: reference,
       accounts,
     });
-    await je.save();
+    await je.sync();
     postedVoucher = je.name;
   }
 
@@ -98,5 +98,5 @@ export async function postBankTransactionToGL(transaction: Doc) {
   await transaction.set('status', 'Reconciled');
   await transaction.set('postedVoucher', postedVoucher);
   await transaction.set('postedVoucherType', postedVoucherType);
-  await transaction.save();
+  await transaction.sync();
 }
