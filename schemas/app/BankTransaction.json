@@ -1,0 +1,105 @@
+{
+  "name": "BankTransaction",
+  "label": "Bank Transaction",
+  "naming": "random",
+  "fields": [
+    {
+      "fieldname": "date",
+      "label": "Date",
+      "fieldtype": "Date",
+      "required": true
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "amount",
+      "label": "Amount",
+      "fieldtype": "Currency",
+      "required": true
+    },
+    {
+      "fieldname": "type",
+      "label": "Type",
+      "fieldtype": "Select",
+      "options": [
+        { "value": "Deposit", "label": "Deposit" },
+        { "value": "Withdrawal", "label": "Withdrawal" }
+      ]
+    },
+    {
+      "fieldname": "balance",
+      "label": "Balance",
+      "fieldtype": "Currency"
+    },
+    {
+      "fieldname": "reference",
+      "label": "Reference",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "chequeNo",
+      "label": "Cheque No",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "account",
+      "label": "Category",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "party",
+      "label": "Party",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "notes",
+      "label": "Notes",
+      "fieldtype": "Text"
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "options": [
+        { "value": "Unreconciled", "label": "Unreconciled" },
+        { "value": "Reconciled", "label": "Reconciled" }
+      ],
+      "default": "Unreconciled"
+    },
+    {
+      "fieldname": "postedVoucher",
+      "label": "Posted Voucher",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "postedVoucherType",
+      "label": "Posted Voucher Type",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "batch",
+      "label": "Batch",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "importOrder",
+      "label": "Import Order",
+      "fieldtype": "Int"
+    },
+    {
+      "fieldname": "dedupeKey",
+      "label": "Dedupe Key",
+      "fieldtype": "Data"
+    }
+  ],
+  "quickEditFields": ["account", "party", "notes"]
+}
