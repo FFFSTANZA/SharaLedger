@@ -77,7 +77,15 @@ export class AccountingSettings extends Doc {
 
   override hidden: HiddenMap = {
     discountAccount: () => !this.enableDiscounting,
-    gstin: () => this.fyo.singles.SystemSettings?.countryCode !== 'in',
+    gstin: () => {
+      // Always show GST tab for India during setup wizard
+      // Check if we're in setup by looking at the current route or setupComplete flag
+      const isInSetup = !this.setupComplete || this.fyo.store.route?.includes('setup');
+      if (isInSetup && this.fyo.singles.SystemSettings?.countryCode === 'in') {
+        return false;
+      }
+      return this.fyo.singles.SystemSettings?.countryCode !== 'in';
+    },
     enablePricingRule: () =>
       !this.fyo.singles.AccountingSettings?.enableDiscounting,
     enableCouponCode: () =>

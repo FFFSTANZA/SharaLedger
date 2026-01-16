@@ -142,6 +142,7 @@ export default defineComponent({
         this.doc
       );
 
+      // During setup wizard, ensure all tabs are shown including GST
       return [...groupedFields.values()][0];
     },
   },

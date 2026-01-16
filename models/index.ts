@@ -55,10 +55,6 @@ import { POSOpeningShift } from './inventory/Point of Sale/POSOpeningShift';
 import { POSClosingShift } from './inventory/Point of Sale/POSClosingShift';
 import { IntegrationErrorLog } from './baseModels/IntegrationErrorLog/IntegrationErrorLog';
 import { ItemEnquiry } from './baseModels/ItemEnquiry/ItemEnquiry';
-import { BankTransaction } from './baseModels/BankTransaction/BankTransaction';
-import { BankImportBatch } from './baseModels/BankImportBatch/BankImportBatch';
-import { BankImportProfile } from './baseModels/BankImportProfile/BankImportProfile';
-import { BankRule } from './baseModels/BankRule/BankRule';
 
 export const models = {
   Account,
@@ -99,10 +95,6 @@ export const models = {
   PrintTemplate,
   Tax,
   TaxSummary,
-  BankTransaction,
-  BankImportBatch,
-  BankImportProfile,
-  BankRule,
   // Inventory Models
   InventorySettings,
   StockMovement,
