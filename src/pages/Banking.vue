@@ -83,12 +83,20 @@ export default defineComponent({
     };
   },
   mounted() {
-    // Check if we should open reconciliation tab from query params or route
-    if (this.$route.query.tab === 'reconciliation' || this.$route.path.includes('reconciliation')) {
-      this.activeTab = 'reconciliation';
-    }
+    this.initFromRoute();
+  },
+  activated() {
+    this.initFromRoute();
   },
   methods: {
+    initFromRoute() {
+      // Check if we should open reconciliation tab from query params or route
+      if (this.$route.query.tab === 'reconciliation' || this.$route.path.includes('reconciliation')) {
+        this.activeTab = 'reconciliation';
+      } else if (this.$route.query.tab === 'rules') {
+        this.activeTab = 'rules';
+      }
+    },
     switchTab(tabId: string) {
       this.activeTab = tabId;
       // Refresh reconciliation data when switching to it

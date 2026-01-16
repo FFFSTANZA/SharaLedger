@@ -318,34 +318,36 @@ export class BankTransaction extends Doc {
       userRemark: this.notes || this.description || undefined,
     });
 
-    const accounts = [];
+    const row1 = je.fyo.doc.getNewDoc(ModelNameEnum.JournalEntryAccount);
+    const row2 = je.fyo.doc.getNewDoc(ModelNameEnum.JournalEntryAccount);
+
     if (isCredit) {
       // Money coming in (Debit bank, Credit income/other account)
-      accounts.push({
+      await row1.set({
         account: this.bankAccount,
         debit: amount,
         credit: this.fyo.pesa(0),
       });
-      accounts.push({
+      await row2.set({
         account: this.account,
         debit: this.fyo.pesa(0),
         credit: amount,
       });
     } else {
       // Money going out (Credit bank, Debit expense/other account)
-      accounts.push({
+      await row1.set({
         account: this.bankAccount,
         debit: this.fyo.pesa(0),
         credit: amount,
       });
-      accounts.push({
+      await row2.set({
         account: this.account,
         debit: amount,
         credit: this.fyo.pesa(0),
       });
     }
 
-    await je.set({ accounts });
+    await je.set({ accounts: [row1, row2] });
     await je.sync();
     return je;
   }

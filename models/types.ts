@@ -80,7 +80,7 @@ export enum ModelNameEnum {
   BankImportBatch = 'BankImportBatch',
   BankImportProfile = 'BankImportProfile',
   BankRule = 'BankRule',
-  }
+}
 
 export type ModelName = keyof typeof ModelNameEnum;
 

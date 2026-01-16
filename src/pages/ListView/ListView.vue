@@ -163,22 +163,28 @@ export default defineComponent({
     },
   },
   activated() {
-    this.listConfig = getListConfig(this.schemaName);
-    docsPathRef.value =
-      docsPathMap[this.schemaName] ?? docsPathMap.Entries ?? '';
-
-    if (this.fyo.store.isDevelopment) {
-      // @ts-ignore
-      window.lv = this;
-    }
-
-    this.setShortcuts();
+    this.init();
+  },
+  mounted() {
+    this.init();
   },
   deactivated() {
     docsPathRef.value = '';
     this.shortcuts?.delete(this.context);
   },
   methods: {
+    init() {
+      this.listConfig = getListConfig(this.schemaName);
+      docsPathRef.value =
+        docsPathMap[this.schemaName] ?? docsPathMap.Entries ?? '';
+
+      if (this.fyo.store.isDevelopment) {
+        // @ts-ignore
+        window.lv = this;
+      }
+
+      this.setShortcuts();
+    },
     setShortcuts() {
       if (!this.shortcuts) {
         return;
