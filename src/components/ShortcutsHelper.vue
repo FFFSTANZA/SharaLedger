@@ -64,7 +64,7 @@ export default defineComponent({
     this.groups = [
       {
         label: t`Global`,
-        description: t`Applicable anywhere in SharaLedger`,
+        description: t`Applicable anywhere in Versoll Books`,
         collapsed: false,
         shortcuts: [
           {

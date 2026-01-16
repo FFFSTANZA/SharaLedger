@@ -15,8 +15,8 @@ const buildDirPath = path.join(root, 'dist_electron', 'build');
 const packageDirPath = path.join(root, 'dist_electron', 'bundled');
 
 const frappeBooksConfig = {
-  productName: 'SharaLedger',
-  appId: 'com.sharaledger.app',
+  productName: 'Versoll Books',
+  appId: 'com.versoll.books',
   artifactName: '${productName}-v${version}-${os}-${arch}.${ext}',
   asarUnpack: '**/*.node',
   extraResources: [
@@ -46,7 +46,7 @@ const frappeBooksConfig = {
     publish: ['github'],
   },
   win: {
-    publisherName: 'SharaLedger Technologies',
+    publisherName: 'Versoll',
     artifactName: '${productName}-v${version}-windows-${arch}.${ext}',
     signDlls: true,
     icon: 'build/icon.ico',

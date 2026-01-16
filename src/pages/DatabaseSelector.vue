@@ -10,12 +10,12 @@
       class="w-full w-form shadow-2xl rounded-3xl border border-white dark:border-gray-800 relative bg-white/90 dark:bg-gray-875/90 backdrop-blur-md overflow-hidden"
       style="height: 720px"
     >
-      <!-- Welcome to SharaLedger -->
+      <!-- Welcome to Versoll Books -->
       <div class="px-8 pt-10 pb-6">
         <h1
           class="text-3xl font-bold select-none text-gray-900 dark:text-gray-25 tracking-tight"
         >
-          {{ t`Welcome to SharaLedger` }}
+          {{ t`Welcome to Versoll Books` }}
         </h1>
         <p class="text-gray-500 dark:text-gray-400 text-lg mt-2 select-none">
           {{ t`Your premium accounting companion` }}
@@ -97,7 +97,7 @@
               {{ t`Explore with Demo` }}
             </p>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ t`Experience SharaLedger with pre-loaded data` }}
+              {{ t`Experience Versoll Books with pre-loaded data` }}
             </p>
           </div>
         </div>

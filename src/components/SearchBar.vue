@@ -315,7 +315,7 @@ export default defineComponent({
   },
   methods: {
     openDocs() {
-      ipc.openLink('https://docs.sharaledger.com/' + docsPathMap.Search);
+      ipc.openLink('https://docs.versoll.com/' + docsPathMap.Search);
     },
     getShortcuts() {
       const ifOpen = (cb: Function) => () => this.openModal && cb();

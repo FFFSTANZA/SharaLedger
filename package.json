@@ -1,10 +1,10 @@
 {
-  "name": "sharaledger",
+  "name": "versoll-books",
   "version": "0.36.0",
   "description": "Simple book-keeping app for everyone",
   "author": {
-    "name": "SharaLedger Technologies",
-    "email": "hello@sharaledger.com"
+    "name": "Versoll",
+    "email": "hello@versoll.com"
   },
   "scripts": {
     "dev": "node build/scripts/dev.mjs",
@@ -93,9 +93,9 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "homepage": "https://sharaledger.com",
+  "homepage": "https://versoll.com",
   "repository": {
-    "url": "https://github.com/sharaledger/sharaledger"
+    "url": "https://github.com/versoll/versoll-books"
   },
   "license": "AGPL-3.0-only"
 }
