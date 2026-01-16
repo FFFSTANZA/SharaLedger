@@ -49,6 +49,9 @@ import { setLanguageMap } from './utils/language';
       platform() {
         return platformName;
       },
+      ipc() {
+        return ipc;
+      },
     },
     methods: {
       t: fyo.t,

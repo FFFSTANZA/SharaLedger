@@ -5,6 +5,7 @@ import { NotFoundError, ValueError } from 'fyo/utils/errors';
 import Observable from 'fyo/utils/observable';
 import { Schema } from 'schemas/types';
 import { getRandomString } from 'utils';
+import { GetAllOptions } from 'utils/db/types';
 import { Fyo } from '..';
 import { DocValueMap, RawValueMap } from './types';
 
@@ -77,6 +78,16 @@ export class DocHandler {
     this.#addToCache(doc);
 
     return doc;
+  }
+
+  async getDocs(
+    schemaName: string,
+    options: GetAllOptions = {}
+  ): Promise<Doc[]> {
+    const data = await this.fyo.db.getAll(schemaName, options);
+    return data.map((d) =>
+      this.getNewDoc(schemaName, d, true, undefined, undefined, false)
+    );
   }
 
   getNewDoc(

@@ -2,6 +2,8 @@ import { fyo } from '../initFyo';
 import { ModelNameEnum } from 'models/types';
 import { Doc } from 'fyo/model/doc';
 import { t } from 'fyo';
+import { DateTime } from 'luxon';
+import { Money } from 'pesa';
 
 export async function postBankTransactionToGL(transaction: Doc) {
   if (transaction.status === 'Reconciled') {
@@ -23,27 +25,32 @@ export async function postBankTransactionToGL(transaction: Doc) {
     throw new Error(t`Please select a category account before posting`);
   }
 
+  const amountMoney = amount as Money;
+  const absAmount = amountMoney.abs();
+  const dateObj = date as Date;
+  const isoDate = DateTime.fromJSDate(dateObj).toISODate();
+
   let postedVoucher;
   let postedVoucherType;
 
   if (party) {
     // Create Payment
     postedVoucherType = ModelNameEnum.Payment;
-    const payment = await fyo.doc.create(ModelNameEnum.Payment, {
-      date: date + ' 00:00:00', // Ensure it's a valid datetime
+    const payment = fyo.doc.getNewDoc(ModelNameEnum.Payment, {
+      date: isoDate + ' 00:00:00', // Ensure it's a valid datetime
       party,
       paymentType: type === 'Deposit' ? 'Receive' : 'Pay',
       // For bank transactions:
-      // Deposit (Receive): Party pays to bank → From: account, To: bankAccount
-      // Withdrawal (Pay): Bank pays to party → From: bankAccount, To: account
+      // Deposit (Receive): Party pays to bank -> From: account, To: bankAccount
+      // Withdrawal (Pay): Bank pays to party -> From: bankAccount, To: account
       account: type === 'Deposit' ? account : bankAccount, // From Account
       paymentAccount: type === 'Deposit' ? bankAccount : account, // To Account
-      amount: Math.abs(amount),
+      amount: absAmount,
       referenceId: reference,
       userRemark: description,
     });
 
-    await payment.save();
+    await payment.sync();
     postedVoucher = payment.name;
   } else {
     // Create Journal Entry
@@ -54,36 +61,36 @@ export async function postBankTransactionToGL(transaction: Doc) {
        // Debit Bank, Credit Categorization Account
        accounts.push({
          account: bankAccount,
-         debit: Math.abs(amount),
-         credit: 0,
+         debit: absAmount,
+         credit: fyo.pesa(0),
        });
        accounts.push({
          account: account,
-         debit: 0,
-         credit: Math.abs(amount),
+         debit: fyo.pesa(0),
+         credit: absAmount,
        });
     } else {
        // Credit Bank, Debit Categorization Account
        accounts.push({
          account: bankAccount,
-         debit: 0,
-         credit: Math.abs(amount),
+         debit: fyo.pesa(0),
+         credit: absAmount,
        });
        accounts.push({
          account: account,
-         debit: Math.abs(amount),
-         credit: 0,
+         debit: absAmount,
+         credit: fyo.pesa(0),
        });
     }
 
-    const je = await fyo.doc.create(ModelNameEnum.JournalEntry, {
-      date,
+    const je = fyo.doc.getNewDoc(ModelNameEnum.JournalEntry, {
+      date: isoDate,
       entryType: 'Bank Entry',
       userRemark: description,
       referenceNumber: reference,
       accounts,
     });
-    await je.save();
+    await je.sync();
     postedVoucher = je.name;
   }
 
@@ -91,5 +98,5 @@ export async function postBankTransactionToGL(transaction: Doc) {
   await transaction.set('status', 'Reconciled');
   await transaction.set('postedVoucher', postedVoucher);
   await transaction.set('postedVoucherType', postedVoucherType);
-  await transaction.save();
+  await transaction.sync();
 }

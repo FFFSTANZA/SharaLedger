@@ -113,8 +113,7 @@ export default defineComponent({
       }
     },
     async updateRow(row: Doc, field: string, value: any) {
-      await row.set(field, value);
-      await row.save();
+      await row.setAndSync(field, value);
     },
     async post(row: Doc) {
       try {
