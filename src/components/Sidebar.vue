@@ -166,7 +166,7 @@ export default defineComponent({
   },
   async mounted() {
     const { companyName } = await fyo.doc.getDoc('AccountingSettings');
-    this.companyName = companyName as string;
+    this.companyName = 'Versoll Books'; // Always show "Versoll Books" instead of company name
     this.groups = await getSidebarConfig();
 
     this.setActiveGroup();
