@@ -10,7 +10,12 @@
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">{{ t`1. Select Bank Account` }}</label>
               <FormControl
-                :df="{ fieldname: 'bankAccount', fieldtype: 'Link', target: 'Account' }"
+                :df="{ 
+                  fieldname: 'bankAccount', 
+                  fieldtype: 'Link', 
+                  target: 'Account',
+                  filters: { accountType: 'Bank' }
+                }"
                 :value="bankAccount"
                 @change="(val) => bankAccount = val"
               />
@@ -81,6 +86,11 @@
             {{ t`Import ${csvData.length} Transactions` }}
           </Button>
         </div>
+        
+        <!-- Error Display -->
+        <div v-if="errorMessage" class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-4">
+          <p class="text-sm text-red-700 dark:text-red-200">{{ errorMessage }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -106,6 +116,7 @@ export default defineComponent({
       csvData: [] as string[][],
       headers: [] as string[],
       mappings: [] as (string | null)[],
+      errorMessage: '',
     };
   },
   computed: {
@@ -121,47 +132,74 @@ export default defineComponent({
   },
   methods: {
     async selectFile() {
-      const result = await this.ipc.selectFile({
-        title: 'Select CSV File',
-        filters: [{ name: 'CSV Files', extensions: ['csv'] }]
-      });
+      this.errorMessage = '';
+      try {
+        const result = await this.ipc.selectFile({
+          title: 'Select CSV File',
+          filters: [{ name: 'CSV Files', extensions: ['csv'] }]
+        });
 
-      if (result && !result.canceled && result.success) {
-        this.fileName = result.name;
-        const content = result.data.toString('utf-8');
-        const parsed = parseCSV(content);
-        if (parsed.length > 0) {
-          this.headers = parsed[0];
-          this.csvData = parsed.slice(1);
-          // Initial auto-mapping
-          this.mappings = this.headers.map((h) => {
-            const lowH = h.toLowerCase();
-            if (lowH.includes('date')) return 'date';
-            if (
-              lowH.includes('desc') ||
-              lowH.includes('narration') ||
-              lowH.includes('remark')
-            ) {
-              return 'description';
-            }
-            if (lowH.includes('withdrawal') || lowH.includes('debit') || lowH.includes('dr')) {
-              return 'withdrawal';
-            }
-            if (lowH.includes('deposit') || lowH.includes('credit') || lowH.includes('cr')) {
-              return 'deposit';
-            }
-            if (lowH.includes('amount') || lowH === 'amt') return 'amount';
-            if (lowH.includes('balance')) return 'balance';
-            if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) {
-              return 'reference';
-            }
-            return null;
-          });
+        if (result && !result.canceled && result.success) {
+          this.fileName = result.name;
+          const content = result.data.toString('utf-8');
+          const parsed = parseCSV(content);
+          if (parsed.length > 0) {
+            this.headers = parsed[0];
+            this.csvData = parsed.slice(1);
+            // Initial auto-mapping
+            this.mappings = this.headers.map((h) => {
+              const lowH = h.toLowerCase();
+              if (lowH.includes('date')) return 'date';
+              if (
+                lowH.includes('desc') ||
+                lowH.includes('narration') ||
+                lowH.includes('remark')
+              ) {
+                return 'description';
+              }
+              if (lowH.includes('withdrawal') || lowH.includes('debit') || lowH.includes('dr')) {
+                return 'withdrawal';
+              }
+              if (lowH.includes('deposit') || lowH.includes('credit') || lowH.includes('cr')) {
+                return 'deposit';
+              }
+              if (lowH.includes('amount') || lowH === 'amt') return 'amount';
+              if (lowH.includes('balance')) return 'balance';
+              if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) {
+                return 'reference';
+              }
+              return null;
+            });
+          } else {
+            this.errorMessage = this.t`The selected file appears to be empty or has no valid data.`;
+          }
+        } else if (result && result.canceled) {
+          // User canceled file selection, do nothing
+          return;
+        } else {
+          this.errorMessage = this.t`Failed to select file. Please try again.`;
         }
+      } catch (error) {
+        console.error('File selection error:', error);
+        this.errorMessage = this.t`An error occurred while selecting the file: ${error.message}`;
       }
     },
     async importTransactions() {
+      this.errorMessage = '';
+      
+      if (!this.bankAccount) {
+        this.errorMessage = this.t`Please select a bank account first.`;
+        return;
+      }
+      
+      if (!this.isMappingValid) {
+        this.errorMessage = this.t`Please map the Date and either Amount or Withdrawal/Deposit columns.`;
+        return;
+      }
+
       let count = 0;
+      let skipped = 0;
+      
       for (const row of this.csvData) {
         const entry: any = {
           bankAccount: this.bankAccount,
@@ -207,15 +245,32 @@ export default defineComponent({
             });
             await doc.sync();
             count++;
+          } else {
+            skipped++;
           }
         }
       }
       
-      showToast({ 
-        title: this.t`${count} new transactions imported.`, 
-        type: 'success' 
-      });
-      routeTo('/bank-reconciliation');
+      if (count > 0) {
+        showToast({ 
+          title: this.t`${count} new transactions imported.`, 
+          type: 'success' 
+        });
+      } else if (skipped > 0) {
+        showToast({ 
+          title: this.t`${skipped} duplicate transactions skipped.`, 
+          type: 'info' 
+        });
+      } else {
+        showToast({ 
+          title: this.t`No transactions were imported.`, 
+          type: 'warning' 
+        });
+      }
+      
+      if (count > 0) {
+        routeTo('/bank-reconciliation');
+      }
     },
     parseAmount(val: string) {
       if (!val) return 0;
