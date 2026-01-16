@@ -110,10 +110,14 @@ export default defineComponent({
   },
   computed: {
     isMappingValid() {
-      const activeMappings = this.mappings.filter(m => m !== null);
-      return activeMappings.includes('date') && 
-             (activeMappings.includes('amount') || (activeMappings.includes('withdrawal') && activeMappings.includes('deposit')));
-    }
+      const activeMappings = this.mappings.filter((m) => m !== null);
+      return (
+        activeMappings.includes('date') &&
+        (activeMappings.includes('amount') ||
+          activeMappings.includes('withdrawal') ||
+          activeMappings.includes('deposit'))
+      );
+    },
   },
   methods: {
     async selectFile() {
@@ -130,14 +134,27 @@ export default defineComponent({
           this.headers = parsed[0];
           this.csvData = parsed.slice(1);
           // Initial auto-mapping
-          this.mappings = this.headers.map(h => {
+          this.mappings = this.headers.map((h) => {
             const lowH = h.toLowerCase();
             if (lowH.includes('date')) return 'date';
-            if (lowH.includes('desc') || lowH.includes('narration') || lowH.includes('remark')) return 'description';
-            if (lowH.includes('withdrawal') || lowH.includes('debit') || lowH.includes('dr')) return 'withdrawal';
-            if (lowH.includes('deposit') || lowH.includes('credit') || lowH.includes('cr')) return 'deposit';
+            if (
+              lowH.includes('desc') ||
+              lowH.includes('narration') ||
+              lowH.includes('remark')
+            ) {
+              return 'description';
+            }
+            if (lowH.includes('withdrawal') || lowH.includes('debit') || lowH.includes('dr')) {
+              return 'withdrawal';
+            }
+            if (lowH.includes('deposit') || lowH.includes('credit') || lowH.includes('cr')) {
+              return 'deposit';
+            }
+            if (lowH.includes('amount') || lowH === 'amt') return 'amount';
             if (lowH.includes('balance')) return 'balance';
-            if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) return 'reference';
+            if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) {
+              return 'reference';
+            }
             return null;
           });
         }
