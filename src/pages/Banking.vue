@@ -37,6 +37,11 @@
       <div v-show="activeTab === 'reconciliation'" class="h-full">
         <BankReconciliation ref="reconciliation" />
       </div>
+
+      <!-- Rules Tab -->
+      <div v-show="activeTab === 'rules'" class="h-full">
+        <ListView schema-name="BankRule" />
+      </div>
     </div>
   </div>
 </template>
@@ -46,12 +51,14 @@ import { t } from 'fyo';
 import { defineComponent } from 'vue';
 import BankImport from './BankImport.vue';
 import BankReconciliation from './BankReconciliation.vue';
+import ListView from './ListView/ListView.vue';
 
 export default defineComponent({
   name: 'Banking',
   components: {
     BankImport,
     BankReconciliation,
+    ListView,
   },
   data() {
     return {
@@ -67,16 +74,29 @@ export default defineComponent({
           label: t`Reconciliation`,
           icon: 'check-circle',
         },
+        {
+          id: 'rules',
+          label: t`Bank Rules`,
+          icon: 'list',
+        },
       ],
     };
   },
   mounted() {
-    // Check if we should open reconciliation tab from query params or route
-    if (this.$route.query.tab === 'reconciliation' || this.$route.path.includes('reconciliation')) {
-      this.activeTab = 'reconciliation';
-    }
+    this.initFromRoute();
+  },
+  activated() {
+    this.initFromRoute();
   },
   methods: {
+    initFromRoute() {
+      // Check if we should open reconciliation tab from query params or route
+      if (this.$route.query.tab === 'reconciliation' || this.$route.path.includes('reconciliation')) {
+        this.activeTab = 'reconciliation';
+      } else if (this.$route.query.tab === 'rules') {
+        this.activeTab = 'rules';
+      }
+    },
     switchTab(tabId: string) {
       this.activeTab = tabId;
       // Refresh reconciliation data when switching to it

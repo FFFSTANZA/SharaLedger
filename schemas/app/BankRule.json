@@ -1,0 +1,40 @@
+{
+  "name": "BankRule",
+  "label": "Bank Rule",
+  "fields": [
+    {
+      "fieldname": "ruleName",
+      "label": "Rule Name",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "condition",
+      "label": "Description Contains",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "targetAccount",
+      "label": "Set Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "required": true
+    },
+    {
+        "fieldname": "targetParty",
+        "label": "Set Party",
+        "fieldtype": "Link",
+        "target": "Party"
+    },
+    {
+      "fieldname": "isActive",
+      "label": "Is Active",
+      "fieldtype": "Check",
+      "default": true
+    }
+  ],
+  "keywordFields": ["ruleName", "condition"],
+  "linkDisplayField": "ruleName",
+  "naming": "random"
+}

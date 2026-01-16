@@ -368,10 +368,13 @@ export default defineComponent({
         batch.totalTransactions = this.transactions.length;
         await batch.sync();
 
+        let order = 1;
         for (const txn of this.transactions) {
           // Dedupe check
           const dateValue = this.parseDate(txn.date);
-          const isoDate = dateValue.toISOString().split('T')[0];
+          const isoDate = dateValue instanceof Date && !isNaN(dateValue.getTime()) 
+            ? dateValue.toISOString().split('T')[0] 
+            : new Date().toISOString().split('T')[0];
           const dedupeKey = `${isoDate}-${txn.amount}-${txn.description.slice(0, 50)}-${txn.reference || ''}`;
           
           const existing = await fyo.db.getAll('BankTransaction', { filters: { dedupeKey }, limit: 1 });
@@ -390,6 +393,7 @@ export default defineComponent({
           doc.dedupeKey = dedupeKey;
           doc.batch = batch.name;
           doc.reference = txn.reference;
+          doc.importOrder = order++;
           await doc.sync();
           this.importedCount++;
         }
