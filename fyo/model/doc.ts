@@ -93,6 +93,17 @@ export class Doc extends Observable<DocValue | Doc[]> {
     return this.schema.name;
   }
 
+  get values(): DocValueMap {
+    const values: DocValueMap = {};
+    for (const field of this.schema.fields) {
+      values[field.fieldname] = this[field.fieldname] as DocValue | Doc[];
+    }
+    if (this.name) {
+      values.name = this.name;
+    }
+    return values;
+  }
+
   get notInserted(): boolean {
     return this._notInserted;
   }

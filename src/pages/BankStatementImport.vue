@@ -117,7 +117,7 @@ export default defineComponent({
   },
   methods: {
     async selectFile() {
-      const result = await ipc.selectFile({
+      const result = await this.ipc.selectFile({
         title: 'Select CSV File',
         filters: [{ name: 'CSV Files', extensions: ['csv'] }]
       });
@@ -176,11 +176,14 @@ export default defineComponent({
         if (entry.date && entry.amount) {
           // Dedupe check
           const key = dedupeKey(entry.date, entry.description || '', entry.amount, entry.balance || 0);
-          const existing = await this.fyo.db.getOne(ModelNameEnum.BankTransaction, { dedupeKey: key });
+          const existing = await this.fyo.db.getAll(ModelNameEnum.BankTransaction, { 
+            filters: { dedupeKey: key },
+            limit: 1
+          });
           
-          if (!existing) {
+          if (existing.length === 0) {
             const auto = autoCategorize(entry.description || '', entry.type);
-            const doc = await this.fyo.doc.create(ModelNameEnum.BankTransaction, {
+            const doc = this.fyo.doc.getNewDoc(ModelNameEnum.BankTransaction, {
               ...entry,
               ...auto,
               dedupeKey: key
