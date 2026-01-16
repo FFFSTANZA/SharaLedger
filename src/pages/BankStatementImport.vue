@@ -127,6 +127,27 @@
               </div>
             </div>
 
+            <!-- CSV Parsing Warnings -->
+            <div v-if="csvWarnings.length > 0" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                  <p class="font-medium text-yellow-800 dark:text-yellow-200">{{ t`CSV Parsing Warnings` }}</p>
+                  <div class="text-sm text-yellow-600 dark:text-yellow-400 mt-1 space-y-1">
+                    <div v-for="(warning, index) in csvWarnings" :key="index" class="flex items-start gap-2">
+                      <span class="text-yellow-500">•</span>
+                      <span>{{ warning }}</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                    {{ t`These warnings don't prevent import but may indicate data formatting issues.` }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <!-- File Info -->
             <div v-if="csvData.length" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
               <div class="flex items-center justify-between">
@@ -161,7 +182,7 @@
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ t`Match your CSV columns to transaction fields` }}</p>
               </div>
               <div class="flex gap-2">
-                <Button @click="autoDetectColumns" size="small">
+                <Button @click="autoDetectColumnsEnhanced" size="small">
                   <template #prefix>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -404,7 +425,7 @@ import PageHeader from 'src/components/PageHeader.vue';
 import Button from 'src/components/Button.vue';
 import FormControl from 'src/components/Controls/FormControl.vue';
 import { ModelNameEnum } from 'models/types';
-import { parseCSV } from 'utils/csvParser';
+import { parseCSV, parseCSVAdvanced, analyzeCSVStructure, sanitizeField, detectDataType, type CSVParseOptions, type CSVParseResult } from 'utils/csvParser';
 import { autoCategorize, dedupeKey } from 'src/banking/autoCategorize';
 import { routeTo } from 'src/utils/ui';
 import { showToast } from 'src/utils/interactive';
@@ -429,6 +450,13 @@ export default defineComponent({
         skipped: 0,
       },
       importLogs: [] as Array<{ message: string; type: 'info' | 'warning' | 'error' }>,
+      
+      // Enhanced CSV parsing data
+      parseResult: null as CSVParseResult | null,
+      csvWarnings: [] as string[],
+      csvErrors: [] as string[],
+      delimiter: ',',
+      parseOptions: {} as CSVParseOptions,
     };
   },
   computed: {
@@ -497,59 +525,287 @@ export default defineComponent({
     async processFile(name: string, content: string) {
       try {
         this.fileName = name;
-        const parsed = parseCSV(content);
+        this.errorMessage = '';
+        this.csvWarnings = [];
+        this.csvErrors = [];
         
-        if (parsed.length === 0) {
-          this.errorMessage = this.t`The selected file appears to be empty or has no valid data.`;
+        // First, try to analyze the CSV structure
+        let analysis;
+        try {
+          analysis = analyzeCSVStructure(content);
+          this.delimiter = analysis.delimiter;
+        } catch (e) {
+          console.warn('CSV analysis failed, proceeding with basic parsing:', e);
+        }
+
+        // Parse with advanced options
+        this.parseOptions = {
+          delimiter: this.delimiter,
+          skipEmptyLines: true,
+          encoding: 'utf-8',
+          maxRows: 50000 // Limit for performance
+        };
+
+        this.parseResult = parseCSVAdvanced(content, this.parseOptions);
+        this.csvWarnings = this.parseResult.warnings;
+        this.csvErrors = this.parseResult.errors;
+
+        // Handle critical errors
+        if (this.parseResult.errors.length > 0) {
+          this.errorMessage = this.t`CSV parsing errors: ${this.parseResult.errors.join(', ')}`;
           return;
         }
 
-        if (parsed.length === 1) {
-          this.errorMessage = this.t`The file only contains headers. No data rows found.`;
+        // Check if we have any data
+        if (this.parseResult.rows.length === 0) {
+          this.errorMessage = this.t`No data rows found. The file might contain only headers or be empty.`;
           return;
         }
 
-        this.headers = parsed[0];
-        this.csvData = parsed.slice(1);
-        
-        // Auto-detect column mappings
-        this.autoDetectColumns();
+        // Set up headers and data
+        this.headers = this.parseResult.headers;
+        this.csvData = this.parseResult.rows;
+
+        // Show warnings to user if any
+        if (this.parseResult.warnings.length > 0) {
+          console.warn('CSV parsing warnings:', this.parseResult.warnings);
+          // Don't block the import for warnings, just log them
+        }
+
+        // Validate data quality
+        this.validateDataQuality();
+
+        // Auto-detect column mappings with enhanced patterns
+        this.autoDetectColumnsEnhanced();
+
+        // Show parsing success message
+        const message = this.t`Successfully parsed ${this.csvData.length} transactions with ${this.headers.length} columns`;
+        showToast({ title: message, type: 'success' });
+
       } catch (error) {
         console.error('File processing error:', error);
-        this.errorMessage = this.t`Failed to parse CSV file: ${error.message}`;
+        this.errorMessage = this.t`Failed to process CSV file: ${error.message}. Please check the file format and try again.`;
       }
     },
-    autoDetectColumns() {
-      this.mappings = this.headers.map((h) => {
-        const lowH = h.toLowerCase();
-        if (lowH.includes('date')) return 'date';
-        if (
-          lowH.includes('desc') ||
-          lowH.includes('narration') ||
-          lowH.includes('remark') ||
-          lowH.includes('detail')
-        ) {
-          return 'description';
+
+    validateDataQuality() {
+      const warnings = [];
+
+      // Check for common data quality issues
+      if (this.csvData.length === 0) {
+        warnings.push('No data rows found');
+        return warnings;
+      }
+
+      // Sample the first few rows to check data quality
+      const sampleSize = Math.min(10, this.csvData.length);
+      const sample = this.csvData.slice(0, sampleSize);
+
+      // Check for rows with too many empty fields
+      const emptyFieldThreshold = Math.floor(this.headers.length * 0.8); // 80% empty threshold
+      sample.forEach((row, idx) => {
+        const emptyFields = row.filter(field => !field || field.trim() === '').length;
+        if (emptyFields > emptyFieldThreshold) {
+          warnings.push(`Row ${idx + 1} has ${emptyFields} empty fields`);
         }
-        if (lowH.includes('withdrawal') || lowH.includes('debit') || lowH.includes('dr')) {
-          return 'withdrawal';
-        }
-        if (lowH.includes('deposit') || lowH.includes('credit') || lowH.includes('cr')) {
-          return 'deposit';
-        }
-        if (lowH.includes('amount') || lowH === 'amt') return 'amount';
-        if (lowH.includes('balance')) return 'balance';
-        if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) {
-          return 'reference';
-        }
-        if (lowH.includes('type')) {
-          // Don't auto-map Type column as it's for reference only
-          // The amount logic will handle Credit/Debit classification
-          return null;
-        }
-        return null;
+      });
+
+      // Check for inconsistent column counts
+      const columnCounts = sample.map(row => row.length);
+      const uniqueCounts = [...new Set(columnCounts)];
+      if (uniqueCounts.length > 1) {
+        warnings.push(`Inconsistent column counts detected: ${uniqueCounts.join(', ')}`);
+      }
+
+      // Check for potential encoding issues (non-ASCII characters)
+      const hasNonAscii = sample.some(row => 
+        row.some(field => field && /[^\x00-\x7F]/.test(field))
+      );
+      if (hasNonAscii) {
+        warnings.push('Non-ASCII characters detected - ensure proper encoding');
+      }
+
+      if (warnings.length > 0) {
+        this.csvWarnings.push(...warnings.map(w => `Data quality: ${w}`));
+      }
+
+      return warnings;
+    },
+    autoDetectColumnsEnhanced() {
+      // Enhanced column detection with fuzzy matching and data type analysis
+      this.mappings = this.headers.map((h, index) => {
+        const header = h.toLowerCase().trim();
+        const sampleValues = this.csvData.slice(0, 10).map(row => row[index]).filter(Boolean);
+        
+        // First, try exact header matching
+        if (this.isDateColumn(header, sampleValues)) return 'date';
+        if (this.isDescriptionColumn(header, sampleValues)) return 'description';
+        if (this.isAmountColumn(header, sampleValues)) return 'amount';
+        if (this.isWithdrawalColumn(header, sampleValues)) return 'withdrawal';
+        if (this.isDepositColumn(header, sampleValues)) return 'deposit';
+        if (this.isBalanceColumn(header, sampleValues)) return 'balance';
+        if (this.isReferenceColumn(header, sampleValues)) return 'reference';
+        
+        // If no exact match, try fuzzy matching
+        return this.fuzzyMatchColumn(header, sampleValues);
       });
     },
+
+    isDateColumn(header: string, sampleValues: string[]): boolean {
+      // Strong header indicators
+      const dateHeaders = ['date', 'transaction date', 'posting date', 'value date', 'txn date', 'dt'];
+      if (dateHeaders.some(h => header.includes(h))) return true;
+      
+      // Check if most sample values look like dates
+      if (sampleValues.length > 0) {
+        const dateLikeCount = sampleValues.filter(val => {
+          const cleaned = sanitizeField(val);
+          return detectDataType(cleaned) === 'date';
+        }).length;
+        
+        return dateLikeCount >= sampleValues.length * 0.6; // 60% threshold
+      }
+      
+      return false;
+    },
+
+    isDescriptionColumn(header: string, sampleValues: string[]): boolean {
+      const descHeaders = ['description', 'narration', 'details', 'detail', 'remarks', 'remark', 'memo', 'transaction description', 'desc', 'particulars'];
+      if (descHeaders.some(h => header.includes(h))) return true;
+      
+      // Check if values are text-heavy (likely descriptions)
+      if (sampleValues.length > 0) {
+        const textLikeCount = sampleValues.filter(val => {
+          const cleaned = sanitizeField(val);
+          return cleaned.length > 10 && detectDataType(cleaned) === 'text';
+        }).length;
+        
+        return textLikeCount >= sampleValues.length * 0.6;
+      }
+      
+      return false;
+    },
+
+    isAmountColumn(header: string, sampleValues: string[]): boolean {
+      const amountHeaders = ['amount', 'amt', 'value', 'transaction amount', 'txn amount'];
+      if (amountHeaders.some(h => header.includes(h))) return true;
+      
+      // Check if values are numeric
+      if (sampleValues.length > 0) {
+        const numericCount = sampleValues.filter(val => {
+          const cleaned = sanitizeField(val);
+          return detectDataType(cleaned) === 'number';
+        }).length;
+        
+        return numericCount >= sampleValues.length * 0.8; // 80% threshold for amount
+      }
+      
+      return false;
+    },
+
+    isWithdrawalColumn(header: string, sampleValues: string[]): boolean {
+      const withdrawalHeaders = ['withdrawal', 'debit', 'dr', 'paid out', 'payment', 'charge', 'fee'];
+      if (withdrawalHeaders.some(h => header.includes(h))) return true;
+      
+      // Check for negative values or debit indicators
+      if (sampleValues.length > 0) {
+        const hasNegativeValues = sampleValues.some(val => {
+          const cleaned = sanitizeField(val).replace(/,/g, '');
+          return !isNaN(parseFloat(cleaned)) && parseFloat(cleaned) < 0;
+        });
+        
+        return hasNegativeValues;
+      }
+      
+      return false;
+    },
+
+    isDepositColumn(header: string, sampleValues: string[]): boolean {
+      const depositHeaders = ['deposit', 'credit', 'cr', 'received', 'receipt', 'income'];
+      if (depositHeaders.some(h => header.includes(h))) return true;
+      
+      // Check for positive values or credit indicators
+      if (sampleValues.length > 0) {
+        const hasPositiveValues = sampleValues.some(val => {
+          const cleaned = sanitizeField(val).replace(/,/g, '');
+          return !isNaN(parseFloat(cleaned)) && parseFloat(cleaned) > 0;
+        });
+        
+        return hasPositiveValues;
+      }
+      
+      return false;
+    },
+
+    isBalanceColumn(header: string, sampleValues: string[]): boolean {
+      const balanceHeaders = ['balance', 'closing balance', 'running balance', 'current balance', 'bal'];
+      if (balanceHeaders.some(h => header.includes(h))) return true;
+      
+      // Balance columns often have larger values
+      if (sampleValues.length > 0) {
+        const largeNumericCount = sampleValues.filter(val => {
+          const cleaned = sanitizeField(val).replace(/,/g, '');
+          const num = parseFloat(cleaned);
+          return !isNaN(num) && Math.abs(num) > 1000; // Likely a balance
+        }).length;
+        
+        return largeNumericCount >= sampleValues.length * 0.6;
+      }
+      
+      return false;
+    },
+
+    isReferenceColumn(header: string, sampleValues: string[]): boolean {
+      const refHeaders = ['reference', 'ref', 'cheque', 'check', 'chq', 'voucher', 'utr', 'transaction id', 'txn id', 'id'];
+      if (refHeaders.some(h => header.includes(h))) return true;
+      
+      // Reference columns often have alphanumeric codes
+      if (sampleValues.length > 0) {
+        const alphanumericCount = sampleValues.filter(val => {
+          const cleaned = sanitizeField(val);
+          return /^[A-Za-z0-9\-]+$/.test(cleaned) && cleaned.length > 3 && cleaned.length < 50;
+        }).length;
+        
+        return alphanumericCount >= sampleValues.length * 0.6;
+      }
+      
+      return false;
+    },
+
+    fuzzyMatchColumn(header: string, sampleValues: string[]): string | null {
+      // Try fuzzy matching based on partial text and data analysis
+      
+      // Check for date-like patterns in values
+      if (sampleValues.some(val => detectDataType(sanitizeField(val)) === 'date')) {
+        return 'date';
+      }
+      
+      // Check for amount-like patterns
+      const numericCount = sampleValues.filter(val => {
+        const cleaned = sanitizeField(val);
+        return detectDataType(cleaned) === 'number';
+      }).length;
+      
+      if (numericCount >= sampleValues.length * 0.8) {
+        // If we already have an amount column mapped, don't map another
+        const hasAmountMapping = this.mappings.includes('amount');
+        if (!hasAmountMapping) return 'amount';
+      }
+      
+      // Check for text-heavy fields (likely description)
+      const textLikeCount = sampleValues.filter(val => {
+        const cleaned = sanitizeField(val);
+        return cleaned.length > 5 && detectDataType(cleaned) === 'text';
+      }).length;
+      
+      if (textLikeCount >= sampleValues.length * 0.7) {
+        const hasDescMapping = this.mappings.includes('description');
+        if (!hasDescMapping) return 'description';
+      }
+      
+      return null;
+    },
+
     clearMappings() {
       this.mappings = this.headers.map(() => null);
     },

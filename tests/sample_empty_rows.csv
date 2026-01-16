@@ -1,0 +1,7 @@
+Date,Description,Amount,Balance
+
+2024-01-01,Opening Balance,1000.00,1000.00
+
+2024-01-02,ATM Withdrawal,50.00,950.00
+
+2024-01-03,Salary Deposit,2500.00,3450.00
