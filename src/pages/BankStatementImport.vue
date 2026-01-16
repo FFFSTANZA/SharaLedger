@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900">
     <PageHeader :title="t`Bank Statement Import`">
       <template #actions>
-        <Button v-if="currentStep > 1 && currentStep < 4" @click="prevStep">
+        <Button v-if="currentStep > 1" @click="prevStep">
           <template #prefix>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -541,6 +541,11 @@ export default defineComponent({
         if (lowH.includes('balance')) return 'balance';
         if (lowH.includes('ref') || lowH.includes('chq') || lowH.includes('cheque')) {
           return 'reference';
+        }
+        if (lowH.includes('type')) {
+          // Don't auto-map Type column as it's for reference only
+          // The amount logic will handle Credit/Debit classification
+          return null;
         }
         return null;
       });

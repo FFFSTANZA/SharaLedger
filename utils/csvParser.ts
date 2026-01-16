@@ -1,9 +1,15 @@
 export function parseCSV(text: string): string[][] {
   // Works on RFC 4180 CSV (handles quoted fields, escaped quotes and CRLF/LF)
+  // Also supports tab-separated values (TSV)
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
   let inQuotes = false;
+
+  // Determine delimiter - if tabs are present and more common than commas, use tabs
+  const tabCount = (text.match(/\t/g) || []).length;
+  const commaCount = (text.match(/,/g) || []).length;
+  const delimiter = tabCount > commaCount ? '\t' : ',';
 
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
@@ -30,7 +36,7 @@ export function parseCSV(text: string): string[][] {
       continue;
     }
 
-    if (c === ',') {
+    if (c === delimiter) {
       row.push(field);
       field = '';
       continue;
