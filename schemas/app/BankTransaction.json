@@ -76,6 +76,18 @@
       "fieldtype": "Text"
     },
     {
+      "fieldname": "matchingVoucher",
+      "label": "Matching Voucher",
+      "fieldtype": "Data",
+      "readOnly": true
+    },
+    {
+      "fieldname": "matchingVoucherType",
+      "label": "Matching Voucher Type",
+      "fieldtype": "Data",
+      "readOnly": true
+    },
+    {
       "fieldname": "postedVoucher",
       "label": "Posted Voucher",
       "fieldtype": "Data",

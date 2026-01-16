@@ -1,94 +1,87 @@
 <template>
-  <div class="flex flex-col overflow-hidden w-full h-full">
+  <div class="flex flex-col overflow-hidden w-full h-full bg-gray-50 dark:bg-gray-900">
     <!-- Header Bar -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        {{ t`Import Bank Statement` }}
-      </h2>
-      <div class="flex space-x-2">
-        <Button
-          v-if="transactions.length > 0"
-          :title="t`Import`"
-          type="primary"
-          :disabled="!canImport"
-          @click="importTransactions"
-        >
-          {{ t`Import` }}
-        </Button>
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between shadow-sm z-10">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+          {{ t`Import Bank Statement` }}
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ t`Upload and map your bank transactions` }}
+        </p>
+      </div>
+      <div class="flex space-x-3">
         <Button
           v-if="transactions.length > 0"
           :title="t`Clear`"
+          variant="secondary"
           @click="clearAll"
         >
           {{ t`Clear` }}
         </Button>
         <Button
+          v-if="transactions.length > 0"
+          :title="t`Import ${transactions.length} Transactions`"
+          type="primary"
+          :disabled="!canImport"
+          :loading="isImporting"
+          @click="importTransactions"
+        >
+          {{ t`Import` }}
+        </Button>
+        <Button
           v-if="transactions.length === 0"
-          :title="t`Import Statement`"
+          :title="t`Select Statement File`"
           type="primary"
           @click="selectFile"
         >
-          {{ t`Import Statement` }}
+          <template #icon>
+            <feather-icon name="file-plus" class="w-4 h-4 mr-2" />
+          </template>
+          {{ t`Select File` }}
         </Button>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- Sidebar for mapping and profiles -->
-      <div
-        class="w-72 border-e border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900"
-      >
-        <!-- Bank Selection / Info -->
-        <div class="p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800">
-          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <feather-icon name="credit-card" class="w-4 h-4 mr-2 text-blue-600" />
-            {{ t`Bank Details` }}
-          </h3>
+      <!-- Left Sidebar: Configuration -->
+      <div class="w-80 border-e border-gray-200 dark:border-gray-800 flex flex-col bg-white dark:bg-gray-800 overflow-y-auto shadow-inner">
+        <!-- 1. Bank Account Selection -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+          <label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2 block">
+            {{ t`1. Destination Bank Account` }}
+          </label>
           <AutoComplete
-            v-if="transactions.length === 0"
             :df="{
-              fieldname: 'bankName',
-              label: t`Bank Name`,
+              fieldname: 'bankAccount',
+              label: t`Bank Account`,
               fieldtype: 'AutoComplete',
-              placeholder: t`Select bank`,
-              options: bankOptions,
+              placeholder: t`Select bank account`,
             }"
+            :suggestions="bankAccountSuggestions"
             class="w-full"
             :border="true"
-            :value="selectedBank"
+            :value="selectedBankAccount"
             size="small"
-            @change="setBank"
+            @change="setBankAccount"
           />
-          <div v-else class="space-y-3">
-            <div class="flex justify-between">
-              <span class="text-sm text-gray-500 dark:text-gray-400">{{ t`Bank:` }}</span>
-              <span class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ detectedBank || t`Unknown` }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-sm text-gray-500 dark:text-gray-400">{{ t`Transactions:` }}</span>
-              <span class="text-sm font-bold text-blue-600">{{ transactions.length }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-sm text-gray-500 dark:text-gray-400">{{ t`File:` }}</span>
-              <span class="text-sm text-gray-600 dark:text-gray-400 truncate" :title="fileName">{{ fileName }}</span>
-            </div>
-          </div>
+          <p class="text-xs text-gray-400 mt-2 italic">
+            {{ t`Transactions will be imported into this account.` }}
+          </p>
         </div>
 
-        <!-- Column Mapping -->
-        <div
-          v-if="transactions.length > 0"
-          class="p-6 border-b border-gray-200 dark:border-gray-800 overflow-y-auto bg-white dark:bg-gray-800"
-          style="max-height: 280px"
-        >
-          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <feather-icon name="columns" class="w-4 h-4 mr-2 text-green-600" />
-            {{ t`Column Mapping` }}
-          </h3>
-          <div class="space-y-3">
+        <!-- 2. Column Mapping -->
+        <div v-if="transactions.length > 0" class="p-6 border-b border-gray-200 dark:border-gray-800">
+          <label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4 block">
+            {{ t`2. Column Mapping` }}
+          </label>
+          <div class="space-y-4">
             <div v-for="field in mappingFields" :key="field.key" class="space-y-1">
-              <label class="text-xs text-gray-500 dark:text-gray-400 block">{{ field.label }}</label>
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ field.label }}</label>
+                <span v-if="field.required" class="text-[10px] bg-red-100 text-red-600 px-1 rounded">{{ t`Required` }}</span>
+              </div>
               <Select
                 :df="{
                   fieldname: field.key,
@@ -105,180 +98,142 @@
           </div>
         </div>
 
-        <!-- Import Summary -->
-        <div v-if="transactions.length > 0" class="p-6 flex-1 overflow-y-auto">
-          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <feather-icon name="trending-up" class="w-4 h-4 mr-2 text-violet-600" />
-            {{ t`Summary` }}
-          </h3>
-          <div class="space-y-3">
-            <div class="flex justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
-              <span class="text-sm text-green-700 dark:text-green-400">{{ t`Total Credits` }}</span>
-              <span class="text-sm font-semibold text-green-700 dark:text-green-400">{{ formatCurrency(totalCredits) }}</span>
+        <!-- 3. Summary -->
+        <div v-if="transactions.length > 0" class="p-6 bg-gray-50 dark:bg-gray-900/50">
+          <label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4 block">
+            {{ t`3. Statement Summary` }}
+          </label>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">{{ t`Total Records` }}</span>
+              <span class="font-semibold">{{ transactions.length }}</span>
             </div>
-            <div class="flex justify-between p-2 bg-red-50 dark:bg-red-900/20 rounded">
-              <span class="text-sm text-red-700 dark:text-red-400">{{ t`Total Debits` }}</span>
-              <span class="text-sm font-semibold text-red-700 dark:text-red-400">{{ formatCurrency(totalDebits) }}</span>
+            <div class="flex justify-between text-sm">
+              <span class="text-green-600 font-medium">{{ t`Total Credits` }}</span>
+              <span class="font-semibold text-green-600">{{ formatCurrency(totalCredits) }}</span>
             </div>
-            <div class="flex justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded">
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{ t`Net Amount` }}</span>
-              <span class="text-sm font-bold text-gray-800 dark:text-gray-200">{{ formatCurrency(totalCredits - totalDebits) }}</span>
+            <div class="flex justify-between text-sm">
+              <span class="text-red-600 font-medium">{{ t`Total Debits` }}</span>
+              <span class="font-semibold text-red-600">{{ formatCurrency(totalDebits) }}</span>
+            </div>
+            <div class="pt-2 border-t border-gray-200 dark:border-gray-700 flex justify-between">
+              <span class="text-sm font-bold">{{ t`Net Change` }}</span>
+              <span class="text-sm font-bold" :class="(totalCredits - totalDebits) >= 0 ? 'text-green-600' : 'text-red-600'">
+                {{ formatCurrency(totalCredits - totalDebits) }}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Transaction Preview -->
-      <div class="flex-1 overflow-hidden flex flex-col">
-        <div
-          v-if="transactions.length === 0"
-          class="flex-1 flex items-center justify-center"
-        >
-          <div class="text-center max-w-lg mx-auto p-8">
-            <div class="w-20 h-20 mx-auto bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6">
-              <feather-icon name="upload" class="w-10 h-10 text-blue-600" />
+      <!-- Right Side: Preview Table -->
+      <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 overflow-hidden">
+        <div v-if="transactions.length === 0" class="flex-1 flex flex-col items-center justify-center p-12 text-center">
+          <div class="w-24 h-24 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-8 animate-pulse">
+            <feather-icon name="upload-cloud" class="w-12 h-12 text-blue-500" />
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            {{ t`Ready to Import` }}
+          </h3>
+          <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
+            {{ t`Upload your bank statement (CSV, XLS, XLSX) to begin. We'll help you map the columns and review before importing.` }}
+          </p>
+          <Button type="primary" size="large" @click="selectFile">
+            {{ t`Select Bank Statement` }}
+          </Button>
+          <div class="mt-12 grid grid-cols-3 gap-8 text-left">
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+              <feather-icon name="check-circle" class="w-5 h-5 text-green-500 mb-2" />
+              <h4 class="font-semibold text-sm">{{ t`Auto-Detection` }}</h4>
+              <p class="text-xs text-gray-500">{{ t`Smart mapping of common bank formats.` }}</p>
             </div>
-            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
-              {{ t`Import Bank Statement` }}
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-6">
-              {{ t`Upload your bank statement (CSV or Excel) to import transactions directly into your accounting` }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
-              {{ t`Supports CSV, XLSX and XLS formats` }}
-            </p>
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+              <feather-icon name="shield" class="w-5 h-5 text-blue-500 mb-2" />
+              <h4 class="font-semibold text-sm">{{ t`Deduplication` }}</h4>
+              <p class="text-xs text-gray-500">{{ t`We skip transactions you've already imported.` }}</p>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+              <feather-icon name="zap" class="w-5 h-5 text-yellow-500 mb-2" />
+              <h4 class="font-semibold text-sm">{{ t`Fast Processing` }}</h4>
+              <p class="text-xs text-gray-500">{{ t`Import hundreds of records in seconds.` }}</p>
+            </div>
           </div>
         </div>
 
-        <div
-          v-else
-          class="flex-1 overflow-auto custom-scroll"
-        >
-          <!-- Preview Header -->
-          <div class="sticky top-0 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex justify-between items-center">
-              <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200">
-                {{ t`${transactions.length} Transactions` }}
-              </h3>
-              <Button size="small" variant="ghost" @click="reparse">
-                <template #icon>
-                  <feather-icon name="refresh-cw" class="w-4 h-4" />
-                </template>
-              </Button>
+        <div v-else class="flex-1 flex flex-col overflow-hidden">
+          <!-- Table Header -->
+          <div class="px-6 py-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">
+              {{ t`Preview: ${transactions.length} Transactions` }}
+            </span>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-gray-500">{{ t`File:` }} {{ fileName }}</span>
             </div>
           </div>
-
-          <!-- Transaction Table -->
-          <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-12">#</th>
-                <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400 w-28">{{ t`Date` }}</th>
-                <th class="text-left p-3 font-medium text-gray-600 dark:text-gray-400">{{ t`Description` }}</th>
-                <th class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 w-28">{{ t`Amount` }}</th>
-                <th class="text-right p-3 font-medium text-gray-600 dark:text-gray-400 w-28">{{ t`Balance` }}</th>
-                <th class="text-center p-3 font-medium text-gray-600 dark:text-gray-400 w-20">{{ t`Type` }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(txn, index) in displayTransactions"
-                :key="index"
-                class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <td class="p-3 text-gray-500">{{ index + 1 }}</td>
-                <td class="p-3 text-gray-800 dark:text-gray-200 font-medium">{{ txn.date }}</td>
-                <td class="p-3">
-                  <input
-                    :value="txn.description"
-                    class="w-full bg-transparent border-none focus:ring-0 p-0 text-gray-800 dark:text-gray-200 text-sm"
-                    @input="updateDescription(index, $event)"
-                  />
-                </td>
-                <td
-                  class="p-3 text-right font-mono font-medium"
-                  :class="txn.type === 'credit' ? 'text-green-600' : 'text-red-600'"
-                >
-                  {{ formatCurrency(txn.amount) }}
-                </td>
-                <td class="p-3 text-right font-mono text-gray-500">
-                  {{ txn.balance ? formatCurrency(txn.balance) : '-' }}
-                </td>
-                <td class="p-3 text-center">
-                  <span
-                    class="px-2 py-1 rounded text-xs font-medium"
-                    :class="txn.type === 'credit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-                  >
-                    {{ txn.type === 'credit' ? 'CR' : 'DR' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          
+          <!-- Table -->
+          <div class="flex-1 overflow-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-white dark:bg-gray-900 sticky top-0 border-b border-gray-200 dark:border-gray-700 z-10">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">#</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Date` }}</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ t`Description` }}</th>
+                  <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Credit` }}</th>
+                  <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Debit` }}</th>
+                  <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Balance` }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                <tr v-for="(txn, idx) in transactions" :key="idx" class="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors">
+                  <td class="px-6 py-3 text-gray-400">{{ idx + 1 }}</td>
+                  <td class="px-6 py-3 font-medium">{{ txn.date }}</td>
+                  <td class="px-6 py-3">
+                    <div class="truncate max-w-md" :title="txn.description">{{ txn.description }}</div>
+                  </td>
+                  <td class="px-6 py-3 text-right font-mono text-green-600 font-medium">
+                    {{ txn.type === 'credit' ? formatCurrency(txn.amount) : '-' }}
+                  </td>
+                  <td class="px-6 py-3 text-right font-mono text-red-600 font-medium">
+                    {{ txn.type === 'debit' ? formatCurrency(txn.amount) : '-' }}
+                  </td>
+                  <td class="px-6 py-3 text-right font-mono text-gray-500">
+                    {{ txn.balance ? formatCurrency(txn.balance) : '-' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Import Progress Modal -->
-    <Modal
-      :open-modal="isImporting"
-      :close-on-outside-click="false"
-      @closemodal="() => {}"
-    >
-      <div class="w-form">
-        <FormHeader :form-title="t`Importing Transactions`" />
-        <hr class="dark:border-gray-800" />
-        <div class="p-6">
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {{ t`Importing ${importProgress} of ${transactions.length} transactions...` }}
-          </p>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div
-              class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              :style="{ width: `${(importProgress / transactions.length) * 100}%` }"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </Modal>
-
-    <!-- Import Complete Modal -->
+    <!-- Import Success Modal -->
     <Modal :open-modal="importComplete" @closemodal="resetImport">
-      <div class="w-form">
-        <FormHeader :form-title="t`Import Complete`" />
-        <hr class="dark:border-gray-800" />
-        <div class="p-6">
-          <div class="text-center mb-6">
-            <feather-icon name="check-circle" class="w-12 h-12 mx-auto text-green-500 mb-3" />
-            <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
-              {{ t`Bank statement imported successfully` }}
-            </p>
+      <div class="w-[450px]">
+        <div class="p-8 text-center">
+          <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <feather-icon name="check" class="w-10 h-10 text-green-600" />
           </div>
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ t`Import Successful!` }}</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-8">
+            {{ t`We've imported ${importedCount} transactions. ${duplicateCount} duplicates were automatically skipped.` }}
+          </p>
           
-          <div class="space-y-3">
-            <div class="flex justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded">
-              <span class="text-sm text-green-700 dark:text-green-400">{{ t`Transactions Added` }}</span>
-              <span class="text-sm font-semibold text-green-700 dark:text-green-400">{{ importedCount }}</span>
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+              <span class="block text-2xl font-bold text-gray-900 dark:text-gray-100">{{ importedCount }}</span>
+              <span class="text-xs text-gray-500 uppercase font-semibold">{{ t`New Records` }}</span>
             </div>
-            
-            <div v-if="duplicateCount > 0" class="flex justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
-              <span class="text-sm text-blue-700 dark:text-blue-400">{{ t`Duplicates Skipped` }}</span>
-              <span class="text-sm font-semibold text-blue-700 dark:text-blue-400">{{ duplicateCount }}</span>
-            </div>
-            
-            <div v-if="importErrors.length > 0" class="flex justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded">
-              <span class="text-sm text-red-700 dark:text-red-400">{{ t`Failed to Import` }}</span>
-              <span class="text-sm font-semibold text-red-700 dark:text-red-400">{{ importErrors.length }}</span>
+            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+              <span class="block text-2xl font-bold text-gray-900 dark:text-gray-100">{{ duplicateCount }}</span>
+              <span class="text-xs text-gray-500 uppercase font-semibold">{{ t`Duplicates` }}</span>
             </div>
           </div>
 
-          <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/10 rounded text-xs text-blue-700 dark:text-blue-400">
-            {{ t`Next Step: Review transactions in Reconciliation tab to post to GL` }}
-          </div>
-        </div>
-        <hr class="dark:border-gray-800" />
-        <div class="flex justify-end p-4">
-          <Button type="primary" @click="resetImport">{{ t`Go to Reconciliation` }}</Button>
+          <Button type="primary" size="large" class="w-full" @click="goToReconciliation">
+            {{ t`Continue to Reconciliation` }}
+          </Button>
         </div>
       </div>
     </Modal>
@@ -286,29 +241,17 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { t } from 'fyo';
 import { DateTime } from 'luxon';
-import {
-  ParsedTransaction,
-  parseStatementFile,
-  detectBankType,
-} from 'src/banking/statementParser';
-import {
-  autoMapColumns,
-  ColumnMapping,
-} from 'src/banking/bankStatementMapping';
+import { parseStatementFile, detectBankType, ParsedTransaction } from 'src/banking/statementParser';
+import { autoMapColumns, ColumnMapping } from 'src/banking/bankStatementMapping';
 import Button from 'src/components/Button.vue';
 import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import Select from 'src/components/Controls/Select.vue';
-import FormHeader from 'src/components/FormHeader.vue';
 import Modal from 'src/components/Modal.vue';
 import { fyo } from 'src/initFyo';
 import { showToast } from 'src/utils/interactive';
-import { defineComponent } from 'vue';
-
-interface DisplayTransaction extends ParsedTransaction {
-  category?: string;
-}
 
 export default defineComponent({
   name: 'BankImport',
@@ -316,338 +259,175 @@ export default defineComponent({
     Button,
     AutoComplete,
     Select,
-    FormHeader,
     Modal,
   },
   data() {
     return {
       fileName: '',
       transactions: [] as ParsedTransaction[],
-      displayTransactions: [] as DisplayTransaction[],
       columnMapping: {} as ColumnMapping,
-      selectedBank: '',
-      detectedBank: '',
-      categories: {} as Record<number, string>,
-      parsedHeaders: [] as string[],
+      selectedBankAccount: '',
+      bankAccountSuggestions: [] as string[],
       isImporting: false,
-      importProgress: 0,
+      importComplete: false,
       importedCount: 0,
       duplicateCount: 0,
-      importErrors: [] as Error[],
-      importComplete: false,
-      bankOptions: [
-        { value: 'HDFC Bank', label: 'HDFC Bank' },
-        { value: 'State Bank of India', label: 'State Bank of India' },
-        { value: 'ICICI Bank', label: 'ICICI Bank' },
-        { value: 'Axis Bank', label: 'Axis Bank' },
-        { value: 'Yes Bank', label: 'Yes Bank' },
-        { value: 'Punjab National Bank', label: 'Punjab National Bank' },
-        { value: 'Bank of Baroda', label: 'Bank of Baroda' },
-        { value: 'Canara Bank', label: 'Canara Bank' },
-        { value: 'Union Bank of India', label: 'Union Bank of India' },
-        { value: 'Indian Bank', label: 'Indian Bank' },
-        { value: 'IDFC First Bank', label: 'IDFC First Bank' },
-        { value: 'Kotak Mahindra Bank', label: 'Kotak Mahindra Bank' },
-        { value: 'Bandhan Bank', label: 'Bandhan Bank' },
-        { value: 'Standard Chartered', label: 'Standard Chartered' },
-        { value: 'HSBC Bank', label: 'HSBC Bank' },
-        { value: 'Other', label: 'Other' },
-      ],
       mappingFields: [
-        { key: 'date', label: 'Date Column' },
-        { key: 'description', label: 'Description Column' },
-        { key: 'amount', label: 'Amount Column' },
+        { key: 'date', label: 'Date Column', required: true },
+        { key: 'description', label: 'Description Column', required: true },
+        { key: 'amount', label: 'Amount Column', required: true },
         { key: 'balance', label: 'Balance Column' },
         { key: 'type', label: 'Type Column (CR/DR)' },
         { key: 'reference', label: 'Reference Column' },
-        { key: 'chequeNo', label: 'Cheque No Column' },
       ],
+      parsedHeaders: [] as string[],
     };
   },
   computed: {
+    canImport(): boolean {
+      return this.transactions.length > 0 && !!this.selectedBankAccount;
+    },
     headerOptions(): { value: string; label: string }[] {
       return this.parsedHeaders.map((h, i) => ({
         value: String(i),
         label: h,
       }));
     },
-    canImport(): boolean {
-      return this.transactions.length > 0;
-    },
     totalCredits(): number {
-      return this.transactions
-        .filter((t) => t.type === 'credit')
-        .reduce((sum, t) => sum + t.amount, 0);
+      return this.transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
     },
     totalDebits(): number {
-      return this.transactions
-        .filter((t) => t.type === 'debit')
-        .reduce((sum, t) => sum + t.amount, 0);
+      return this.transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
     },
   },
+  async mounted() {
+    await this.loadBankAccounts();
+  },
   methods: {
-    /**
-     * Convert various date formats to ISO format (YYYY-MM-DD)
-     * Handles: dd/MM/yyyy, dd-MM-yyyy, dd.MM.yyyy, MM/dd/yyyy, yyyy-MM-dd
-     * Also handles Indian formats like dd-MM-yy
-     */
-    convertToISODate(dateStr: string): Date | null {
-      if (!dateStr || !dateStr.trim()) {
-        return null;
-      }
-
-      const trimmed = dateStr.trim();
-
-      // Try ISO format first (YYYY-MM-DD)
-      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-        return new Date(trimmed);
-      }
-
-      // Try dd/MM/yyyy or dd-MM-yyyy or dd.MM.yyyy
-      const dmyMatch = trimmed.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
-      if (dmyMatch) {
-        const [, day, month, year] = dmyMatch;
-        const fullYear = year.length === 2 ? (parseInt(year) > 50 ? '19' + year : '20' + year) : year;
-        const date = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
-        if (!Number.isNaN(date.valueOf())) {
-          return date;
-        }
-      }
-
-      // Try MM/dd/yyyy (US format)
-      const mdyMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (mdyMatch) {
-        const [, month, day, year] = mdyMatch;
-        const date = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
-        if (!Number.isNaN(date.valueOf())) {
-          return date;
-        }
-      }
-
-      // Try natural language formats like "15 Jan 2024" or "Jan 15, 2024"
-      const naturalDate = DateTime.fromFormat(trimmed, 'dd MMM yyyy').toJSDate();
-      if (!Number.isNaN(naturalDate.valueOf())) {
-        return naturalDate;
-      }
-
-      const naturalDate2 = DateTime.fromFormat(trimmed, 'MMM dd, yyyy').toJSDate();
-      if (!Number.isNaN(naturalDate2.valueOf())) {
-        return naturalDate2;
-      }
-
-      // Try "15-Jan-2024" format
-      const dashFormat = DateTime.fromFormat(trimmed, 'dd-MMM-yyyy').toJSDate();
-      if (!Number.isNaN(dashFormat.valueOf())) {
-        return dashFormat;
-      }
-
-      // Try "Jan-15-2024" format
-      const dashFormat2 = DateTime.fromFormat(trimmed, 'MMM-dd-yyyy').toJSDate();
-      if (!Number.isNaN(dashFormat2.valueOf())) {
-        return dashFormat2;
-      }
-
-      // Fallback to JavaScript's Date parsing (more permissive)
-      const fallbackDate = new Date(trimmed);
-      if (!Number.isNaN(fallbackDate.valueOf())) {
-        return fallbackDate;
-      }
-
-      return null;
-    },
-    async selectFile() {
-      const { success, canceled, data, name } = await ipc.selectFile({
-        title: t`Select Bank Statement`,
-        filters: [
-          { name: 'CSV Files', extensions: ['csv', 'txt'] },
-          { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
-          { name: 'All Files', extensions: ['*'] },
-        ],
-      });
-
-      if (canceled || !success || !data) {
-        return;
-      }
-
-      this.fileName = name;
-
+    t,
+    async loadBankAccounts() {
       try {
-        const result = parseStatementFile(name, data);
-        this.parsedHeaders = result.headers;
-        this.transactions = result.transactions;
-        this.detectedBank =
-          result.bankName || detectBankType(result.headers, result.rawRows);
-        this.selectedBank = this.detectedBank;
-
-        const autoMapped = autoMapColumns(result.headers);
-        this.columnMapping = autoMapped;
-
-        this.displayTransactions = this.transactions.map((txn) => ({
-          ...txn,
-          category: '',
-        }));
-
-        showToast({
-          type: 'success',
-          message: t`Loaded ${this.transactions.length} transactions`,
+        const accounts = await fyo.db.getAllRaw('Account', {
+          filters: { accountType: 'Bank', isGroup: false },
+          fields: ['name'],
         });
-      } catch (error) {
-        showToast({
-          type: 'error',
-          message: t`Failed to parse file: ${(error as Error).message}`,
-        });
+        this.bankAccountSuggestions = accounts.map((a: any) => a.name as string);
+        if (this.bankAccountSuggestions.length > 0) {
+          this.selectedBankAccount = this.bankAccountSuggestions[0];
+        }
+      } catch (e) {
+        console.error('Failed to load bank accounts', e);
       }
     },
-    setBank(value: string) {
-      this.selectedBank = value;
+    setBankAccount(val: string) {
+      this.selectedBankAccount = val;
     },
     updateMapping(key: string, value: string | null) {
       if (value === null) {
         delete this.columnMapping[key as keyof ColumnMapping];
       } else {
-        this.columnMapping[key as keyof ColumnMapping] =
-          value as unknown as number;
+        this.columnMapping[key as keyof ColumnMapping] = parseInt(value);
       }
     },
-    updateDescription(index: number, event: Event) {
-      const value = (event.target as HTMLInputElement).value;
-      this.displayTransactions[index].description = value;
-    },
-    reparse() {
-      showToast({
-        type: 'info',
-        message: t`Re-parse with updated mapping`,
+    async selectFile() {
+      const { success, canceled, data, name } = await ipc.selectFile({
+        title: t`Select Bank Statement`,
+        filters: [
+          { name: 'CSV Files', extensions: ['csv'] },
+          { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
+        ],
       });
-    },
-    clearAll() {
-      this.transactions = [];
-      this.displayTransactions = [];
-      this.columnMapping = {};
-      this.fileName = '';
-      this.selectedBank = '';
-      this.detectedBank = '';
-      this.categories = {};
-      this.parsedHeaders = [];
+
+      if (canceled || !success || !data) return;
+
+      this.fileName = name;
+      try {
+        const result = parseStatementFile(name, data);
+        this.parsedHeaders = result.headers;
+        this.transactions = result.transactions;
+        this.columnMapping = autoMapColumns(result.headers);
+        showToast({ type: 'success', message: t`Loaded ${this.transactions.length} transactions` });
+      } catch (error: any) {
+        showToast({ type: 'error', message: t`Failed to parse: ${error.message}` });
+      }
     },
     async importTransactions() {
+      if (!this.selectedBankAccount) {
+        showToast({ type: 'error', message: t`Please select a bank account` });
+        return;
+      }
+
       this.isImporting = true;
-      this.importProgress = 0;
       this.importedCount = 0;
-      this.importErrors = [];
       this.duplicateCount = 0;
 
       try {
         const batch = fyo.doc.getNewDoc('BankImportBatch');
         batch.fileName = this.fileName;
-        batch.bankName = this.selectedBank || this.detectedBank;
         batch.importDate = new Date();
         batch.totalTransactions = this.transactions.length;
-        batch.status = 'In Progress';
         await batch.sync();
 
-        for (let i = 0; i < this.displayTransactions.length; i++) {
-          const txn = this.displayTransactions[i];
-          this.importProgress = i + 1;
-
-          try {
-            // Convert date to proper format
-            const dateValue = this.convertToISODate(txn.date);
-            if (!dateValue) {
-              throw new Error(`Invalid date: ${txn.date}`);
-            }
-
-            const description = txn.description || '';
-            const reference = txn.reference || txn.chequeNo || '';
-            // Use normalized date for dedupe key to avoid format issues
-            const normalizedDate = dateValue.toISOString().split('T')[0];
-            // Duplicate check: Date + Amount + Reference/Cheque No
-            const dedupeKey = `${normalizedDate}-${txn.amount}-${reference.slice(0, 100)}`;
-
-            // Check for existing transactions with same dedupeKey
-            const existing = await fyo.db.getAll('BankTransaction', {
-              filters: { dedupeKey },
-              fields: ['dedupeKey']
-            });
-            if (existing && existing.length > 0) {
-              this.duplicateCount++;
-              continue;
-            }
-
-            const doc = fyo.doc.getNewDoc('BankTransaction');
-            doc.date = dateValue;
-            doc.description = description;
-            doc.amount = fyo.pesa(txn.amount);
-            // Handle null type - default to 'Debit' for zero amount transactions
-            doc.type = txn.type === 'credit' ? 'Credit' : (txn.type === 'debit' ? 'Debit' : 'Debit');
-            doc.balance = txn.balance ? fyo.pesa(txn.balance) : undefined;
-            doc.bankName = this.selectedBank || this.detectedBank;
-            doc.reference = txn.reference;
-            doc.chequeNo = txn.chequeNo;
-            doc.category = this.categories[i] || undefined;
-            doc.dedupeKey = dedupeKey;
-            doc.batch = batch.name;
-            doc.importOrder = i + 1;
-            doc.status = 'Imported'; // Default status after import
-
-            await doc.sync();
-            this.importedCount++;
-          } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            const desc = txn.description?.slice(0, 30) ?? 'N/A';
-            console.error(`Failed to import row ${i + 1}:`, error);
-            this.importErrors.push(new Error(`Row ${i + 1}: ${errorMsg} - ${desc}`));
-          }
-        }
-
-        // Update batch status - Partial success is still completed with errors
-        batch.status = this.importedCount > 0 ? 'Completed' : 'Failed';
-        batch.matchedCount = 0;
-        batch.unmatchedCount = this.importedCount;
-        if (this.importErrors.length > 0) {
-          batch.errorLog = this.importErrors.map(e => e.message).join('\n');
-        }
-        await batch.sync();
-
-        // Show summary feedback
-        this.isImporting = false;
-        this.importComplete = true;
-
-        // Success toast with duplicate info
-        const successMessage = this.duplicateCount > 0
-          ? t`Bank statement imported. ${this.importedCount} transactions added, ${this.duplicateCount} duplicates skipped.`
-          : t`Bank statement imported successfully. ${this.importedCount} transactions added.`;
-        
-        if (this.importedCount > 0) {
-          showToast({
-            type: 'success',
-            message: successMessage,
-          });
+        for (const txn of this.transactions) {
+          // Dedupe check
+          const dateValue = this.parseDate(txn.date);
+          const isoDate = dateValue.toISOString().split('T')[0];
+          const dedupeKey = `${isoDate}-${txn.amount}-${txn.description.slice(0, 50)}-${txn.reference || ''}`;
           
-          // Also show recommendation message
-          showToast({
-            type: 'info',
-            message: t`Review in Reconciliation tab to post to GL and reconcile.`,
-            duration: 5000
-          });
+          const existing = await fyo.db.getAll('BankTransaction', { filters: { dedupeKey }, limit: 1 });
+          if (existing.length > 0) {
+            this.duplicateCount++;
+            continue;
+          }
+
+          const doc = fyo.doc.getNewDoc('BankTransaction');
+          doc.date = dateValue;
+          doc.description = txn.description;
+          doc.amount = fyo.pesa(txn.amount);
+          doc.type = txn.type === 'credit' ? 'Credit' : 'Debit';
+          doc.bankAccount = this.selectedBankAccount;
+          doc.status = 'Unreconciled';
+          doc.dedupeKey = dedupeKey;
+          doc.batch = batch.name;
+          doc.reference = txn.reference;
+          await doc.sync();
+          this.importedCount++;
         }
 
-      } catch (error) {
+        this.importComplete = true;
+      } catch (e: any) {
+        showToast({ type: 'error', message: t`Import failed: ${e.message}` });
+      } finally {
         this.isImporting = false;
-        showToast({
-          type: 'error',
-          message: t`Import failed: ${(error as Error).message}`,
-        });
       }
+    },
+    parseDate(dateStr: string): Date {
+      // Basic parser, can be improved
+      const d = DateTime.fromISO(dateStr);
+      if (d.isValid) return d.toJSDate();
+      
+      const formats = ['dd/MM/yyyy', 'dd-MM-yyyy', 'dd.MM.yyyy', 'MM/dd/yyyy', 'yyyy-MM-dd'];
+      for (const f of formats) {
+        const parsed = DateTime.fromFormat(dateStr, f);
+        if (parsed.isValid) return parsed.toJSDate();
+      }
+      return new Date(dateStr);
+    },
+    formatCurrency(val: number) {
+      return fyo.format(val, 'Currency');
+    },
+    clearAll() {
+      this.transactions = [];
+      this.fileName = '';
     },
     resetImport() {
       this.importComplete = false;
       this.clearAll();
-      // Switch to Reconciliation tab
-      this.$emit('switch-tab', 'reconciliation');
     },
-    formatCurrency(amount: number): string {
-      return fyo.format(amount, 'Currency');
-    },
-  },
+    goToReconciliation() {
+      this.importComplete = false;
+      this.$router.push('/bank-reconciliation');
+    }
+  }
 });
 </script>
