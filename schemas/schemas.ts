@@ -21,6 +21,7 @@ import LoyaltyPointEntry from './app/LoyaltyPointEntry.json';
 import CollectionRulesItems from './app/CollectionRulesItems.json';
 import CouponCode from './app/CouponCode.json';
 import AppliedCouponCodes from './app/AppliedCouponCodes.json';
+import BankTransaction from './app/BankTransaction.json';
 import Payment from './app/Payment.json';
 import PaymentMethod from './app/PaymentMethod.json';
 import PaymentFor from './app/PaymentFor.json';
@@ -122,6 +123,7 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   LoyaltyPointEntry as Schema,
   CollectionRulesItems as Schema,
 
+  BankTransaction as Schema,
   Payment as Schema,
   PaymentMethod as Schema,
   PaymentFor as Schema,
