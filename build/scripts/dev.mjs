@@ -31,7 +31,7 @@ let isReload = false;
  */
 let electronProcess = null;
 
-console.log(`running SharaLedger in dev mode\nroot: ${root}`);
+console.log(`running Versoll Books in dev mode\nroot: ${root}`);
 /**
  * @type {import('execa').ExecaChildProcess<string>}
  */

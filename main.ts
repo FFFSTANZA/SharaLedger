@@ -23,7 +23,7 @@ import registerIpcMainMessageListeners from './main/registerIpcMainMessageListen
 import registerProcessListeners from './main/registerProcessListeners';
 
 export class Main {
-  title = 'SharaLedger';
+  title = 'Versoll Books';
   icon: string;
 
   winURL = '';

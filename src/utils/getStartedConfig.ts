@@ -45,7 +45,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           description: t`Review your chart of accounts, add any account or tax heads as needed`,
           action: () => routeTo('/chart-of-accounts'),
           fieldname: 'chartOfAccountsReviewed',
-          documentation: 'https://docs.sharaledger.com/chart-of-accounts',
+          documentation: 'https://docs.versoll.com/chart-of-accounts',
         },
         {
           key: 'Opening Balances',
@@ -53,7 +53,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           icon: 'opening-ac',
           fieldname: 'openingBalanceChecked',
           description: t`Set up your opening balances before performing any accounting entries`,
-          documentation: 'https://docs.sharaledger.com/setup-opening-balances',
+          documentation: 'https://docs.versoll.com/setup-opening-balances',
         },
         {
           key: 'Add Taxes',
@@ -63,7 +63,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           description: t`Set up your tax templates for your sales or purchase transactions`,
           action: () => routeTo('/list/Tax'),
           documentation:
-            'https://docs.sharaledger.com/create-initial-entries#add-taxes',
+            'https://docs.versoll.com/create-initial-entries#add-taxes',
         },
       ],
     },
@@ -84,7 +84,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
             }),
           fieldname: 'salesItemCreated',
           documentation:
-            'https://docs.sharaledger.com/create-initial-entries#add-sales-items',
+            'https://docs.versoll.com/create-initial-entries#add-sales-items',
         },
         {
           key: 'Add Customers',
@@ -100,7 +100,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
             }),
           fieldname: 'customerCreated',
           documentation:
-            'https://docs.sharaledger.com/create-initial-entries#add-customers',
+            'https://docs.versoll.com/create-initial-entries#add-customers',
         },
         {
           key: 'Create Sales Bill',
@@ -109,7 +109,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           description: t`Create your first sales bill for the created customer`,
           action: () => routeTo('/list/SalesInvoice'),
           fieldname: 'invoiceCreated',
-          documentation: 'https://docs.sharaledger.com/sales-invoices',
+          documentation: 'https://docs.versoll.com/sales-invoices',
         },
       ],
     },
@@ -150,7 +150,7 @@ export function getGetStartedConfig(): GetStartedConfigItem[] {
           action: () => routeTo('/list/PurchaseInvoice'),
           fieldname: 'billCreated',
           documentation:
-            'https://docs.sharaledger.com/purchase-invoices#creating-purchase-invoices',
+            'https://docs.versoll.com/purchase-invoices#creating-purchase-invoices',
         },
       ],
     },

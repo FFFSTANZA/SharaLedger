@@ -226,7 +226,7 @@ export default defineComponent({
 
       this.update();
       await showDialog({
-        title: this.t`Reload SharaLedger?`,
+        title: this.t`Reload Versoll Books?`,
         detail: this.t`Changes made to settings will be visible on reload.`,
         type: 'info',
         buttons: [

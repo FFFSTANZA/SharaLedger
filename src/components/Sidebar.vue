@@ -191,7 +191,7 @@ export default defineComponent({
     reportIssue,
     toggleSidebar,
     openDocumentation() {
-      ipc.openLink('https://docs.sharaledger.com/' + docsPathRef.value);
+      ipc.openLink('https://docs.versoll.com/' + docsPathRef.value);
     },
     setActiveGroup() {
       const { fullPath } = this.$router.currentRoute.value;

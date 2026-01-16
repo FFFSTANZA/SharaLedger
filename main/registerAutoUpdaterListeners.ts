@@ -52,7 +52,7 @@ export default function registerAutoUpdaterListeners(main: Main) {
     const option = await dialog.showMessageBox({
       type: 'info',
       title: 'Update Downloaded',
-      message: 'Restart SharaLedger to install update?',
+      message: 'Restart Versoll Books to install update?',
       buttons: ['Yes', 'No'],
     });
 
