@@ -1,0 +1,8 @@
+Date,Description,Amount,Balance,Cheque No
+01/01/2024,Opening Balance,1000.00,1000.00,
+02/01/2024,ATM Withdrawal,50.00,950.00,ATM001
+03/01/2024,Salary Deposit,"2,500.00",3450.00,
+04/01/2024,Grocery Shopping,"$75.50",3374.50,POS001
+05/01/2024,Online Transfer,120.00,3254.50,
+06/01/2024,Refund from Store,(25.00),3229.50,REF001
+2024-01-07,Bank Fee,-10.00,3219.50,

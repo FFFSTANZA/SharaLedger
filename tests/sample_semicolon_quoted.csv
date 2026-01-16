@@ -1,0 +1,6 @@
+"Date";"Description";"Withdrawal";"Deposit";"Balance";"Reference"
+"2024-01-01";"Opening Balance";"0.00";"1000.00";"1000.00";"OB001"
+"2024-01-02";"ATM Withdrawal";"-50.00";;"950.00";"ATM001"
+"2024-01-03";"Salary Deposit";"";"2500.00";"3450.00";"SAL001"
+"2024-01-04";"Grocery Shopping with very long description that contains commas, and more text";"75.50";"";"3374.50";"POS001"
+"2024-01-05";"Online Transfer";"120.00";"";"3254.50";"TRF001"
