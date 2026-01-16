@@ -1,241 +1,167 @@
 <template>
-  <div class="flex flex-col overflow-hidden w-full h-full bg-gray-50 dark:bg-gray-900">
+  <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+    <header class="px-6 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-20">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {{ t`Bank Reconciliation` }}
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {{ t`Categorize and post bank transactions to General Ledger` }}
-          </p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ t`Bank Reconciliation` }}</h1>
+          <p class="text-sm text-gray-500 mt-1">{{ t`Review, categorize and match transactions to your books.` }}</p>
         </div>
         <div class="flex space-x-3">
-          <Button
-            :title="t`Auto-categorize`"
-            type="secondary"
-            @click="autoCategorizeAll"
-            :loading="autoCategorizing"
-          >
-            {{ t`Auto-categorize` }}
+          <Button variant="secondary" @click="autoCategorizeAll" :loading="autoCategorizing">
+            <template #icon><feather-icon name="zap" class="w-4 h-4 mr-2" /></template>
+            {{ t`Auto-Categorize` }}
           </Button>
-          <Button
-            v-if="selectedTransactions.length > 0"
-            :title="t`Post ${selectedTransactions.length} to GL`"
-            type="primary"
-            @click="postSelectedToGL"
-            :loading="posting"
-          >
+          <Button v-if="selectedTransactions.length > 0" type="primary" @click="postSelectedToGL" :loading="posting">
             {{ t`Post ${selectedTransactions.length} to GL` }}
           </Button>
-          <Button
-            :title="t`Refresh`"
-            @click="loadTransactions"
-          >
+          <Button variant="secondary" @click="loadTransactions">
             <feather-icon name="refresh-cw" class="w-4 h-4" />
           </Button>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Bank Account Selector -->
-    <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-      <div class="flex items-center space-x-4">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {{ t`Bank Account:` }}
-        </label>
-        <AutoComplete
-          :df="{
-            fieldname: 'bankAccount',
-            label: t`Bank Account`,
-            fieldtype: 'AutoComplete',
-          }"
-          :value="selectedBankAccount"
-          @change="onBankAccountChange"
-          :suggestions="bankAccountSuggestions"
-          :border="true"
-          size="small"
-          class="w-80"
-        />
-        <div class="flex items-center space-x-4 text-sm">
-          <div class="flex items-center space-x-2">
-            <span class="text-gray-500 dark:text-gray-400">{{ t`Unreconciled:` }}</span>
-            <span class="font-semibold text-gray-900 dark:text-gray-100">{{ unreconciledCount }}</span>
+    <!-- Filters & Stats -->
+    <div class="px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between z-10">
+      <div class="flex items-center space-x-6">
+        <div class="w-72">
+          <AutoComplete
+            :df="{ fieldname: 'bankAccount', label: t`Filter by Bank Account`, fieldtype: 'AutoComplete' }"
+            :value="selectedBankAccount"
+            :suggestions="bankAccountSuggestions"
+            @change="onBankAccountChange"
+            size="small"
+            :border="true"
+          />
+        </div>
+        <div class="flex space-x-4 text-sm border-l border-gray-200 dark:border-gray-700 pl-6">
+          <div class="flex flex-col">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">{{ t`Unreconciled` }}</span>
+            <span class="text-lg font-bold text-yellow-600">{{ unreconciledCount }}</span>
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-gray-500 dark:text-gray-400">{{ t`Total:` }}</span>
-            <span class="font-semibold text-gray-900 dark:text-gray-100">{{ transactions.length }}</span>
+          <div class="flex flex-col">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">{{ t`Reconciled` }}</span>
+            <span class="text-lg font-bold text-green-600">{{ reconciledCount }}</span>
           </div>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-gray-500 uppercase font-bold">{{ t`Status:` }}</span>
+        <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          <button 
+            v-for="s in ['All', 'Unreconciled', 'Reconciled']" 
+            :key="s"
+            @click="filterStatus = s"
+            class="px-3 py-1 text-xs rounded-md transition-all"
+            :class="filterStatus === s ? 'bg-white dark:bg-gray-600 shadow-sm font-bold' : 'text-gray-500'"
+          >
+            {{ t(s) }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Transactions Table -->
-    <div class="flex-1 overflow-auto">
-      <table class="w-full">
-        <thead class="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+    <!-- Main Table Area -->
+    <div class="flex-1 overflow-auto custom-scroll">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 shadow-sm">
           <tr>
-            <th class="px-4 py-3 text-left">
-              <input
-                type="checkbox"
-                :checked="allSelected"
-                @change="toggleSelectAll"
-                class="w-4 h-4 rounded border-gray-300"
-              />
+            <th class="px-6 py-3 w-12">
+              <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" class="rounded border-gray-300" />
             </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Date` }}
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Description` }}
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Account` }}
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Party` }}
-            </th>
-            <th class="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Debit` }}
-            </th>
-            <th class="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Credit` }}
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Status` }}
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-              {{ t`Voucher` }}
-            </th>
+            <th class="px-4 py-3 text-left font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Date` }}</th>
+            <th class="px-4 py-3 text-left font-bold text-gray-500 uppercase tracking-wider">{{ t`Transaction Details` }}</th>
+            <th class="px-4 py-3 text-left font-bold text-gray-500 uppercase tracking-wider w-64">{{ t`Category / Match` }}</th>
+            <th class="px-4 py-3 text-right font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Amount` }}</th>
+            <th class="px-4 py-3 text-center font-bold text-gray-500 uppercase tracking-wider w-32">{{ t`Actions` }}</th>
           </tr>
         </thead>
-        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-          <tr
-            v-for="txn in transactions"
-            :key="txn.name"
-            :class="{
-              'bg-blue-50 dark:bg-blue-900/20': selectedTransactions.includes(txn.name),
-              'hover:bg-gray-50 dark:hover:bg-gray-800': true
-            }"
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900">
+          <tr v-for="txn in filteredTransactions" :key="txn.name" 
+            :class="[
+              selectedTransactions.includes(txn.name) ? 'bg-blue-50/50 dark:bg-blue-900/10' : '',
+              txn.status === 'Reconciled' ? 'opacity-75 bg-gray-50/30 dark:bg-gray-800/20' : ''
+            ]"
+            class="transition-colors group"
           >
-            <!-- Checkbox -->
-            <td class="px-4 py-3">
-              <input
-                type="checkbox"
-                v-if="txn.status === 'Unreconciled'"
-                :checked="selectedTransactions.includes(txn.name)"
-                @change="toggleSelect(txn.name)"
-                class="w-4 h-4 rounded border-gray-300"
-              />
+            <td class="px-6 py-4">
+              <input v-if="txn.status === 'Unreconciled'" type="checkbox" :checked="selectedTransactions.includes(txn.name)" @change="toggleSelect(txn.name)" class="rounded border-gray-300" />
+              <feather-icon v-else name="check-circle" class="w-4 h-4 text-green-500" />
             </td>
-
-            <!-- Date -->
-            <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-              {{ formatDate(txn.date) }}
+            <td class="px-4 py-4 whitespace-nowrap text-gray-500">{{ formatDate(txn.date) }}</td>
+            <td class="px-4 py-4">
+              <div class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-md" :title="txn.description">{{ txn.description }}</div>
+              <div class="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">{{ txn.bankAccount }} <span v-if="txn.reference" class="ml-2">• {{ txn.reference }}</span></div>
             </td>
-
-            <!-- Description -->
-            <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-              <div class="max-w-xs truncate" :title="txn.description">
-                {{ txn.description }}
+            <td class="px-4 py-4">
+              <div v-if="txn.status === 'Unreconciled'" class="space-y-2">
+                <!-- Matching Suggestion -->
+                <div v-if="txn.matchingVoucher" class="p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-100 dark:border-green-800 flex items-center justify-between">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] text-green-600 font-bold uppercase">{{ t`Potential Match` }}</span>
+                    <span class="text-xs font-semibold">{{ txn.matchingVoucher }}</span>
+                  </div>
+                  <button @click="reconcileWithMatch(txn)" class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">
+                    {{ t`Match` }}
+                  </button>
+                </div>
+                
+                <!-- Categorization -->
+                <div v-else class="flex flex-col space-y-2">
+                  <AutoComplete
+                    :df="{ fieldname: 'account', label: t`Account`, fieldtype: 'AutoComplete' }"
+                    :value="txn.account || ''"
+                    @change="(v) => updateTransaction(txn.name, 'account', v)"
+                    :suggestions="accountSuggestions"
+                    size="small"
+                    :border="true"
+                    :placeholder="t`Select account...`"
+                  />
+                  <div class="flex space-x-2">
+                    <input 
+                      type="text" 
+                      :value="txn.party || ''" 
+                      @change="(e) => updateTransaction(txn.name, 'party', e.target.value)"
+                      class="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded bg-transparent"
+                      :placeholder="t`Party (Optional)`"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div v-else class="flex flex-col">
+                <div class="flex items-center text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  <span class="truncate">{{ txn.account || t`Matched` }}</span>
+                </div>
+                <div class="mt-1">
+                  <a @click="openVoucher(txn.postedVoucherType, txn.postedVoucher)" class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-bold uppercase">
+                    {{ txn.postedVoucher }}
+                  </a>
+                </div>
               </div>
             </td>
-
-            <!-- Account (Editable) -->
-            <td class="px-4 py-3">
-              <AutoComplete
-                v-if="txn.status === 'Unreconciled'"
-                :df="{
-                  fieldname: 'account',
-                  label: t`Account`,
-                  fieldtype: 'AutoComplete',
-                }"
-                :value="txn.account || ''"
-                @change="(value) => updateTransaction(txn.name, 'account', value)"
-                :suggestions="accountSuggestions"
-                :border="true"
-                size="small"
-                class="min-w-[200px]"
-              />
-              <span v-else class="text-sm text-gray-700 dark:text-gray-300">
-                {{ txn.account }}
-              </span>
+            <td class="px-4 py-4 text-right">
+              <div class="font-mono font-bold" :class="txn.type === 'Credit' ? 'text-green-600' : 'text-red-600'">
+                {{ formatCurrency(txn.amount) }}
+              </div>
+              <div class="text-[10px] text-gray-400 font-bold uppercase">{{ t(txn.type) }}</div>
             </td>
-
-            <!-- Party (Editable) -->
-            <td class="px-4 py-3">
-              <input
-                v-if="txn.status === 'Unreconciled'"
-                type="text"
-                :value="txn.party || ''"
-                @input="(e) => updateTransaction(txn.name, 'party', e.target.value)"
-                class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                :placeholder="t`Optional`"
-              />
-              <span v-else class="text-sm text-gray-700 dark:text-gray-300">
-                {{ txn.party || '-' }}
-              </span>
-            </td>
-
-            <!-- Debit -->
-            <td class="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100 whitespace-nowrap">
-              {{ txn.type === 'Debit' ? formatCurrency(txn.amount) : '-' }}
-            </td>
-
-            <!-- Credit -->
-            <td class="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100 whitespace-nowrap">
-              {{ txn.type === 'Credit' ? formatCurrency(txn.amount) : '-' }}
-            </td>
-
-            <!-- Status -->
-            <td class="px-4 py-3">
-              <span
-                :class="{
-                  'px-2 py-1 text-xs rounded-full': true,
-                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': txn.status === 'Unreconciled',
-                  'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': txn.status === 'Reconciled'
-                }"
-              >
-                {{ txn.status }}
-              </span>
-            </td>
-
-            <!-- Voucher -->
-            <td class="px-4 py-3">
-              <a
-                v-if="txn.postedVoucher"
-                @click="openVoucher(txn.postedVoucherType, txn.postedVoucher)"
-                class="text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-              >
-                {{ txn.postedVoucher }}
-              </a>
-              <span v-else class="text-sm text-gray-400">-</span>
-            </td>
-          </tr>
-
-          <!-- Empty State -->
-          <tr v-if="transactions.length === 0 && !loading">
-            <td colspan="9" class="px-4 py-12 text-center">
-              <div class="flex flex-col items-center justify-center">
-                <feather-icon name="inbox" class="w-12 h-12 text-gray-400 mb-3" />
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                  {{ t`No bank transactions found` }}
-                </p>
-                <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">
-                  {{ t`Import bank statements to get started` }}
-                </p>
+            <td class="px-4 py-4 text-center">
+              <div v-if="txn.status === 'Unreconciled'" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button size="small" variant="ghost" @click="postTransaction(txn)">
+                  <feather-icon name="arrow-right-circle" class="w-4 h-4 text-blue-600" />
+                </Button>
+              </div>
+              <div v-else>
+                <feather-icon name="check" class="w-5 h-5 text-green-500 mx-auto" />
               </div>
             </td>
           </tr>
-
-          <!-- Loading State -->
-          <tr v-if="loading">
-            <td colspan="9" class="px-4 py-12 text-center">
-              <div class="flex items-center justify-center">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span class="ml-3 text-gray-600 dark:text-gray-400">{{ t`Loading...` }}</span>
-              </div>
+          <tr v-if="filteredTransactions.length === 0">
+            <td colspan="6" class="px-6 py-24 text-center">
+              <feather-icon name="coffee" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ t`All caught up!` }}</h3>
+              <p class="text-sm text-gray-500">{{ t`No transactions to reconcile in this view.` }}</p>
             </td>
           </tr>
         </tbody>
@@ -251,359 +177,130 @@ import { DateTime } from 'luxon';
 import Button from 'src/components/Button.vue';
 import AutoComplete from 'src/components/Controls/AutoComplete.vue';
 import { autoCategorizeMultiple, applyCategorization } from 'src/banking/autoCategorize';
-import { postMultipleBankTransactions } from 'src/banking/postToGL';
+import { postMultipleBankTransactions, postBankTransactionToGL } from 'src/banking/postToGL';
 import { fyo } from 'src/initFyo';
 import { showToast } from 'src/utils/interactive';
 
-interface BankTransaction {
-  name: string;
-  date: string;
-  description: string;
-  amount: number;
-  type: 'Credit' | 'Debit';
-  bankAccount: string;
-  account?: string;
-  party?: string;
-  status: 'Unreconciled' | 'Reconciled';
-  postedVoucher?: string;
-  postedVoucherType?: string;
-  notes?: string;
-  reference?: string;
-}
-
 export default defineComponent({
   name: 'BankReconciliation',
-  components: {
-    Button,
-    AutoComplete,
-  },
+  components: { Button, AutoComplete },
   data() {
     return {
-      transactions: [] as BankTransaction[],
+      transactions: [] as any[],
       selectedTransactions: [] as string[],
       selectedBankAccount: '',
       bankAccountSuggestions: [] as string[],
       accountSuggestions: [] as string[],
+      filterStatus: 'Unreconciled',
       loading: false,
       autoCategorizing: false,
       posting: false,
-      updateTimeout: null as any,
     };
   },
   computed: {
-    unreconciledCount(): number {
-      return this.transactions.filter(t => t.status === 'Unreconciled').length;
+    filteredTransactions() {
+      return this.transactions.filter(t => {
+        if (this.filterStatus === 'All') return true;
+        return t.status === this.filterStatus;
+      });
     },
-    allSelected(): boolean {
-      const unreconciled = this.transactions.filter(t => t.status === 'Unreconciled');
+    unreconciledCount() { return this.transactions.filter(t => t.status === 'Unreconciled').length; },
+    reconciledCount() { return this.transactions.filter(t => t.status === 'Reconciled').length; },
+    allSelected() { 
+      const unreconciled = this.filteredTransactions.filter(t => t.status === 'Unreconciled');
       return unreconciled.length > 0 && this.selectedTransactions.length === unreconciled.length;
-    },
+    }
   },
   async mounted() {
     await this.loadBankAccounts();
     await this.loadAccounts();
     await this.loadTransactions();
   },
-  beforeUnmount() {
-    if (this.updateTimeout) {
-      clearTimeout(this.updateTimeout);
-    }
-  },
   methods: {
     t,
-    
     async loadBankAccounts() {
-      try {
-        const accounts = await fyo.db.getAllRaw('Account', {
-          filters: { accountType: 'Bank', isGroup: false },
-          fields: ['name'],
-        });
-        this.bankAccountSuggestions = accounts.map((a: any) => a.name as string);
-        
-        if (this.bankAccountSuggestions.length > 0 && !this.selectedBankAccount) {
-          this.selectedBankAccount = this.bankAccountSuggestions[0];
-        }
-      } catch (error: any) {
-        console.error('Error loading bank accounts:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to load bank accounts: ${error.message || 'Unknown error'}`,
-        });
-      }
+      const accounts = await fyo.db.getAllRaw('Account', { filters: { accountType: 'Bank', isGroup: false }, fields: ['name'] });
+      this.bankAccountSuggestions = accounts.map((a: any) => a.name);
+      if (this.bankAccountSuggestions.length > 0) this.selectedBankAccount = this.bankAccountSuggestions[0];
     },
-
     async loadAccounts() {
-      try {
-        const accounts = await fyo.db.getAllRaw('Account', {
-          filters: { isGroup: false },
-          fields: ['name'],
-          orderBy: 'name',
-          order: 'asc',
-        });
-        this.accountSuggestions = accounts.map((a: any) => a.name as string);
-      } catch (error: any) {
-        console.error('Error loading accounts:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to load accounts: ${error.message || 'Unknown error'}`,
-        });
-      }
+      const accounts = await fyo.db.getAllRaw('Account', { filters: { isGroup: false }, fields: ['name'], orderBy: 'name' });
+      this.accountSuggestions = accounts.map((a: any) => a.name);
     },
-
     async loadTransactions() {
       this.loading = true;
       try {
         const filters: any = {};
-        
-        if (this.selectedBankAccount) {
-          filters.bankAccount = this.selectedBankAccount;
-        }
-
-        const txns = await fyo.db.getAllRaw('BankTransaction', {
-          filters,
-          fields: ['*'],
-          orderBy: 'date',
-          order: 'desc',
-        });
-
-        this.transactions = txns as BankTransaction[];
-      } catch (error: any) {
-        console.error('Error loading transactions:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to load transactions: ${error.message}`,
-        });
-      } finally {
-        this.loading = false;
-      }
+        if (this.selectedBankAccount) filters.bankAccount = this.selectedBankAccount;
+        const txns = await fyo.db.getAllRaw('BankTransaction', { filters, fields: ['*'], orderBy: 'date', order: 'desc' });
+        this.transactions = txns;
+      } finally { this.loading = false; }
     },
-
-    async onBankAccountChange(value: string) {
-      this.selectedBankAccount = value;
-      this.selectedTransactions = [];
+    async onBankAccountChange(val: string) {
+      this.selectedBankAccount = val;
       await this.loadTransactions();
     },
-
     toggleSelect(name: string) {
-      const index = this.selectedTransactions.indexOf(name);
-      if (index > -1) {
-        this.selectedTransactions.splice(index, 1);
-      } else {
-        this.selectedTransactions.push(name);
-      }
+      const idx = this.selectedTransactions.indexOf(name);
+      if (idx > -1) this.selectedTransactions.splice(idx, 1);
+      else this.selectedTransactions.push(name);
     },
-
     toggleSelectAll() {
-      if (this.allSelected) {
-        this.selectedTransactions = [];
-      } else {
-        this.selectedTransactions = this.transactions
-          .filter(t => t.status === 'Unreconciled')
-          .map(t => t.name);
-      }
+      if (this.allSelected) this.selectedTransactions = [];
+      else this.selectedTransactions = this.filteredTransactions.filter(t => t.status === 'Unreconciled').map(t => t.name);
     },
-
-    async updateTransaction(name: string, field: string, value: any) {
-      try {
-        const txn = this.transactions.find(t => t.name === name);
-        if (!txn) return;
-
-        // Don't allow editing reconciled transactions
-        if (txn.status === 'Reconciled') {
-          showToast({
-            type: 'warning',
-            message: t`Cannot edit reconciled transactions`,
-          });
-          return;
-        }
-
-        // Sanitize value
-        const sanitizedValue = typeof value === 'string' ? value.trim() : value;
-
-        // Update local state immediately
-        (txn as any)[field] = sanitizedValue;
-
-        // Debounce the database update
-        if (this.updateTimeout) {
-          clearTimeout(this.updateTimeout);
-        }
-
-        this.updateTimeout = setTimeout(async () => {
-          try {
-            const doc = await fyo.doc.getDoc('BankTransaction', name);
-            
-            // Verify it's still unreconciled
-            if (doc.status === 'Reconciled') {
-              showToast({
-                type: 'warning',
-                message: t`Transaction was reconciled, changes not saved`,
-              });
-              await this.loadTransactions();
-              return;
-            }
-
-            await doc.setAndSync({ [field]: sanitizedValue });
-          } catch (error: any) {
-            console.error('Error updating transaction:', error);
-            showToast({
-              type: 'error',
-              message: t`Failed to update: ${error.message || 'Unknown error'}`,
-            });
-            // Reload to get correct state
-            await this.loadTransactions();
-          }
-        }, 500);
-      } catch (error: any) {
-        console.error('Error updating transaction:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to update: ${error.message || 'Unknown error'}`,
-        });
-      }
+    async updateTransaction(name: string, field: string, val: any) {
+      const doc = await fyo.doc.getDoc('BankTransaction', name);
+      await doc.setAndSync({ [field]: val });
+      // Update local state
+      const txn = this.transactions.find(t => t.name === name);
+      if (txn) txn[field] = val;
     },
-
     async autoCategorizeAll() {
       this.autoCategorizing = true;
       try {
-        const uncategorized = this.transactions.filter(
-          t => t.status === 'Unreconciled' && !t.account
-        );
-
-        if (uncategorized.length === 0) {
-          showToast({
-            type: 'info',
-            message: t`All transactions are already categorized`,
-          });
-          return;
-        }
-
+        const uncategorized = this.transactions.filter(t => t.status === 'Unreconciled' && !t.account && !t.matchingVoucher);
         const suggestions = await autoCategorizeMultiple(fyo, uncategorized);
-        
-        let count = 0;
-        for (const [name, suggestion] of suggestions) {
-          await applyCategorization(fyo, name, suggestion);
-          count++;
+        for (const [name, sug] of suggestions) {
+          await applyCategorization(fyo, name, sug);
         }
-
         await this.loadTransactions();
-        
-        showToast({
-          type: 'success',
-          message: t`Auto-categorized ${count} transactions`,
-        });
-      } catch (error: any) {
-        console.error('Error auto-categorizing:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to auto-categorize: ${error.message}`,
-        });
-      } finally {
-        this.autoCategorizing = false;
-      }
+        showToast({ type: 'success', message: t`Auto-categorized ${suggestions.size} transactions` });
+      } finally { this.autoCategorizing = false; }
     },
-
     async postSelectedToGL() {
       this.posting = true;
       try {
-        const selectedTxns = this.transactions.filter(
-          t => this.selectedTransactions.includes(t.name)
-        );
-
-        if (selectedTxns.length === 0) {
-          showToast({
-            type: 'warning',
-            message: t`No transactions selected`,
-          });
-          return;
-        }
-
-        // Validate all have accounts
-        const missingAccount = selectedTxns.find(t => !t.account || t.account.trim() === '');
-        if (missingAccount) {
-          showToast({
-            type: 'error',
-            message: t`Please categorize all selected transactions before posting`,
-          });
-          return;
-        }
-
-        // Validate all have valid bank accounts
-        const missingBankAccount = selectedTxns.find(t => !t.bankAccount || t.bankAccount.trim() === '');
-        if (missingBankAccount) {
-          showToast({
-            type: 'error',
-            message: t`All transactions must have a bank account`,
-          });
-          return;
-        }
-
-        const results = await postMultipleBankTransactions(fyo, selectedTxns);
-        
-        let successCount = 0;
-        let errorCount = 0;
-        const errors: string[] = [];
-        
-        for (const [name, result] of results) {
-          if (result.success) {
-            successCount++;
-          } else {
-            errorCount++;
-            errors.push(result.error || 'Unknown error');
-            console.error(`Failed to post ${name}:`, result.error);
-          }
-        }
-
+        const selected = this.transactions.filter(t => this.selectedTransactions.includes(t.name));
+        const results = await postMultipleBankTransactions(fyo, selected);
+        let success = 0;
+        for (const r of results.values()) if (r.success) success++;
         await this.loadTransactions();
         this.selectedTransactions = [];
-
-        if (errorCount === 0) {
-          showToast({
-            type: 'success',
-            message: t`Posted ${successCount} transactions to GL`,
-            duration: 3000,
-          });
-        } else {
-          const errorMsg = errors.length > 0 ? `\n${errors[0]}` : '';
-          showToast({
-            type: 'warning',
-            message: t`Posted ${successCount} transactions, ${errorCount} failed${errorMsg}`,
-            duration: 5000,
-          });
-        }
-      } catch (error: any) {
-        console.error('Error posting to GL:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to post to GL: ${error.message || 'Unknown error'}`,
-          duration: 4000,
-        });
-      } finally {
-        this.posting = false;
+        showToast({ type: 'success', message: t`Successfully processed ${success} transactions.` });
+      } finally { this.posting = false; }
+    },
+    async postTransaction(txn: any) {
+      const res = await postBankTransactionToGL(fyo, txn);
+      if (res.success) {
+        showToast({ type: 'success', message: t`Transaction posted successfully.` });
+        await this.loadTransactions();
+      } else {
+        showToast({ type: 'error', message: res.error || 'Failed to post' });
       }
     },
-
-    formatDate(date: string): string {
-      return DateTime.fromISO(date).toFormat('dd MMM yyyy');
-    },
-
-    formatCurrency(amount: number): string {
-      return fyo.format(amount, 'Currency');
-    },
-
-    async openVoucher(voucherType: string, voucherName: string) {
-      if (!voucherType || !voucherName) return;
-      
-      try {
-        const doc = await fyo.doc.getDoc(voucherType, voucherName);
-        await this.$router.push(`/edit/${voucherType}/${voucherName}`);
-      } catch (error: any) {
-        console.error('Error opening voucher:', error);
-        showToast({
-          type: 'error',
-          message: t`Failed to open voucher: ${error.message}`,
-        });
+    async reconcileWithMatch(txn: any) {
+      const res = await postBankTransactionToGL(fyo, txn);
+      if (res.success) {
+        showToast({ type: 'success', message: t`Reconciled with existing voucher.` });
+        await this.loadTransactions();
+      } else {
+        showToast({ type: 'error', message: res.error || 'Failed to reconcile' });
       }
     },
-  },
+    formatDate(d: string) { return DateTime.fromISO(d).toFormat('dd MMM yyyy'); },
+    formatCurrency(v: number) { return fyo.format(v, 'Currency'); },
+    async openVoucher(type: string, name: string) { this.$router.push(`/edit/${type}/${name}`); }
+  }
 });
 </script>

@@ -15,6 +15,8 @@ interface BankTransaction {
   notes?: string;
   reference?: string;
   chequeNo?: string;
+  matchingVoucher?: string;
+  matchingVoucherType?: string;
 }
 
 interface PostResult {
@@ -22,6 +24,7 @@ interface PostResult {
   voucherName?: string;
   voucherType?: string;
   error?: string;
+  isMatch?: boolean;
 }
 
 export async function postBankTransactionToGL(
@@ -31,7 +34,42 @@ export async function postBankTransactionToGL(
   let createdVoucher: Doc | null = null;
   
   try {
-    // Validate required fields
+    const bankTxn = await fyo.doc.getDoc('BankTransaction', transaction.name);
+    
+    // Check if already reconciled
+    if (bankTxn.status === 'Reconciled') {
+      return {
+        success: false,
+        error: 'Transaction is already reconciled'
+      };
+    }
+
+    // 1. Check if we have a matching voucher selected
+    if (transaction.matchingVoucher && transaction.matchingVoucherType) {
+      // Verify the voucher exists
+      try {
+        const voucher = await fyo.doc.getDoc(transaction.matchingVoucherType, transaction.matchingVoucher);
+        
+        // Link and reconcile
+        await bankTxn.setAndSync({
+          status: 'Reconciled',
+          postedVoucher: voucher.name,
+          postedVoucherType: voucher.schemaName
+        });
+
+        return {
+          success: true,
+          voucherName: voucher.name as string,
+          voucherType: voucher.schemaName,
+          isMatch: true
+        };
+      } catch (e) {
+        throw new Error(`Selected matching voucher "${transaction.matchingVoucher}" not found`);
+      }
+    }
+
+    // 2. No match, create a new voucher
+    // Validate required fields for new voucher
     if (!transaction.account || transaction.account.trim() === '') {
       return {
         success: false,
@@ -46,57 +84,36 @@ export async function postBankTransactionToGL(
       };
     }
 
-    // Check if already reconciled
-    const bankTxn = await fyo.doc.getDoc('BankTransaction', transaction.name);
-    if (bankTxn.status === 'Reconciled') {
-      return {
-        success: false,
-        error: 'Transaction is already reconciled'
-      };
-    }
-
     // Determine if we should create Payment or Journal Entry
     const shouldCreatePayment = !!transaction.party && transaction.party.trim() !== '';
 
     let voucher: Doc;
     
-    try {
-      if (shouldCreatePayment) {
-        voucher = await createPaymentEntry(fyo, transaction);
-      } else {
-        voucher = await createJournalEntry(fyo, transaction);
-      }
-      createdVoucher = voucher;
-    } catch (error: any) {
-      throw new Error(`Failed to create voucher: ${error.message}`);
+    if (shouldCreatePayment) {
+      voucher = await createPaymentEntry(fyo, transaction);
+    } else {
+      voucher = await createJournalEntry(fyo, transaction);
     }
+    createdVoucher = voucher;
 
     // Submit the voucher
-    try {
-      await voucher.submit();
-    } catch (error: any) {
-      throw new Error(`Failed to submit voucher: ${error.message}`);
-    }
+    await voucher.submit();
 
     // Update bank transaction with posted voucher info
-    try {
-      await bankTxn.setAndSync({
-        status: 'Reconciled',
-        postedVoucher: voucher.name,
-        postedVoucherType: voucher.schemaName
-      });
-    } catch (error: any) {
-      // Voucher is already submitted, log error but return success
-      console.error('Failed to update bank transaction status:', error);
-    }
+    await bankTxn.setAndSync({
+      status: 'Reconciled',
+      postedVoucher: voucher.name,
+      postedVoucherType: voucher.schemaName
+    });
 
     return {
       success: true,
       voucherName: voucher.name as string,
-      voucherType: voucher.schemaName
+      voucherType: voucher.schemaName,
+      isMatch: false
     };
   } catch (error: any) {
-    // If we created a voucher but failed later, try to delete it
+    // Cleanup if failed
     if (createdVoucher) {
       try {
         await createdVoucher.delete();
@@ -118,7 +135,6 @@ async function createPaymentEntry(
 ): Promise<Doc> {
   const isCredit = transaction.type === 'Credit';
   
-  // Validate party exists
   if (!transaction.party) {
     throw new Error('Party is required for payment entries');
   }
@@ -126,7 +142,6 @@ async function createPaymentEntry(
   // Check if party exists, if not create it
   let partyExists = await fyo.db.exists('Party', transaction.party);
   if (!partyExists) {
-    // Create party
     const newParty = fyo.doc.getNewDoc('Party');
     await newParty.set({
       name: transaction.party,
@@ -135,10 +150,8 @@ async function createPaymentEntry(
     await newParty.sync();
   }
   
-  // Create payment entry
   const payment = fyo.doc.getNewDoc(ModelNameEnum.Payment);
   
-  // Set basic fields
   await payment.set({
     party: transaction.party,
     date: DateTime.fromISO(transaction.date).toJSDate(),
@@ -148,15 +161,14 @@ async function createPaymentEntry(
     paymentMethod: 'Bank',
   });
 
-  // Set accounts based on transaction type
   if (isCredit) {
-    // Money coming in: From Party → To Bank
+    // Money coming in: From Party Account → To Bank Account
     await payment.set({
       account: transaction.account, // Party receivable account
       paymentAccount: transaction.bankAccount, // Bank account
     });
   } else {
-    // Money going out: From Bank → To Party
+    // Money going out: From Bank Account → To Party Account
     await payment.set({
       account: transaction.bankAccount, // Bank account
       paymentAccount: transaction.account, // Party payable account
@@ -174,7 +186,6 @@ async function createJournalEntry(
   const isCredit = transaction.type === 'Credit';
   const amount = Math.abs(transaction.amount);
   
-  // Validate account exists
   if (!transaction.account) {
     throw new Error('Account is required for journal entries');
   }
@@ -189,7 +200,6 @@ async function createJournalEntry(
     throw new Error(`Bank account "${transaction.bankAccount}" does not exist`);
   }
   
-  // Create journal entry
   const je = fyo.doc.getNewDoc(ModelNameEnum.JournalEntry);
   
   await je.set({
@@ -199,7 +209,6 @@ async function createJournalEntry(
     userRemark: transaction.notes || transaction.description || undefined,
   });
 
-  // Add account entries
   const accounts = [];
   
   if (isCredit) {
@@ -243,9 +252,8 @@ export async function postMultipleBankTransactions(
   for (const transaction of transactions) {
     const result = await postBankTransactionToGL(fyo, transaction);
     results.set(transaction.name, result);
-    
-    // Small delay to avoid overwhelming the system
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Small delay
+    await new Promise(resolve => setTimeout(resolve, 50));
   }
   
   return results;
