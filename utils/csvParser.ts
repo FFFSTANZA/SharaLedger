@@ -1,10 +1,62 @@
 export function parseCSV(text: string): string[][] {
-  //  Works on RFC 4180 csv
-  let rows = splitCsvBlock(text);
-  if (rows.length === 1) {
-    rows = splitCsvBlock(text, '\n');
+  // Works on RFC 4180 CSV (handles quoted fields, escaped quotes and CRLF/LF)
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (inQuotes) {
+      if (c === '"') {
+        const next = text[i + 1];
+        if (next === '"') {
+          field += '"';
+          i++;
+          continue;
+        }
+
+        inQuotes = false;
+        continue;
+      }
+
+      field += c;
+      continue;
+    }
+
+    if (c === '"') {
+      inQuotes = true;
+      continue;
+    }
+
+    if (c === ',') {
+      row.push(field);
+      field = '';
+      continue;
+    }
+
+    if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') {
+        i++;
+      }
+
+      row.push(field);
+      field = '';
+      rows.push(row);
+      row = [];
+      continue;
+    }
+
+    field += c;
   }
-  return rows.map(splitCsvLine);
+
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  return rows;
 }
 
 export function generateCSV(matrix: unknown[][]): string {
