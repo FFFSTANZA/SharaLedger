@@ -33,18 +33,16 @@ export async function postBankTransactionToGL(transaction: Doc) {
       date: date + ' 00:00:00', // Ensure it's a valid datetime
       party,
       paymentType: type === 'Deposit' ? 'Receive' : 'Pay',
-      paymentAccount: bankAccount, // This is the Bank/Cash account
-      account: account, // categorization account or Party account side
+      // For bank transactions:
+      // Deposit (Receive): Party pays to bank → From: account, To: bankAccount
+      // Withdrawal (Pay): Bank pays to party → From: bankAccount, To: account
+      account: type === 'Deposit' ? account : bankAccount, // From Account
+      paymentAccount: type === 'Deposit' ? bankAccount : account, // To Account
       amount: Math.abs(amount),
       referenceId: reference,
       userRemark: description,
     });
-    
-    // In Frappe Books, if party is set, 'account' usually should be the party's receivable/payable account.
-    // If we have 'account' from categorization, we use it. 
-    // But usually Payment doc handles party account automatically if we just set party.
-    // Let's re-check how Payment.vue handles it.
-    
+
     await payment.save();
     postedVoucher = payment.name;
   } else {

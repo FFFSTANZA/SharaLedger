@@ -117,15 +117,14 @@ export default defineComponent({
   },
   methods: {
     async selectFile() {
-      const result = await ipc.openFileDialog({
-        properties: ['openFile'],
+      const result = await ipc.selectFile({
+        title: 'Select CSV File',
         filters: [{ name: 'CSV Files', extensions: ['csv'] }]
       });
 
-      if (result && result.length > 0) {
-        const filePath = result[0];
-        this.fileName = filePath.split('/').pop() || filePath;
-        const content = await ipc.readFile(filePath);
+      if (result && !result.canceled && result.success) {
+        this.fileName = result.name;
+        const content = result.data.toString('utf-8');
         const parsed = parseCSV(content);
         if (parsed.length > 0) {
           this.headers = parsed[0];

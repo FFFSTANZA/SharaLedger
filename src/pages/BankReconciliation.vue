@@ -83,7 +83,6 @@ import { ModelNameEnum } from 'models/types';
 import { Doc } from 'fyo/model/doc';
 import { postBankTransactionToGL } from 'src/banking/postToGL';
 import { routeTo } from 'src/utils/ui';
-import { formatCurrency } from 'src/utils';
 import { showToast } from 'src/utils/interactive';
 
 export default defineComponent({
@@ -98,7 +97,9 @@ export default defineComponent({
     this.loadTransactions();
   },
   methods: {
-    formatCurrency,
+    formatCurrency(value: unknown) {
+      return this.fyo.format(value, 'Currency');
+    },
     async loadTransactions() {
       this.loading = true;
       try {
