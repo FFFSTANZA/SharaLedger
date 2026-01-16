@@ -147,9 +147,12 @@
               <div class="text-[10px] text-gray-400 font-bold uppercase">{{ t(txn.type) }}</div>
             </td>
             <td class="px-4 py-4 text-center">
-              <div v-if="txn.status === 'Unreconciled'" class="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="small" variant="ghost" @click="postTransaction(txn)">
-                  <feather-icon name="arrow-right-circle" class="w-4 h-4 text-blue-600" />
+              <div v-if="txn.status === 'Unreconciled'" class="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col space-y-1">
+                <Button size="small" variant="ghost" @click="postTransaction(txn)" :title="t`Post to GL`" class="text-blue-600">
+                  <feather-icon name="arrow-right-circle" class="w-4 h-4" />
+                </Button>
+                <Button size="small" variant="ghost" @click="createRuleFromTxn(txn)" :title="t`Create Rule`" class="text-yellow-600">
+                  <feather-icon name="plus-circle" class="w-4 h-4" />
                 </Button>
               </div>
               <div v-else>
@@ -176,8 +179,6 @@ import { t } from 'fyo';
 import { DateTime } from 'luxon';
 import Button from 'src/components/Button.vue';
 import AutoComplete from 'src/components/Controls/AutoComplete.vue';
-import { autoCategorizeMultiple, applyCategorization } from 'src/banking/autoCategorize';
-import { postMultipleBankTransactions, postBankTransactionToGL } from 'src/banking/postToGL';
 import { fyo } from 'src/initFyo';
 import { showToast } from 'src/utils/interactive';
 
@@ -259,44 +260,65 @@ export default defineComponent({
     async autoCategorizeAll() {
       this.autoCategorizing = true;
       try {
-        const uncategorized = this.transactions.filter(t => t.status === 'Unreconciled' && !t.account && !t.matchingVoucher);
-        const suggestions = await autoCategorizeMultiple(fyo, uncategorized);
-        for (const [name, sug] of suggestions) {
-          await applyCategorization(fyo, name, sug);
+        const uncategorized = this.transactions.filter(t => t.status === 'Unreconciled');
+        let count = 0;
+        for (const txn of uncategorized) {
+          const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+          await (doc as any).suggest();
+          count++;
         }
         await this.loadTransactions();
-        showToast({ type: 'success', message: t`Auto-categorized ${suggestions.size} transactions` });
+        showToast({ type: 'success', message: t`Suggested categorization for ${count} transactions` });
       } finally { this.autoCategorizing = false; }
     },
     async postSelectedToGL() {
       this.posting = true;
       try {
-        const selected = this.transactions.filter(t => this.selectedTransactions.includes(t.name));
-        const results = await postMultipleBankTransactions(fyo, selected);
         let success = 0;
-        for (const r of results.values()) if (r.success) success++;
+        for (const txnName of this.selectedTransactions) {
+          try {
+            const doc = await fyo.doc.getDoc('BankTransaction', txnName);
+            await (doc as any).postToGL();
+            success++;
+          } catch (e: any) {
+            console.error(`Failed to post ${txnName}:`, e);
+          }
+        }
         await this.loadTransactions();
         this.selectedTransactions = [];
         showToast({ type: 'success', message: t`Successfully processed ${success} transactions.` });
       } finally { this.posting = false; }
     },
     async postTransaction(txn: any) {
-      const res = await postBankTransactionToGL(fyo, txn);
-      if (res.success) {
+      try {
+        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        await (doc as any).postToGL();
         showToast({ type: 'success', message: t`Transaction posted successfully.` });
         await this.loadTransactions();
-      } else {
-        showToast({ type: 'error', message: res.error || 'Failed to post' });
+      } catch (e: any) {
+        showToast({ type: 'error', message: e.message || 'Failed to post' });
       }
     },
     async reconcileWithMatch(txn: any) {
-      const res = await postBankTransactionToGL(fyo, txn);
-      if (res.success) {
+      try {
+        const doc = await fyo.doc.getDoc('BankTransaction', txn.name);
+        await (doc as any).postToGL();
         showToast({ type: 'success', message: t`Reconciled with existing voucher.` });
         await this.loadTransactions();
-      } else {
-        showToast({ type: 'error', message: res.error || 'Failed to reconcile' });
+      } catch (e: any) {
+        showToast({ type: 'error', message: e.message || 'Failed to reconcile' });
       }
+    },
+    async createRuleFromTxn(txn: any) {
+      const rule = fyo.doc.getNewDoc('BankRule');
+      await rule.set({
+        ruleName: `Rule for ${txn.description.slice(0, 20)}`,
+        condition: txn.description,
+        targetAccount: txn.account,
+        targetParty: txn.party,
+      });
+      await rule.sync();
+      showToast({ type: 'success', message: t`Bank rule created.` });
     },
     formatDate(d: string) { return DateTime.fromISO(d).toFormat('dd MMM yyyy'); },
     formatCurrency(v: number) { return fyo.format(v, 'Currency'); },
