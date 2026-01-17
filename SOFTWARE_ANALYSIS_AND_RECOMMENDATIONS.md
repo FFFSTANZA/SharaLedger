@@ -134,17 +134,7 @@ Based on my analysis, here are features that are **simple to implement** but wou
 - **Implementation**: Simple linear regression on payment patterns
   **Impact**: Prevent business failures due to cash crunch
 
-### **5. Auto-Bank Reconciliation** 🏦
-
-**What it does**: Automatically match bank statements with transactions
-**Why powerful**:
-
-- Manual reconciliation is tedious
-- Error-prone in manual processes
-- **Implementation**: Pattern matching + fuzzy string matching
-  **Impact**: 90% time savings on reconciliation
-
-### **6. Smart Expense Categorizer** 🤖
+### **5. Smart Expense Categorizer** 🤖
 
 **What it does**: Automatically categorize expenses based on description
 **Why powerful**:
@@ -154,7 +144,7 @@ Based on my analysis, here are features that are **simple to implement** but wou
 - **Implementation**: Simple ML with transaction description keywords
   **Impact**: Consistent accounting, accurate reports
 
-### **7. Multi-Language Voice Commands** 🗣️
+### **6. Multi-Language Voice Commands** 🗣️
 
 **What it does**: Support voice commands in Hindi, Tamil, Telugu, Bengali
 **Why powerful**:
@@ -163,7 +153,7 @@ Based on my analysis, here are features that are **simple to implement** but wou
 - **Implementation**: Web Speech API with language detection
   **Impact**: Accessible to 70% of Indian population
 
-### **8. GST Rate Auto-Detection** 🏷️
+### **7. GST Rate Auto-Detection** 🏷️
 
 **What it does**: Suggest GST rates based on item description
 **Why powerful**:
@@ -295,8 +285,7 @@ These are **unique features** that could make SharaLedger the ** undisputed lead
 
 1. **WhatsApp Business Integration** - High impact, relatively easy
 2. **Smart Receipt Scanner** - Saves maximum time
-3. **Auto-Bank Reconciliation** - Solves major pain point
-4. **Voice Invoice Creation** - Impressive demo feature
+3. **Voice Invoice Creation** - Impressive demo feature
 
 ### **Phase 2 (Medium Complexity - 4-6 months)**
 
@@ -346,7 +335,7 @@ The key to dominance lies in implementing **simple but powerful features** that 
 
 The combination of **offline-first design**, **Indian market focus**, and **open-source nature** makes SharaLedger uniquely positioned to capture the Indian SME market.
 
-**My recommendation**: Focus on the **"Quick Wins"** first (WhatsApp integration, receipt scanning, bank reconciliation) to build user base and revenue, then implement the **revolutionary features** to establish market leadership.
+**My recommendation**: Focus on the **"Quick Wins"** first (WhatsApp integration, receipt scanning, voice invoice creation) to build user base and revenue, then implement the **revolutionary features** to establish market leadership.
 
 With proper execution, SharaLedger could become the **default accounting software for Indian SMEs** within 2-3 years.
 
