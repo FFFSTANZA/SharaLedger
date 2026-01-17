@@ -31,13 +31,13 @@ test('Field Counts', function (t) {
   t.equal(appSchemaMap.JournalEntryAccount.fields?.length, 3);
   t.equal(appSchemaMap.Party.fields?.length, 9);
   t.equal(appSchemaMap.Customer.fields?.length, undefined);
-  t.equal(regionalSchemaMap.Party.fields?.length, 2);
+  t.equal(regionalSchemaMap.Party.fields?.length, 5);
   t.end();
 });
 
 test('Quick Edit Field Counts', function (t) {
   t.equal(appSchemaMap.Party.quickEditFields?.length, 5);
-  t.equal(regionalSchemaMap.Party.quickEditFields?.length, 8);
+  t.equal(regionalSchemaMap.Party.quickEditFields?.length, 11);
   t.end();
 });
 
@@ -47,12 +47,12 @@ const regionalCombined = getRegionalCombinedSchemas(
 );
 
 test('Field Counts', function (t) {
-  t.equal(regionalCombined.Party.fields?.length, 11);
+  t.equal(regionalCombined.Party.fields?.length, 14);
   t.end();
 });
 
 test('Quick Edit Field Counts', function (t) {
-  t.equal(regionalSchemaMap.Party.quickEditFields?.length, 8);
+  t.equal(regionalSchemaMap.Party.quickEditFields?.length, 11);
   t.end();
 });
 
@@ -89,12 +89,12 @@ test('Abstract Schema Existance', function (t) {
 });
 
 test('Field Counts', function (t) {
-  t.equal(abstractCombined.Customer!.fields?.length, 11);
+  t.equal(abstractCombined.Customer!.fields?.length, 14);
   t.end();
 });
 
 test('Quick Edit Field Counts', function (t) {
-  t.equal(abstractCombined.Customer!.quickEditFields?.length, 8);
+  t.equal(abstractCombined.Customer!.quickEditFields?.length, 11);
   t.end();
 });
 
