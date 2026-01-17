@@ -1,5 +1,5 @@
-import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { DateTime } from 'luxon';
+import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import setupInstance from 'src/setup/setupInstance';
 import { SetupWizardOptions } from 'src/setup/types';
 import test from 'tape';

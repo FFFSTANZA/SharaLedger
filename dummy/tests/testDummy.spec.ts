@@ -1,7 +1,7 @@
-import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { purchaseItemPartyMap } from 'dummy/helpers';
 import test from 'tape';
 import { getTestDbPath, getTestFyo } from 'tests/helpers';
+import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { setupDummyInstance } from '..';
 
 const dbPath = getTestDbPath();

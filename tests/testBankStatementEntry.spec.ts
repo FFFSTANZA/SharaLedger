@@ -1,5 +1,6 @@
 import test from 'tape';
 import { closeTestFyo, getTestFyo, setupTestFyo } from './helpers';
+import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { getDbError, DuplicateEntryError } from 'fyo/utils/errors';
 import { getBankStatementEntryHash } from 'src/banking/bankStatement';
 

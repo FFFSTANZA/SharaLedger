@@ -127,10 +127,12 @@ export default class DatabaseCore extends DatabaseBase {
     await config.pre?.();
     for (const schemaName of create) {
       await this.#createTable(schemaName);
+      await this.#ensureUniqueIndexes(schemaName);
     }
 
     for (const config of alter) {
       await this.#alterTable(config);
+      await this.#ensureUniqueIndexes(config.schemaName);
     }
 
     if (!hasSingleValueTable) {
@@ -445,6 +447,51 @@ export default class DatabaseCore extends DatabaseBase {
       `PRAGMA foreign_key_list(${schemaName})`
     );
     return foreignKeyList.map((d) => d.from as string);
+  }
+
+  async #ensureUniqueIndexes(schemaName: string) {
+    const schema = this.schemaMap[schemaName] as Schema;
+
+    const uniqueFields = schema.fields.filter((f) => {
+      const isUnique = (f as unknown as { unique?: boolean }).unique;
+      return !!isUnique && f.fieldtype !== FieldTypeEnum.Table && !f.computed;
+    });
+
+    if (!uniqueFields.length) {
+      return;
+    }
+
+    const indexList = (await this.knex!.raw(
+      `PRAGMA index_list(${schemaName})`
+    )) as FieldValueMap[];
+
+    const uniqueColumns = new Set<string>();
+    for (const idx of indexList) {
+      if (!idx.unique) {
+        continue;
+      }
+
+      const indexName = idx.name as string;
+      const indexInfo = (await this.knex!.raw(
+        `PRAGMA index_info(${indexName})`
+      )) as FieldValueMap[];
+
+      const columnName = indexInfo?.[0]?.name;
+      if (indexInfo.length === 1 && typeof columnName === 'string') {
+        uniqueColumns.add(columnName);
+      }
+    }
+
+    for (const field of uniqueFields) {
+      if (uniqueColumns.has(field.fieldname)) {
+        continue;
+      }
+
+      const indexName = `uniq_${schemaName}_${field.fieldname}`;
+      await this.knex!.schema.table(schemaName, (table) => {
+        table.unique([field.fieldname], indexName);
+      });
+    }
   }
 
   #getQueryBuilder(
