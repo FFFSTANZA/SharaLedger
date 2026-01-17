@@ -194,7 +194,6 @@ Records of money received from customers or paid to suppliers.
 - Clear payment tracking
 - Reduced outstanding receivables
 - Accurate cash flow records
-- Bank reconciliation support
 - Payment history
 
 **Use cases:**
@@ -203,7 +202,6 @@ Records of money received from customers or paid to suppliers.
 - Making supplier payments
 - Handling advance payments
 - Processing refunds
-- Reconciling bank statements
 
 ---
 
@@ -285,7 +283,6 @@ A comprehensive record of all financial transactions organized by account.
 **Use cases:**
 
 - Reviewing all transactions for an account
-- Reconciling bank accounts
 - Auditing financial records
 - Investigating discrepancies
 - Year-end reviews
