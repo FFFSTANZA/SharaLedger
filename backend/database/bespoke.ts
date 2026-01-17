@@ -116,7 +116,7 @@ export class BespokeQueries {
         outflow: db.knex!.raw('sum(cast(credit as real))'),
       })
       .groupBy(periodExpr)
-      .orderBy(periodExpr)) as unknown as {
+      .orderBy('period')) as unknown as {
       period: string;
       inflow: number;
       outflow: number;
@@ -336,7 +336,7 @@ export class BespokeQueries {
         amount: db.knex!.raw('cast(outstandingAmount as real)'),
         dueDate: db.knex!.raw('date(date, ?)', [dueModifier]),
       })
-      .orderBy(db.knex!.raw('date(date, ?)', [dueModifier]), 'asc')
+      .orderBy('dueDate', 'asc')
       .first()) as
       | {
           name?: string;

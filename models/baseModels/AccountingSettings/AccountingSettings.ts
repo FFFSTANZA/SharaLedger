@@ -79,8 +79,7 @@ export class AccountingSettings extends Doc {
     discountAccount: () => !this.enableDiscounting,
     gstin: () => {
       // Always show GST tab for India during setup wizard
-      // Check if we're in setup by looking at the current route or setupComplete flag
-      const isInSetup = !this.setupComplete || this.fyo.store.route?.includes('setup');
+      const isInSetup = !this.setupComplete;
       if (isInSetup && this.fyo.singles.SystemSettings?.countryCode === 'in') {
         return false;
       }

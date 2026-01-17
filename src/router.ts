@@ -3,6 +3,7 @@ import CommonForm from 'src/pages/CommonForm/CommonForm.vue';
 import Dashboard from 'src/pages/Dashboard/Dashboard.vue';
 import GetStarted from 'src/pages/GetStarted.vue';
 import ImportWizard from 'src/pages/ImportWizard.vue';
+import Banking from 'src/pages/Banking/Banking.vue';
 import ListView from 'src/pages/ListView/ListView.vue';
 import PrintView from 'src/pages/PrintView/PrintView.vue';
 import ReportPrintView from 'src/pages/PrintView/ReportPrintView.vue';
@@ -101,6 +102,11 @@ const routes: RouteRecordRaw[] = [
     path: '/import-wizard',
     name: 'Import Wizard',
     component: ImportWizard,
+  },
+  {
+    path: '/banking',
+    name: 'Banking',
+    component: Banking,
   },
   {
     path: '/template-builder/:name',

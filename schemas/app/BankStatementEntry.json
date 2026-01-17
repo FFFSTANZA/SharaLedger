@@ -1,0 +1,98 @@
+{
+  "name": "BankStatementEntry",
+  "label": "Bank Statement Entry",
+  "naming": "autoincrement",
+  "isSingle": false,
+  "isChild": false,
+  "fields": [
+    {
+      "fieldname": "name",
+      "label": "Entry No.",
+      "fieldtype": "Data",
+      "required": true
+    },
+    {
+      "fieldname": "bankAccount",
+      "label": "Bank Account",
+      "fieldtype": "Link",
+      "target": "Account",
+      "required": true,
+      "section": "Default"
+    },
+    {
+      "fieldname": "transactionDate",
+      "label": "Transaction Date",
+      "fieldtype": "Date",
+      "required": true,
+      "section": "Default"
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Text",
+      "required": true,
+      "section": "Default"
+    },
+    {
+      "fieldname": "amount",
+      "label": "Amount",
+      "fieldtype": "Currency",
+      "required": true,
+      "section": "Default"
+    },
+    {
+      "fieldname": "debitCredit",
+      "label": "Debit / Credit",
+      "fieldtype": "Select",
+      "required": true,
+      "options": [
+        { "value": "Debit", "label": "Debit" },
+        { "value": "Credit", "label": "Credit" }
+      ],
+      "section": "Default"
+    },
+    {
+      "fieldname": "transactionHash",
+      "label": "Transaction Hash",
+      "fieldtype": "Data",
+      "required": true,
+      "unique": true,
+      "section": "References"
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "required": true,
+      "default": "Unreconciled",
+      "options": [
+        { "value": "Unreconciled", "label": "Unreconciled" },
+        { "value": "Matched", "label": "Matched" },
+        { "value": "Ignored", "label": "Ignored" }
+      ],
+      "section": "References"
+    },
+    {
+      "fieldname": "matchedDocType",
+      "label": "Matched DocType",
+      "fieldtype": "Data",
+      "readOnly": true,
+      "section": "References"
+    },
+    {
+      "fieldname": "matchedDocName",
+      "label": "Matched Document",
+      "fieldtype": "Data",
+      "readOnly": true,
+      "section": "References"
+    },
+    {
+      "fieldname": "matchedAt",
+      "label": "Matched At",
+      "fieldtype": "Datetime",
+      "readOnly": true,
+      "section": "References"
+    }
+  ],
+  "keywordFields": ["name", "description", "bankAccount", "status"]
+}

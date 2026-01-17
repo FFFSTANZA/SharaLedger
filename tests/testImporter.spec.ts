@@ -1,5 +1,5 @@
-import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { readFileSync } from 'fs';
+import { assertDoesNotThrow } from 'backend/database/tests/helpers';
 import { ModelNameEnum } from 'models/types';
 import { join } from 'path';
 import { Importer } from 'src/importer';

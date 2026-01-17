@@ -10,8 +10,8 @@ export async function createIndianRecords(fyo: Fyo) {
 
 async function createTaxes(fyo: Fyo) {
   const GSTs = {
-    GST: [28, 18, 12, 5],
-    IGST: [28, 18, 12, 5],
+    GST: [28, 18, 12, 5, 3],
+    IGST: [28, 18, 12, 5, 3],
     'Exempt-GST': [0],
     'Exempt-IGST': [0],
   };

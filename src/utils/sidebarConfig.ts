@@ -290,6 +290,25 @@ function getCompleteSidebar(): SidebarConfig {
       ] as SidebarItem[],
     },
     {
+      label: t`Banking`,
+      name: 'banking',
+      icon: 'general',
+      route: '/banking',
+      items: [
+        {
+          label: t`Import & Reconcile`,
+          name: 'banking-home',
+          route: '/banking',
+        },
+        {
+          label: t`Bank Statement Entries`,
+          name: 'bank-statement-entries',
+          route: '/list/BankStatementEntry',
+          schemaName: 'BankStatementEntry',
+        },
+      ] as SidebarItem[],
+    },
+    {
       label: t`Common`,
       name: 'common-entries',
       icon: 'common-entries',
