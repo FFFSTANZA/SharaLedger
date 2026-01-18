@@ -7,24 +7,29 @@
 
 **Solution**:
 - Added `"hidden": true` to `BankStatementEntry.json` schema
-- Added `hidden: () => true` to the sidebar config for Bank Statement Entries menu item
+- Added `hidden: () => true` to sidebar config for Bank Statement Entries menu item
 - This ensures users can only interact with bank statements through the Import & Reconcile interface
 
 ### 2. Clearance Date Not Set Error
-**Problem**: When creating a Payment entry via "Create Draft & Match", the system threw "Clearance Date not set" error. This is because Payment.ts validates that bank payments must have both `clearanceDate` and `referenceId` set.
+**Problem**: When creating a Payment entry via "Create Draft & Match", the system threw "Clearance Date not set" error. This is because `Payment.ts` validates that bank payments must have both `clearanceDate` and `referenceId` set.
 
 **Solution**:
 - Set `clearanceDate: transactionDate` when creating Payment entries (line 982 in Banking.vue)
 - Set `referenceId: BANK-{entryName}` to provide a unique reference (line 983 in Banking.vue)
-- This satisfies the validation requirements in `Payment.ts` line 234-248
+- This satisfies validation requirements in `Payment.ts` lines 234-248
 
-### 3. Match with Existing - Additional Document Types
-**Problem**: The "Match with existing accounting entry" dropdown only showed Payment and Journal Entry options. Users may want to match bank statement entries with Sales or Purchase invoices as well.
+### 3. Verified Match with Existing Document Types
+**Review**: Confirmed which document types exist and are appropriate for matching bank statement entries.
 
-**Solution**:
-- Added Sales Invoice and Purchase Invoice to the matchDocTypeDf options
-- Updated TypeScript type for matchDocType to include 'SalesInvoice' and 'PurchaseInvoice'
-- This allows users to match bank transactions with any relevant accounting document
+**Appropriate Types for Matching**:
+- **Payment** - Handles both receipts (Receive) and payments (Pay) via `paymentType` field
+- **Journal Entry** - For direct ledger entries without parties
+
+**Not Included**: Sales Invoice and Purchase Invoice are NOT in match options because:
+- Bank statements show actual money movements
+- Invoices are documents requesting payment (not the payment itself)
+- The actual payment transaction is recorded in Payment documents, not in invoices
+- Matching directly with invoices doesn't align with accounting principles
 
 ## UI/UX Improvements
 
@@ -47,7 +52,7 @@
 - Real-time filtering as user types
 
 ### 7. Action Buttons in Header
-**Improved**: Moved action buttons from bottom of forms to top-right of action panel
+**Improved**: Moved action buttons from the bottom of forms to the top-right of the action panel
 - Create Draft & Match button (green)
 - Match button (green)
 - Mark as Ignored button (gray)
@@ -72,21 +77,21 @@
    - Added `"hidden": true` to hide the schema from list views
 
 2. **src/utils/sidebarConfig.ts**
-   - Added `hidden: () => true` to Bank Statement Entries menu item
+   - Added `hidden: () => true` to the Bank Statement Entries menu item
 
 3. **src/pages/Banking/Banking.vue**
-   - Added clearanceDate and referenceId to Payment creation
-   - Added Sales Invoice and Purchase Invoice to match options
+   - Added `clearanceDate` and `referenceId` to Payment creation
+   - Verified match options only include Payment and JournalEntry
    - Added bank account filter
-   - Added search functionality with filteredUnreconciledEntries computed property
+   - Added search functionality with `filteredUnreconciledEntries` computed property
    - Added reconciliation summary dashboard
-   - Added keyboard navigation (handleKeydown method)
+   - Added keyboard navigation (`handleKeydown` method)
    - Improved action button placement
-   - Added matchedCount and ignoredCount state
-   - Updated refreshUnreconciled to fetch statistics
+   - Added `matchedCount` and `ignoredCount` state
+   - Updated `refreshUnreconciled` to fetch statistics
 
 ### Validation Requirements Met
-The Payment model (models/baseModels/Payment/Payment.ts) validates:
+The Payment model (`models/baseModels/Payment/Payment.ts`) validates:
 ```typescript
 async validateReferencesAreSet() {
   const type = (await this.paymentMethodDoc()).type;
@@ -107,11 +112,19 @@ async validateReferencesAreSet() {
 
 Our solution ensures both required fields are set when creating bank payments from the reconciliation interface.
 
+### Document Type Mapping (Create New)
+The "Create New" section uses user-friendly labels that map to actual document types:
+- **Receipt Entry** → Creates Payment with `paymentType='Receive'`
+- **Payment Entry** → Creates Payment with `paymentType='Pay'`
+- **Journal Entry** → Creates JournalEntry document
+
+These are just UI labels for better user understanding; they all map to the appropriate underlying document types.
+
 ## Benefits
 
 ✅ **Better UX**: Users can't accidentally access internal BankStatementEntry records
 ✅ **No More Errors**: Clearance date validation is properly handled
-✅ **Flexible Matching**: Can match with Payment, Journal Entry, Sales Invoice, or Purchase Invoice
+✅ **Correct Matching**: Only matches with Payment and JournalEntry (accounting-correct approach)
 ✅ **Better Productivity**: Search, filter, and keyboard shortcuts speed up reconciliation
 ✅ **Clear Progress**: Real-time statistics show reconciliation progress
 ✅ **Professional UI**: Improved button placement and visual feedback

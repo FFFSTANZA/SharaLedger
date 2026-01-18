@@ -407,7 +407,7 @@ export default defineComponent({
       matchedCount: 0 as number,
       ignoredCount: 0 as number,
 
-      matchDocType: 'Payment' as 'Payment' | 'JournalEntry' | 'SalesInvoice' | 'PurchaseInvoice',
+      matchDocType: 'Payment' as 'Payment' | 'JournalEntry',
       matchDocName: '' as string,
 
       createDocType: 'Receipt Entry' as
@@ -484,8 +484,6 @@ export default defineComponent({
         options: [
           { label: this.t`Payment`, value: 'Payment' },
           { label: this.t`Journal Entry`, value: 'JournalEntry' },
-          { label: this.t`Sales Invoice`, value: 'SalesInvoice' },
-          { label: this.t`Purchase Invoice`, value: 'PurchaseInvoice' },
         ],
       };
     },
