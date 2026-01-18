@@ -305,6 +305,7 @@ function getCompleteSidebar(): SidebarConfig {
           name: 'bank-statement-entries',
           route: '/list/BankStatementEntry',
           schemaName: 'BankStatementEntry',
+          hidden: () => true,
         },
       ] as SidebarItem[],
     },
