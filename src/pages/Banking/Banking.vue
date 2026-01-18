@@ -77,8 +77,9 @@
           class="grid grid-cols-12 gap-2 px-3 py-2 text-[10px] tracking-widest font-bold uppercase bg-gray-50/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400"
         >
           <div class="col-span-2">{{ t`Date` }}</div>
-          <div class="col-span-6">{{ t`Description` }}</div>
-          <div class="col-span-2">{{ t`Debit / Credit` }}</div>
+          <div class="col-span-5">{{ t`Description` }}</div>
+          <div class="col-span-2">{{ t`Type` }}</div>
+          <div class="col-span-1">{{ t`Ref` }}</div>
           <div class="col-span-2 text-end">{{ t`Amount` }}</div>
         </div>
 
@@ -90,13 +91,32 @@
             :class="row.isDuplicate || row.error ? 'opacity-60' : ''"
           >
             <div class="col-span-2">{{ formatDate(row.transactionDate) }}</div>
-            <div class="col-span-6 truncate" :title="row.description">
-              {{ row.description }}
+            <div class="col-span-5">
+              <div class="truncate" :title="row.description">
+                {{ row.description }}
+              </div>
+              <div v-if="row.categorization" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                      :class="getCategorizationClass(row.categorization.confidence)">
+                  {{ row.categorization.docType }} - {{ row.categorization.category }}
+                  <span class="ml-1">({{ Math.round(row.categorization.confidence * 100) }}%)</span>
+                </span>
+              </div>
             </div>
             <div class="col-span-2">
               <span v-if="row.error" class="text-red-600">{{ t`Error` }}</span>
               <span v-else-if="row.isDuplicate" class="text-amber-600">{{ t`Duplicate` }}</span>
-              <span v-else>{{ row.debitCredit }}</span>
+              <span v-else class="flex flex-col gap-1">
+                <span>{{ row.debitCredit }}</span>
+                <span v-if="row.balance" class="text-xs text-gray-500">
+                  Bal: {{ formatCurrency(row.balance) }}
+                </span>
+              </span>
+            </div>
+            <div class="col-span-1">
+              <span v-if="row.reference" class="text-xs text-gray-500 dark:text-gray-400 truncate block" :title="row.reference">
+                {{ row.reference }}
+              </span>
             </div>
             <div class="col-span-2 text-end">
               {{ formatCurrency(row.amount) }}
@@ -351,19 +371,13 @@ import {
   getBankStatementEntryHash,
   parseDebitCredit,
   parseStatementDate,
+  parseCsvRow,
+  type EnhancedPreviewRow,
+  type CategorizationSuggestion,
 } from 'src/banking/bankStatement';
 import { defineComponent } from 'vue';
 
-type PreviewRow = {
-  rowIndex: number;
-  transactionDate: Date;
-  description: string;
-  amount: number;
-  debitCredit: 'Debit' | 'Credit';
-  hash: string;
-  isDuplicate: boolean;
-  error?: string;
-};
+type PreviewRow = EnhancedPreviewRow;
 
 type StatementEntrySummary = {
   name: string;
@@ -585,6 +599,15 @@ export default defineComponent({
 
       return String(value ?? '');
     },
+    getCategorizationClass(confidence: number): string {
+      if (confidence >= 0.8) {
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+      } else if (confidence >= 0.6) {
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+      } else {
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      }
+    },
     async selectFile() {
       this.importMessage = '';
       this.importMessageType = 'info';
@@ -625,49 +648,18 @@ export default defineComponent({
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
-          if (!row?.length || row.every((c) => !String(c ?? '').trim())) {
-            continue;
-          }
-
-          const rowIndex = i + 2;
-          try {
-            const transactionDate = parseStatementDate(
-              row[columns.dateIdx] ?? ''
-            );
-            const description = String(row[columns.descriptionIdx] ?? '').trim();
-            const { amount, debitCredit } = parseDebitCredit({ row, columns });
-
-            const hash = getBankStatementEntryHash({
-              transactionDate,
-              amount,
-              description,
-              bankAccount: this.importBankAccount,
-            });
-
-            const isDuplicate = seenInFile.has(hash);
-            seenInFile.add(hash);
-
-            preview.push({
-              rowIndex,
-              transactionDate,
-              description,
-              amount,
-              debitCredit,
-              hash,
-              isDuplicate,
-            });
-            hashes.push(hash);
-          } catch (err) {
-            preview.push({
-              rowIndex,
-              transactionDate: new Date(),
-              description: row.join(', '),
-              amount: 0,
-              debitCredit: 'Debit',
-              hash: '',
-              isDuplicate: false,
-              error: err instanceof Error ? err.message : String(err),
-            });
+          const parsedRow = parseCsvRow(
+            row,
+            columns,
+            i + 2,
+            this.importBankAccount,
+            new Set(), // We don't have existing hashes yet
+            seenInFile
+          );
+          
+          preview.push(parsedRow);
+          if (parsedRow.hash) {
+            hashes.push(parsedRow.hash);
           }
         }
 
@@ -742,6 +734,8 @@ export default defineComponent({
           debitCredit: row.debitCredit,
           transactionHash: row.hash,
           status: 'Unreconciled',
+          reference: row.reference,
+          balance: row.balance ? this.fyo.pesa(row.balance) : undefined,
         });
 
         try {
