@@ -93,7 +93,19 @@
       "fieldtype": "Datetime",
       "readOnly": true,
       "section": "References"
+    },
+    {
+      "fieldname": "reference",
+      "label": "Reference",
+      "fieldtype": "Data",
+      "section": "Additional Info"
+    },
+    {
+      "fieldname": "balance",
+      "label": "Balance",
+      "fieldtype": "Currency",
+      "section": "Additional Info"
     }
   ],
-  "keywordFields": ["name", "description", "bankAccount", "status"]
+  "keywordFields": ["name", "description", "bankAccount", "status", "reference"]
 }
