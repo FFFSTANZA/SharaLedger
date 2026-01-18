@@ -4,6 +4,7 @@
   "naming": "autoincrement",
   "isSingle": false,
   "isChild": false,
+  "hidden": true,
   "fields": [
     {
       "fieldname": "name",

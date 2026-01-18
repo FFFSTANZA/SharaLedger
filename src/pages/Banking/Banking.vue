@@ -106,23 +106,62 @@
       </div>
     </div>
 
-    <div v-else class="flex overflow-hidden flex-1">
+    <div v-else class="flex overflow-hidden flex-1" @keydown="handleKeydown">
       <div class="w-1/2 border-e dark:border-gray-800 overflow-auto custom-scroll custom-scroll-thumb1">
-        <div class="flex items-center justify-between px-4 py-3 border-b dark:border-gray-800">
-          <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
-            {{ t`Unreconciled Bank Statement Entries` }}
-          </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ unreconciledEntries.length }}
-          </p>
+        <div class="px-4 py-3 border-b dark:border-gray-800 space-y-3">
+          <div v-if="reconciliationStats" class="p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+            <p class="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">
+              {{ t`Reconciliation Summary` }}
+            </p>
+            <div class="flex gap-4 text-xs">
+              <div>
+                <p class="text-gray-500 dark:text-gray-400">{{ t`Unreconciled` }}</p>
+                <p class="font-semibold text-gray-900 dark:text-gray-100">{{ reconciliationStats.unreconciled }}</p>
+              </div>
+              <div>
+                <p class="text-gray-500 dark:text-gray-400">{{ t`Matched` }}</p>
+                <p class="font-semibold text-green-600">{{ reconciliationStats.matched }}</p>
+              </div>
+              <div>
+                <p class="text-gray-500 dark:text-gray-400">{{ t`Ignored` }}</p>
+                <p class="font-semibold text-amber-600">{{ reconciliationStats.ignored }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {{ t`Unreconciled Bank Statement Entries` }}
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{ filteredUnreconciledEntries.length }}
+            </p>
+          </div>
+
+          <div class="flex gap-2">
+            <Link
+              class="flex-1"
+              :border="true"
+              :df="bankAccountFilterDf"
+              :value="reconcileBankAccount"
+              @change="(v) => { reconcileBankAccount = v; refreshUnreconciled(); }"
+            />
+          </div>
+
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="t`Search by description or amount...`"
+            class="w-full px-3 py-2 text-sm border dark:border-gray-700 dark:bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+          />
         </div>
 
-        <div v-if="!unreconciledEntries.length" class="p-4 text-sm text-gray-500 dark:text-gray-400">
+        <div v-if="!filteredUnreconciledEntries.length" class="p-4 text-sm text-gray-500 dark:text-gray-400">
           {{ t`No unreconciled entries.` }}
         </div>
 
         <button
-          v-for="entry in unreconciledEntries"
+          v-for="entry in filteredUnreconciledEntries"
           :key="entry.name"
           class="w-full text-left px-4 py-3 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/30"
           :class="selectedEntry?.name === entry.name ? 'bg-violet-50 dark:bg-violet-900/20' : ''"
@@ -165,7 +204,7 @@
             </p>
           </div>
 
-          <div class="mt-4 flex gap-2">
+          <div class="mt-4 flex flex-wrap gap-2">
             <button
               class="px-3 py-2 rounded-xl text-sm font-semibold"
               :class="reconcileMode === 'match' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'"
@@ -187,6 +226,36 @@
             >
               {{ t`Ignore` }}
             </button>
+
+            <div v-if="reconcileMode === 'create'" class="ml-auto">
+              <button
+                class="px-3 py-2 rounded-xl text-sm font-semibold bg-green-600 text-white hover:bg-green-700"
+                :disabled="isReconciling || !canCreateDoc"
+                @click="createNewAccountingDoc"
+              >
+                {{ t`Create Draft & Match` }}
+              </button>
+            </div>
+
+            <div v-else-if="reconcileMode === 'match'" class="ml-auto">
+              <button
+                class="px-3 py-2 rounded-xl text-sm font-semibold bg-green-600 text-white hover:bg-green-700"
+                :disabled="isReconciling || !matchDocType || !matchDocName"
+                @click="matchExisting"
+              >
+                {{ t`Match` }}
+              </button>
+            </div>
+
+            <div v-else class="ml-auto">
+              <button
+                class="px-3 py-2 rounded-xl text-sm font-semibold bg-gray-600 text-white hover:bg-gray-700"
+                :disabled="isReconciling"
+                @click="ignoreSelected"
+              >
+                {{ t`Mark as Ignored` }}
+              </button>
+            </div>
           </div>
 
           <div v-if="reconcileMode === 'match'" class="mt-4 border dark:border-gray-800 rounded-xl p-4">
@@ -209,16 +278,6 @@
               :value="matchDocName"
               @change="(v) => (matchDocName = v)"
             />
-
-            <div class="mt-4 flex justify-end">
-              <Button
-                type="primary"
-                :disabled="isReconciling || !matchDocType || !matchDocName"
-                @click="matchExisting"
-              >
-                {{ t`Match` }}
-              </Button>
-            </div>
           </div>
 
           <div v-else-if="reconcileMode === 'create'" class="mt-4 border dark:border-gray-800 rounded-xl p-4">
@@ -262,28 +321,10 @@
               :value="createLedgerAccount"
               @change="(v) => (createLedgerAccount = v)"
             />
-
-            <div class="mt-4 flex justify-end">
-              <Button
-                type="primary"
-                :disabled="isReconciling || !canCreateDoc"
-                @click="createNewAccountingDoc"
-              >
-                {{ t`Create Draft & Match` }}
-              </Button>
-            </div>
           </div>
 
           <div v-else class="mt-4 border dark:border-gray-800 rounded-xl p-4">
             <p class="text-sm font-semibold mb-3">{{ t`Ignore this entry` }}</p>
-            <div class="flex justify-end">
-              <Button
-                :disabled="isReconciling"
-                @click="ignoreSelected"
-              >
-                {{ t`Mark as Ignored` }}
-              </Button>
-            </div>
           </div>
 
           <p v-if="reconcileMessage" class="text-sm mt-3" :class="reconcileMessageClass">
@@ -360,6 +401,12 @@ export default defineComponent({
       reconcileMessage: '' as string,
       reconcileMessageType: 'info' as 'info' | 'error' | 'success',
 
+      reconcileBankAccount: '' as string,
+      searchQuery: '' as string,
+
+      matchedCount: 0 as number,
+      ignoredCount: 0 as number,
+
       matchDocType: 'Payment' as 'Payment' | 'JournalEntry',
       matchDocName: '' as string,
 
@@ -380,6 +427,39 @@ export default defineComponent({
         fieldtype: 'Link',
         target: 'Account',
         filters: { accountType: 'Bank', isGroup: false },
+      };
+    },
+    bankAccountFilterDf() {
+      return {
+        fieldname: 'reconcileBankAccount',
+        label: this.t`Filter by Bank Account`,
+        fieldtype: 'Link',
+        target: 'Account',
+        filters: { accountType: 'Bank', isGroup: false },
+      };
+    },
+    filteredUnreconciledEntries(): StatementEntrySummary[] {
+      let entries = this.unreconciledEntries;
+
+      if (this.reconcileBankAccount) {
+        entries = entries.filter(e => e.bankAccount === this.reconcileBankAccount);
+      }
+
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        entries = entries.filter(e =>
+          e.description.toLowerCase().includes(query) ||
+          String(e.amount).includes(query)
+        );
+      }
+
+      return entries;
+    },
+    reconciliationStats() {
+      return {
+        unreconciled: this.unreconciledEntries.length,
+        matched: this.matchedCount,
+        ignored: this.ignoredCount,
       };
     },
     importMessageClass(): string {
@@ -712,6 +792,19 @@ export default defineComponent({
         const updated = rows.find((r) => r.name === this.selectedEntry?.name);
         this.selectedEntry = updated ?? null;
       }
+
+      const matchedRows = await this.fyo.db.getAll('BankStatementEntry', {
+        fields: ['name'],
+        filters: { status: 'Matched' },
+      });
+
+      const ignoredRows = await this.fyo.db.getAll('BankStatementEntry', {
+        fields: ['name'],
+        filters: { status: 'Ignored' },
+      });
+
+      this.matchedCount = matchedRows.length;
+      this.ignoredCount = ignoredRows.length;
     },
 
     selectEntry(entry: StatementEntrySummary) {
@@ -773,6 +866,7 @@ export default defineComponent({
 
       this.reconcileMessage = this.t`Matched.`;
       this.reconcileMessageType = 'success';
+      this.matchedCount++;
 
       await this.refreshUnreconciled();
       this.selectedEntry = null;
@@ -883,6 +977,8 @@ export default defineComponent({
           paymentType,
           paymentMethod: 'Bank',
           amount: this.fyo.pesa(amountNum),
+          clearanceDate: transactionDate,
+          referenceId: `BANK-${this.selectedEntry.name}`,
         };
 
         if (paymentType === 'Receive') {
@@ -924,11 +1020,41 @@ export default defineComponent({
         this.reconcileMessageType = 'success';
         await this.refreshUnreconciled();
         this.selectedEntry = null;
+        this.ignoredCount++;
       } catch (err) {
         this.reconcileMessage = err instanceof Error ? err.message : String(err);
         this.reconcileMessageType = 'error';
       } finally {
         this.isReconciling = false;
+      }
+    },
+    handleKeydown(event: KeyboardEvent) {
+      if (!this.unreconciledEntries.length) {
+        return;
+      }
+
+      const currentIndex = this.filteredUnreconciledEntries.findIndex(
+        e => e.name === this.selectedEntry?.name
+      );
+
+      if (event.key === 'ArrowDown' || event.key === 'j') {
+        event.preventDefault();
+        const nextIndex = Math.min(currentIndex + 1, this.filteredUnreconciledEntries.length - 1);
+        if (currentIndex === -1) {
+          this.selectEntry(this.filteredUnreconciledEntries[0]);
+        } else if (nextIndex !== currentIndex) {
+          this.selectEntry(this.filteredUnreconciledEntries[nextIndex]);
+        }
+      } else if (event.key === 'ArrowUp' || event.key === 'k') {
+        event.preventDefault();
+        const prevIndex = Math.max(currentIndex - 1, 0);
+        if (currentIndex === -1) {
+          this.selectEntry(this.filteredUnreconciledEntries[0]);
+        } else if (prevIndex !== currentIndex) {
+          this.selectEntry(this.filteredUnreconciledEntries[prevIndex]);
+        }
+      } else if (event.key === 'Escape') {
+        this.selectedEntry = null;
       }
     },
   },
