@@ -216,7 +216,6 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       }
 
       // Convert to base currency for threshold check and calculation
-      const exchangeRate = this.exchangeRate ?? 1;
       const baseApplicableAmount = applicableAmount.mul(exchangeRate);
       const absBaseApplicableAmount = baseApplicableAmount.abs();
 
