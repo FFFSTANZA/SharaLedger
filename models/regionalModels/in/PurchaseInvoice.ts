@@ -216,17 +216,61 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       }
 
       // Convert to base currency for threshold check and calculation
-      const baseApplicableAmount = applicableAmount.mul(exchangeRate).abs();
+      const exchangeRate = this.exchangeRate ?? 1;
+      const baseApplicableAmount = applicableAmount.mul(exchangeRate);
+      const absBaseApplicableAmount = baseApplicableAmount.abs();
 
       // Check threshold
-      if (!tdsSection.isApplicableForAmount(baseApplicableAmount)) {
-        return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+      if (!tdsSection.isApplicableForAmount(absBaseApplicableAmount)) {
+        // Check cumulative threshold
+        const cumulativeThreshold = tdsSection.cumulativeThreshold ?? zeroAmount;
+        if (cumulativeThreshold.gt(0)) {
+          const invoiceDate = DateTime.fromISO(
+            (this.date as string) || DateTime.local().toISODate()
+          );
+          let startYear = invoiceDate.year;
+          if (invoiceDate.month < 4) {
+            startYear -= 1;
+          }
+          const fyStart = `${startYear}-04-01`;
+          const fyEnd = `${startYear + 1}-03-31`;
+
+          const previousInvoices = (await this.fyo.db.getAll(this.schemaName, {
+            filters: {
+              party: this.party,
+              submitted: true,
+              cancelled: false,
+              date: ['between', [fyStart, fyEnd]],
+            },
+            fields: ['netTotal', 'exchangeRate', 'name'],
+          })) as any[];
+
+          let cumulativeTotal = zeroAmount;
+          for (const inv of previousInvoices) {
+            if (inv.name === this.name) continue;
+            const amount = this.fyo
+              .pesa(inv.netTotal || 0)
+              .mul(inv.exchangeRate ?? 1);
+            cumulativeTotal = cumulativeTotal.add(amount);
+          }
+
+          const currentCumulative = cumulativeTotal.add(baseApplicableAmount);
+
+          if (
+            currentCumulative.abs().lt(cumulativeThreshold) &&
+            cumulativeTotal.abs().lt(cumulativeThreshold)
+          ) {
+            return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+          }
+        } else {
+          return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
+        }
       }
 
       // Calculate TDS
       const hasPan = party.panAvailable ?? true;
       const tdsRate = tdsSection.getApplicableRate(hasPan);
-      const tdsAmount = baseApplicableAmount.mul(tdsRate / 100);
+      const tdsAmount = absBaseApplicableAmount.mul(tdsRate / 100);
 
       return {
         tdsAmount,
