@@ -1,6 +1,7 @@
 import { t } from 'fyo';
 import { Action } from 'fyo/model/types';
 import { DateTime } from 'luxon';
+import { Money } from 'pesa';
 import { ModelNameEnum } from 'models/types';
 import getCommonExportActions from 'reports/commonExporter';
 import { Report } from 'reports/Report';
@@ -178,10 +179,10 @@ export class TDSSummary extends Report {
 
       // If it's a return, amounts are reversed
       const tdsAmount = pi.isReturn
-        ? -tdsDetails.tdsAmount.toNumber()
-        : tdsDetails.tdsAmount.toNumber();
+        ? -(tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount)
+        : (tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount);
 
-      const grossAmount = pi.baseGrandTotal.toNumber();
+      const grossAmount = pi.baseGrandTotal instanceof Money ? pi.baseGrandTotal.float : pi.baseGrandTotal;
 
       if (summaryMap.has(key)) {
         const existing = summaryMap.get(key)!;
