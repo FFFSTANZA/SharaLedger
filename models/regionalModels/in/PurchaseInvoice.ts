@@ -36,7 +36,7 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
    */
   override async afterSubmit() {
     const tdsDetails = await this.calculateTDS();
-    const hasTDS = !this.isReturn && tdsDetails.tdsAmount.gt(0);
+    const hasTDS = tdsDetails.tdsAmount.gt(0);
 
     const originalMakeAutoPayment = this.makeAutoPayment;
 
@@ -47,7 +47,9 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
     await super.afterSubmit();
 
     if (hasTDS) {
-      const netOutstanding = this.baseGrandTotal!.sub(tdsDetails.tdsAmount);
+      const netOutstanding = this.isReturn
+        ? this.baseGrandTotal!.add(tdsDetails.tdsAmount)
+        : this.baseGrandTotal!.sub(tdsDetails.tdsAmount);
 
       await this.fyo.db.update(this.schemaName, {
         name: this.name as string,
@@ -84,7 +86,22 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
     const tdsDetails = await this.calculateTDS();
 
     if (this.isReturn) {
-      await posting.debit(this.account!, this.baseGrandTotal!);
+      // For returns, amounts are negative in Fyo.
+      // tdsAmount from calculateTDS is positive.
+      // vendor debit = -118 + 10 = -108.
+      // TDS debit = -10.
+      const vendorDebit = tdsDetails.tdsAmount.gt(0)
+        ? this.baseGrandTotal!.add(tdsDetails.tdsAmount)
+        : this.baseGrandTotal!;
+      await posting.debit(this.account!, vendorDebit);
+
+      if (tdsDetails.tdsAmount.gt(0)) {
+        const tdsPayableAccount = await this.getTDSPayableAccount();
+        if (tdsPayableAccount) {
+          // Reverse TDS liability (negative debit)
+          await posting.debit(tdsPayableAccount, tdsDetails.tdsAmount.neg());
+        }
+      }
     } else {
       // If TDS is applicable, vendor payable is net amount (grand total - TDS)
       const vendorPayable = tdsDetails.tdsAmount.gt(0)
@@ -188,16 +205,28 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
         return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
       }
 
+      // Calculate TDS on amount excluding GST (CBDT Circular 23/2017)
+      const exchangeRate = this.exchangeRate ?? 1;
+      const netAmount = this.netTotal ?? zeroAmount;
+      const discountAmount = this.getTotalDiscount();
+
+      let applicableAmount = netAmount;
+      if (!this.discountAfterTax) {
+        applicableAmount = applicableAmount.sub(discountAmount);
+      }
+
+      // Convert to base currency for threshold check and calculation
+      const baseApplicableAmount = applicableAmount.mul(exchangeRate).abs();
+
       // Check threshold
-      const grossAmount = this.baseGrandTotal ?? zeroAmount;
-      if (!tdsSection.isApplicableForAmount(grossAmount)) {
+      if (!tdsSection.isApplicableForAmount(baseApplicableAmount)) {
         return { tdsAmount: zeroAmount, tdsRate: 0, tdsSection: null };
       }
 
       // Calculate TDS
       const hasPan = party.panAvailable ?? true;
       const tdsRate = tdsSection.getApplicableRate(hasPan);
-      const tdsAmount = grossAmount.mul(tdsRate / 100);
+      const tdsAmount = baseApplicableAmount.mul(tdsRate / 100);
 
       return {
         tdsAmount,

@@ -180,7 +180,7 @@ export class EWayBill extends Doc {
     }
 
     if (this.validUpto) {
-      const validUptoDate = DateTime.fromISO(this.validUpto);
+      const validUptoDate = DateTime.fromISO(this.validUpto).endOf('day');
       if (DateTime.local() > validUptoDate) {
         this.status = 'Expired';
         return;

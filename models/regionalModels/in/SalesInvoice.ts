@@ -48,6 +48,8 @@ function getCreateEWayBillAction(fyo: Fyo): Action {
         ewayBill as unknown as { populateFromInvoice?: () => Promise<void> }
       ).populateFromInvoice?.();
 
+      await ewayBill.sync();
+
       const name = ewayBill.name;
       if (!name) {
         return;

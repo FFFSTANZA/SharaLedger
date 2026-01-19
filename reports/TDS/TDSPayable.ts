@@ -170,71 +170,39 @@ export class TDSPayable extends Report {
     const rows: TDSPayableRow[] = [];
 
     for (const invoice of purchaseInvoices) {
-      // Get party details
-      const party = await this.fyo.doc.getDoc(
-        ModelNameEnum.Party,
-        invoice.party as string
-      );
+      // Get purchase invoice doc to use its regional logic
+      const pi = (await this.fyo.doc.getDoc(
+        ModelNameEnum.PurchaseInvoice,
+        invoice.name as string
+      )) as any;
 
-      const tdsApplicable = party.get('tdsApplicable') as boolean;
-      const tdsCategory = party.get('tdsCategory') as string | undefined;
-      const panAvailable = (party.get('panAvailable') as boolean) ?? true;
+      const tdsDetails = await pi.calculateTDS();
 
-      if (!tdsApplicable || !tdsCategory) {
-        continue;
-      }
-
-      // Get TDS Category
-      const tdsCategoryDoc = await this.fyo.doc.getDoc(
-        'TDSCategory',
-        tdsCategory
-      );
-      const tdsSectionName = tdsCategoryDoc.get('tdsSection') as
-        | string
-        | undefined;
-
-      if (!tdsSectionName) {
+      // Skip if no TDS was deducted
+      if (tdsDetails.tdsAmount.isZero()) {
         continue;
       }
 
       // Filter by TDS Section if specified
-      if (this.tdsSection && tdsSectionName !== this.tdsSection) {
+      if (this.tdsSection && tdsDetails.tdsSection !== this.tdsSection) {
         continue;
       }
 
-      // Get TDS Section
-      const tdsSection = await this.fyo.doc.getDoc(
-        'TDSSection',
-        tdsSectionName
-      );
+      // If it's a return, TDS amount is reversed
+      const tdsAmount = pi.isReturn
+        ? -tdsDetails.tdsAmount.toNumber()
+        : tdsDetails.tdsAmount.toNumber();
 
-      const isActive = tdsSection.get('isActive') as boolean;
-      if (!isActive) {
-        continue;
-      }
-
-      const rate = panAvailable
-        ? (tdsSection.get('rate') as number)
-        : (tdsSection.get('rateWithoutPan') as number);
-
-      const grossAmount = invoice.baseGrandTotal as number;
-
-      // Check threshold
-      const threshold = tdsSection.get('threshold') as number | undefined;
-      if (threshold && grossAmount < threshold) {
-        continue; // Skip if below threshold
-      }
-
-      const tdsAmount = (grossAmount * rate) / 100;
+      const grossAmount = pi.baseGrandTotal.toNumber();
       const netPayable = grossAmount - tdsAmount;
 
       rows.push({
-        date: invoice.date as string,
-        invoice: invoice.name as string,
-        party: invoice.party as string,
-        tdsSection: tdsSectionName,
+        date: pi.date,
+        invoice: pi.name,
+        party: pi.party,
+        tdsSection: tdsDetails.tdsSection || '',
         grossAmount,
-        tdsRate: rate,
+        tdsRate: tdsDetails.tdsRate,
         tdsAmount,
         netPayable,
       });
