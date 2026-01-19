@@ -1,6 +1,7 @@
 import { t } from 'fyo';
 import { Action } from 'fyo/model/types';
 import { DateTime } from 'luxon';
+import { Money } from 'pesa';
 import { ModelNameEnum } from 'models/types';
 import getCommonExportActions from 'reports/commonExporter';
 import { Report } from 'reports/Report';
@@ -224,7 +225,7 @@ export class EWayBillRegister extends Report {
         invoiceNo: (ewayBill.invoiceNo as string) || '',
         customer: customerName,
         invoiceDate: (ewayBill.invoiceDate as string) || '',
-        invoiceValue: (ewayBill.invoiceValue as number) || 0,
+        invoiceValue: ewayBill.invoiceValue instanceof Money ? ewayBill.invoiceValue.float : (ewayBill.invoiceValue as number) || 0,
         ewayBillNo: (ewayBill.ewayBillNo as string) || '',
         vehicleNo: (ewayBill.vehicleNo as string) || '',
         transportMode: (ewayBill.transportMode as string) || '',

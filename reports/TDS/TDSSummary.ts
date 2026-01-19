@@ -1,6 +1,7 @@
 import { t } from 'fyo';
 import { Action } from 'fyo/model/types';
 import { DateTime } from 'luxon';
+import { Money } from 'pesa';
 import { ModelNameEnum } from 'models/types';
 import getCommonExportActions from 'reports/commonExporter';
 import { Report } from 'reports/Report';
@@ -154,65 +155,34 @@ export class TDSSummary extends Report {
     >();
 
     for (const invoice of purchaseInvoices) {
-      // Get party details
-      const party = await this.fyo.doc.getDoc(
-        ModelNameEnum.Party,
-        invoice.party as string
-      );
+      // Get purchase invoice doc to use its regional logic
+      const pi = (await this.fyo.doc.getDoc(
+        ModelNameEnum.PurchaseInvoice,
+        invoice.name as string
+      )) as any;
 
-      const tdsApplicable = party.get('tdsApplicable') as boolean;
-      const tdsCategory = party.get('tdsCategory') as string | undefined;
-      const panAvailable = (party.get('panAvailable') as boolean) ?? true;
+      const tdsDetails = await pi.calculateTDS();
 
-      if (!tdsApplicable || !tdsCategory) {
-        continue;
-      }
-
-      // Get TDS Category
-      const tdsCategoryDoc = await this.fyo.doc.getDoc(
-        'TDSCategory',
-        tdsCategory
-      );
-      const tdsSectionName = tdsCategoryDoc.get('tdsSection') as
-        | string
-        | undefined;
-
-      if (!tdsSectionName) {
+      // Skip if no TDS was deducted
+      if (tdsDetails.tdsAmount.isZero()) {
         continue;
       }
 
       // Filter by TDS Section if specified
-      if (this.tdsSection && tdsSectionName !== this.tdsSection) {
+      if (this.tdsSection && tdsDetails.tdsSection !== this.tdsSection) {
         continue;
       }
 
-      // Get TDS Section
-      const tdsSection = await this.fyo.doc.getDoc(
-        'TDSSection',
-        tdsSectionName
-      );
-
-      const isActive = tdsSection.get('isActive') as boolean;
-      if (!isActive) {
-        continue;
-      }
-
-      const rate = panAvailable
-        ? (tdsSection.get('rate') as number)
-        : (tdsSection.get('rateWithoutPan') as number);
-
-      const grossAmount = invoice.baseGrandTotal as number;
-
-      // Check threshold
-      const threshold = tdsSection.get('threshold') as number | undefined;
-      if (threshold && grossAmount < threshold) {
-        continue;
-      }
-
-      const tdsAmount = (grossAmount * rate) / 100;
-
-      const partyName = invoice.party as string;
+      const partyName = pi.party as string;
+      const tdsSectionName = tdsDetails.tdsSection || '';
       const key = `${partyName}-${tdsSectionName}`;
+
+      // If it's a return, amounts are reversed
+      const tdsAmount = pi.isReturn
+        ? -(tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount)
+        : (tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount);
+
+      const grossAmount = pi.baseGrandTotal instanceof Money ? pi.baseGrandTotal.float : pi.baseGrandTotal;
 
       if (summaryMap.has(key)) {
         const existing = summaryMap.get(key)!;
@@ -221,7 +191,7 @@ export class TDSSummary extends Report {
         existing.totalTDSAmount += tdsAmount;
       } else {
         summaryMap.set(key, {
-          party: invoice.party as string,
+          party: partyName,
           tdsSection: tdsSectionName,
           invoiceCount: 1,
           totalGrossAmount: grossAmount,
