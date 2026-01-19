@@ -58,6 +58,61 @@ export class EWayBill extends Doc {
         throw new ValidationError(t`E-Way Bill number must be 12 digits`);
       }
     },
+    ewayBillDate: (value) => {
+      if (!value) {
+        return;
+      }
+
+      const ewayBillDate = DateTime.fromISO(value);
+      if (!ewayBillDate.isValid) {
+        throw new ValidationError(t`Invalid E-Way Bill date`);
+      }
+
+      // E-Way Bill should not be older than invoice date
+      if (this.invoiceDate) {
+        const invoiceDate = DateTime.fromISO(this.invoiceDate);
+        if (ewayBillDate < invoiceDate) {
+          throw new ValidationError(
+            t`E-Way Bill date cannot be before invoice date`
+          );
+        }
+      }
+    },
+    vehicleNo: (value) => {
+      if (!value) {
+        return;
+      }
+
+      // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
+      const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
+      if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
+        throw new ValidationError(
+          t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
+        );
+      }
+    },
+    fromGstin: (value) => {
+      if (!value) {
+        return;
+      }
+
+      // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
+      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
+      if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
+        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
+      }
+    },
+    toGstin: (value) => {
+      if (!value) {
+        return;
+      }
+
+      // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
+      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
+      if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
+        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
+      }
+    },
     validUpto: () => {
       if (!this.ewayBillDate || !this.validUpto) {
         return;
@@ -85,8 +140,6 @@ export class EWayBill extends Doc {
     invoiceNo: () => true,
     invoiceDate: () => true,
     invoiceValue: () => true,
-    fromGstin: () => true,
-    toGstin: () => true,
     statusChangedBy: () => true,
     statusChangedAt: () => true,
   };

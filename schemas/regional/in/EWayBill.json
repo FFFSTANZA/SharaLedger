@@ -92,7 +92,6 @@
       "label": "From GSTIN",
       "fieldtype": "Data",
       "placeholder": "27AAAAA0000A1Z5",
-      "readOnly": true,
       "section": "GST Details"
     },
     {
@@ -100,7 +99,6 @@
       "label": "To GSTIN",
       "fieldtype": "Data",
       "placeholder": "27BBBBB1111B1Z5",
-      "readOnly": true,
       "section": "GST Details"
     },
     {
@@ -233,7 +231,6 @@
     }
   ],
   "quickEditFields": [
-    "salesInvoice",
     "supplyType",
     "subType",
     "transporterName",
@@ -242,7 +239,9 @@
     "distanceKm",
     "ewayBillNo",
     "ewayBillDate",
-    "validUpto"
+    "validUpto",
+    "fromGstin",
+    "toGstin"
   ],
   "keywordFields": ["invoiceNo", "ewayBillNo", "vehicleNo"]
 }
