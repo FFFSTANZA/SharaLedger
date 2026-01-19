@@ -83,11 +83,11 @@ export class EWayBill extends Doc {
         return;
       }
 
-      // Basic vehicle number validation for Indian format
+      // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
       const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
-      if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase())) {
+      if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
         throw new ValidationError(
-          t`Invalid vehicle number format (e.g., MH12AB1234)`
+          t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
         );
       }
     },
@@ -96,10 +96,10 @@ export class EWayBill extends Doc {
         return;
       }
 
-      // Basic GSTIN validation
-      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
+      // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
+      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
       if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
-        throw new ValidationError(t`Invalid GSTIN format`);
+        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
       }
     },
     toGstin: (value) => {
@@ -107,10 +107,10 @@ export class EWayBill extends Doc {
         return;
       }
 
-      // Basic GSTIN validation
-      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
+      // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
+      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
       if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
-        throw new ValidationError(t`Invalid GSTIN format`);
+        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
       }
     },
     validUpto: () => {
@@ -140,8 +140,6 @@ export class EWayBill extends Doc {
     invoiceNo: () => true,
     invoiceDate: () => true,
     invoiceValue: () => true,
-    fromGstin: () => true,
-    toGstin: () => true,
     statusChangedBy: () => true,
     statusChangedAt: () => true,
   };

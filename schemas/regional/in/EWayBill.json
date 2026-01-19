@@ -231,7 +231,6 @@
     }
   ],
   "quickEditFields": [
-    "salesInvoice",
     "supplyType",
     "subType",
     "transporterName",
@@ -240,7 +239,9 @@
     "distanceKm",
     "ewayBillNo",
     "ewayBillDate",
-    "validUpto"
+    "validUpto",
+    "fromGstin",
+    "toGstin"
   ],
   "keywordFields": ["invoiceNo", "ewayBillNo", "vehicleNo"]
 }

@@ -27,9 +27,16 @@ function getCreateEWayBillAction(fyo: Fyo): Action {
         | string
         | undefined;
       if (!companyGstin) {
+        console.warn('Company GSTIN is required to create E-Way Bills');
         return false;
       }
 
+      // Check if invoice has value that requires E-Way Bill
+      if (doc.baseGrandTotal && doc.baseGrandTotal.gte(fyo.pesa(50000))) {
+        return true;
+      }
+
+      // Allow creation for invoices below threshold as well
       return true;
     },
     action: async (doc: Doc) => {
