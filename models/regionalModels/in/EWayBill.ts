@@ -150,6 +150,22 @@ export class EWayBill extends Doc {
     this.updateStatus();
   }
 
+  async _applyChange(
+    fieldname: string,
+    retriggerChildDocApplyChange?: boolean
+  ): Promise<boolean> {
+    const res = await super._applyChange(
+      fieldname,
+      retriggerChildDocApplyChange
+    );
+
+    if (fieldname === 'salesInvoice' && this.salesInvoice) {
+      await this.populateFromInvoice();
+    }
+
+    return res;
+  }
+
   // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
     const previousStatus = this.status;
@@ -218,28 +234,32 @@ export class EWayBill extends Doc {
       return;
     }
 
-    const invoice = await this.fyo.doc.getDoc(
-      ModelNameEnum.SalesInvoice,
-      this.salesInvoice
-    );
-    this.invoiceNo = invoice.name as string;
-    this.invoiceDate = invoice.date as string;
-    this.invoiceValue = invoice.baseGrandTotal as Money;
+    try {
+      const invoice = await this.fyo.doc.getDoc(
+        ModelNameEnum.SalesInvoice,
+        this.salesInvoice
+      );
+      this.invoiceNo = invoice.name as string;
+      this.invoiceDate = invoice.date as string;
+      this.invoiceValue = invoice.baseGrandTotal as Money;
 
-    const companyGstin = this.fyo.singles.AccountingSettings?.gstin as
-      | string
-      | undefined;
-    if (companyGstin) {
-      this.fromGstin = companyGstin;
-    }
-
-    const partyName = invoice.party as string;
-    if (partyName) {
-      const party = await this.fyo.doc.getDoc(ModelNameEnum.Party, partyName);
-      const customerGstin = party.get('gstin') as string | undefined;
-      if (customerGstin) {
-        this.toGstin = customerGstin;
+      const companyGstin = this.fyo.singles.AccountingSettings?.gstin as
+        | string
+        | undefined;
+      if (companyGstin) {
+        this.fromGstin = companyGstin;
       }
+
+      const partyName = invoice.party as string;
+      if (partyName) {
+        const party = await this.fyo.doc.getDoc(ModelNameEnum.Party, partyName);
+        const customerGstin = party.get('gstin') as string | undefined;
+        if (customerGstin) {
+          this.toGstin = customerGstin;
+        }
+      }
+    } catch (error) {
+      console.error('Error populating E-Way Bill from invoice:', error);
     }
   }
 

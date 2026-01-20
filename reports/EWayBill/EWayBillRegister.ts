@@ -104,6 +104,7 @@ export class EWayBillRegister extends Report {
         label: t`Invoice No`,
         fieldtype: 'Link',
         fieldname: 'invoiceNo',
+        target: ModelNameEnum.SalesInvoice,
         width: 1,
       },
       {
