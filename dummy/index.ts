@@ -85,7 +85,7 @@ async function setOtherSettings(fyo: Fyo) {
 
   const acc = await fyo.doc.getDoc(ModelNameEnum.AccountingSettings);
   await acc.setAndSync({
-    gstin: '27LIN180000A1Z5',
+    gstin: '27AAAPL1234C1Z5',
   });
 }
 
