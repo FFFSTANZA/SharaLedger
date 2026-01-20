@@ -78,10 +78,26 @@ export class TDSSection extends Doc {
     cumulativeAmount?: Money,
     partyTurnover?: Money,
     buyerTurnover?: Money,
-    sellerTurnover?: Money
+    sellerTurnover?: Money,
+    financialInstitutionType?: 'bank' | 'cooperative' | 'postoffice' | 'other'
   ): boolean {
     if (!this.isActive) {
       return false;
+    }
+
+    // Handle interest threshold based on financial institution type (194A)
+    if (this.name === '194A' && financialInstitutionType) {
+      if (financialInstitutionType === 'bank' || 
+          financialInstitutionType === 'cooperative' || 
+          financialInstitutionType === 'postoffice') {
+        // ₹5,000 threshold for banks/co-operative banks/post office
+        const threshold = this.threshold ?? amount.mul(0); // Default to 0, will be set during initialization
+        return amount.gte(threshold);
+      } else {
+        // ₹10,000 threshold for others (non-banking)
+        const threshold = this.cumulativeThreshold ?? amount.mul(0); // Default to 0, will be set during initialization
+        return amount.gte(threshold);
+      }
     }
 
     // Handle turnover-based sections (194Q, 206C1H)

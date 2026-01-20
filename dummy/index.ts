@@ -610,6 +610,17 @@ async function generateTDSData(fyo: Fyo) {
       serviceType: 'Goods-Sale',
       mutualExclusiveWith: '194Q',
     },
+    {
+      name: '194A',
+      description: 'Interest payments',
+      rate: 10,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(5000), // ₹5,000 for banks/co-op/post office
+      cumulativeThreshold: fyo.pesa(10000), // ₹10,000 for others
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'General',
+    },
   ];
 
   for (const section of tdsSections) {
@@ -661,6 +672,16 @@ async function generateTDSData(fyo: Fyo) {
       name: 'Sale of Goods',
       tdsSection: '206C1H',
       notes: 'For sale of goods (TCS)',
+    },
+    {
+      name: 'Interest - Banks/Co-op/Post Office',
+      tdsSection: '194A',
+      notes: 'For interest from banks/co-operative banks/post office (₹5,000 threshold)',
+    },
+    {
+      name: 'Interest - Others (Non-banking)',
+      tdsSection: '194A',
+      notes: 'For interest from others/non-banking (₹10,000 threshold)',
     },
   ];
 

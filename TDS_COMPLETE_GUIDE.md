@@ -49,9 +49,11 @@ TDS Amount = (Payment Amount × TDS Rate) / 100
 #### 1. **Threshold Limits**
 TDS is deducted only when payment exceeds specified threshold limits:
 - **Professional Services**: ₹30,000 per annum
-- **Contractor Payments**: ₹30,000 per annum
+- **Contractor Payments**: ₹30,000 per contract OR ₹1,00,000 aggregate per annum
 - **Rent**: ₹2,40,000 per annum
 - **Commission**: ₹15,000 per annum
+- **Interest - Banks/Co-op Banks/Post Office**: ₹5,000 per annum
+- **Interest - Others (Non-banking)**: ₹10,000 per annum
 
 #### 2. **TDS on Inclusive/Exclusive Basis**
 - TDS is calculated on the **gross amount** (before TDS deduction)
@@ -180,7 +182,8 @@ Each section has specific categories with defined rates:
 | Rent - Building/Land | 10% | 194I | ₹2,40,000 | Building or land rent |
 | Rent - Equipment | 2% | 194I | ₹2,40,000 | Equipment/machinery rent |
 | Commission | 5% | 194H | ₹15,000 | Commission payments |
-| Interest | 10% | 194A | ₹5,000 | Interest payments |
+| Interest - Banks/Co-op Banks/Post Office | 10% | 194A | ₹5,000 | Interest from banks/co-operative banks/post office |
+| Interest - Others (Non-banking) | 10% | 194A | ₹10,000 | Interest from others (non-banking financial institutions) |
 | Cash Withdrawal (ITR Filers) | 2% | 194N | ₹1 crore | Cash withdrawal above threshold |
 | Cash Withdrawal (Non-ITR) | 2%/5% | 194N | ₹20 lakh | Tiered rates based on amount |
 | E-commerce | 1% | 194O | ₹5 lakh | E-commerce transactions |
@@ -199,6 +202,20 @@ Each section has specific categories with defined rates:
 - **Business People**: If business turnover > ₹1 crore
 - **Professionals**: If gross receipts > ₹50 lakh
 - **Rent Payments**: If total rent paid > ₹2,40,000
+
+---
+
+## Important Notes on Salary TDS
+
+### Salary TDS Calculation
+**Salary TDS calculation follows slab-based computation and is handled separately from transaction-based TDS.** This includes:
+- Income tax slabs based on total income
+- Standard deduction calculations
+- Exemption calculations (HRA, LTA, etc.)
+- Perquisite valuations
+- Tax-saving investments and deductions under Chapter VI-A
+
+**Note**: This system focuses on transaction-based TDS calculations. Salary TDS requires additional payroll integration and is typically handled through separate payroll modules with slab-based tax calculations.
 
 ---
 
@@ -312,8 +329,10 @@ Credit: Party Account                    ₹98,000
 
 #### Form 24Q:
 - **Purpose**: TDS on Salary
-- **Who Files**: All deductors making salary payments
+- **Coverage**: All salary payments and deductions
 - **Due Date**: 31st of month following quarter
+
+**Note**: Salary TDS calculation follows slab-based computation and is handled separately from transaction-based TDS. This includes income tax slabs, standard deduction, exemption calculations, and perquisite valuations.
 
 #### Form 26Q:
 - **Purpose**: TDS on Non-Salary Payments
@@ -321,8 +340,8 @@ Credit: Party Account                    ₹98,000
 - **Due Date**: 31st of month following quarter
 
 #### Form 27Q:
-- **Purpose**: TDS on Securities
-- **Coverage**: Interest, dividend, and other income from securities
+- **Purpose**: TDS on payments to Non-Residents (excluding salary)
+- **Coverage**: Interest, dividend, and other payments to non-residents
 - **Due Date**: 31st of month following quarter
 
 #### Form 27EQ:
@@ -350,17 +369,17 @@ Credit: Party Account                    ₹98,000
 ### Scenario 1: Professional Services
 ```
 Service Provider: ABC Consultants
-Service Amount: ₹50,000
+Service Amount: ₹1,00,000 (Gross Amount)
 TDS Category: Professional Services (194J)
 TDS Rate: 10%
 PAN Available: Yes
 
 Calculation:
-- TDS Amount: ₹50,000 × 10% = ₹5,000
-- Net Payment: ₹50,000 - ₹5,000 = ₹45,000
-- Entry: Dr. Professional Services ₹50,000
-         Cr. TDS Payable ₹5,000
-         Cr. ABC Consultants ₹45,000
+- TDS Amount: ₹1,00,000 × 10% = ₹10,000
+- Net Payment: ₹1,00,000 - ₹10,000 = ₹90,000
+- Entry: Dr. Professional Services ₹1,00,000
+         Cr. TDS Payable ₹10,000
+         Cr. ABC Consultants ₹90,000
 ```
 
 ### Scenario 2: Contractor Payment - Dual Threshold Logic
@@ -587,6 +606,45 @@ Requirements for Lower TDS:
 1. Valid lower TDS certificate from Income Tax Department
 2. Certificate must be valid for relevant period
 3. Deductor must have copy of certificate
+```
+
+### Scenario 11: Interest TDS - Different Financial Institutions
+```
+Scenario A - Bank Interest:
+Financial Institution: HDFC Bank
+Interest Amount: ₹6,000
+TDS Category: Interest - Banks/Co-op/Post Office (194A)
+TDS Rate: 10%
+Threshold: ₹5,000 per annum
+
+Calculation:
+✅ Interest ₹6,000 > ₹5,000 threshold
+- TDS Amount: ₹6,000 × 10% = ₹600
+- Net Interest: ₹6,000 - ₹600 = ₹5,400
+
+Scenario B - Non-Banking Financial Institution:
+Financial Institution: NBFC Finance Ltd
+Interest Amount: ₹8,000
+TDS Category: Interest - Others (Non-banking) (194A)
+TDS Rate: 10%
+Threshold: ₹10,000 per annum
+
+Calculation:
+❌ Interest ₹8,000 < ₹10,000 threshold
+- No TDS applicable
+- Full Interest Received: ₹8,000
+
+Scenario C - Post Office Interest:
+Financial Institution: India Post Savings
+Interest Amount: ₹4,000
+TDS Category: Interest - Banks/Co-op/Post Office (194A)
+TDS Rate: 10%
+Threshold: ₹5,000 per annum
+
+Calculation:
+❌ Interest ₹4,000 < ₹5,000 threshold
+- No TDS applicable
+- Full Interest Received: ₹4,000
 ```
 
 ---
