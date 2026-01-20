@@ -752,7 +752,7 @@ async function generateParties(fyo: Fyo) {
     if (data.role === 'Supplier' || data.role === 'Both') {
       if (data.name === 'Janky Office Spaces') {
         data.tdsApplicable = true;
-        data.tdsCategory = 'Rent';
+        data.tdsCategory = 'Rent - Building';
         data.panAvailable = true;
       }
 
