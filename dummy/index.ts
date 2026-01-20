@@ -103,6 +103,7 @@ async function generateDynamicEntries(
 
   notifier?.(fyo.t`Creating Purchase Invoices`, -1);
   const purchaseInvoices = await getPurchaseInvoices(fyo, years, salesInvoices);
+  purchaseInvoices.push(...(await getTDSPurchaseInvoices(fyo)));
 
   notifier?.(fyo.t`Creating Journal Entries`, -1);
   const journalEntries = await getJournalEntries(fyo, salesInvoices);
@@ -115,6 +116,11 @@ async function generateDynamicEntries(
 
   const payments = await getPayments(fyo, invoices);
   await syncAndSubmit(payments, notifier);
+
+  // Generate E-Way Bills for some submitted sales invoices
+  notifier?.(fyo.t`Creating E-Way Bills`, -1);
+  const eWayBills = await generateEWayBills(fyo, salesInvoices);
+  await syncAndSubmit(eWayBills, notifier);
 }
 
 async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
@@ -517,6 +523,7 @@ async function getNonSalesPurchaseInvoices(
 
 async function generateStaticEntries(fyo: Fyo) {
   await generateItems(fyo);
+  await generateTDSData(fyo);
   await generateParties(fyo);
 }
 
@@ -527,15 +534,230 @@ async function generateItems(fyo: Fyo) {
   }
 }
 
+async function generateTDSData(fyo: Fyo) {
+  // Create common TDS sections
+  const tdsSections = [
+    {
+      name: '194C',
+      description: 'Payment to contractors',
+      rate: 1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(30000),
+      cumulativeThreshold: fyo.pesa(100000),
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+    },
+    {
+      name: '194J',
+      description: 'Professional / technical services',
+      rate: 10,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(30000),
+      cumulativeThreshold: fyo.pesa(100000),
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+    },
+    {
+      name: '194I',
+      description: 'Rent payments',
+      rate: 10,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(240000),
+      cumulativeThreshold: fyo.pesa(240000),
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+    },
+  ];
+
+  for (const section of tdsSections) {
+    if (await fyo.db.exists('TDSSection', section.name)) {
+      continue;
+    }
+    const doc = fyo.doc.getNewDoc('TDSSection', section, false);
+    await doc.sync();
+  }
+
+  // Create categories mapped to sections
+  const tdsCategories = [
+    {
+      name: 'Contractor Payment',
+      tdsSection: '194C',
+      notes: 'For contractor / job work expenses',
+    },
+    {
+      name: 'Professional Services',
+      tdsSection: '194J',
+      notes: 'For consultancy / professional services expenses',
+    },
+    {
+      name: 'Rent',
+      tdsSection: '194I',
+      notes: 'For office rent payments',
+    },
+  ];
+
+  for (const category of tdsCategories) {
+    if (await fyo.db.exists('TDSCategory', category.name)) {
+      continue;
+    }
+    const doc = fyo.doc.getNewDoc('TDSCategory', category, false);
+    await doc.sync();
+  }
+
+  // Ensure there is a payable account (used by PurchaseInvoice TDS posting)
+  if (!(await fyo.db.exists('Account', 'TDS Payable'))) {
+    const parent = (await getAccountName(fyo, 'Duties and Taxes')) as string;
+    const doc = fyo.doc.getNewDoc(
+      ModelNameEnum.Account,
+      {
+        name: 'TDS Payable',
+        isGroup: false,
+        rootType: 'Liability',
+        accountType: 'Tax',
+        parentAccount: parent,
+      },
+      false
+    );
+    await doc.sync();
+  }
+}
+
 async function generateParties(fyo: Fyo) {
   for (const party of parties) {
-    const data = { ...party };
+    const data: Record<string, unknown> = { ...party };
     if (data.defaultAccount) {
-      data.defaultAccount = await getAccountName(fyo, data.defaultAccount);
+      data.defaultAccount = await getAccountName(
+        fyo,
+        data.defaultAccount as string
+      );
     }
+
+    // Add TDS configuration for a few supplier parties to ensure the feature
+    // is visible and testable in demo data.
+    if (data.role === 'Supplier' || data.role === 'Both') {
+      if (data.name === 'Janky Office Spaces') {
+        data.tdsApplicable = true;
+        data.tdsCategory = 'Rent';
+        data.panAvailable = true;
+      }
+
+      if (data.name === 'Maxwell') {
+        data.tdsApplicable = true;
+        data.tdsCategory = 'Professional Services';
+        // Show a "no PAN" scenario for demo
+        data.panAvailable = false;
+      }
+    }
+
     const doc = fyo.doc.getNewDoc('Party', data, false);
     await doc.sync();
   }
+}
+
+async function getTDSPurchaseInvoices(fyo: Fyo): Promise<PurchaseInvoice[]> {
+  const invoices: PurchaseInvoice[] = [];
+  const today = DateTime.local();
+
+  const tdsParties = [
+    { name: 'Janky Office Spaces', item: 'Office Rent', qty: 6 },
+    { name: 'Maxwell', item: 'Marketing - Video', qty: 3 },
+  ];
+
+  for (const partyInfo of tdsParties) {
+    // Check if party exists
+    if (!(await fyo.db.exists('Party', partyInfo.name))) {
+      continue;
+    }
+
+    const doc = fyo.doc.getNewDoc(
+      ModelNameEnum.PurchaseInvoice,
+      {
+        date: today.minus({ days: 15 }).toJSDate(),
+      },
+      false
+    ) as PurchaseInvoice;
+
+    await doc.set('party', partyInfo.name);
+    if (!doc.account) {
+      doc.account = await getAccountName(fyo, 'Creditors');
+    }
+
+    await doc.append('items', {});
+    await doc.items!.at(-1)!.set({
+      item: partyInfo.item,
+      quantity: partyInfo.qty,
+    });
+
+    invoices.push(doc);
+  }
+
+  return invoices;
+}
+
+async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
+  const eWayBills = [];
+  const vehicleNumbers = ['MH12AB1234', 'DL01CD5678', 'KA03EF9012', 'GJ05GH3456'];
+  const transporters = [
+    'Blue Dart Express',
+    'DTDC Courier',
+    'Delhivery',
+    'VRL Logistics',
+  ];
+  const companyGstin = '27AAAPL1234C1Z5';
+
+  // Generate E-Way Bills for ~20% of invoices with invoice value >= 50,000
+  for (const invoice of salesInvoices) {
+    // Only for higher value invoices
+    if (
+      invoice.baseGrandTotal &&
+      invoice.baseGrandTotal.gte(fyo.pesa(50000)) &&
+      Math.random() < 0.2
+    ) {
+      const invoiceDate = DateTime.fromJSDate(invoice.date as Date);
+
+      // Distance for E-Way Bill validity calculation
+      const distance = Math.floor(Math.random() * 500) + 100; // 100-600 km
+      const ewayBillDate = invoiceDate.toISODate();
+
+      // E-Way Bill valid for 1 day per 200 km
+      const validityDays = Math.max(1, Math.ceil(distance / 200));
+      const validUpto = invoiceDate.plus({ days: validityDays }).toISODate();
+
+      // Get party GSTIN (if available)
+      let toGstin = null;
+      try {
+        const party = await fyo.doc.getDoc('Party', invoice.party as string);
+        toGstin = (party.get('gstin') as string) || null;
+      } catch {
+        // No GSTIN available
+      }
+
+      const eWayBill = fyo.doc.getNewDoc(
+        'EWayBill',
+        {
+          salesInvoice: invoice.name,
+          supplyType: 'Outward',
+          subType: 'Supply',
+          fromGstin: companyGstin,
+          toGstin,
+          transporterName: sample(transporters),
+          transportMode: 'Road',
+          vehicleNo: sample(vehicleNumbers),
+          distanceKm: distance,
+          ewayBillNo: String(
+            100000000000 + Math.floor(Math.random() * 899999999999)
+          ).slice(0, 12),
+          ewayBillDate,
+          validUpto,
+        },
+        false
+      );
+
+      eWayBills.push(eWayBill);
+    }
+  }
+
+  return eWayBills;
 }
 
 async function syncAndSubmit(docs: Doc[], notifier?: Notifier) {
@@ -544,6 +766,7 @@ async function syncAndSubmit(docs: Doc[], notifier?: Notifier) {
     [ModelNameEnum.SalesInvoice]: t`Invoices`,
     [ModelNameEnum.Payment]: t`Payments`,
     [ModelNameEnum.JournalEntry]: t`Journal Entries`,
+    EWayBill: t`E-Way Bills`,
   };
 
   const total = docs.length;
