@@ -28,11 +28,20 @@ export class TDSSection extends Doc {
     amount?: Money,
     cumulativeAmount?: Money,
     isITRFiler?: boolean,
-    otherSectionApplicable?: boolean
+    otherSectionApplicable?: boolean,
+    isNonFiler?: boolean,
+    baseRate?: number
   ): number {
     // Check mutual exclusivity first
     if (otherSectionApplicable && this.mutualExclusiveWith) {
       return 0; // Don't apply if mutually exclusive section applies
+    }
+
+    // Handle higher TDS for non-filers (Section 206AB)
+    if (isNonFiler && baseRate) {
+      const doubleRate = baseRate * 2;
+      const fivePercent = 5;
+      return Math.min(Math.max(doubleRate, fivePercent), 20); // Higher of 2x or 5%, max 20%
     }
 
     if (!hasPan) {
@@ -79,7 +88,11 @@ export class TDSSection extends Doc {
     partyTurnover?: Money,
     buyerTurnover?: Money,
     sellerTurnover?: Money,
-    financialInstitutionType?: 'bank' | 'cooperative' | 'postoffice' | 'other'
+    financialInstitutionType?: 'bank' | 'cooperative' | 'postoffice' | 'other',
+    isSeniorCitizen?: boolean,
+    isSpecifiedPerson?: boolean,
+    businessTurnover?: Money,
+    professionalIncome?: Money
   ): boolean {
     if (!this.isActive) {
       return false;
@@ -87,16 +100,29 @@ export class TDSSection extends Doc {
 
     // Handle interest threshold based on financial institution type (194A)
     if (this.name === '194A' && financialInstitutionType) {
-      if (financialInstitutionType === 'bank' || 
-          financialInstitutionType === 'cooperative' || 
-          financialInstitutionType === 'postoffice') {
-        // ₹5,000 threshold for banks/co-operative banks/post office
-        const threshold = this.threshold ?? amount.mul(0); // Default to 0, will be set during initialization
-        return amount.gte(threshold);
+      if (isSeniorCitizen) {
+        // Senior citizens: ₹50,000 threshold for banks
+        return amount.gte(this.cumulativeThreshold ?? amount.mul(0));
+      } else if (financialInstitutionType === 'bank' || 
+                 financialInstitutionType === 'cooperative' || 
+                 financialInstitutionType === 'postoffice') {
+        // Banks/co-operative banks/post office: ₹40,000 threshold
+        return amount.gte(this.threshold ?? amount.mul(0));
       } else {
-        // ₹10,000 threshold for others (non-banking)
-        const threshold = this.cumulativeThreshold ?? amount.mul(0); // Default to 0, will be set during initialization
-        return amount.gte(threshold);
+        // Others (non-banking): ₹5,000 threshold
+        const othersThreshold = amount.mul(0).add(5000); // Hardcoded ₹5,000 for others
+        return amount.gte(othersThreshold);
+      }
+    }
+
+    // Handle crypto assets threshold based on person type (194S)
+    if (this.name === '194S' && isSpecifiedPerson !== undefined) {
+      if (isSpecifiedPerson) {
+        // Specified person: ₹50,000 threshold
+        return amount.gte(this.cumulativeThreshold ?? amount.mul(0));
+      } else {
+        // Others: ₹10,000 threshold
+        return amount.gte(this.threshold ?? amount.mul(0));
       }
     }
 
@@ -153,14 +179,25 @@ export class TDSSection extends Doc {
     otherSectionApplicable?: boolean,
     partyTurnover?: Money,
     buyerTurnover?: Money,
-    sellerTurnover?: Money
+    sellerTurnover?: Money,
+    financialInstitutionType?: 'bank' | 'cooperative' | 'postoffice' | 'other',
+    isSeniorCitizen?: boolean,
+    isSpecifiedPerson?: boolean,
+    businessTurnover?: Money,
+    professionalIncome?: Money,
+    isNonFiler?: boolean
   ): Money {
     if (!this.isApplicableForAmount(
       baseAmount,
       cumulativeAmount,
       partyTurnover,
       buyerTurnover,
-      sellerTurnover
+      sellerTurnover,
+      financialInstitutionType,
+      isSeniorCitizen,
+      isSpecifiedPerson,
+      businessTurnover,
+      professionalIncome
     )) {
       return baseAmount.mul(0);
     }
@@ -170,7 +207,9 @@ export class TDSSection extends Doc {
       baseAmount,
       cumulativeAmount,
       isITRFiler,
-      otherSectionApplicable
+      otherSectionApplicable,
+      isNonFiler,
+      this.rate
     );
 
     return baseAmount.mul(rate / 100);

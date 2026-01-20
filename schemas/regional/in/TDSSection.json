@@ -137,6 +137,26 @@
           "label": "Equipment Rent (2%)"
         },
         {
+          "value": "Interest-Banks",
+          "label": "Interest from Banks (₹40,000)"
+        },
+        {
+          "value": "Interest-SeniorCitizen",
+          "label": "Interest for Senior Citizens (₹50,000)"
+        },
+        {
+          "value": "Interest-Others",
+          "label": "Interest from Others (₹5,000)"
+        },
+        {
+          "value": "Crypto-Specified",
+          "label": "Crypto - Specified Person (₹50,000)"
+        },
+        {
+          "value": "Crypto-Others",
+          "label": "Crypto - Others (₹10,000)"
+        },
+        {
           "value": "Goods-Purchase",
           "label": "Purchase of Goods (194Q)"
         },

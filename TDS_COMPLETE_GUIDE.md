@@ -52,17 +52,24 @@ TDS is deducted only when payment exceeds specified threshold limits:
 - **Contractor Payments**: ₹30,000 per contract OR ₹1,00,000 aggregate per annum
 - **Rent**: ₹2,40,000 per annum
 - **Commission**: ₹15,000 per annum
-- **Interest - Banks/Co-op Banks/Post Office**: ₹5,000 per annum
-- **Interest - Others (Non-banking)**: ₹10,000 per annum
+- **Interest - Banks/Co-op Banks/Post Office**: ₹40,000 per annum
+- **Interest - Senior Citizens (Banks)**: ₹50,000 per annum
+- **Interest - Others (Non-banking)**: ₹5,000 per annum
 
 #### 2. **TDS on Inclusive/Exclusive Basis**
 - TDS is calculated on the **gross amount** (before TDS deduction)
 - The net payment to the deductee is: Gross Amount - TDS Amount
 
-#### 3. **PAN Requirement**
+#### 3. **PAN Requirement and Higher TDS for Non-Filers**
 - If deductee doesn't provide PAN, TDS rate is 20% (or higher as per section)
 - With valid PAN, applicable TDS rates apply
-- Higher TDS (20%) for non-filers of ITR (as per Section 206AB)
+- **Higher TDS for Non-filers (Section 206AB)**: 
+  - **Rule**: Higher of twice the specified rate OR 5%, subject to maximum 20%
+  - **Examples**: 
+    - Normal rate 1% → becomes 5% (higher of 2×1%=2% or 5%)
+    - Normal rate 10% → becomes 20% (higher of 2×10%=20% or 5%)
+  - **Applicability**: Non-filers of ITR for last 3 years
+- **Lower TDS**: Available with valid certificate from Income Tax Department
 
 ---
 
@@ -124,9 +131,13 @@ TDS is deducted only when payment exceeds specified threshold limits:
 - If buyer doesn't meet 194Q conditions but seller meets TCS conditions → **TCS under 206C(1H) applies**
 - **System must automatically decide based on conditions**
 
-#### Section 194S - Crypto Assets
+#### Section 194S - Sale of Crypto Assets
 - **TDS Rate**: 1% for sale of crypto assets
-- **Threshold**: ₹10,000 per transaction
+- **Threshold**: Based on person type
+  - **Specified Person**: ₹50,000 per transaction
+  - **Others**: ₹10,000 per transaction
+- **Specified Person**: Individual/HUF with turnover not exceeding ₹1 crore (business) or ₹50 lakh (profession)
+- **Examples**: Trading of cryptocurrencies, NFTs, virtual assets
 
 ---
 
@@ -182,8 +193,9 @@ Each section has specific categories with defined rates:
 | Rent - Building/Land | 10% | 194I | ₹2,40,000 | Building or land rent |
 | Rent - Equipment | 2% | 194I | ₹2,40,000 | Equipment/machinery rent |
 | Commission | 5% | 194H | ₹15,000 | Commission payments |
-| Interest - Banks/Co-op Banks/Post Office | 10% | 194A | ₹5,000 | Interest from banks/co-operative banks/post office |
-| Interest - Others (Non-banking) | 10% | 194A | ₹10,000 | Interest from others (non-banking financial institutions) |
+| Interest - Banks/Co-op Banks/Post Office | 10% | 194A | ₹40,000 | Interest from banks/co-operative banks/post office |
+| Interest - Senior Citizens (Banks) | 10% | 194A | ₹50,000 | Interest from banks for senior citizens |
+| Interest - Others (Non-banking) | 10% | 194A | ₹5,000 | Interest from companies/NBFCs/others |
 | Cash Withdrawal (ITR Filers) | 2% | 194N | ₹1 crore | Cash withdrawal above threshold |
 | Cash Withdrawal (Non-ITR) | 2%/5% | 194N | ₹20 lakh | Tiered rates based on amount |
 | E-commerce | 1% | 194O | ₹5 lakh | E-commerce transactions |
@@ -608,12 +620,37 @@ Requirements for Lower TDS:
 3. Deductor must have copy of certificate
 ```
 
-### Scenario 11: Interest TDS - Different Financial Institutions
+### Scenario 11: Interest TDS - Different Financial Institutions and Senior Citizens
 ```
-Scenario A - Bank Interest:
+Scenario A - Regular Bank Interest:
 Financial Institution: HDFC Bank
-Interest Amount: ₹6,000
+Interest Amount: ₹45,000
 TDS Category: Interest - Banks/Co-op/Post Office (194A)
+TDS Rate: 10%
+Threshold: ₹40,000 per annum
+
+Calculation:
+✅ Interest ₹45,000 > ₹40,000 threshold
+- TDS Amount: ₹45,000 × 10% = ₹4,500
+- Net Interest: ₹45,000 - ₹4,500 = ₹40,500
+
+Scenario B - Senior Citizen Bank Interest:
+Financial Institution: State Bank of India
+Account Holder: Senior Citizen (60+ years)
+Interest Amount: ₹48,000
+TDS Category: Interest - Senior Citizens (Banks) (194A)
+TDS Rate: 10%
+Threshold: ₹50,000 per annum
+
+Calculation:
+❌ Interest ₹48,000 < ₹50,000 threshold
+- No TDS applicable
+- Full Interest Received: ₹48,000
+
+Scenario C - Non-Banking Financial Institution:
+Financial Institution: HDFC Finance Ltd (NBFC)
+Interest Amount: ₹6,000
+TDS Category: Interest - Others (Non-banking) (194A)
 TDS Rate: 10%
 Threshold: ₹5,000 per annum
 
@@ -622,29 +659,104 @@ Calculation:
 - TDS Amount: ₹6,000 × 10% = ₹600
 - Net Interest: ₹6,000 - ₹600 = ₹5,400
 
-Scenario B - Non-Banking Financial Institution:
-Financial Institution: NBFC Finance Ltd
-Interest Amount: ₹8,000
-TDS Category: Interest - Others (Non-banking) (194A)
-TDS Rate: 10%
-Threshold: ₹10,000 per annum
-
-Calculation:
-❌ Interest ₹8,000 < ₹10,000 threshold
-- No TDS applicable
-- Full Interest Received: ₹8,000
-
-Scenario C - Post Office Interest:
+Scenario D - Post Office Interest:
 Financial Institution: India Post Savings
-Interest Amount: ₹4,000
+Interest Amount: ₹38,000
 TDS Category: Interest - Banks/Co-op/Post Office (194A)
 TDS Rate: 10%
-Threshold: ₹5,000 per annum
+Threshold: ₹40,000 per annum
 
 Calculation:
-❌ Interest ₹4,000 < ₹5,000 threshold
+❌ Interest ₹38,000 < ₹40,000 threshold
 - No TDS applicable
-- Full Interest Received: ₹4,000
+- Full Interest Received: ₹38,000
+```
+
+### Scenario 12: Section 194S - Crypto Assets with Person Type Logic
+```
+Scenario A - Specified Person (Individual with low turnover):
+Person: Individual Trader (Small Business)
+Business Turnover: ₹80 lakh (< ₹1 crore)
+Crypto Transaction: Sale of Bitcoin for ₹45,000
+TDS Category: Crypto Assets (194S)
+TDS Rate: 1%
+Threshold: ₹50,000 (Specified Person)
+
+Calculation:
+❌ Amount ₹45,000 < ₹50,000 threshold
+- No TDS applicable
+- Full Proceeds Received: ₹45,000
+
+Scenario B - Specified Person (HUF with professional income):
+Person: HUF (Professional Income)
+Professional Income: ₹40 lakh (< ₹50 lakh)
+Crypto Transaction: Sale of Ethereum for ₹55,000
+TDS Category: Crypto Assets (194S)
+TDS Rate: 1%
+Threshold: ₹50,000 (Specified Person)
+
+Calculation:
+✅ Amount ₹55,000 > ₹50,000 threshold
+- TDS Amount: ₹55,000 × 1% = ₹550
+- Net Proceeds: ₹55,000 - ₹550 = ₹54,450
+
+Scenario C - Other Person (Large Business):
+Person: Corporate Entity
+Business Turnover: ₹15 crore (> ₹1 crore)
+Crypto Transaction: Sale of Multiple Tokens for ₹8,000
+TDS Category: Crypto Assets (194S)
+TDS Rate: 1%
+Threshold: ₹10,000 (Others)
+
+Calculation:
+❌ Amount ₹8,000 < ₹10,000 threshold
+- No TDS applicable
+- Full Proceeds Received: ₹8,000
+
+Scenario D - Other Person (High Value Transaction):
+Person: Corporate Entity
+Business Turnover: ₹15 crore (> ₹1 crore)
+Crypto Transaction: Sale of NFT for ₹25,000
+TDS Category: Crypto Assets (194S)
+TDS Rate: 1%
+Threshold: ₹10,000 (Others)
+
+Calculation:
+✅ Amount ₹25,000 > ₹10,000 threshold
+- TDS Amount: ₹25,000 × 1% = ₹250
+- Net Proceeds: ₹25,000 - ₹250 = ₹24,750
+```
+
+### Scenario 13: Higher TDS for Non-Filers (Section 206AB)
+```
+Scenario A - Professional Services with Non-Filer:
+Service Provider: Independent Consultant
+ITR Filing Status: Haven't filed ITR for last 3 years
+Service Amount: ₹1,00,000
+Normal TDS Rate: 10%
+Higher TDS Rate: 20% (higher of 2×10%=20% or 5%)
+
+Calculation:
+❌ Non-filer status applies
+- TDS Amount: ₹1,00,000 × 20% = ₹20,000
+- Net Payment: ₹1,00,000 - ₹20,000 = ₹80,000
+
+Scenario B - Contractor Payment with Non-Filer:
+Contractor: Small Business
+ITR Filing Status: Haven't filed ITR for last 3 years
+Contract Amount: ₹50,000
+Normal TDS Rate: 1% (Individual contractor)
+Higher TDS Rate: 5% (higher of 2×1%=2% or 5%)
+
+Calculation:
+❌ Non-filer status applies
+- TDS Amount: ₹50,000 × 5% = ₹2,500
+- Net Payment: ₹50,000 - ₹2,500 = ₹47,500
+
+Comparison with ITR Filer:
+✅ ITR filer would pay: ₹50,000 × 1% = ₹500
+❌ Non-filer pays: ₹50,000 × 5% = ₹2,500
+Difference: ₹2,000 extra for non-filing
 ```
 
 ---
@@ -657,8 +769,10 @@ Calculation:
 - **Interest**: 1.5% per month for non-payment
 
 ### For Non-Filing of Returns:
-- **Late Fee**: ₹200 per day (minimum ₹1,000)
-- **Penalty**: ₹10,000 per return
+- **Late Fee (Section 234E)**: ₹200 per day
+  - **Maximum Cap**: Cannot exceed the TDS amount
+- **Penalty (Section 271H)**: ₹10,000 to ₹1,00,000
+  - Applies for failure to file TDS returns or filing incorrect returns
 
 ### For Furnishing Incorrect Information:
 - **Penalty**: ₹10,000 per return

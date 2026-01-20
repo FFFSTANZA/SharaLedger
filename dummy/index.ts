@@ -615,8 +615,19 @@ async function generateTDSData(fyo: Fyo) {
       description: 'Interest payments',
       rate: 10,
       rateWithoutPan: 20,
-      threshold: fyo.pesa(5000), // ₹5,000 for banks/co-op/post office
-      cumulativeThreshold: fyo.pesa(10000), // ₹10,000 for others
+      threshold: fyo.pesa(40000), // ₹40,000 for banks/co-op/post office
+      cumulativeThreshold: fyo.pesa(50000), // ₹50,000 for senior citizens
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'General',
+    },
+    {
+      name: '194S',
+      description: 'Sale of crypto assets',
+      rate: 1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(10000), // ₹10,000 for others
+      cumulativeThreshold: fyo.pesa(50000), // ₹50,000 for specified persons
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
       serviceType: 'General',
@@ -676,12 +687,27 @@ async function generateTDSData(fyo: Fyo) {
     {
       name: 'Interest - Banks/Co-op/Post Office',
       tdsSection: '194A',
-      notes: 'For interest from banks/co-operative banks/post office (₹5,000 threshold)',
+      notes: 'For interest from banks/co-operative banks/post office (₹40,000 threshold)',
+    },
+    {
+      name: 'Interest - Senior Citizens (Banks)',
+      tdsSection: '194A',
+      notes: 'For interest from banks for senior citizens (₹50,000 threshold)',
     },
     {
       name: 'Interest - Others (Non-banking)',
       tdsSection: '194A',
-      notes: 'For interest from others/non-banking (₹10,000 threshold)',
+      notes: 'For interest from companies/NBFCs/others (₹5,000 threshold)',
+    },
+    {
+      name: 'Crypto Assets - Others',
+      tdsSection: '194S',
+      notes: 'For sale of crypto assets by others (₹10,000 threshold)',
+    },
+    {
+      name: 'Crypto Assets - Specified Persons',
+      tdsSection: '194S',
+      notes: 'For sale of crypto assets by specified persons (₹50,000 threshold)',
     },
   ];
 
