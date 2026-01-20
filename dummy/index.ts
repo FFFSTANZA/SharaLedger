@@ -717,11 +717,11 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
 
       // Distance for E-Way Bill validity calculation
       const distance = Math.floor(Math.random() * 500) + 100; // 100-600 km
-      const ewayBillDate = invoiceDate.toISODate();
+      const ewayBillDate = invoiceDate.toJSDate();
 
       // E-Way Bill valid for 1 day per 200 km
       const validityDays = Math.max(1, Math.ceil(distance / 200));
-      const validUpto = invoiceDate.plus({ days: validityDays }).toISODate();
+      const validUpto = invoiceDate.plus({ days: validityDays }).toJSDate();
 
       // Get party GSTIN (if available)
       let toGstin = null;
