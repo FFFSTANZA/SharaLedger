@@ -543,9 +543,11 @@ async function generateTDSData(fyo: Fyo) {
       rate: 1,
       rateWithoutPan: 20,
       threshold: fyo.pesa(30000),
+      perContractThreshold: fyo.pesa(30000),
       cumulativeThreshold: fyo.pesa(100000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'General',
     },
     {
       name: '194J',
@@ -553,9 +555,10 @@ async function generateTDSData(fyo: Fyo) {
       rate: 10,
       rateWithoutPan: 20,
       threshold: fyo.pesa(30000),
-      cumulativeThreshold: fyo.pesa(100000),
+      cumulativeThreshold: fyo.pesa(30000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'Professional',
     },
     {
       name: '194I',
@@ -566,6 +569,46 @@ async function generateTDSData(fyo: Fyo) {
       cumulativeThreshold: fyo.pesa(240000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'Rent-Building',
+    },
+    {
+      name: '194N',
+      description: 'Cash withdrawal',
+      rate: 2,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(100000000), // ₹1 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      requiresITRFiling: true,
+      tieredRates: true,
+      tier1Rate: 2,
+      tier1Threshold: fyo.pesa(2000000), // ₹20 lakh
+      tier2Rate: 5,
+      serviceType: 'General',
+    },
+    {
+      name: '194Q',
+      description: 'Purchase of goods',
+      rate: 0.1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(50000000), // ₹50 lakh
+      turnoverThreshold: fyo.pesa(1000000000), // ₹10 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'Goods-Purchase',
+      mutualExclusiveWith: '206C1H',
+    },
+    {
+      name: '206C1H',
+      description: 'Sale of goods (TCS)',
+      rate: 0.1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(50000000), // ₹50 lakh
+      turnoverThreshold: fyo.pesa(1000000000), // ₹10 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'Goods-Sale',
+      mutualExclusiveWith: '194Q',
     },
   ];
 
@@ -590,9 +633,34 @@ async function generateTDSData(fyo: Fyo) {
       notes: 'For consultancy / professional services expenses',
     },
     {
-      name: 'Rent',
+      name: 'Technical Services',
+      tdsSection: '194J',
+      notes: 'For technical services (2% rate)',
+    },
+    {
+      name: 'Rent - Building',
       tdsSection: '194I',
-      notes: 'For office rent payments',
+      notes: 'For office/building rent payments',
+    },
+    {
+      name: 'Rent - Equipment',
+      tdsSection: '194I',
+      notes: 'For equipment/machinery rent payments',
+    },
+    {
+      name: 'Cash Withdrawal',
+      tdsSection: '194N',
+      notes: 'For cash withdrawal TDS (tiered rates)',
+    },
+    {
+      name: 'Purchase of Goods',
+      tdsSection: '194Q',
+      notes: 'For purchase of goods (TDS)',
+    },
+    {
+      name: 'Sale of Goods',
+      tdsSection: '206C1H',
+      notes: 'For sale of goods (TCS)',
     },
   ];
 
