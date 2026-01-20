@@ -543,9 +543,11 @@ async function generateTDSData(fyo: Fyo) {
       rate: 1,
       rateWithoutPan: 20,
       threshold: fyo.pesa(30000),
+      perContractThreshold: fyo.pesa(30000),
       cumulativeThreshold: fyo.pesa(100000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'General',
     },
     {
       name: '194J',
@@ -553,9 +555,10 @@ async function generateTDSData(fyo: Fyo) {
       rate: 10,
       rateWithoutPan: 20,
       threshold: fyo.pesa(30000),
-      cumulativeThreshold: fyo.pesa(100000),
+      cumulativeThreshold: fyo.pesa(30000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'Professional',
     },
     {
       name: '194I',
@@ -566,6 +569,68 @@ async function generateTDSData(fyo: Fyo) {
       cumulativeThreshold: fyo.pesa(240000),
       effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
       isActive: true,
+      serviceType: 'Rent-Building',
+    },
+    {
+      name: '194N',
+      description: 'Cash withdrawal',
+      rate: 2,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(100000000), // ₹1 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      requiresITRFiling: true,
+      tieredRates: true,
+      tier1Rate: 2,
+      tier1Threshold: fyo.pesa(2000000), // ₹20 lakh
+      tier2Rate: 5,
+      serviceType: 'General',
+    },
+    {
+      name: '194Q',
+      description: 'Purchase of goods',
+      rate: 0.1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(50000000), // ₹50 lakh
+      turnoverThreshold: fyo.pesa(1000000000), // ₹10 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'Goods-Purchase',
+      mutualExclusiveWith: '206C1H',
+    },
+    {
+      name: '206C1H',
+      description: 'Sale of goods (TCS)',
+      rate: 0.1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(50000000), // ₹50 lakh
+      turnoverThreshold: fyo.pesa(1000000000), // ₹10 crore
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'Goods-Sale',
+      mutualExclusiveWith: '194Q',
+    },
+    {
+      name: '194A',
+      description: 'Interest payments',
+      rate: 10,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(40000), // ₹40,000 for banks/co-op/post office
+      cumulativeThreshold: fyo.pesa(50000), // ₹50,000 for senior citizens
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'General',
+    },
+    {
+      name: '194S',
+      description: 'Sale of crypto assets',
+      rate: 1,
+      rateWithoutPan: 20,
+      threshold: fyo.pesa(10000), // ₹10,000 for others
+      cumulativeThreshold: fyo.pesa(50000), // ₹50,000 for specified persons
+      effectiveDate: DateTime.local().minus({ years: 1 }).toISODate(),
+      isActive: true,
+      serviceType: 'General',
     },
   ];
 
@@ -590,9 +655,59 @@ async function generateTDSData(fyo: Fyo) {
       notes: 'For consultancy / professional services expenses',
     },
     {
-      name: 'Rent',
+      name: 'Technical Services',
+      tdsSection: '194J',
+      notes: 'For technical services (2% rate)',
+    },
+    {
+      name: 'Rent - Building',
       tdsSection: '194I',
-      notes: 'For office rent payments',
+      notes: 'For office/building rent payments',
+    },
+    {
+      name: 'Rent - Equipment',
+      tdsSection: '194I',
+      notes: 'For equipment/machinery rent payments',
+    },
+    {
+      name: 'Cash Withdrawal',
+      tdsSection: '194N',
+      notes: 'For cash withdrawal TDS (tiered rates)',
+    },
+    {
+      name: 'Purchase of Goods',
+      tdsSection: '194Q',
+      notes: 'For purchase of goods (TDS)',
+    },
+    {
+      name: 'Sale of Goods',
+      tdsSection: '206C1H',
+      notes: 'For sale of goods (TCS)',
+    },
+    {
+      name: 'Interest - Banks/Co-op/Post Office',
+      tdsSection: '194A',
+      notes: 'For interest from banks/co-operative banks/post office (₹40,000 threshold)',
+    },
+    {
+      name: 'Interest - Senior Citizens (Banks)',
+      tdsSection: '194A',
+      notes: 'For interest from banks for senior citizens (₹50,000 threshold)',
+    },
+    {
+      name: 'Interest - Others (Non-banking)',
+      tdsSection: '194A',
+      notes: 'For interest from companies/NBFCs/others (₹5,000 threshold)',
+    },
+    {
+      name: 'Crypto Assets - Others',
+      tdsSection: '194S',
+      notes: 'For sale of crypto assets by others (₹10,000 threshold)',
+    },
+    {
+      name: 'Crypto Assets - Specified Persons',
+      tdsSection: '194S',
+      notes: 'For sale of crypto assets by specified persons (₹50,000 threshold)',
     },
   ];
 
@@ -717,11 +832,11 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
 
       // Distance for E-Way Bill validity calculation
       const distance = Math.floor(Math.random() * 500) + 100; // 100-600 km
-      const ewayBillDate = invoiceDate.toISODate();
+      const ewayBillDate = invoiceDate.toJSDate();
 
       // E-Way Bill valid for 1 day per 200 km
       const validityDays = Math.max(1, Math.ceil(distance / 200));
-      const validUpto = invoiceDate.plus({ days: validityDays }).toISODate();
+      const validUpto = invoiceDate.plus({ days: validityDays }).toJSDate();
 
       // Get party GSTIN (if available)
       let toGstin = null;

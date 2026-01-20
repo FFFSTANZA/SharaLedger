@@ -52,8 +52,130 @@
       "label": "Cumulative Threshold",
       "fieldtype": "Currency",
       "placeholder": "100000",
-      "description": "Annual cumulative threshold for TDS applicability",
+      "description": "Annual cumulative threshold for TDS applicability (e.g., ₹1,00,000 for 194C)",
       "section": "Thresholds"
+    },
+    {
+      "fieldname": "perContractThreshold",
+      "label": "Per Contract Threshold",
+      "fieldtype": "Currency",
+      "placeholder": "30000",
+      "description": "Threshold per individual contract (e.g., ₹30,000 for 194C)",
+      "section": "Thresholds"
+    },
+    {
+      "fieldname": "requiresITRFiling",
+      "label": "Requires ITR Filing Status",
+      "fieldtype": "Check",
+      "default": false,
+      "description": "Whether this section requires ITR filing status check (for 194N)",
+      "section": "Special Conditions"
+    },
+    {
+      "fieldname": "tieredRates",
+      "label": "Has Tiered Rates",
+      "fieldtype": "Check",
+      "default": false,
+      "description": "Whether this section has multiple rate tiers (for 194N)",
+      "section": "Special Conditions"
+    },
+    {
+      "fieldname": "tier1Rate",
+      "label": "Tier 1 Rate (%)",
+      "fieldtype": "Float",
+      "placeholder": "2.0",
+      "description": "First tier rate (for sections with tiered rates)",
+      "section": "Tiered Rates"
+    },
+    {
+      "fieldname": "tier1Threshold",
+      "label": "Tier 1 Threshold",
+      "fieldtype": "Currency",
+      "placeholder": "2000000",
+      "description": "Threshold for first tier (for sections with tiered rates)",
+      "section": "Tiered Rates"
+    },
+    {
+      "fieldname": "tier2Rate",
+      "label": "Tier 2 Rate (%)",
+      "fieldtype": "Float",
+      "placeholder": "5.0",
+      "description": "Second tier rate (for sections with tiered rates)",
+      "section": "Tiered Rates"
+    },
+    {
+      "fieldname": "turnoverThreshold",
+      "label": "Turnover Threshold",
+      "fieldtype": "Currency",
+      "placeholder": "1000000000",
+      "description": "Turnover threshold for applicability (e.g., ₹10 crore for 194Q)",
+      "section": "Special Conditions"
+    },
+    {
+      "fieldname": "serviceType",
+      "label": "Service Type",
+      "fieldtype": "Select",
+      "options": [
+        {
+          "value": "General",
+          "label": "General"
+        },
+        {
+          "value": "Professional",
+          "label": "Professional Services (10%)"
+        },
+        {
+          "value": "Technical",
+          "label": "Technical Services (2%)"
+        },
+        {
+          "value": "Rent-Building",
+          "label": "Building/Land Rent (10%)"
+        },
+        {
+          "value": "Rent-Equipment",
+          "label": "Equipment Rent (2%)"
+        },
+        {
+          "value": "Interest-Banks",
+          "label": "Interest from Banks (₹40,000)"
+        },
+        {
+          "value": "Interest-SeniorCitizen",
+          "label": "Interest for Senior Citizens (₹50,000)"
+        },
+        {
+          "value": "Interest-Others",
+          "label": "Interest from Others (₹5,000)"
+        },
+        {
+          "value": "Crypto-Specified",
+          "label": "Crypto - Specified Person (₹50,000)"
+        },
+        {
+          "value": "Crypto-Others",
+          "label": "Crypto - Others (₹10,000)"
+        },
+        {
+          "value": "Goods-Purchase",
+          "label": "Purchase of Goods (194Q)"
+        },
+        {
+          "value": "Goods-Sale",
+          "label": "Sale of Goods (206C1H)"
+        }
+      ],
+      "default": "General",
+      "description": "Service type classification for rate determination",
+      "section": "Service Classification"
+    },
+    {
+      "fieldname": "mutualExclusiveWith",
+      "label": "Mutually Exclusive With",
+      "fieldtype": "Data",
+      "placeholder": "206C1H",
+      "description": "Section code that this section is mutually exclusive with (e.g., 194Q vs 206C1H)",
+      "section": "Special Conditions"
     },
     {
       "fieldname": "effectiveDate",
