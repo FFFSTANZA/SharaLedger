@@ -26,6 +26,8 @@ export class EWayBill extends Doc {
   transporterName?: string;
   transportMode?: string;
   vehicleNo?: string;
+  transportDocNo?: string;
+  transportDocDate?: string;
   distanceKm?: number;
   ewayBillNo?: string;
   ewayBillDate?: string;
@@ -95,16 +97,28 @@ export class EWayBill extends Doc {
       }
     },
     vehicleNo: (value) => {
-      if (!value) {
-        return;
-      }
+      if (this.transportMode === 'Road') {
+        if (!value) {
+          throw new ValidationError(t`Vehicle Number is required for Road transport`);
+        }
 
-      // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
-      const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
-      if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
-        throw new ValidationError(
-          t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
-        );
+        // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
+        const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
+        if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
+          throw new ValidationError(
+            t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
+          );
+        }
+      }
+    },
+    transportDocNo: (value) => {
+      if (this.transportMode && this.transportMode !== 'Road' && !value) {
+        let docLabel = t`Transport Document Number`;
+        if (this.transportMode === 'Rail') docLabel = t`RR Number`;
+        if (this.transportMode === 'Air') docLabel = t`AWB Number`;
+        if (this.transportMode === 'Ship') docLabel = t`Bill of Lading Number`;
+
+        throw new ValidationError(t`${docLabel} is required for ${this.transportMode} transport`);
       }
     },
     fromGstin: (value) => {
@@ -164,6 +178,9 @@ export class EWayBill extends Doc {
   };
 
   hidden: HiddenMap = {
+    vehicleNo: () => this.transportMode !== 'Road',
+    transportDocNo: () => !this.transportMode || this.transportMode === 'Road',
+    transportDocDate: () => !this.transportMode || this.transportMode === 'Road',
     statusChangeReason: () => {
       return this.status !== 'Cancelled' && this.status !== 'Expired';
     },
@@ -200,9 +217,13 @@ export class EWayBill extends Doc {
     return res;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
     const previousStatus = this.status;
+
+    // Ensure invoice details are populated
+    if (!this.invoiceNo || !this.invoiceDate || !this.invoiceValue || this.invoiceValue.isZero()) {
+      await this.populateFromInvoice();
+    }
 
     this.setValidUptoFromDistance();
     this.updateStatus();
@@ -296,26 +317,39 @@ export class EWayBill extends Doc {
         ModelNameEnum.SalesInvoice,
         this.salesInvoice
       );
+      
+      if (!invoice) {
+        console.warn(`Invoice ${this.salesInvoice} not found for E-Way Bill`);
+        return;
+      }
+
       this.invoiceNo = invoice.name as string;
       
-      // Handle invoice date - can be string or Date
+      // Handle invoice date - can be string, Date, or DateTime
       if (invoice.date instanceof Date) {
-        this.invoiceDate = invoice.date.toISOString();
+        this.invoiceDate = invoice.date.toISOString().split('T')[0];
       } else if (typeof invoice.date === 'string') {
-        this.invoiceDate = invoice.date;
+        this.invoiceDate = invoice.date.split('T')[0];
+      } else if (invoice.date && typeof (invoice.date as any).toISODate === 'function') {
+        // Handle Luxon DateTime
+        this.invoiceDate = (invoice.date as any).toISODate();
       }
       
-      this.invoiceValue = invoice.baseGrandTotal as Money;
+      // Use baseGrandTotal or grandTotal if base is missing/zero
+      const value = (invoice.baseGrandTotal as Money) || (invoice.grandTotal as Money);
+      if (value) {
+        this.invoiceValue = value;
+      }
 
       const companyGstin = this.fyo.singles.AccountingSettings?.gstin as
         | string
         | undefined;
-      if (companyGstin) {
+      if (companyGstin && !this.fromGstin) {
         this.fromGstin = companyGstin;
       }
 
       const partyName = invoice.party as string;
-      if (partyName) {
+      if (partyName && !this.toGstin) {
         const party = await this.fyo.doc.getDoc(ModelNameEnum.Party, partyName);
         const customerGstin = party.get('gstin') as string | undefined;
         if (customerGstin) {

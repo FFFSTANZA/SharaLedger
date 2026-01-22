@@ -18,6 +18,8 @@ type EWayBillRow = {
   invoiceValue: number;
   ewayBillNo: string;
   vehicleNo: string;
+  transportDocNo: string;
+  transportDocDate: string;
   transportMode: string;
   distanceKm: number;
   ewayBillDate: string;
@@ -132,10 +134,10 @@ export class EWayBillRegister extends Report {
         width: 1,
       },
       {
-        label: t`Vehicle No`,
+        label: t`Vehicle No / Doc No`,
         fieldtype: 'Data',
-        fieldname: 'vehicleNo',
-        width: 1,
+        fieldname: 'vehicleNoOrDocNo',
+        width: 1.2,
       },
       {
         label: t`Distance (KM)`,
@@ -189,6 +191,8 @@ export class EWayBillRegister extends Report {
         'invoiceValue',
         'ewayBillNo',
         'vehicleNo',
+        'transportDocNo',
+        'transportDocDate',
         'transportMode',
         'distanceKm',
         'ewayBillDate',
@@ -201,14 +205,18 @@ export class EWayBillRegister extends Report {
 
     const rows: EWayBillRow[] = [];
 
+    // Pre-fetch some invoices if possible or just fetch as we go but handle missing invoice date
     for (const ewayBill of ewayBills) {
-      // Get customer name from invoice
       let customerName = '';
-      if (ewayBill.salesInvoice) {
+      
+      // If we have the invoice name but it's not the same as invoiceNo field, or just to be sure
+      const invoiceId = (ewayBill.salesInvoice as string) || (ewayBill.invoiceNo as string);
+      
+      if (invoiceId) {
         try {
           const invoice = await this.fyo.doc.getDoc(
             ModelNameEnum.SalesInvoice,
-            ewayBill.salesInvoice as string
+            invoiceId
           );
           customerName = (invoice.party as string) || '';
 
@@ -216,8 +224,16 @@ export class EWayBillRegister extends Report {
           if (this.customer && customerName !== this.customer) {
             continue;
           }
+          
+          // Fallback if record fields are empty
+          if (!ewayBill.invoiceNo) ewayBill.invoiceNo = invoice.name;
+          if (!ewayBill.invoiceDate) ewayBill.invoiceDate = (invoice.date as any).toISODate?.() || invoice.date;
+          if (!ewayBill.invoiceValue || (ewayBill.invoiceValue as any).isZero?.()) {
+            ewayBill.invoiceValue = invoice.baseGrandTotal || invoice.grandTotal;
+          }
         } catch (error) {
-          console.warn('Could not fetch invoice:', error);
+          // If invoice not found, we still show the E-Way Bill but with what we have
+          console.warn(`Could not fetch invoice ${invoiceId}:`, error);
         }
       }
 
@@ -229,6 +245,8 @@ export class EWayBillRegister extends Report {
         invoiceValue: ewayBill.invoiceValue instanceof Money ? ewayBill.invoiceValue.float : (ewayBill.invoiceValue as number) || 0,
         ewayBillNo: (ewayBill.ewayBillNo as string) || '',
         vehicleNo: (ewayBill.vehicleNo as string) || '',
+        transportDocNo: (ewayBill.transportDocNo as string) || '',
+        transportDocDate: (ewayBill.transportDocDate as string) || '',
         transportMode: (ewayBill.transportMode as string) || '',
         distanceKm: (ewayBill.distanceKm as number) || 0,
         ewayBillDate: (ewayBill.ewayBillDate as string) || '',
@@ -245,10 +263,14 @@ export class EWayBillRegister extends Report {
 
     for (const row of rows) {
       const reportRow: ReportRow = { cells: [] };
+      const rowExtended = {
+        ...row,
+        vehicleNoOrDocNo: row.transportMode === 'Road' ? row.vehicleNo : row.transportDocNo,
+      };
 
       for (const { fieldname, fieldtype, width } of this.columns) {
         const align = isNumeric(fieldtype) ? 'right' : 'left';
-        const value = row[fieldname as keyof EWayBillRow];
+        const value = rowExtended[fieldname as keyof typeof rowExtended];
 
         let rawValue: string | number | null = null;
         if (typeof value === 'number') {
