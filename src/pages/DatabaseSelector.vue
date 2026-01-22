@@ -1,173 +1,207 @@
 <template>
   <div
-    class="flex-1 flex justify-center items-center bg-gradient-to-br from-violet-50 to-teal-50 dark:from-gray-950 dark:to-gray-900"
+    class="flex-1 flex justify-center items-center bg-slate-50 dark:bg-slate-950"
     :class="{
       'pointer-events-none': loadingDatabase,
       'window-drag': platform !== 'Windows',
     }"
   >
     <div
-      class="w-full w-form shadow-2xl rounded-3xl border border-white dark:border-gray-800 relative bg-white/90 dark:bg-gray-875/90 backdrop-blur-md overflow-hidden"
-      style="height: 720px"
+      class="w-full max-w-6xl shadow-2xl rounded-3xl border border-slate-200 dark:border-slate-800 relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl overflow-hidden"
+      style="height: 680px"
     >
-      <!-- Welcome to Versoll Books -->
-      <div class="px-8 pt-10 pb-6">
-        <h1
-          class="text-3xl font-bold select-none text-gray-900 dark:text-gray-25 tracking-tight"
-        >
-          {{ t`Welcome to Versoll Books` }}
-        </h1>
-        <p class="text-gray-500 dark:text-gray-400 text-lg mt-2 select-none">
-          {{ t`Your premium accounting companion` }}
-        </p>
+      <!-- Header Section -->
+      <div class="px-10 pt-10 pb-8">
+        <div class="flex items-center gap-4 mb-3">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-300 dark:shadow-violet-900/50 flex items-center justify-center">
+            <feather-icon name="book" class="text-white w-7 h-7" />
+          </div>
+          <div>
+            <h1 class="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Versoll Books
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 text-base font-medium mt-1">
+              Smart accounting for modern businesses
+            </p>
+          </div>
+        </div>
       </div>
 
-      <!-- Action items -->
-      <div class="px-4 space-y-2">
-        <!-- New File -->
+      <!-- Main Actions Grid -->
+      <div class="px-10 grid grid-cols-3 gap-6">
+        <!-- New Company Card -->
         <div
           data-testid="create-new-file"
-          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
-          :class="
-            creatingDemo
-              ? 'opacity-50'
-              : 'hover:bg-violet-50 dark:hover:bg-violet-900/20 cursor-pointer'
-          "
+          class="relative group cursor-pointer"
+          :class="{ 'opacity-50 pointer-events-none': creatingDemo }"
           @click="newDatabase"
         >
           <div
-            class="w-12 h-12 rounded-2xl bg-violet-600 shadow-lg shadow-violet-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
+            class="h-64 rounded-3xl bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/30 dark:to-indigo-900/30 border-2 border-violet-100 dark:border-violet-800/50 p-6 flex flex-col justify-between transition-all duration-300 group-hover:border-violet-300 dark:group-hover:border-violet-600 group-hover:shadow-xl group-hover:shadow-violet-100 dark:group-hover:shadow-violet-900/20 group-hover:-translate-y-1"
           >
-            <feather-icon name="plus" class="text-white w-6 h-6" />
-          </div>
-
-          <div>
-            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {{ t`New Company` }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ t`Start a fresh journey with a new company` }}
-            </p>
+            <div>
+              <div
+                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-200 dark:shadow-violet-900/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
+              >
+                <feather-icon name="plus" class="text-white w-8 h-8" />
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                New Company
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Start fresh with a new accounting setup
+              </p>
+            </div>
+            <div
+              class="w-full h-1 bg-violet-200 dark:bg-violet-800/50 rounded-full overflow-hidden"
+            >
+              <div
+                class="h-full bg-gradient-to-r from-violet-500 to-indigo-600 transition-all duration-500 group-hover:w-full w-0"
+              ></div>
+            </div>
           </div>
         </div>
 
-        <!-- Existing File -->
+        <!-- Existing Company Card -->
         <div
-          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
-          :class="
-            creatingDemo
-              ? 'opacity-50'
-              : 'hover:bg-teal-50 dark:hover:bg-teal-900/20 cursor-pointer'
-          "
+          class="relative group cursor-pointer"
+          :class="{ 'opacity-50 pointer-events-none': creatingDemo }"
           @click="existingDatabase"
         >
           <div
-            class="w-12 h-12 rounded-2xl bg-teal-600 shadow-lg shadow-teal-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
+            class="h-64 rounded-3xl bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/30 dark:to-emerald-900/30 border-2 border-teal-100 dark:border-teal-800/50 p-6 flex flex-col justify-between transition-all duration-300 group-hover:border-teal-300 dark:group-hover:border-teal-600 group-hover:shadow-xl group-hover:shadow-teal-100 dark:group-hover:shadow-teal-900/20 group-hover:-translate-y-1"
           >
-            <feather-icon name="upload" class="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {{ t`Existing Company` }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ t`Import your data from an existing file` }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Create Demo -->
-        <div
-          v-if="!files?.length"
-          class="px-4 h-24 flex flex-row items-center gap-5 p-4 rounded-2xl transition-all duration-300 group"
-          :class="
-            creatingDemo
-              ? 'opacity-50'
-              : 'hover:bg-amber-50 dark:hover:bg-amber-900/20 cursor-pointer'
-          "
-          @click="createDemo"
-        >
-          <div
-            class="w-12 h-12 rounded-2xl bg-amber-500 shadow-lg shadow-amber-200 dark:shadow-none flex-center group-hover:scale-110 transition-transform duration-300"
-          >
-            <feather-icon name="monitor" class="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <p class="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {{ t`Explore with Demo` }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ t`Experience Versoll Books with pre-loaded data` }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="px-8 mt-8 mb-4">
-        <h3
-          class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest"
-        >
-          {{ files?.length ? t`Recent Companies` : '' }}
-        </h3>
-      </div>
-
-      <!-- File List -->
-      <div class="overflow-y-auto px-4" style="max-height: 280px">
-        <div
-          v-for="(file, i) in files"
-          :key="file.dbPath"
-          class="h-20 px-4 flex gap-5 items-center rounded-xl transition-all duration-200 mb-1"
-          :class="
-            creatingDemo
-              ? 'opacity-50'
-              : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer'
-          "
-          :title="t`${file.companyName} stored at ${file.dbPath}`"
-          @click="selectFile(file)"
-        >
-          <div
-            class="w-10 h-10 rounded-xl flex justify-center items-center bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 font-bold flex-shrink-0 text-base"
-          >
-            {{ file.companyName.charAt(0).toUpperCase() }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-baseline">
-              <h2 class="font-bold text-gray-900 dark:text-gray-100 truncate">
-                {{ file.companyName }}
-              </h2>
-              <p
-                class="whitespace-nowrap text-xs font-medium text-gray-400 dark:text-gray-500"
+            <div>
+              <div
+                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-200 dark:shadow-teal-900/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
               >
-                {{ formatDate(file.modified) }}
+                <feather-icon name="upload" class="text-white w-8 h-8" />
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Existing Company
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Import your existing accounting data
               </p>
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {{ file.dbPath }}
-            </p>
+            <div
+              class="w-full h-1 bg-teal-200 dark:bg-teal-800/50 rounded-full overflow-hidden"
+            >
+              <div
+                class="h-full bg-gradient-to-r from-teal-500 to-emerald-600 transition-all duration-500 group-hover:w-full w-0"
+              ></div>
+            </div>
           </div>
-          <button
-            class="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-            @click.stop="() => deleteDb(i)"
-          >
-            <feather-icon name="trash-2" class="w-4 h-4" />
-          </button>
         </div>
-      </div>
-      <hr v-if="files?.length" class="dark:border-gray-800" />
 
-      <!-- Language Selector -->
-      <div
-        class="w-full flex justify-between items-center absolute bottom-0 left-0 p-6 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-t dark:border-gray-800"
-      >
-        <LanguageSelector v-show="!creatingDemo" class="text-sm w-32" />
-        <button
-          v-if="files?.length"
-          class="text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-xl px-6 py-2 transition-all shadow-md shadow-violet-200 dark:shadow-none"
-          :disabled="creatingDemo"
+        <!-- Demo Company Card -->
+        <div
+          v-if="!files?.length"
+          class="relative group cursor-pointer"
+          :class="{ 'opacity-50 pointer-events-none': creatingDemo }"
           @click="createDemo"
         >
-          {{ creatingDemo ? t`Please Wait` : t`Create Another Demo` }}
-        </button>
+          <div
+            class="h-64 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 border-2 border-amber-100 dark:border-amber-800/50 p-6 flex flex-col justify-between transition-all duration-300 group-hover:border-amber-300 dark:group-hover:border-amber-600 group-hover:shadow-xl group-hover:shadow-amber-100 dark:group-hover:shadow-amber-900/20 group-hover:-translate-y-1"
+          >
+            <div>
+              <div
+                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-200 dark:shadow-amber-900/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
+              >
+                <feather-icon name="play-circle" class="text-white w-8 h-8" />
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Explore Demo
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Try Versoll Books with sample data
+              </p>
+            </div>
+            <div
+              class="w-full h-1 bg-amber-200 dark:bg-amber-800/50 rounded-full overflow-hidden"
+            >
+              <div
+                class="h-full bg-gradient-to-r from-amber-500 to-orange-600 transition-all duration-500 group-hover:w-full w-0"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Companies Section -->
+      <div class="px-10 mt-8">
+        <div
+          v-if="files?.length"
+          class="flex items-center justify-between mb-4"
+        >
+          <h3 class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            Recent Companies
+          </h3>
+          <button
+            v-if="files?.length"
+            class="text-sm font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl px-5 py-2 transition-all shadow-md shadow-violet-200 dark:shadow-violet-900/30"
+            :disabled="creatingDemo"
+            @click="createDemo"
+          >
+            {{ creatingDemo ? 'Please Wait' : 'Create Demo' }}
+          </button>
+        </div>
+
+        <!-- File List -->
+        <div
+          class="space-y-2 overflow-y-auto"
+          style="max-height: 200px"
+        >
+          <div
+            v-for="(file, i) in files"
+            :key="file.dbPath"
+            class="h-16 px-4 flex gap-4 items-center rounded-xl transition-all duration-200"
+            :class="
+              creatingDemo
+                ? 'opacity-50'
+                : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer'
+            "
+            :title="`${file.companyName} stored at ${file.dbPath}`"
+            @click="selectFile(file)"
+          >
+            <div
+              class="w-11 h-11 rounded-xl flex justify-center items-center bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/40 dark:to-indigo-900/40 text-violet-600 dark:text-violet-400 font-bold flex-shrink-0 text-base shadow-sm"
+            >
+              {{ file.companyName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-baseline">
+                <h2 class="font-bold text-slate-900 dark:text-white truncate">
+                  {{ file.companyName }}
+                </h2>
+                <p
+                  class="whitespace-nowrap text-xs font-medium text-slate-400 dark:text-slate-500"
+                >
+                  {{ formatDate(file.modified) }}
+                </p>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {{ file.dbPath }}
+              </p>
+            </div>
+            <button
+              class="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-slate-400 hover:text-red-500 transition-colors"
+              @click.stop="() => deleteDb(i)"
+            >
+              <feather-icon name="trash-2" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div
+        class="w-full flex justify-between items-center absolute bottom-0 left-0 p-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800"
+      >
+        <LanguageSelector
+          v-show="!creatingDemo"
+          class="text-sm w-36"
+        />
       </div>
     </div>
     <Loading
@@ -182,30 +216,30 @@
     <!-- Base Count Selection when Dev -->
     <Modal :open-modal="openModal" @closemodal="openModal = false">
       <div
-        class="p-8 text-gray-900 dark:text-gray-100 w-form bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl border border-gray-100 dark:border-gray-700 shadow-2xl"
+        class="p-8 text-slate-900 dark:text-white w-form bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl"
       >
         <h2 class="text-2xl font-bold select-none mb-2">Set Base Count</h2>
-        <p class="text-base mt-2 text-gray-600 dark:text-gray-400">
-          Base Count is a lower bound on the number of entries made when
-          creating the dummy instance.
+        <p class="text-base mt-2 text-slate-600 dark:text-slate-400">
+          Base Count is a lower bound on the number of entries created
+          when setting up the demo instance.
         </p>
         <div class="flex my-8 justify-center items-baseline gap-4 text-base">
           <label
             for="basecount"
-            class="text-gray-700 dark:text-gray-300 font-medium"
-            >Base Count</label
+            class="text-slate-700 dark:text-slate-300 font-medium"
+          >Base Count</label
           >
           <input
             v-model="baseCount"
             type="number"
             name="basecount"
-            class="bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 border border-gray-200 dark:border-gray-600 focus:border-violet-500 dark:focus:border-violet-400 rounded-lg px-4 py-2 outline-none transition-all duration-200 w-24 text-center font-semibold text-gray-900 dark:text-gray-100"
+            class="bg-slate-50 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-600 border border-slate-200 dark:border-slate-600 focus:border-violet-500 dark:focus:border-violet-400 rounded-lg px-4 py-2 outline-none transition-all duration-200 w-24 text-center font-semibold text-slate-900 dark:text-white"
           />
         </div>
         <div class="flex justify-between gap-4">
           <Button
             @click="openModal = false"
-            class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-all duration-200"
+            class="px-6 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-medium rounded-lg transition-all duration-200"
           >
             Cancel
           </Button>
@@ -217,7 +251,7 @@
                 startDummyInstanceSetup();
               }
             "
-            class="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md"
+            class="px-6 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md shadow-violet-200 dark:shadow-violet-900/30"
           >
             Create Demo
           </Button>

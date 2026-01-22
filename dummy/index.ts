@@ -135,66 +135,87 @@ async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
     .date!;
   const date = DateTime.fromJSDate(lastInv).minus({ months: 6 }).toJSDate();
 
-  // Bank Entry
-  let doc = fyo.doc.getNewDoc(
-    ModelNameEnum.JournalEntry,
-    {
-      date,
-      entryType: 'Bank Entry',
-    },
-    false
-  );
-  await doc.append('accounts', {
-    account: 'Supreme Bank',
-    debit: amount,
-    credit: fyo.pesa(0),
-  });
+  // Bank Entry - only create if accounts exist
+  if (await fyo.db.exists('Account', 'Supreme Bank') &&
+      await fyo.db.exists('Account', 'Secured Loans')) {
+    let doc = fyo.doc.getNewDoc(
+      ModelNameEnum.JournalEntry,
+      {
+        date,
+        entryType: 'Bank Entry',
+      },
+      false
+    );
+    await doc.append('accounts', {
+      account: 'Supreme Bank',
+      debit: amount,
+      credit: fyo.pesa(0),
+    });
 
-  await doc.append('accounts', {
-    account: 'Secured Loans',
-    credit: amount,
-    debit: fyo.pesa(0),
-  });
-  entries.push(doc);
+    await doc.append('accounts', {
+      account: 'Secured Loans',
+      credit: amount,
+      debit: fyo.pesa(0),
+    });
+    entries.push(doc);
+  }
 
-  // Cash Entry
-  doc = fyo.doc.getNewDoc(
-    ModelNameEnum.JournalEntry,
-    {
-      date,
-      entryType: 'Cash Entry',
-    },
-    false
-  );
-  await doc.append('accounts', {
-    account: 'Cash',
-    debit: amount.percent(30),
-    credit: fyo.pesa(0),
-  });
+  // Cash Entry - only create if accounts exist
+  if (await fyo.db.exists('Account', 'Cash') &&
+      await fyo.db.exists('Account', 'Supreme Bank')) {
+    let doc = fyo.doc.getNewDoc(
+      ModelNameEnum.JournalEntry,
+      {
+        date,
+        entryType: 'Cash Entry',
+      },
+      false
+    );
+    await doc.append('accounts', {
+      account: 'Cash',
+      debit: amount.percent(30),
+      credit: fyo.pesa(0),
+    });
 
-  await doc.append('accounts', {
-    account: 'Supreme Bank',
-    credit: amount.percent(30),
-    debit: fyo.pesa(0),
-  });
-  entries.push(doc);
+    await doc.append('accounts', {
+      account: 'Supreme Bank',
+      credit: amount.percent(30),
+      debit: fyo.pesa(0),
+    });
+    entries.push(doc);
+  }
 
   return entries;
 }
 
 async function getAccountName(fyo: Fyo, name: string) {
   if (name === 'Debtors') {
-    const exists = await fyo.db.exists('Account', 'Debtors');
-    if (!exists && (await fyo.db.exists('Account', 'Sundry Debtors'))) {
+    if (await fyo.db.exists('Account', 'Debtors')) {
+      return 'Debtors';
+    }
+    if (await fyo.db.exists('Account', 'Sundry Debtors')) {
       return 'Sundry Debtors';
     }
   } else if (name === 'Creditors') {
-    const exists = await fyo.db.exists('Account', 'Creditors');
-    if (!exists && (await fyo.db.exists('Account', 'Sundry Creditors'))) {
+    if (await fyo.db.exists('Account', 'Creditors')) {
+      return 'Creditors';
+    }
+    if (await fyo.db.exists('Account', 'Sundry Creditors')) {
       return 'Sundry Creditors';
     }
+  } else {
+    // Check if account actually exists, otherwise return null
+    if (await fyo.db.exists('Account', name)) {
+      return name;
+    }
   }
-  return name;
+
+  // Check if the account actually exists, otherwise return null
+  if (await fyo.db.exists('Account', name)) {
+    return name;
+  }
+
+  return null;
 }
 
 async function getPayments(fyo: Fyo, invoices: Invoice[]) {
@@ -219,6 +240,12 @@ async function getPayments(fyo: Fyo, invoices: Invoice[]) {
       doc.account = 'Cash';
       doc.paymentAccount = await getAccountName(fyo, 'Creditors');
     }
+
+    // Skip if required accounts don't exist
+    if (!doc.account || !doc.paymentAccount) {
+      continue;
+    }
+
     doc.amount = invoice.outstandingAmount;
 
     // Discount
@@ -292,7 +319,10 @@ async function getSalesInvoices(
 
     await doc.set('party', customer!.name);
     if (!doc.account) {
-      doc.account = await getAccountName(fyo, 'Debtors');
+      const accountName = await getAccountName(fyo, 'Debtors');
+      if (accountName) {
+        doc.account = accountName;
+      }
     }
     /**
      * Add `numItems` number of items to the invoice.
@@ -437,7 +467,10 @@ async function getSalesPurchaseInvoices(
 
       await doc.set('party', supplier);
       if (!doc.account) {
-        doc.account = await getAccountName(fyo, 'Creditors');
+        const accountName = await getAccountName(fyo, 'Creditors');
+        if (accountName) {
+          doc.account = accountName;
+        }
       }
 
       /**
@@ -494,7 +527,10 @@ async function getNonSalesPurchaseInvoices(
       const party = purchaseItemPartyMap[name];
       await doc.set('party', party);
       if (!doc.account) {
-        doc.account = await getAccountName(fyo, 'Creditors');
+        const accountName = await getAccountName(fyo, 'Creditors');
+        if (accountName) {
+          doc.account = accountName;
+        }
       }
       await doc.append('items', {});
       const row = doc.items!.at(-1)!;
@@ -740,11 +776,41 @@ async function generateTDSData(fyo: Fyo) {
 async function generateParties(fyo: Fyo) {
   for (const party of parties) {
     const data: Record<string, unknown> = { ...party };
+
+    // Handle defaultAccount - only set if account exists
     if (data.defaultAccount) {
-      data.defaultAccount = await getAccountName(
+      const accountName = await getAccountName(
         fyo,
         data.defaultAccount as string
       );
+      if (accountName) {
+        data.defaultAccount = accountName;
+      } else {
+        delete data.defaultAccount;
+      }
+    }
+
+    // Handle currency - only set if currency exists
+    if (data.currency) {
+      const currency = data.currency as string;
+      if (!(await fyo.db.exists('Currency', currency))) {
+        delete data.currency;
+      }
+    }
+
+    // Handle address - only set if exists
+    if (data.address) {
+      delete data.address;
+    }
+
+    // Handle fromLead - only set if lead exists
+    if (data.fromLead) {
+      delete data.fromLead;
+    }
+
+    // Handle loyaltyProgram - only set if exists
+    if (data.loyaltyProgram) {
+      delete data.loyaltyProgram;
     }
 
     // Add TDS configuration for a few supplier parties to ensure the feature
@@ -752,13 +818,19 @@ async function generateParties(fyo: Fyo) {
     if (data.role === 'Supplier' || data.role === 'Both') {
       if (data.name === 'Janky Office Spaces') {
         data.tdsApplicable = true;
-        data.tdsCategory = 'Rent - Building';
+        // Only set TDS category if it exists
+        if (await fyo.db.exists('TDSCategory', 'Rent - Building')) {
+          data.tdsCategory = 'Rent - Building';
+        }
         data.panAvailable = true;
       }
 
       if (data.name === 'Maxwell') {
         data.tdsApplicable = true;
-        data.tdsCategory = 'Professional Services';
+        // Only set TDS category if it exists
+        if (await fyo.db.exists('TDSCategory', 'Professional Services')) {
+          data.tdsCategory = 'Professional Services';
+        }
         // Show a "no PAN" scenario for demo
         data.panAvailable = false;
       }
@@ -794,7 +866,10 @@ async function getTDSPurchaseInvoices(fyo: Fyo): Promise<PurchaseInvoice[]> {
 
     await doc.set('party', partyInfo.name);
     if (!doc.account) {
-      doc.account = await getAccountName(fyo, 'Creditors');
+      const accountName = await getAccountName(fyo, 'Creditors');
+      if (accountName) {
+        doc.account = accountName;
+      }
     }
 
     await doc.append('items', {});
