@@ -201,14 +201,18 @@ export class EWayBillRegister extends Report {
 
     const rows: EWayBillRow[] = [];
 
+    // Pre-fetch some invoices if possible or just fetch as we go but handle missing invoice date
     for (const ewayBill of ewayBills) {
-      // Get customer name from invoice
       let customerName = '';
-      if (ewayBill.salesInvoice) {
+      
+      // If we have the invoice name but it's not the same as invoiceNo field, or just to be sure
+      const invoiceId = (ewayBill.salesInvoice as string) || (ewayBill.invoiceNo as string);
+      
+      if (invoiceId) {
         try {
           const invoice = await this.fyo.doc.getDoc(
             ModelNameEnum.SalesInvoice,
-            ewayBill.salesInvoice as string
+            invoiceId
           );
           customerName = (invoice.party as string) || '';
 
@@ -216,8 +220,16 @@ export class EWayBillRegister extends Report {
           if (this.customer && customerName !== this.customer) {
             continue;
           }
+          
+          // Fallback if record fields are empty
+          if (!ewayBill.invoiceNo) ewayBill.invoiceNo = invoice.name;
+          if (!ewayBill.invoiceDate) ewayBill.invoiceDate = (invoice.date as any).toISODate?.() || invoice.date;
+          if (!ewayBill.invoiceValue || (ewayBill.invoiceValue as any).isZero?.()) {
+            ewayBill.invoiceValue = invoice.baseGrandTotal || invoice.grandTotal;
+          }
         } catch (error) {
-          console.warn('Could not fetch invoice:', error);
+          // If invoice not found, we still show the E-Way Bill but with what we have
+          console.warn(`Could not fetch invoice ${invoiceId}:`, error);
         }
       }
 

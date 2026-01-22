@@ -200,9 +200,13 @@ export class EWayBill extends Doc {
     return res;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
     const previousStatus = this.status;
+
+    // Ensure invoice details are populated
+    if (!this.invoiceNo || !this.invoiceDate || !this.invoiceValue || this.invoiceValue.isZero()) {
+      await this.populateFromInvoice();
+    }
 
     this.setValidUptoFromDistance();
     this.updateStatus();
@@ -296,26 +300,39 @@ export class EWayBill extends Doc {
         ModelNameEnum.SalesInvoice,
         this.salesInvoice
       );
+      
+      if (!invoice) {
+        console.warn(`Invoice ${this.salesInvoice} not found for E-Way Bill`);
+        return;
+      }
+
       this.invoiceNo = invoice.name as string;
       
-      // Handle invoice date - can be string or Date
+      // Handle invoice date - can be string, Date, or DateTime
       if (invoice.date instanceof Date) {
-        this.invoiceDate = invoice.date.toISOString();
+        this.invoiceDate = invoice.date.toISOString().split('T')[0];
       } else if (typeof invoice.date === 'string') {
-        this.invoiceDate = invoice.date;
+        this.invoiceDate = invoice.date.split('T')[0];
+      } else if (invoice.date && typeof (invoice.date as any).toISODate === 'function') {
+        // Handle Luxon DateTime
+        this.invoiceDate = (invoice.date as any).toISODate();
       }
       
-      this.invoiceValue = invoice.baseGrandTotal as Money;
+      // Use baseGrandTotal or grandTotal if base is missing/zero
+      const value = (invoice.baseGrandTotal as Money) || (invoice.grandTotal as Money);
+      if (value) {
+        this.invoiceValue = value;
+      }
 
       const companyGstin = this.fyo.singles.AccountingSettings?.gstin as
         | string
         | undefined;
-      if (companyGstin) {
+      if (companyGstin && !this.fromGstin) {
         this.fromGstin = companyGstin;
       }
 
       const partyName = invoice.party as string;
-      if (partyName) {
+      if (partyName && !this.toGstin) {
         const party = await this.fyo.doc.getDoc(ModelNameEnum.Party, partyName);
         const customerGstin = party.get('gstin') as string | undefined;
         if (customerGstin) {
