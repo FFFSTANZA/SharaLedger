@@ -747,23 +747,6 @@ async function generateParties(fyo: Fyo) {
       );
     }
 
-    // Add TDS configuration for a few supplier parties to ensure the feature
-    // is visible and testable in demo data.
-    if (data.role === 'Supplier' || data.role === 'Both') {
-      if (data.name === 'Janky Office Spaces') {
-        data.tdsApplicable = true;
-        data.tdsCategory = 'Rent';
-        data.panAvailable = true;
-      }
-
-      if (data.name === 'Maxwell') {
-        data.tdsApplicable = true;
-        data.tdsCategory = 'Professional Services';
-        // Show a "no PAN" scenario for demo
-        data.panAvailable = false;
-      }
-    }
-
     const doc = fyo.doc.getNewDoc('Party', data, false);
     await doc.sync();
   }
