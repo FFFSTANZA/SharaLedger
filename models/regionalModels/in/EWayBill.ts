@@ -63,15 +63,31 @@ export class EWayBill extends Doc {
         return;
       }
 
-      const ewayBillDate = DateTime.fromISO(value);
+      let ewayBillDate: DateTime;
+      if (typeof value === 'string') {
+        ewayBillDate = DateTime.fromISO(value);
+      } else if (value instanceof Date) {
+        ewayBillDate = DateTime.fromJSDate(value);
+      } else {
+        throw new ValidationError(t`Invalid E-Way Bill date format`);
+      }
+
       if (!ewayBillDate.isValid) {
         throw new ValidationError(t`Invalid E-Way Bill date`);
       }
 
       // E-Way Bill should not be older than invoice date
       if (this.invoiceDate) {
-        const invoiceDate = DateTime.fromISO(this.invoiceDate);
-        if (ewayBillDate < invoiceDate) {
+        let invoiceDate: DateTime;
+        if (typeof this.invoiceDate === 'string') {
+          invoiceDate = DateTime.fromISO(this.invoiceDate);
+        } else if (this.invoiceDate instanceof Date) {
+          invoiceDate = DateTime.fromJSDate(this.invoiceDate);
+        } else {
+          return; // Skip validation if invoice date format is invalid
+        }
+
+        if (invoiceDate.isValid && ewayBillDate < invoiceDate) {
           throw new ValidationError(
             t`E-Way Bill date cannot be before invoice date`
           );
@@ -118,10 +134,28 @@ export class EWayBill extends Doc {
         return;
       }
 
-      const billDate = DateTime.fromISO(this.ewayBillDate);
-      const validUptoDate = DateTime.fromISO(this.validUpto);
+      let billDate: DateTime;
+      let validUptoDate: DateTime;
 
-      if (validUptoDate <= billDate) {
+      // Handle ewayBillDate (can be string or Date)
+      if (typeof this.ewayBillDate === 'string') {
+        billDate = DateTime.fromISO(this.ewayBillDate);
+      } else if (this.ewayBillDate instanceof Date) {
+        billDate = DateTime.fromJSDate(this.ewayBillDate);
+      } else {
+        return; // Skip validation if ewayBillDate format is invalid
+      }
+
+      // Handle validUpto (can be string or Date)
+      if (typeof this.validUpto === 'string') {
+        validUptoDate = DateTime.fromISO(this.validUpto);
+      } else if (this.validUpto instanceof Date) {
+        validUptoDate = DateTime.fromJSDate(this.validUpto);
+      } else {
+        return; // Skip validation if validUpto format is invalid
+      }
+
+      if (billDate.isValid && validUptoDate.isValid && validUptoDate <= billDate) {
         throw new ValidationError(
           t`Valid Upto date must be after E-Way Bill Date`
         );
@@ -196,10 +230,21 @@ export class EWayBill extends Doc {
     }
 
     if (this.validUpto) {
-      const validUptoDate = DateTime.fromISO(this.validUpto).endOf('day');
-      if (DateTime.local() > validUptoDate) {
-        this.status = 'Expired';
-        return;
+      let validUptoDate: DateTime;
+      if (typeof this.validUpto === 'string') {
+        validUptoDate = DateTime.fromISO(this.validUpto);
+      } else if (this.validUpto instanceof Date) {
+        validUptoDate = DateTime.fromJSDate(this.validUpto);
+      } else {
+        return; // Skip status update if validUpto format is invalid
+      }
+
+      if (validUptoDate.isValid) {
+        const validUptoEndOfDay = validUptoDate.endOf('day');
+        if (DateTime.local() > validUptoEndOfDay) {
+          this.status = 'Expired';
+          return;
+        }
       }
     }
 
@@ -224,9 +269,21 @@ export class EWayBill extends Doc {
       return;
     }
 
-    const billDate = DateTime.fromISO(this.ewayBillDate);
+    let billDate: DateTime;
+    if (typeof this.ewayBillDate === 'string') {
+      billDate = DateTime.fromISO(this.ewayBillDate);
+    } else if (this.ewayBillDate instanceof Date) {
+      billDate = DateTime.fromJSDate(this.ewayBillDate);
+    } else {
+      return; // Skip if ewayBillDate format is invalid
+    }
+
+    if (!billDate.isValid) {
+      return; // Skip if date is invalid
+    }
+
     const days = Math.max(1, Math.ceil(this.distanceKm / 200));
-    this.validUpto = billDate.plus({ days }).toISODate();
+    this.validUpto = billDate.plus({ days }).toJSDate();
   }
 
   async populateFromInvoice() {
@@ -240,7 +297,14 @@ export class EWayBill extends Doc {
         this.salesInvoice
       );
       this.invoiceNo = invoice.name as string;
-      this.invoiceDate = invoice.date as string;
+      
+      // Handle invoice date - can be string or Date
+      if (invoice.date instanceof Date) {
+        this.invoiceDate = invoice.date.toISOString();
+      } else if (typeof invoice.date === 'string') {
+        this.invoiceDate = invoice.date;
+      }
+      
       this.invoiceValue = invoice.baseGrandTotal as Money;
 
       const companyGstin = this.fyo.singles.AccountingSettings?.gstin as
