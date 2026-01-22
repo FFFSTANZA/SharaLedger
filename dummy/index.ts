@@ -922,26 +922,31 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
         // No GSTIN available
       }
 
-      const eWayBill = fyo.doc.getNewDoc(
-        'EWayBill',
-        {
-          salesInvoice: invoice.name,
-          supplyType: 'Outward',
-          subType: 'Supply',
-          fromGstin: companyGstin,
-          toGstin,
-          transporterName: sample(transporters),
-          transportMode: 'Road',
-          vehicleNo: sample(vehicleNumbers),
-          distanceKm: distance,
-          ewayBillNo: String(
-            100000000000 + Math.floor(Math.random() * 899999999999)
-          ).slice(0, 12),
-          ewayBillDate,
-          validUpto,
-        },
-        false
-      );
+      const transportMode = sample(['Road', 'Road', 'Road', 'Rail', 'Air', 'Ship'])!;
+      const data: any = {
+        salesInvoice: invoice.name,
+        supplyType: 'Outward',
+        subType: 'Supply',
+        fromGstin: companyGstin,
+        toGstin,
+        transporterName: sample(transporters),
+        transportMode,
+        distanceKm: distance,
+        ewayBillNo: String(
+          100000000000 + Math.floor(Math.random() * 899999999999)
+        ).slice(0, 12),
+        ewayBillDate,
+        validUpto,
+      };
+
+      if (transportMode === 'Road') {
+        data.vehicleNo = sample(vehicleNumbers);
+      } else {
+        data.transportDocNo = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+        data.transportDocDate = ewayBillDate;
+      }
+
+      const eWayBill = fyo.doc.getNewDoc('EWayBill', data, false);
 
       eWayBills.push(eWayBill);
     }

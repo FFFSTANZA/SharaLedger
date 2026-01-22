@@ -18,6 +18,8 @@ type EWayBillRow = {
   invoiceValue: number;
   ewayBillNo: string;
   vehicleNo: string;
+  transportDocNo: string;
+  transportDocDate: string;
   transportMode: string;
   distanceKm: number;
   ewayBillDate: string;
@@ -132,10 +134,10 @@ export class EWayBillRegister extends Report {
         width: 1,
       },
       {
-        label: t`Vehicle No`,
+        label: t`Vehicle No / Doc No`,
         fieldtype: 'Data',
-        fieldname: 'vehicleNo',
-        width: 1,
+        fieldname: 'vehicleNoOrDocNo',
+        width: 1.2,
       },
       {
         label: t`Distance (KM)`,
@@ -189,6 +191,8 @@ export class EWayBillRegister extends Report {
         'invoiceValue',
         'ewayBillNo',
         'vehicleNo',
+        'transportDocNo',
+        'transportDocDate',
         'transportMode',
         'distanceKm',
         'ewayBillDate',
@@ -241,6 +245,8 @@ export class EWayBillRegister extends Report {
         invoiceValue: ewayBill.invoiceValue instanceof Money ? ewayBill.invoiceValue.float : (ewayBill.invoiceValue as number) || 0,
         ewayBillNo: (ewayBill.ewayBillNo as string) || '',
         vehicleNo: (ewayBill.vehicleNo as string) || '',
+        transportDocNo: (ewayBill.transportDocNo as string) || '',
+        transportDocDate: (ewayBill.transportDocDate as string) || '',
         transportMode: (ewayBill.transportMode as string) || '',
         distanceKm: (ewayBill.distanceKm as number) || 0,
         ewayBillDate: (ewayBill.ewayBillDate as string) || '',
@@ -257,10 +263,14 @@ export class EWayBillRegister extends Report {
 
     for (const row of rows) {
       const reportRow: ReportRow = { cells: [] };
+      const rowExtended = {
+        ...row,
+        vehicleNoOrDocNo: row.transportMode === 'Road' ? row.vehicleNo : row.transportDocNo,
+      };
 
       for (const { fieldname, fieldtype, width } of this.columns) {
         const align = isNumeric(fieldtype) ? 'right' : 'left';
-        const value = row[fieldname as keyof EWayBillRow];
+        const value = rowExtended[fieldname as keyof typeof rowExtended];
 
         let rawValue: string | number | null = null;
         if (typeof value === 'number') {

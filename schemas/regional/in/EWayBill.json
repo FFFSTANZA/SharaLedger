@@ -143,6 +143,21 @@
       "section": "Transport Details"
     },
     {
+      "fieldname": "transportDocNo",
+      "label": "Transport Document No",
+      "fieldtype": "Data",
+      "placeholder": "RR/AWB/BOL Number",
+      "description": "Railway Receipt/Airway Bill/Bill of Lading Number",
+      "section": "Transport Details"
+    },
+    {
+      "fieldname": "transportDocDate",
+      "label": "Transport Document Date",
+      "fieldtype": "Date",
+      "description": "Date of transport document",
+      "section": "Transport Details"
+    },
+    {
       "fieldname": "distanceKm",
       "label": "Distance (KM)",
       "fieldtype": "Int",
@@ -236,6 +251,8 @@
     "transporterName",
     "transportMode",
     "vehicleNo",
+    "transportDocNo",
+    "transportDocDate",
     "distanceKm",
     "ewayBillNo",
     "ewayBillDate",
@@ -243,5 +260,5 @@
     "fromGstin",
     "toGstin"
   ],
-  "keywordFields": ["invoiceNo", "ewayBillNo", "vehicleNo"]
+  "keywordFields": ["invoiceNo", "ewayBillNo", "vehicleNo", "transportDocNo"]
 }

@@ -82,9 +82,19 @@
         <span class="text-gray-600">{{ t`Transport Mode` }}</span>
         <span>{{ doc.transportMode || '-' }}</span>
       </p>
-      <p class="flex justify-between mt-2">
+      <p class="flex justify-between mt-2" v-if="doc.transportMode === 'Road'">
         <span class="text-gray-600">{{ t`Vehicle Number` }}</span>
         <span>{{ doc.vehicleNo || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2" v-if="doc.transportMode && doc.transportMode !== 'Road'">
+        <span class="text-gray-600">
+          {{ doc.transportMode === 'Rail' ? t`RR No` : (doc.transportMode === 'Air' ? t`AWB No` : t`Bill of Lading No`) }}
+        </span>
+        <span>{{ doc.transportDocNo || '-' }}</span>
+      </p>
+      <p class="flex justify-between mt-2" v-if="doc.transportMode && doc.transportMode !== 'Road'">
+        <span class="text-gray-600">{{ t`Doc Date` }}</span>
+        <span>{{ doc.transportDocDate || '-' }}</span>
       </p>
       <p class="flex justify-between mt-2">
         <span class="text-gray-600">{{ t`Transporter Name` }}</span>

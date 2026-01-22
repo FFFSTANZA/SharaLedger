@@ -26,6 +26,8 @@ export class EWayBill extends Doc {
   transporterName?: string;
   transportMode?: string;
   vehicleNo?: string;
+  transportDocNo?: string;
+  transportDocDate?: string;
   distanceKm?: number;
   ewayBillNo?: string;
   ewayBillDate?: string;
@@ -95,16 +97,28 @@ export class EWayBill extends Doc {
       }
     },
     vehicleNo: (value) => {
-      if (!value) {
-        return;
-      }
+      if (this.transportMode === 'Road') {
+        if (!value) {
+          throw new ValidationError(t`Vehicle Number is required for Road transport`);
+        }
 
-      // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
-      const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
-      if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
-        throw new ValidationError(
-          t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
-        );
+        // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
+        const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
+        if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
+          throw new ValidationError(
+            t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
+          );
+        }
+      }
+    },
+    transportDocNo: (value) => {
+      if (this.transportMode && this.transportMode !== 'Road' && !value) {
+        let docLabel = t`Transport Document Number`;
+        if (this.transportMode === 'Rail') docLabel = t`RR Number`;
+        if (this.transportMode === 'Air') docLabel = t`AWB Number`;
+        if (this.transportMode === 'Ship') docLabel = t`Bill of Lading Number`;
+
+        throw new ValidationError(t`${docLabel} is required for ${this.transportMode} transport`);
       }
     },
     fromGstin: (value) => {
@@ -164,6 +178,9 @@ export class EWayBill extends Doc {
   };
 
   hidden: HiddenMap = {
+    vehicleNo: () => this.transportMode !== 'Road',
+    transportDocNo: () => !this.transportMode || this.transportMode === 'Road',
+    transportDocDate: () => !this.transportMode || this.transportMode === 'Road',
     statusChangeReason: () => {
       return this.status !== 'Cancelled' && this.status !== 'Expired';
     },
