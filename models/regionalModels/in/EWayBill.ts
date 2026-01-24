@@ -377,6 +377,7 @@ export class EWayBill extends Doc {
         'invoiceDate',
         'invoiceValue',
         'ewayBillNo',
+        'ewayBillDate',
         'vehicleNo',
         'validUpto',
       ],
