@@ -225,9 +225,20 @@ export class EWayBillRegister extends Report {
             continue;
           }
           
-          // Fallback if record fields are empty
-          if (!ewayBill.invoiceNo) ewayBill.invoiceNo = invoice.name;
-          if (!ewayBill.invoiceDate) ewayBill.invoiceDate = (invoice.date as any).toISODate?.() || invoice.date;
+          // Fallback if record fields are empty - but don't override if they exist
+          if (!ewayBill.invoiceNo) {
+            ewayBill.invoiceNo = invoice.name;
+          }
+          if (!ewayBill.invoiceDate) {
+            // Convert to Date object if needed
+            if (invoice.date instanceof Date) {
+              ewayBill.invoiceDate = invoice.date;
+            } else if (typeof invoice.date === 'string') {
+              ewayBill.invoiceDate = new Date(invoice.date);
+            } else if ((invoice.date as any)?.toJSDate) {
+              ewayBill.invoiceDate = (invoice.date as any).toJSDate();
+            }
+          }
           if (!ewayBill.invoiceValue || (ewayBill.invoiceValue as any).isZero?.()) {
             ewayBill.invoiceValue = invoice.baseGrandTotal || invoice.grandTotal;
           }
@@ -237,20 +248,35 @@ export class EWayBillRegister extends Report {
         }
       }
 
+      // Convert dates to strings for display
+      const formatDate = (date: any): string => {
+        if (!date) return '';
+        if (date instanceof Date) {
+          return date.toISOString().split('T')[0];
+        }
+        if (typeof date === 'string') {
+          return date.split('T')[0];
+        }
+        if (date?.toISODate) {
+          return date.toISODate();
+        }
+        return '';
+      };
+
       rows.push({
         name: ewayBill.name as string,
         invoiceNo: (ewayBill.invoiceNo as string) || '',
         customer: customerName,
-        invoiceDate: (ewayBill.invoiceDate as string) || '',
+        invoiceDate: formatDate(ewayBill.invoiceDate),
         invoiceValue: ewayBill.invoiceValue instanceof Money ? ewayBill.invoiceValue.float : (ewayBill.invoiceValue as number) || 0,
         ewayBillNo: (ewayBill.ewayBillNo as string) || '',
         vehicleNo: (ewayBill.vehicleNo as string) || '',
         transportDocNo: (ewayBill.transportDocNo as string) || '',
-        transportDocDate: (ewayBill.transportDocDate as string) || '',
+        transportDocDate: formatDate(ewayBill.transportDocDate),
         transportMode: (ewayBill.transportMode as string) || '',
         distanceKm: (ewayBill.distanceKm as number) || 0,
-        ewayBillDate: (ewayBill.ewayBillDate as string) || '',
-        validUpto: (ewayBill.validUpto as string) || '',
+        ewayBillDate: formatDate(ewayBill.ewayBillDate),
+        validUpto: formatDate(ewayBill.validUpto),
         status: (ewayBill.status as string) || 'Draft',
       });
     }

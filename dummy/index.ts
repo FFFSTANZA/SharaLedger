@@ -895,13 +895,14 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   ];
   const companyGstin = '27AAAPL1234C1Z5';
 
-  // Generate E-Way Bills for ~20% of invoices with invoice value >= 50,000
+  // Generate E-Way Bills for ~50% of invoices with invoice value >= 50,000
+  // (Increased from 20% to make E-Way Bills more visible in demo)
   for (const invoice of salesInvoices) {
     // Only for higher value invoices
     if (
       invoice.baseGrandTotal &&
       invoice.baseGrandTotal.gte(fyo.pesa(50000)) &&
-      Math.random() < 0.2
+      Math.random() < 0.5
     ) {
       const invoiceDate = DateTime.fromJSDate(invoice.date as Date);
 
@@ -925,6 +926,10 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
       const transportMode = sample(['Road', 'Road', 'Road', 'Rail', 'Air', 'Ship'])!;
       const data: any = {
         salesInvoice: invoice.name,
+        // Explicitly set invoice fields as Date objects (schema expects Date fieldtype)
+        invoiceNo: invoice.name,
+        invoiceDate: invoice.date, // Already a Date object
+        invoiceValue: invoice.baseGrandTotal || invoice.grandTotal,
         supplyType: 'Outward',
         subType: 'Supply',
         fromGstin: companyGstin,
