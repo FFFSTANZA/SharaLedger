@@ -886,23 +886,31 @@ async function getTDSPurchaseInvoices(fyo: Fyo): Promise<PurchaseInvoice[]> {
 
 async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   const eWayBills = [];
-  const vehicleNumbers = ['MH12AB1234', 'DL01CD5678', 'KA03EF9012', 'GJ05GH3456'];
+  const vehicleNumbers = [
+    'MH12AB1234', 'DL01CD5678', 'KA03EF9012', 'GJ05GH3456',
+    'MH14BC2345', 'HR26DE6789', 'UP16FG0123', 'TN01HJ4567',
+    'WB02JK8901', 'TS09LM2345', 'AP03NP6789', 'KL07PQ0123'
+  ];
   const transporters = [
     'Blue Dart Express',
     'DTDC Courier',
     'Delhivery',
     'VRL Logistics',
+    'TCI Express',
+    'Safexpress',
+    'Gati Limited',
+    'Rivigo Services',
   ];
   const companyGstin = '27AAAPL1234C1Z5';
 
-  // Generate E-Way Bills for ~50% of invoices with invoice value >= 50,000
-  // (Increased from 20% to make E-Way Bills more visible in demo)
+  // Generate E-Way Bills for ~60% of invoices with invoice value >= 50,000
+  // (Increased further for better demo visibility)
   for (const invoice of salesInvoices) {
     // Only for higher value invoices
+    const grandTotal = invoice.baseGrandTotal || invoice.grandTotal || fyo.pesa(0);
     if (
-      invoice.baseGrandTotal &&
-      invoice.baseGrandTotal.gte(fyo.pesa(50000)) &&
-      Math.random() < 0.5
+      grandTotal.gte(fyo.pesa(50000)) &&
+      Math.random() < 0.6
     ) {
       const invoiceDate = DateTime.fromJSDate(invoice.date as Date);
 
@@ -929,7 +937,7 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
         // Explicitly set invoice fields as Date objects (schema expects Date fieldtype)
         invoiceNo: invoice.name,
         invoiceDate: invoice.date, // Already a Date object
-        invoiceValue: invoice.baseGrandTotal || invoice.grandTotal,
+        invoiceValue: grandTotal,
         supplyType: 'Outward',
         subType: 'Supply',
         fromGstin: companyGstin,

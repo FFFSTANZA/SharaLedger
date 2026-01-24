@@ -43,7 +43,8 @@ export class EWayBillRegister extends Report {
     }
 
     if (!this.fromDate) {
-      this.fromDate = DateTime.local().startOf('month').toISODate();
+      // Show more data by default in demo
+      this.fromDate = DateTime.local().minus({ months: 6 }).startOf('month').toISODate();
     }
   }
 
@@ -95,6 +96,12 @@ export class EWayBillRegister extends Report {
         fieldtype: 'Data',
         fieldname: 'ewayBillNo',
         width: 1.2,
+      },
+      {
+        label: t`E-Way Bill Date`,
+        fieldtype: 'Date',
+        fieldname: 'ewayBillDate',
+        width: 1,
       },
       {
         label: t`Status`,
@@ -239,7 +246,9 @@ export class EWayBillRegister extends Report {
               ewayBill.invoiceDate = (invoice.date as any).toJSDate();
             }
           }
-          if (!ewayBill.invoiceValue || (ewayBill.invoiceValue as any).isZero?.()) {
+          if (!ewayBill.invoiceValue || 
+              ((ewayBill.invoiceValue as any).isZero && (ewayBill.invoiceValue as any).isZero()) ||
+              (typeof ewayBill.invoiceValue === 'number' && ewayBill.invoiceValue === 0)) {
             ewayBill.invoiceValue = invoice.baseGrandTotal || invoice.grandTotal;
           }
         } catch (error) {
@@ -301,8 +310,13 @@ export class EWayBillRegister extends Report {
         let rawValue: string | number | null = null;
         if (typeof value === 'number') {
           rawValue = this.fyo.format(value, fieldtype);
-        } else if (typeof value === 'string') {
-          rawValue = value;
+        } else if (typeof value === 'string' && value) {
+          // If it looks like an ISO date and the fieldtype is Date, format it
+          if (fieldtype === 'Date' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+            rawValue = this.fyo.format(value, 'Date');
+          } else {
+            rawValue = value;
+          }
         }
 
         reportRow.cells.push({
