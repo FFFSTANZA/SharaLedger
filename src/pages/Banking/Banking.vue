@@ -362,7 +362,6 @@ import Button from 'src/components/Button.vue';
 import PageHeader from 'src/components/PageHeader.vue';
 import Link from 'src/components/Controls/Link.vue';
 import Select from 'src/components/Controls/Select.vue';
-import { fyo } from 'src/initFyo';
 import { showDialog } from 'src/utils/interactive';
 import { selectTextFile } from 'src/utils/ui';
 import { parseCSV } from 'utils/csvParser';
@@ -398,7 +397,6 @@ export default defineComponent({
   },
   data() {
     return {
-      fyo,
       activeTab: 'import' as 'import' | 'reconciliation',
 
       importBankAccount: '' as string,

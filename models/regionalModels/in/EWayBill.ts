@@ -17,7 +17,7 @@ export type EWayBillStatus = 'Draft' | 'Active' | 'Cancelled' | 'Expired';
 export class EWayBill extends Doc {
   salesInvoice?: string;
   invoiceNo?: string;
-  invoiceDate?: string;
+  invoiceDate?: Date | string;
   invoiceValue?: Money;
   supplyType?: string;
   subType?: string;
@@ -27,11 +27,11 @@ export class EWayBill extends Doc {
   transportMode?: string;
   vehicleNo?: string;
   transportDocNo?: string;
-  transportDocDate?: string;
+  transportDocDate?: Date | string;
   distanceKm?: number;
   ewayBillNo?: string;
-  ewayBillDate?: string;
-  validUpto?: string;
+  ewayBillDate?: Date | string;
+  validUpto?: Date | string;
 
   status?: EWayBillStatus;
   statusChangedBy?: string;
@@ -323,16 +323,17 @@ export class EWayBill extends Doc {
         return;
       }
 
+      // Set invoiceNo
       this.invoiceNo = invoice.name as string;
       
-      // Handle invoice date - can be string, Date, or DateTime
+      // Handle invoice date - convert to Date object (schema expects Date fieldtype)
       if (invoice.date instanceof Date) {
-        this.invoiceDate = invoice.date.toISOString().split('T')[0];
+        this.invoiceDate = invoice.date;
       } else if (typeof invoice.date === 'string') {
-        this.invoiceDate = invoice.date.split('T')[0];
-      } else if (invoice.date && typeof (invoice.date as any).toISODate === 'function') {
+        this.invoiceDate = new Date(invoice.date);
+      } else if (invoice.date && typeof (invoice.date as any).toJSDate === 'function') {
         // Handle Luxon DateTime
-        this.invoiceDate = (invoice.date as any).toISODate();
+        this.invoiceDate = (invoice.date as any).toJSDate();
       }
       
       // Use baseGrandTotal or grandTotal if base is missing/zero
