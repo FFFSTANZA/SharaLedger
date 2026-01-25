@@ -39,6 +39,18 @@ export class EWayBill extends Doc {
   statusChangeReason?: string;
   remarks?: string;
 
+  /**
+   * Helper method to convert various date formats to DateTime
+   */
+  private _toDateTime(dateValue: Date | string): DateTime | null {
+    if (typeof dateValue === 'string') {
+      return DateTime.fromISO(dateValue);
+    } else if (dateValue instanceof Date) {
+      return DateTime.fromJSDate(dateValue);
+    }
+    return null;
+  }
+
   validations: ValidationMap = {
     distanceKm: (value) => {
       if (value === undefined || value === null || value === '') {
@@ -148,28 +160,10 @@ export class EWayBill extends Doc {
         return;
       }
 
-      let billDate: DateTime;
-      let validUptoDate: DateTime;
+      const billDate = this._toDateTime(this.ewayBillDate);
+      const validUptoDate = this._toDateTime(this.validUpto);
 
-      // Handle ewayBillDate (can be string or Date)
-      if (typeof this.ewayBillDate === 'string') {
-        billDate = DateTime.fromISO(this.ewayBillDate);
-      } else if (this.ewayBillDate instanceof Date) {
-        billDate = DateTime.fromJSDate(this.ewayBillDate);
-      } else {
-        return; // Skip validation if ewayBillDate format is invalid
-      }
-
-      // Handle validUpto (can be string or Date)
-      if (typeof this.validUpto === 'string') {
-        validUptoDate = DateTime.fromISO(this.validUpto);
-      } else if (this.validUpto instanceof Date) {
-        validUptoDate = DateTime.fromJSDate(this.validUpto);
-      } else {
-        return; // Skip validation if validUpto format is invalid
-      }
-
-      if (billDate.isValid && validUptoDate.isValid && validUptoDate <= billDate) {
+      if (billDate && validUptoDate && billDate.isValid && validUptoDate.isValid && validUptoDate <= billDate) {
         throw new ValidationError(
           t`Valid Upto date must be after E-Way Bill Date`
         );
@@ -251,16 +245,9 @@ export class EWayBill extends Doc {
     }
 
     if (this.validUpto) {
-      let validUptoDate: DateTime;
-      if (typeof this.validUpto === 'string') {
-        validUptoDate = DateTime.fromISO(this.validUpto);
-      } else if (this.validUpto instanceof Date) {
-        validUptoDate = DateTime.fromJSDate(this.validUpto);
-      } else {
-        return; // Skip status update if validUpto format is invalid
-      }
-
-      if (validUptoDate.isValid) {
+      const validUptoDate = this._toDateTime(this.validUpto);
+      
+      if (validUptoDate && validUptoDate.isValid) {
         const validUptoEndOfDay = validUptoDate.endOf('day');
         if (DateTime.local() > validUptoEndOfDay) {
           this.status = 'Expired';
