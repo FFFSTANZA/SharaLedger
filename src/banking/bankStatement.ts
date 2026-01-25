@@ -268,7 +268,7 @@ export function parseDebitCredit(params: {
 }
 
 /**
- * Smart categorization based on transaction description
+ * Enhanced smart categorization based on transaction description with better pattern matching
  */
 export interface CategorizationSuggestion {
   docType: 'Payment' | 'Receipt Entry' | 'Journal Entry';
@@ -281,38 +281,47 @@ export interface CategorizationSuggestion {
 export function categorizeTransaction(description: string, amount: number, debitCredit: DebitCredit): CategorizationSuggestion {
   const desc = description.toLowerCase();
   
-  // Payment patterns (money going out)
+  // Enhanced payment patterns (money going out)
   const paymentPatterns = [
-    { pattern: /transfer|wire|neft|imps|rtgs/, category: 'Bank Transfer', confidence: 0.9 },
-    { pattern: /atm|withdrawal/, category: 'Cash Withdrawal', confidence: 0.9 },
-    { pattern: /cheque|chq|chk/, category: 'Cheque Payment', confidence: 0.8 },
-    { pattern: /utility|electricity|water|gas|internet|phone/, category: 'Utilities', confidence: 0.8 },
-    { pattern: /salary|wages|payroll/, category: 'Salary Payment', confidence: 0.9 },
-    { pattern: /rent|lease/, category: 'Rent Payment', confidence: 0.8 },
-    { pattern: /vendor|supplier|purchase/, category: 'Vendor Payment', confidence: 0.7 },
-    { pattern: /tax|gst|tds/, category: 'Tax Payment', confidence: 0.9 },
-    { pattern: /insurance|premium/, category: 'Insurance Payment', confidence: 0.8 },
+    { pattern: /transfer|wire|neft|imps|rtgs|online.*transfer/, category: 'Bank Transfer', confidence: 0.9 },
+    { pattern: /atm|withdrawal|cash.*draw/, category: 'Cash Withdrawal', confidence: 0.9 },
+    { pattern: /cheque|chq|chk|check.*payment/, category: 'Cheque Payment', confidence: 0.8 },
+    { pattern: /utility|electricity|water|gas|internet|phone|bill.*payment/, category: 'Utilities', confidence: 0.8 },
+    { pattern: /salary|wages|payroll|employee.*payment/, category: 'Salary Payment', confidence: 0.9 },
+    { pattern: /rent|lease|property.*rent/, category: 'Rent Payment', confidence: 0.8 },
+    { pattern: /vendor|supplier|purchase|procurement/, category: 'Vendor Payment', confidence: 0.7 },
+    { pattern: /tax|gst|tds|income.*tax/, category: 'Tax Payment', confidence: 0.9 },
+    { pattern: /insurance|premium|life.*insurance/, category: 'Insurance Payment', confidence: 0.8 },
+    { pattern: /loan.*payment|emi|home.*loan/, category: 'Loan EMI', confidence: 0.8 },
+    { pattern: /credit.*card|credit.*payment/, category: 'Credit Card Payment', confidence: 0.8 },
+    { pattern: /subscription|netflix|spotify|software.*license/, category: 'Subscription', confidence: 0.7 },
   ];
 
-  // Receipt patterns (money coming in)
+  // Enhanced receipt patterns (money coming in)
   const receiptPatterns = [
-    { pattern: /deposit|cash\s+deposit/, category: 'Cash Deposit', confidence: 0.9 },
-    { pattern: /interest|dividend/, category: 'Investment Income', confidence: 0.9 },
-    { pattern: /refund|return/, category: 'Refund', confidence: 0.8 },
-    { pattern: /customer|client|sales/, category: 'Customer Receipt', confidence: 0.8 },
-    { pattern: /loan|advance/, category: 'Loan/Advance Receipt', confidence: 0.8 },
+    { pattern: /deposit|cash.*deposit|bank.*deposit/, category: 'Cash Deposit', confidence: 0.9 },
+    { pattern: /interest|dividend|roi|return.*investment/, category: 'Investment Income', confidence: 0.9 },
+    { pattern: /refund|return|reversal/, category: 'Refund', confidence: 0.8 },
+    { pattern: /customer|client|sales|revenue/, category: 'Customer Receipt', confidence: 0.8 },
+    { pattern: /loan|advance|borrowing/, category: 'Loan/Advance Receipt', confidence: 0.8 },
+    { pattern: /freelance|consulting|service.*income/, category: 'Service Income', confidence: 0.8 },
+    { pattern: /rent.*income|property.*income/, category: 'Rental Income', confidence: 0.8 },
   ];
 
   // Journal patterns (adjustments/transfers)
   const journalPatterns = [
-    { pattern: /adjustment|correction|reversal/, category: 'Adjustment Entry', confidence: 0.9 },
-    { pattern: /opening|balance|carried\s+forward/, category: 'Balance Transfer', confidence: 0.8 },
-    { pattern: /commission|charges|fee/, category: 'Bank Charges', confidence: 0.8 },
+    { pattern: /adjustment|correction|reversal|write.*off/, category: 'Adjustment Entry', confidence: 0.9 },
+    { pattern: /opening|balance|carried.*forward/, category: 'Balance Transfer', confidence: 0.8 },
+    { pattern: /commission|charges|fee|bank.*charge/, category: 'Bank Charges', confidence: 0.8 },
+    { pattern: /forex|foreign.*exchange|currency.*exchange/, category: 'Forex Exchange', confidence: 0.8 },
+    { pattern: /dividend|bonus|profit.*sharing/, category: 'Dividend Income', confidence: 0.8 },
   ];
 
-  const patterns = debitCredit === 'Debit' ? paymentPatterns : receiptPatterns;
-  const allPatterns = [...patterns, ...journalPatterns];
+  // Add more context-aware patterns
+  const enhancedPatterns = debitCredit === 'Debit' ? paymentPatterns : receiptPatterns;
+  const allPatterns = [...enhancedPatterns, ...journalPatterns];
 
+  // First pass: exact pattern matching
   for (const { pattern, category, confidence } of allPatterns) {
     if (pattern.test(desc)) {
       const docType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
@@ -325,11 +334,34 @@ export function categorizeTransaction(description: string, amount: number, debit
     }
   }
 
-  // Default categorization
+  // Second pass: keyword-based fuzzy matching for better accuracy
+  const keywordCategories: { [key: string]: { category: string, keywords: string[], confidence: number } } = {
+    'Insurance': { category: 'Insurance Payment', keywords: ['policy', 'premium', 'claim'], confidence: 0.7 },
+    'Investment': { category: 'Investment Income', keywords: ['sip', 'mutual fund', 'equity', 'stock'], confidence: 0.7 },
+    'Food': { category: 'Food & Dining', keywords: ['restaurant', 'food', 'meal', 'dining'], confidence: 0.6 },
+    'Transport': { category: 'Transport', keywords: ['uber', 'ola', 'fuel', 'gas', 'petrol'], confidence: 0.6 },
+    'Healthcare': { category: 'Healthcare', keywords: ['hospital', 'medicine', 'doctor', 'medical'], confidence: 0.6 },
+  };
+
+  for (const [key, config] of Object.entries(keywordCategories)) {
+    if (config.keywords.some(keyword => desc.includes(keyword))) {
+      const docType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+      return {
+        docType: docType as 'Payment' | 'Receipt Entry',
+        category: config.category,
+        confidence: config.confidence,
+        reason: `Keyword matched: ${key}`,
+      };
+    }
+  }
+
+  // Default categorization with better fallback logic
   const defaultDocType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+  const defaultCategory = debitCredit === 'Debit' ? 'General Expense' : 'General Income';
+  
   return {
     docType: defaultDocType as 'Payment' | 'Receipt Entry',
-    category: 'General',
+    category: defaultCategory,
     confidence: 0.3,
     reason: 'Default categorization based on debit/credit direction',
   };

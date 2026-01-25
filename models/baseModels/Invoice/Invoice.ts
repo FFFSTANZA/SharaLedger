@@ -633,9 +633,15 @@ export abstract class Invoice extends Transactional {
         row.tax as string,
         'details'
       )) as Doc[]) ?? [];
-    return details.reduce((acc, doc) => {
-      return (doc.rate as number) + acc;
-    }, 0);
+    
+    // Use Money arithmetic to avoid floating-point precision issues
+    const totalRate = details.reduce((acc, doc) => {
+      const rate = this.fyo.pesa(doc.rate as number || 0);
+      return acc.add(rate);
+    }, this.fyo.pesa(0));
+    
+    // Convert back to number for compatibility, rounding to 2 decimal places
+    return Math.round(totalRate.toNumber() * 100) / 100;
   }
 
   async getItemsDiscountedTotal(row: InvoiceItem) {
@@ -659,15 +665,22 @@ export abstract class Invoice extends Transactional {
         return amount.sub(itemDiscountAmount);
       }
 
-      return amount.mul(1 - itemDiscountPercent / 100);
+      // Use Money arithmetic for percentage calculations to avoid precision issues
+      const discountRate = this.fyo.pesa(itemDiscountPercent).div(100);
+      return amount.mul(this.fyo.pesa(1).sub(discountRate));
     }
 
-    const taxedTotal = rate.mul(quantity).mul(1 + totalTaxRate / 100);
+    // Use Money arithmetic for tax calculations
+    const taxMultiplier = this.fyo.pesa(1).add(this.fyo.pesa(totalTaxRate).div(100));
+    const taxedTotal = rate.mul(quantity).mul(taxMultiplier);
+    
     if (row.setItemDiscountAmount) {
       return taxedTotal.sub(itemDiscountAmount);
     }
 
-    return taxedTotal.mul(1 - itemDiscountPercent / 100);
+    // Use Money arithmetic for percentage discount calculations
+    const discountRate = this.fyo.pesa(itemDiscountPercent).div(100);
+    return taxedTotal.mul(this.fyo.pesa(1).sub(discountRate));
   }
 
   async getReturnDoc(): Promise<Invoice | undefined> {

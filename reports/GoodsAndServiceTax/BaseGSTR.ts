@@ -50,11 +50,160 @@ export abstract class BaseGSTR extends Report {
 
   async setReportData(): Promise<void> {
     this.loading = true;
-    const gstrRows = await this.getGstrRows();
-    const filteredRows = this.filterGstrRows(gstrRows);
-    this.gstrRows = filteredRows;
-    this.reportData = this.getReportDataFromGSTRRows(filteredRows);
-    this.loading = false;
+    try {
+      const gstrRows = await this.getGstrRows();
+      const filteredRows = this.filterGstrRows(gstrRows);
+      this.gstrRows = filteredRows;
+      this.reportData = this.getReportDataFromGSTRRows(filteredRows);
+    } catch (error) {
+      console.error('Error generating GST report:', error);
+      this.reportData = [];
+      this.gstrRows = [];
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async getGstrRows(): Promise<GSTRRow[]> {
+    const gstrRows: GSTRRow[] = [];
+    
+    try {
+      // Validate filters before proceeding
+      this.setDefaultFilters();
+      
+      // Validate date range
+      if (this.fromDate && this.toDate) {
+        const fromDate = DateTime.fromISO(this.fromDate);
+        const toDate = DateTime.fromISO(this.toDate);
+        
+        if (!fromDate.isValid || !toDate.isValid || fromDate > toDate) {
+          throw new Error('Invalid date range specified');
+        }
+        
+        // Limit date range to prevent performance issues
+        if (fromDate.diff(toDate, 'months').months > 12) {
+          throw new Error('Date range cannot exceed 12 months for performance reasons');
+        }
+      }
+
+      // Use efficient query with proper indexing
+      const invoices = await this.fyo.db.getAll(this.schemaName, {
+        filters: {
+          submitted: true,
+          cancelled: false,
+          ...(this.fromDate && { date: ['>=', this.fromDate] }),
+          ...(this.toDate && { date: ['<=', this.toDate] }),
+        },
+        fields: [
+          'name',
+          'party',
+          'date',
+          'grandTotal',
+          'baseGrandTotal',
+          'taxes',
+          'items',
+          'outstandingAmount'
+        ],
+        orderBy: {
+          field: 'date',
+          order: 'desc'
+        }
+      }) as any[];
+
+      // Process invoices with enhanced error handling
+      for (const invoice of invoices) {
+        try {
+          const row = await this.processInvoiceForGSTR(invoice);
+          if (row) {
+            gstrRows.push(row);
+          }
+        } catch (error) {
+          console.warn(`Error processing invoice ${invoice.name}:`, error);
+          // Continue processing other invoices
+        }
+      }
+
+    } catch (error) {
+      console.error('Error fetching invoices for GST report:', error);
+      throw new Error(`Failed to generate GST report: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return gstrRows;
+  }
+
+  private async processInvoiceForGSTR(invoice: any): Promise<GSTRRow | null> {
+    try {
+      // Get party details with validation
+      const party = await this.fyo.doc.getDoc('Party', invoice.party);
+      if (!party) {
+        console.warn(`Party not found for invoice ${invoice.name}`);
+        return null;
+      }
+
+      const gstrRow: GSTRRow = {
+        invoice: invoice.name,
+        party: party.name as string,
+        partyName: party.get('fullName') as string || party.name,
+        gstin: party.get('gstin') as string || '',
+        date: invoice.date,
+        place: this.getPlaceFromGSTIN(party.get('gstin') as string),
+        taxableAmount: this.fyo.pesa(0),
+        igstAmt: 0,
+        cgstAmt: 0,
+        sgstAmt: 0,
+        grandTotal: this.fyo.pesa(invoice.grandTotal || 0),
+        invoiceType: this.getInvoiceType(invoice),
+        hsnCode: this.extractHSNCode(invoice),
+      };
+
+      // Process tax details with precision handling
+      if (invoice.taxes && Array.isArray(invoice.taxes)) {
+        this.processTaxDetailsForGSTR(gstrRow, invoice.taxes);
+      }
+
+      // Calculate taxable amount from items
+      if (invoice.items && Array.isArray(invoice.items)) {
+        for (const item of invoice.items) {
+          const itemAmount = this.fyo.pesa(item.amount || 0);
+          gstrRow.taxableAmount = gstrRow.taxableAmount.add(itemAmount);
+        }
+      }
+
+      // Validate minimum data requirements
+      if (!gstrRow.partyName || !gstrRow.date) {
+        console.warn(`Insufficient data for invoice ${invoice.name}`);
+        return null;
+      }
+
+      return gstrRow;
+
+    } catch (error) {
+      console.error(`Error processing invoice ${invoice.name}:`, error);
+      return null;
+    }
+  }
+
+  private getPlaceFromGSTIN(gstin?: string): string {
+    if (!gstin || gstin.length < 2) {
+      return '';
+    }
+    return gstin.substring(0, 2); // First 2 digits represent state code
+  }
+
+  private getInvoiceType(invoice: any): string {
+    // Determine invoice type based on transaction type and party details
+    if (this.gstrType === 'GSTR-1') {
+      return 'B2B'; // Sales are typically B2B for GSTR-1
+    }
+    return 'B2B'; // Default for GSTR-2
+  }
+
+  private extractHSNCode(invoice: any): string {
+    // Extract HSN code from first item for GSTR reporting
+    if (invoice.items && invoice.items.length > 0) {
+      return invoice.items[0].hsnCode || '';
+    }
+    return '';
   }
 
   getReportDataFromGSTRRows(gstrRows: GSTRRow[]): ReportData {

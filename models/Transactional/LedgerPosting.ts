@@ -48,13 +48,23 @@ export class LedgerPosting {
   }
 
   async post() {
-    this._validateIsEqual();
-    await this._sync();
+    try {
+      this._validateIsEqual();
+      await this._sync();
+    } catch (error) {
+      console.error('Error posting ledger entries:', error);
+      throw new ValidationError(`Failed to post ledger entries: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async postReverse() {
-    this._validateIsEqual();
-    await this._syncReverse();
+    try {
+      this._validateIsEqual();
+      await this._syncReverse();
+    } catch (error) {
+      console.error('Error reversing ledger entries:', error);
+      throw new ValidationError(`Failed to reverse ledger entries: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   validate() {
