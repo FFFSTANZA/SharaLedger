@@ -3,6 +3,7 @@
 ## Scenario 1: Sales Invoice with Full Payment
 
 ### Document: Sales Invoice SINV-001
+
 - Party: ABC Corporation
 - Amount: $1,200
 - Status: Paid
@@ -40,6 +41,7 @@
 ## Scenario 2: Sales Invoice with Partial Payment and Return
 
 ### Document: Sales Invoice SINV-002
+
 - Party: XYZ Limited
 - Amount: $2,500
 - Paid: $1,500
@@ -90,6 +92,7 @@
 ## Scenario 3: Purchase Invoice with Multiple Entries
 
 ### Document: Purchase Invoice PINV-001
+
 - Party: Supplier Inc
 - Amount: $5,000
 - Status: Partially Paid
@@ -144,6 +147,7 @@
 ## Scenario 4: Quote to Invoice Flow
 
 ### Document: Party - ABC Corporation
+
 - Type: Customer
 
 ### Linked Entries Display:
@@ -188,18 +192,18 @@
 
 ## Icon Legend
 
-| Icon | Meaning | Color |
-|------|---------|-------|
-| ↓ | Payment Received | Green |
-| ↑ | Payment Made | Green |
-| 🚚 | Stock Shipped | Blue |
-| 📦 | Stock Received | Blue |
-| ↩ | Return/Credit Note | Orange |
-| 📄 | Invoice | Blue/Green/Orange |
-| 📋 | Quote | Blue |
-| 📚 | Journal Entry | Purple |
-| ⚙️ | Ledger Entry | Gray |
-| 🔗 | Generic Link | Gray |
+| Icon | Meaning            | Color             |
+| ---- | ------------------ | ----------------- |
+| ↓    | Payment Received   | Green             |
+| ↑    | Payment Made       | Green             |
+| 🚚   | Stock Shipped      | Blue              |
+| 📦   | Stock Received     | Blue              |
+| ↩    | Return/Credit Note | Orange            |
+| 📄   | Invoice            | Blue/Green/Orange |
+| 📋   | Quote              | Blue              |
+| 📚   | Journal Entry      | Purple            |
+| ⚙️   | Ledger Entry       | Gray              |
+| 🔗   | Generic Link       | Gray              |
 
 ## Color Coding
 
@@ -237,6 +241,7 @@
 ## Comparison: Before vs After
 
 ### Before
+
 ```
 Linked Entries
 --------------
@@ -250,12 +255,14 @@ Shipment – 1
 ```
 
 **Issues:**
+
 - No context on WHY they're linked
 - No indication of impact
 - Generic presentation
 - User must mentally map relationships
 
 ### After
+
 ```
 Linked Entries
 --------------
@@ -266,14 +273,14 @@ Document Impact
 Payment – 1
   [↓] Payment received from ABC Corp
       Reduced outstanding by $1,200
-      
+
       PAY-001  2024-01-20
       ABC Corp  $1,200
 
 Shipment – 1
   [🚚] Stock shipped to ABC Corp
        15.00 items transferred
-       
+
        SHIP-001  2024-01-18
        ABC Corp  $1,200
 ```

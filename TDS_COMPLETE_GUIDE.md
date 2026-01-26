@@ -1,6 +1,7 @@
 # TDS (Tax Deducted at Source) - Complete Guide
 
 ## Table of Contents
+
 1. [What is TDS?](#what-is-tds)
 2. [TDS Calculation Methodology](#tds-calculation-methodology)
 3. [TDS Rates and Thresholds](#tds-rates-and-thresholds)
@@ -17,12 +18,14 @@
 **TDS (Tax Deducted at Source)** is a method of tax collection introduced by the Income Tax Department of India. Under this system, a person who is liable to make payment to another person is required to deduct tax at source and remit it to the government.
 
 ### Key Concepts:
+
 - **Deductor**: The person/entity who makes the payment and deducts TDS
 - **Deductee**: The person/entity who receives the payment and has TDS deducted
 - **TDS Rate**: Percentage of tax to be deducted at source
 - **Threshold Limit**: Minimum amount above which TDS needs to be deducted
 
 ### Why TDS?
+
 1. **Tax Collection**: Ensures regular collection of income tax
 2. **Prevention of Tax Evasion**: Reduces the possibility of taxpayers not declaring their income
 3. **Government Revenue**: Provides steady revenue flow to the government
@@ -33,11 +36,13 @@
 ## TDS Calculation Methodology
 
 ### Basic Formula:
+
 ```
 TDS Amount = (Payment Amount × TDS Rate) / 100
 ```
 
 ### Example Calculation:
+
 - **Payment Type**: Professional Services
 - **TDS Rate**: 10% (for professionals)
 - **Gross Payment**: ₹1,00,000
@@ -47,7 +52,9 @@ TDS Amount = (Payment Amount × TDS Rate) / 100
 ### Calculation Rules:
 
 #### 1. **Threshold Limits**
+
 TDS is deducted only when payment exceeds specified threshold limits:
+
 - **Professional Services**: ₹30,000 per annum
 - **Contractor Payments**: ₹30,000 per contract OR ₹1,00,000 aggregate per annum
 - **Rent**: ₹2,40,000 per annum
@@ -57,15 +64,17 @@ TDS is deducted only when payment exceeds specified threshold limits:
 - **Interest - Others (Non-banking)**: ₹5,000 per annum
 
 #### 2. **TDS on Inclusive/Exclusive Basis**
+
 - TDS is calculated on the **gross amount** (before TDS deduction)
 - The net payment to the deductee is: Gross Amount - TDS Amount
 
 #### 3. **PAN Requirement and Higher TDS for Non-Filers**
+
 - If deductee doesn't provide PAN, TDS rate is 20% (or higher as per section)
 - With valid PAN, applicable TDS rates apply
-- **Higher TDS for Non-filers (Section 206AB)**: 
+- **Higher TDS for Non-filers (Section 206AB)**:
   - **Rule**: Higher of twice the specified rate OR 5%, subject to maximum 20%
-  - **Examples**: 
+  - **Examples**:
     - Normal rate 1% → becomes 5% (higher of 2×1%=2% or 5%)
     - Normal rate 10% → becomes 20% (higher of 2×10%=20% or 5%)
   - **Applicability**: Non-filers of ITR for last 3 years
@@ -78,7 +87,8 @@ TDS is deducted only when payment exceeds specified threshold limits:
 ### Major TDS Sections:
 
 #### Section 194C - Contractor Payments
-- **TDS Rate**: 
+
+- **TDS Rate**:
   - 1% for payment to individuals/HUF
   - 2% for payment to other entities
 - **Threshold**: **Dual Condition**
@@ -87,20 +97,23 @@ TDS is deducted only when payment exceeds specified threshold limits:
 - **Examples**: Construction work, consulting services, professional contracts
 
 #### Section 194J - Professional Services
-- **TDS Rate**: 
+
+- **TDS Rate**:
   - 10% for professional services (legal, medical, consultancy, architectural)
   - 2% for technical services (excluding professional services)
 - **Threshold**: ₹30,000 per annum
 - **Examples**: Legal fees, medical services, technical services, consultancy
 
 #### Section 194I - Rent
-- **TDS Rate**: 
+
+- **TDS Rate**:
   - 10% for rent
   - 2% for rent of machinery, plant, or equipment
 - **Threshold**: ₹2,40,000 per annum
 - **Examples**: Office rent, equipment rental, building rent
 
 #### Section 194N - Cash Withdrawal
+
 - **TDS Rate**: Conditional based on ITR filing status
 - **For ITR Filers** (filed ITR in last 3 years):
   - Rate: 2% for cash withdrawals > ₹1 crore
@@ -110,28 +123,34 @@ TDS is deducted only when payment exceeds specified threshold limits:
 - **Threshold**: Depends on ITR filing status
 
 #### Section 194O - E-commerce
+
 - **TDS Rate**: 1% for e-commerce transactions
 - **Threshold**: ₹5 lakh aggregate sales
 
 #### Section 194Q - Purchase of Goods
+
 - **TDS Rate**: 0.1% for purchase of goods
-- **Conditions**: 
+- **Conditions**:
   - Buyer turnover > ₹10 crore
   - Purchase from seller > ₹50 lakh in a year
 - **Important**: **Conflicts with TCS 206C(1H)** - if 194Q applies, TCS doesn't apply
 
 #### Section 206C(1H) - TCS on Sale of Goods
+
 - **TCS Rate**: 0.1% on sale of goods
 - **Conditions**: Seller turnover > ₹10 crore
 - **Important**: **Only applies if 194Q doesn't apply**
 
 ### Critical Interaction: 194Q vs 206C(1H)
+
 **MUTUAL EXCLUSIVE RULE**: Only one can apply, never both
+
 - If buyer meets 194Q conditions → **TDS under 194Q applies**
 - If buyer doesn't meet 194Q conditions but seller meets TCS conditions → **TCS under 206C(1H) applies**
 - **System must automatically decide based on conditions**
 
 #### Section 194S - Sale of Crypto Assets
+
 - **TDS Rate**: 1% for sale of crypto assets
 - **Threshold**: Based on person type
   - **Specified Person**: ₹50,000 per transaction
@@ -144,12 +163,13 @@ TDS is deducted only when payment exceeds specified threshold limits:
 ## TDS Components and Structure
 
 ### 1. **TDS Sections**
+
 TDS is categorized under different sections based on the nature of payment:
 
 ```
 TDS Sections Overview:
 ├── Section 194C - Contractors
-├── Section 194J - Professional Services  
+├── Section 194J - Professional Services
 ├── Section 194I - Rent
 ├── Section 194H - Commission
 ├── Section 194N - Cash Withdrawal
@@ -160,57 +180,64 @@ TDS Sections Overview:
 ```
 
 ### 2. **TDS Categories**
+
 Each section has specific categories with defined rates:
 
 #### For Professional Services (194J):
+
 - **Professional Services (10%)**: Legal, Medical, Consultancy, Architectural, Engineering
 - **Technical Services (2%)**: Technical services excluding professional services
 
 #### For Contractors (194C):
+
 - **Construction Contracts**
-- **Professional Contracts** 
+- **Professional Contracts**
 - **Service Contracts**
 - **Transport Contracts**
 
 #### For Rent (194I):
+
 - **Building Rent (10%)**
 - **Land Rent (10%)**
 - **Plant & Machinery Rent (2%)**
 - **Equipment Rent (2%)**
 
 #### For Purchase/Sale of Goods:
+
 - **TDS on Purchase (194Q)**: 0.1% (buyer conditions)
 - **TCS on Sale (206C1H)**: 0.1% (seller conditions)
 
 ### 3. **TDS Rates Structure**
 
-| Payment Type | TDS Rate | Section | Threshold | Conditions |
-|--------------|----------|---------|-----------|------------|
-| Professional Services | 10% | 194J | ₹30,000 | Professional services |
-| Technical Services | 2% | 194J | ₹30,000 | Technical services (non-professional) |
-| Contractor (Individual) | 1% | 194C | ₹30,000 | Per contract OR ₹1L aggregate |
-| Contractor (Company) | 2% | 194C | ₹30,000 | Per contract OR ₹1L aggregate |
-| Rent - Building/Land | 10% | 194I | ₹2,40,000 | Building or land rent |
-| Rent - Equipment | 2% | 194I | ₹2,40,000 | Equipment/machinery rent |
-| Commission | 5% | 194H | ₹15,000 | Commission payments |
-| Interest - Banks/Co-op Banks/Post Office | 10% | 194A | ₹40,000 | Interest from banks/co-operative banks/post office |
-| Interest - Senior Citizens (Banks) | 10% | 194A | ₹50,000 | Interest from banks for senior citizens |
-| Interest - Others (Non-banking) | 10% | 194A | ₹5,000 | Interest from companies/NBFCs/others |
-| Cash Withdrawal (ITR Filers) | 2% | 194N | ₹1 crore | Cash withdrawal above threshold |
-| Cash Withdrawal (Non-ITR) | 2%/5% | 194N | ₹20 lakh | Tiered rates based on amount |
-| E-commerce | 1% | 194O | ₹5 lakh | E-commerce transactions |
-| Purchase of Goods (194Q) | 0.1% | 194Q | ₹50 lakh | Buyer turnover >₹10 crore |
-| Sale of Goods (206C1H) | 0.1% | 206C1H | ₹50 lakh | Seller turnover >₹10 crore |
-| Crypto Assets | 1% | 194S | ₹10,000 | Per transaction |
+| Payment Type                             | TDS Rate | Section | Threshold | Conditions                                         |
+| ---------------------------------------- | -------- | ------- | --------- | -------------------------------------------------- |
+| Professional Services                    | 10%      | 194J    | ₹30,000   | Professional services                              |
+| Technical Services                       | 2%       | 194J    | ₹30,000   | Technical services (non-professional)              |
+| Contractor (Individual)                  | 1%       | 194C    | ₹30,000   | Per contract OR ₹1L aggregate                      |
+| Contractor (Company)                     | 2%       | 194C    | ₹30,000   | Per contract OR ₹1L aggregate                      |
+| Rent - Building/Land                     | 10%      | 194I    | ₹2,40,000 | Building or land rent                              |
+| Rent - Equipment                         | 2%       | 194I    | ₹2,40,000 | Equipment/machinery rent                           |
+| Commission                               | 5%       | 194H    | ₹15,000   | Commission payments                                |
+| Interest - Banks/Co-op Banks/Post Office | 10%      | 194A    | ₹40,000   | Interest from banks/co-operative banks/post office |
+| Interest - Senior Citizens (Banks)       | 10%      | 194A    | ₹50,000   | Interest from banks for senior citizens            |
+| Interest - Others (Non-banking)          | 10%      | 194A    | ₹5,000    | Interest from companies/NBFCs/others               |
+| Cash Withdrawal (ITR Filers)             | 2%       | 194N    | ₹1 crore  | Cash withdrawal above threshold                    |
+| Cash Withdrawal (Non-ITR)                | 2%/5%    | 194N    | ₹20 lakh  | Tiered rates based on amount                       |
+| E-commerce                               | 1%       | 194O    | ₹5 lakh   | E-commerce transactions                            |
+| Purchase of Goods (194Q)                 | 0.1%     | 194Q    | ₹50 lakh  | Buyer turnover >₹10 crore                          |
+| Sale of Goods (206C1H)                   | 0.1%     | 206C1H  | ₹50 lakh  | Seller turnover >₹10 crore                         |
+| Crypto Assets                            | 1%       | 194S    | ₹10,000   | Per transaction                                    |
 
 ### 4. **TDS Deductor Categories**
 
 #### Corporate Deductors:
+
 - **Companies**: All companies must deduct TDS
 - **Banks**: For interest payments
 - **Financial Institutions**: For loans and investments
 
 #### Individual/HUF Deductors:
+
 - **Business People**: If business turnover > ₹1 crore
 - **Professionals**: If gross receipts > ₹50 lakh
 - **Rent Payments**: If total rent paid > ₹2,40,000
@@ -220,7 +247,9 @@ Each section has specific categories with defined rates:
 ## Important Notes on Salary TDS
 
 ### Salary TDS Calculation
+
 **Salary TDS calculation follows slab-based computation and is handled separately from transaction-based TDS.** This includes:
+
 - Income tax slabs based on total income
 - Standard deduction calculations
 - Exemption calculations (HRA, LTA, etc.)
@@ -234,15 +263,18 @@ Each section has specific categories with defined rates:
 ## Implementation in the System
 
 ### 1. **TDS Configuration**
+
 The system implements TDS through the following components:
 
 #### Master Data Setup:
+
 - **TDS Sections**: Pre-defined sections (194C, 194J, 194I, etc.)
 - **TDS Categories**: Specific categories under each section
 - **TDS Rates**: Configurable rates for each category
 - **Threshold Limits**: Configurable limits for TDS applicability
 
 #### Party Configuration:
+
 - **TDS Applicable**: Enable/disable TDS for a party
 - **TDS Category**: Assign appropriate TDS category
 - **PAN Available**: Flag for PAN availability
@@ -273,6 +305,7 @@ Payment Entry Creation
 ### 3. **TDS Posting Entries**
 
 #### For Professional Services:
+
 ```
 Journal Entry:
 Debit: Professional Services Expense     ₹90,000
@@ -281,6 +314,7 @@ Credit: Party Account                   ₹80,000
 ```
 
 #### For Contractor Payments:
+
 ```
 Journal Entry:
 Debit: Contractor Expense                ₹99,000
@@ -291,6 +325,7 @@ Credit: Party Account                    ₹98,000
 ### 4. **TDS Reports and Compliance**
 
 #### Required Reports:
+
 - **Form 24Q**: TDS on Salary
 - **Form 26Q**: TDS on Payments other than Salary
 - **Form 27Q**: TDS on Securities
@@ -298,6 +333,7 @@ Credit: Party Account                    ₹98,000
 - **Form 16A**: TDS Certificate
 
 #### Key Reports:
+
 - **TDS Summary**: Period-wise TDS summary
 - **TDS Outstanding**: Pending TDS payments
 - **TDS Analysis**: Party-wise TDS analysis
@@ -308,6 +344,7 @@ Credit: Party Account                    ₹98,000
 ## TDS Deductor and Deductee Responsibilities
 
 ### Deductor Responsibilities:
+
 1. **Deduct TDS**: As per applicable rates and thresholds
 2. **Deposit TDS**: Deposit TDS with government within due dates
 3. **File Returns**: Quarterly TDS returns (Form 24Q, 26Q, 27Q)
@@ -316,6 +353,7 @@ Credit: Party Account                    ₹98,000
 6. **Furnish Details**: Provide PAN details to deductees
 
 ### Deductee Responsibilities:
+
 1. **Provide PAN**: Provide valid PAN to deductor
 2. **Submit Declaration**: Provide necessary declarations for lower TDS
 3. **Claim Credit**: Claim TDS credit while filing ITR
@@ -324,13 +362,13 @@ Credit: Party Account                    ₹98,000
 
 ### Important Due Dates:
 
-| Activity | Due Date |
-|----------|----------|
-| TDS Deposit | 7th of following month |
-| TDS Return Filing | 31st of month following quarter |
-| Form 26Q (Q4) | 31st May |
-| Form 27Q (Q4) | 31st May |
-| Form 24Q (Q4) | 31st May |
+| Activity          | Due Date                            |
+| ----------------- | ----------------------------------- |
+| TDS Deposit       | 7th of following month              |
+| TDS Return Filing | 31st of month following quarter     |
+| Form 26Q (Q4)     | 31st May                            |
+| Form 27Q (Q4)     | 31st May                            |
+| Form 24Q (Q4)     | 31st May                            |
 | Form 16A Issuance | Within 15 days of TDS return filing |
 
 ---
@@ -340,6 +378,7 @@ Credit: Party Account                    ₹98,000
 ### Types of TDS Returns:
 
 #### Form 24Q:
+
 - **Purpose**: TDS on Salary
 - **Coverage**: All salary payments and deductions
 - **Due Date**: 31st of month following quarter
@@ -347,27 +386,32 @@ Credit: Party Account                    ₹98,000
 **Note**: Salary TDS calculation follows slab-based computation and is handled separately from transaction-based TDS. This includes income tax slabs, standard deduction, exemption calculations, and perquisite valuations.
 
 #### Form 26Q:
+
 - **Purpose**: TDS on Non-Salary Payments
 - **Coverage**: All TDS except salary and securities
 - **Due Date**: 31st of month following quarter
 
 #### Form 27Q:
+
 - **Purpose**: TDS on payments to Non-Residents (excluding salary)
 - **Coverage**: Interest, dividend, and other payments to non-residents
 - **Due Date**: 31st of month following quarter
 
 #### Form 27EQ:
+
 - **Purpose**: TCS/TDS Statement
 - **Nature**: Consolidated summary statement
 - **Due Date**: 31st of month following quarter
 
 ### TDS Return Components:
+
 1. **Deductor Details**: TAN, PAN, address, etc.
 2. **Challan Details**: TDS payment challans
 3. **Deductee Details**: PAN, name, amount, TDS deducted
 4. **Summary**: Total TDS deducted and deposited
 
 ### Common Errors in TDS Returns:
+
 - **Invalid PAN**: Mismatch between PAN and name
 - **Duplicate Entries**: Same deductee entry multiple times
 - **Incorrect Rates**: Wrong TDS rates applied
@@ -379,6 +423,7 @@ Credit: Party Account                    ₹98,000
 ## Common TDS Scenarios
 
 ### Scenario 1: Professional Services
+
 ```
 Service Provider: ABC Consultants
 Service Amount: ₹1,00,000 (Gross Amount)
@@ -395,6 +440,7 @@ Calculation:
 ```
 
 ### Scenario 2: Contractor Payment - Dual Threshold Logic
+
 ```
 Contractor: XYZ Builders
 Contract Amount 1: ₹25,000
@@ -415,6 +461,7 @@ Calculation for Second Contract:
 ```
 
 ### Scenario 3: Contractor Payment - Cumulative Threshold
+
 ```
 Contractor: ABC Services
 Contract 1: ₹40,000 (Jan 2024)
@@ -435,6 +482,7 @@ Calculation:
 ```
 
 ### Scenario 4: Technical Services vs Professional Services
+
 ```
 Scenario A - Professional Service:
 Service: Legal Advisory
@@ -456,6 +504,7 @@ Technical Services (2%):
 ```
 
 ### Scenario 5: Rent Payment - Equipment vs Building
+
 ```
 Scenario A - Building Rent:
 Property: Office Space
@@ -486,6 +535,7 @@ Calculation:
 ### Scenario 6: Section 194N - Cash Withdrawal with ITR Filing Status
 
 #### Case A: ITR Filer
+
 ```
 Party: Corporate Account Holder
 Cash Withdrawal: ₹1,50,00,000 (₹1.5 crore)
@@ -500,12 +550,13 @@ Calculation:
 ```
 
 #### Case B: Non-ITR Filer - Tiered Rates
+
 ```
 Party: Individual Account Holder
 Cash Withdrawal: ₹1,50,00,000 (₹1.5 crore)
 ITR Filing Status: Haven't filed ITR in last 3 years
 TDS Section: 194N
-TDS Rates: 
+TDS Rates:
 - 2% for ₹20 lakh to ₹1 crore
 - 5% for above ₹1 crore
 
@@ -520,6 +571,7 @@ Net Withdrawal: ₹1,50,00,000 - ₹4,10,000 = ₹1,45,90,000
 ### Scenario 7: Critical - 194Q vs 206C(1H) Mutual Exclusivity
 
 #### Case A: Buyer Meets 194Q Conditions
+
 ```
 Buyer: Large Corporation (Turnover ₹50 crore)
 Seller: Small Trader (Turnover ₹2 crore)
@@ -540,6 +592,7 @@ TDS Amount: ₹60,00,000 × 0.1% = ₹6,000
 ```
 
 #### Case B: Seller Meets 206C(1H) Conditions
+
 ```
 Buyer: Small Business (Turnover ₹5 crore)
 Seller: Large Corporation (Turnover ₹25 crore)
@@ -560,6 +613,7 @@ TCS Amount: ₹60,00,000 × 0.1% = ₹6,000
 ```
 
 ### Scenario 8: Complex Multiple Section Scenario
+
 ```
 Party: ABC Tech Solutions
 Multiple Transactions in Same Month:
@@ -569,7 +623,7 @@ Multiple Transactions in Same Month:
    - Rate: 10% (₹4,000)
 
 2. Equipment Rent: ₹30,000
-   - TDS Category: Rent - Equipment (194I) 
+   - TDS Category: Rent - Equipment (194I)
    - Rate: 2% (₹600)
 
 3. Contractor Work: ₹25,000
@@ -581,6 +635,7 @@ Net Payment: ₹95,000 - ₹4,850 = ₹90,150
 ```
 
 ### Scenario 9: No PAN - Higher TDS Rate
+
 ```
 Professional: Independent Consultant
 PAN Status: No PAN available
@@ -601,6 +656,7 @@ Difference: ₹5,000 more TDS without PAN
 ```
 
 ### Scenario 10: Lower TDS Certificate
+
 ```
 Professional: Chartered Accountant
 TDS Rate: Normal 10%
@@ -621,6 +677,7 @@ Requirements for Lower TDS:
 ```
 
 ### Scenario 11: Interest TDS - Different Financial Institutions and Senior Citizens
+
 ```
 Scenario A - Regular Bank Interest:
 Financial Institution: HDFC Bank
@@ -673,6 +730,7 @@ Calculation:
 ```
 
 ### Scenario 12: Section 194S - Crypto Assets with Person Type Logic
+
 ```
 Scenario A - Specified Person (Individual with low turnover):
 Person: Individual Trader (Small Business)
@@ -728,6 +786,7 @@ Calculation:
 ```
 
 ### Scenario 13: Higher TDS for Non-Filers (Section 206AB)
+
 ```
 Scenario A - Professional Services with Non-Filer:
 Service Provider: Independent Consultant
@@ -764,17 +823,20 @@ Difference: ₹2,000 extra for non-filing
 ## Penalties and Consequences
 
 ### For Non-Deduction/Non-Payment:
+
 - **Penalty**: Equal to TDS amount not deducted/not paid
 - **Interest**: 1% per month for non-deduction
 - **Interest**: 1.5% per month for non-payment
 
 ### For Non-Filing of Returns:
+
 - **Late Fee (Section 234E)**: ₹200 per day
   - **Maximum Cap**: Cannot exceed the TDS amount
 - **Penalty (Section 271H)**: ₹10,000 to ₹1,00,000
   - Applies for failure to file TDS returns or filing incorrect returns
 
 ### For Furnishing Incorrect Information:
+
 - **Penalty**: ₹10,000 per return
 - **Prosecution**: In case of deliberate violation
 
@@ -801,4 +863,4 @@ For the latest updates and specific guidance, always refer to the Income Tax Dep
 
 ---
 
-*This guide covers the comprehensive understanding of TDS implementation, calculation, and compliance. For technical implementation details, refer to the system documentation and user guides.*
+_This guide covers the comprehensive understanding of TDS implementation, calculation, and compliance. For technical implementation details, refer to the system documentation and user guides._

@@ -44,7 +44,10 @@ export class EWayBillRegister extends Report {
 
     if (!this.fromDate) {
       // Show more data by default in demo
-      this.fromDate = DateTime.local().minus({ months: 6 }).startOf('month').toISODate();
+      this.fromDate = DateTime.local()
+        .minus({ months: 6 })
+        .startOf('month')
+        .toISODate();
     }
   }
 
@@ -215,10 +218,11 @@ export class EWayBillRegister extends Report {
     // Pre-fetch some invoices if possible or just fetch as we go but handle missing invoice date
     for (const ewayBill of ewayBills) {
       let customerName = '';
-      
+
       // If we have the invoice name but it's not the same as invoiceNo field, or just to be sure
-      const invoiceId = (ewayBill.salesInvoice as string) || (ewayBill.invoiceNo as string);
-      
+      const invoiceId =
+        (ewayBill.salesInvoice as string) || (ewayBill.invoiceNo as string);
+
       if (invoiceId) {
         try {
           const invoice = await this.fyo.doc.getDoc(
@@ -231,7 +235,7 @@ export class EWayBillRegister extends Report {
           if (this.customer && customerName !== this.customer) {
             continue;
           }
-          
+
           // Fallback if record fields are empty - but don't override if they exist
           if (!ewayBill.invoiceNo) {
             ewayBill.invoiceNo = invoice.name;
@@ -246,10 +250,15 @@ export class EWayBillRegister extends Report {
               ewayBill.invoiceDate = (invoice.date as any).toJSDate();
             }
           }
-          if (!ewayBill.invoiceValue || 
-              ((ewayBill.invoiceValue as any).isZero && (ewayBill.invoiceValue as any).isZero()) ||
-              (typeof ewayBill.invoiceValue === 'number' && ewayBill.invoiceValue === 0)) {
-            ewayBill.invoiceValue = invoice.baseGrandTotal || invoice.grandTotal;
+          if (
+            !ewayBill.invoiceValue ||
+            ((ewayBill.invoiceValue as any).isZero &&
+              (ewayBill.invoiceValue as any).isZero()) ||
+            (typeof ewayBill.invoiceValue === 'number' &&
+              ewayBill.invoiceValue === 0)
+          ) {
+            ewayBill.invoiceValue =
+              invoice.baseGrandTotal || invoice.grandTotal;
           }
         } catch (error) {
           // If invoice not found, we still show the E-Way Bill but with what we have
@@ -277,7 +286,10 @@ export class EWayBillRegister extends Report {
         invoiceNo: (ewayBill.invoiceNo as string) || '',
         customer: customerName,
         invoiceDate: formatDate(ewayBill.invoiceDate),
-        invoiceValue: ewayBill.invoiceValue instanceof Money ? ewayBill.invoiceValue.float : (ewayBill.invoiceValue as number) || 0,
+        invoiceValue:
+          ewayBill.invoiceValue instanceof Money
+            ? ewayBill.invoiceValue.float
+            : (ewayBill.invoiceValue as number) || 0,
         ewayBillNo: (ewayBill.ewayBillNo as string) || '',
         vehicleNo: (ewayBill.vehicleNo as string) || '',
         transportDocNo: (ewayBill.transportDocNo as string) || '',
@@ -300,7 +312,8 @@ export class EWayBillRegister extends Report {
       const reportRow: ReportRow = { cells: [] };
       const rowExtended = {
         ...row,
-        vehicleNoOrDocNo: row.transportMode === 'Road' ? row.vehicleNo : row.transportDocNo,
+        vehicleNoOrDocNo:
+          row.transportMode === 'Road' ? row.vehicleNo : row.transportDocNo,
       };
 
       for (const { fieldname, fieldtype, width } of this.columns) {

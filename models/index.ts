@@ -135,7 +135,7 @@ export async function getRegionalModels(
   const { PurchaseInvoice } = await import(
     './regionalModels/in/PurchaseInvoice'
   );
-  
+
   return {
     Address,
     Party,

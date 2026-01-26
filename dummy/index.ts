@@ -136,8 +136,10 @@ async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   const date = DateTime.fromJSDate(lastInv).minus({ months: 6 }).toJSDate();
 
   // Bank Entry - only create if accounts exist
-  if (await fyo.db.exists('Account', 'Supreme Bank') &&
-      await fyo.db.exists('Account', 'Secured Loans')) {
+  if (
+    (await fyo.db.exists('Account', 'Supreme Bank')) &&
+    (await fyo.db.exists('Account', 'Secured Loans'))
+  ) {
     let doc = fyo.doc.getNewDoc(
       ModelNameEnum.JournalEntry,
       {
@@ -161,8 +163,10 @@ async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   }
 
   // Cash Entry - only create if accounts exist
-  if (await fyo.db.exists('Account', 'Cash') &&
-      await fyo.db.exists('Account', 'Supreme Bank')) {
+  if (
+    (await fyo.db.exists('Account', 'Cash')) &&
+    (await fyo.db.exists('Account', 'Supreme Bank'))
+  ) {
     let doc = fyo.doc.getNewDoc(
       ModelNameEnum.JournalEntry,
       {
@@ -723,7 +727,8 @@ async function generateTDSData(fyo: Fyo) {
     {
       name: 'Interest - Banks/Co-op/Post Office',
       tdsSection: '194A',
-      notes: 'For interest from banks/co-operative banks/post office (₹40,000 threshold)',
+      notes:
+        'For interest from banks/co-operative banks/post office (₹40,000 threshold)',
     },
     {
       name: 'Interest - Senior Citizens (Banks)',
@@ -743,7 +748,8 @@ async function generateTDSData(fyo: Fyo) {
     {
       name: 'Crypto Assets - Specified Persons',
       tdsSection: '194S',
-      notes: 'For sale of crypto assets by specified persons (₹50,000 threshold)',
+      notes:
+        'For sale of crypto assets by specified persons (₹50,000 threshold)',
     },
   ];
 
@@ -887,9 +893,18 @@ async function getTDSPurchaseInvoices(fyo: Fyo): Promise<PurchaseInvoice[]> {
 async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   const eWayBills = [];
   const vehicleNumbers = [
-    'MH12AB1234', 'DL01CD5678', 'KA03EF9012', 'GJ05GH3456',
-    'MH14BC2345', 'HR26DE6789', 'UP16FG0123', 'TN01HJ4567',
-    'WB02JK8901', 'TS09LM2345', 'AP03NP6789', 'KL07PQ0123'
+    'MH12AB1234',
+    'DL01CD5678',
+    'KA03EF9012',
+    'GJ05GH3456',
+    'MH14BC2345',
+    'HR26DE6789',
+    'UP16FG0123',
+    'TN01HJ4567',
+    'WB02JK8901',
+    'TS09LM2345',
+    'AP03NP6789',
+    'KL07PQ0123',
   ];
   const transporters = [
     'Blue Dart Express',
@@ -907,11 +922,9 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
   // (Increased further for better demo visibility)
   for (const invoice of salesInvoices) {
     // Only for higher value invoices
-    const grandTotal = invoice.baseGrandTotal || invoice.grandTotal || fyo.pesa(0);
-    if (
-      grandTotal.gte(fyo.pesa(50000)) &&
-      Math.random() < 0.6
-    ) {
+    const grandTotal =
+      invoice.baseGrandTotal || invoice.grandTotal || fyo.pesa(0);
+    if (grandTotal.gte(fyo.pesa(50000)) && Math.random() < 0.6) {
       const invoiceDate = DateTime.fromJSDate(invoice.date as Date);
 
       // Distance for E-Way Bill validity calculation
@@ -931,7 +944,14 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
         // No GSTIN available
       }
 
-      const transportMode = sample(['Road', 'Road', 'Road', 'Rail', 'Air', 'Ship'])!;
+      const transportMode = sample([
+        'Road',
+        'Road',
+        'Road',
+        'Rail',
+        'Air',
+        'Ship',
+      ])!;
       const data: any = {
         salesInvoice: invoice.name,
         // Explicitly set invoice fields as Date objects (schema expects Date fieldtype)
@@ -955,7 +975,9 @@ async function generateEWayBills(fyo: Fyo, salesInvoices: SalesInvoice[]) {
       if (transportMode === 'Road') {
         data.vehicleNo = sample(vehicleNumbers);
       } else {
-        data.transportDocNo = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+        data.transportDocNo = String(
+          Math.floor(Math.random() * 1000000)
+        ).padStart(6, '0');
         data.transportDocDate = ewayBillDate;
       }
 

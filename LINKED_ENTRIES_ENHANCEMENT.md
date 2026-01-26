@@ -7,11 +7,13 @@ This enhancement transforms the Linked Entries view from a simple document list 
 ### What Changed
 
 **Before:**
+
 - Just showed "SalesInvoice - 5" with basic details
 - No context on WHY documents are linked
 - No visibility into cross-document impact
 
 **After:**
+
 - Shows business reasons: "Payment received from Customer ABC"
 - Shows impact: "Reduced outstanding by $500"
 - Provides cross-document impact summary at the top
@@ -22,7 +24,9 @@ This enhancement transforms the Linked Entries view from a simple document list 
 ### 1. Reason Anchoring
 
 Each linked entry now displays:
+
 - **Business Reason**: The WHY behind the link
+
   - Example: "Payment received from ABC Corp" instead of just "PAY-001"
   - Example: "Stock shipped to XYZ Ltd" instead of just "SHIP-042"
   - Example: "Credit note issued to John Doe" for returns
@@ -35,6 +39,7 @@ Each linked entry now displays:
 ### 2. Cross-Document Impact View
 
 A summary section at the top shows aggregate impact:
+
 - Total payments received/made
 - Whether returns exist
 - Number of items transferred
@@ -43,6 +48,7 @@ A summary section at the top shows aggregate impact:
 ### 3. Visual Hierarchy
 
 Different relationship types have distinct visual styles:
+
 - **Payments**: Green with arrow icons (↓ for receive, ↑ for pay)
 - **Stock Transfers**: Blue with truck/package icons
 - **Returns**: Orange with return arrow icons
@@ -71,11 +77,13 @@ Different relationship types have distinct visual styles:
 ## Supported Relationships
 
 ### Payment Relationships
+
 - **Reason**: "Payment received from/paid to [Party]"
 - **Impact**: "Reduced outstanding by [Amount]"
 - **Visual**: Green with arrow icons
 
 ### Stock Transfer Relationships
+
 - **Shipments**: "Stock shipped to [Customer]"
 - **Purchase Receipts**: "Stock received from [Supplier]"
 - **Returns**: "Stock returned from/to [Party]"
@@ -83,6 +91,7 @@ Different relationship types have distinct visual styles:
 - **Visual**: Blue with truck/package icons
 
 ### Invoice Relationships
+
 - **Sales Invoice**: "Invoice raised for [Customer]"
 - **Purchase Invoice**: "Bill received from [Supplier]"
 - **Returns**: "Credit/Debit note issued to/from [Party]"
@@ -90,11 +99,13 @@ Different relationship types have distinct visual styles:
 - **Visual**: Blue/green/orange based on payment status
 
 ### Journal Entry Relationships
+
 - **Reason**: Based on entry type (Bank Entry, Cash Entry, etc.)
 - **Impact**: "Accounts adjusted", "Bank balance updated"
 - **Visual**: Purple with book icon
 
 ### Ledger Entry Relationships
+
 - **Accounting Ledger**: "Accounting entry in [Account]"
 - **Stock Ledger**: "Stock movement for [Item]"
 - **Impact**: Amount credited/debited or quantity moved
@@ -107,6 +118,7 @@ Different relationship types have distinct visual styles:
 **Linked Entry**: Payment PAY-001
 
 **Before Enhancement:**
+
 ```
 Payment - 1
 PAY-001    2024-01-15
@@ -114,10 +126,11 @@ ABC Corp   $500
 ```
 
 **After Enhancement:**
+
 ```
 [↓] Payment received from ABC Corp
     Reduced outstanding by $500
-    
+
     PAY-001    2024-01-15
     ABC Corp   $500
 ```
@@ -127,6 +140,7 @@ ABC Corp   $500
 **Linked Entry**: Shipment SHIP-042
 
 **Before Enhancement:**
+
 ```
 Shipment - 1
 SHIP-042   2024-01-14
@@ -134,10 +148,11 @@ ABC Corp   $1,200
 ```
 
 **After Enhancement:**
+
 ```
 [🚚] Stock shipped to ABC Corp
      15 items transferred
-     
+
      SHIP-042   2024-01-14
      ABC Corp   $1,200
 ```
@@ -147,6 +162,7 @@ ABC Corp   $1,200
 **Linked Entry**: Sales Invoice SINV-RET-001
 
 **Before Enhancement:**
+
 ```
 SalesInvoice - 1
 SINV-RET-001   2024-01-16
@@ -154,10 +170,11 @@ ABC Corp       $300
 ```
 
 **After Enhancement:**
+
 ```
 [↩] Credit note issued to ABC Corp
     Returned $300
-    
+
     SINV-RET-001   2024-01-16
     ABC Corp       $300
 ```
@@ -178,11 +195,13 @@ Document Impact
 The system is designed to be easily extended:
 
 1. **Adding New Relationship Types**:
+
    - Add a new case in `getLinkedEntryReason()`
    - Define the business logic for that document type
    - Choose appropriate icon and color
 
 2. **Customizing Reasons**:
+
    - Edit the specific reason functions (e.g., `getPaymentReason()`)
    - Modify the text templates
    - Add more metadata
@@ -211,6 +230,7 @@ The system is designed to be easily extended:
 ## Future Enhancements
 
 Potential improvements:
+
 1. Timeline view showing chronological order of linked documents
 2. Relationship graph visualization
 3. Custom reason templates per business

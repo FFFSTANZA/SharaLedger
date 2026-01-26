@@ -66,7 +66,7 @@ export class TDSSection extends Doc {
 
     // For ITR filers: 2% above ₹1 crore
     if (isITRFiler) {
-      return amount.gte('100000000') ? (this.rate ?? 2) : 0;
+      return amount.gte('100000000') ? this.rate ?? 2 : 0;
     }
 
     // For non-ITR filers: 2% above ₹20 lakh, 5% above ₹1 crore
@@ -103,9 +103,11 @@ export class TDSSection extends Doc {
       if (isSeniorCitizen) {
         // Senior citizens: ₹50,000 threshold for banks
         return amount.gte(this.cumulativeThreshold ?? amount.mul(0));
-      } else if (financialInstitutionType === 'bank' || 
-                 financialInstitutionType === 'cooperative' || 
-                 financialInstitutionType === 'postoffice') {
+      } else if (
+        financialInstitutionType === 'bank' ||
+        financialInstitutionType === 'cooperative' ||
+        financialInstitutionType === 'postoffice'
+      ) {
         // Banks/co-operative banks/post office: ₹40,000 threshold
         return amount.gte(this.threshold ?? amount.mul(0));
       } else {
@@ -187,18 +189,20 @@ export class TDSSection extends Doc {
     professionalIncome?: Money,
     isNonFiler?: boolean
   ): Money {
-    if (!this.isApplicableForAmount(
-      baseAmount,
-      cumulativeAmount,
-      partyTurnover,
-      buyerTurnover,
-      sellerTurnover,
-      financialInstitutionType,
-      isSeniorCitizen,
-      isSpecifiedPerson,
-      businessTurnover,
-      professionalIncome
-    )) {
+    if (
+      !this.isApplicableForAmount(
+        baseAmount,
+        cumulativeAmount,
+        partyTurnover,
+        buyerTurnover,
+        sellerTurnover,
+        financialInstitutionType,
+        isSeniorCitizen,
+        isSpecifiedPerson,
+        businessTurnover,
+        professionalIncome
+      )
+    ) {
       return baseAmount.mul(0);
     }
 

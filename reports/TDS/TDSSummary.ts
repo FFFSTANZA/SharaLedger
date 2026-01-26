@@ -179,10 +179,17 @@ export class TDSSummary extends Report {
 
       // If it's a return, amounts are reversed
       const tdsAmount = pi.isReturn
-        ? -(tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount)
-        : (tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount);
+        ? -(tdsDetails.tdsAmount instanceof Money
+            ? tdsDetails.tdsAmount.float
+            : tdsDetails.tdsAmount)
+        : tdsDetails.tdsAmount instanceof Money
+        ? tdsDetails.tdsAmount.float
+        : tdsDetails.tdsAmount;
 
-      const grossAmount = pi.baseGrandTotal instanceof Money ? pi.baseGrandTotal.float : pi.baseGrandTotal;
+      const grossAmount =
+        pi.baseGrandTotal instanceof Money
+          ? pi.baseGrandTotal.float
+          : pi.baseGrandTotal;
 
       if (summaryMap.has(key)) {
         const existing = summaryMap.get(key)!;

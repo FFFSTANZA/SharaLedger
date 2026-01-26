@@ -191,10 +191,17 @@ export class TDSPayable extends Report {
 
       // If it's a return, TDS amount is reversed
       const tdsAmount = pi.isReturn
-        ? -(tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount)
-        : (tdsDetails.tdsAmount instanceof Money ? tdsDetails.tdsAmount.float : tdsDetails.tdsAmount);
+        ? -(tdsDetails.tdsAmount instanceof Money
+            ? tdsDetails.tdsAmount.float
+            : tdsDetails.tdsAmount)
+        : tdsDetails.tdsAmount instanceof Money
+        ? tdsDetails.tdsAmount.float
+        : tdsDetails.tdsAmount;
 
-      const grossAmount = pi.baseGrandTotal instanceof Money ? pi.baseGrandTotal.float : pi.baseGrandTotal;
+      const grossAmount =
+        pi.baseGrandTotal instanceof Money
+          ? pi.baseGrandTotal.float
+          : pi.baseGrandTotal;
       const netPayable = grossAmount - tdsAmount;
 
       rows.push({
