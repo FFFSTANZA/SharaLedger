@@ -133,7 +133,10 @@ async function getPaymentReason(
   if (amountAgainstSource) {
     // Payment is specifically against this document
     reason = `Payment ${verb} ${direction} ${party || 'party'}`;
-    impact = `Reduced outstanding by ${sourceDoc.fyo.format(amountAgainstSource, 'Currency')}`;
+    impact = `Reduced outstanding by ${sourceDoc.fyo.format(
+      amountAgainstSource,
+      'Currency'
+    )}`;
   } else {
     // Payment exists but might not be directly linked
     reason = `Payment ${verb} ${direction} ${party || 'party'}`;
@@ -255,9 +258,15 @@ async function getInvoiceReason(
         ? grandTotal.sub(outstandingAmount)
         : sourceDoc.fyo.pesa(0);
       if (paidAmount.isPositive()) {
-        impact = `Paid ${sourceDoc.fyo.format(paidAmount, 'Currency')} of ${sourceDoc.fyo.format(grandTotal!, 'Currency')}`;
+        impact = `Paid ${sourceDoc.fyo.format(
+          paidAmount,
+          'Currency'
+        )} of ${sourceDoc.fyo.format(grandTotal!, 'Currency')}`;
       } else {
-        impact = `Outstanding: ${sourceDoc.fyo.format(outstandingAmount, 'Currency')}`;
+        impact = `Outstanding: ${sourceDoc.fyo.format(
+          outstandingAmount,
+          'Currency'
+        )}`;
       }
       color = 'orange';
     } else if (grandTotal) {
@@ -363,7 +372,10 @@ function getStockLedgerEntryReason(
   const reason = `Stock movement for ${item || 'item'}`;
   const impact =
     quantity !== undefined
-      ? `${quantity > 0 ? 'Added' : 'Removed'} ${sourceDoc.fyo.format(Math.abs(quantity), 'Float')} units ${location ? `at ${location}` : ''}`
+      ? `${quantity > 0 ? 'Added' : 'Removed'} ${sourceDoc.fyo.format(
+          Math.abs(quantity),
+          'Float'
+        )} units ${location ? `at ${location}` : ''}`
       : '';
 
   return {
@@ -423,9 +435,13 @@ async function getQuoteReason(
   };
 }
 
-function getDefaultReason(sourceDoc: Doc, linkedDoc: LinkedDoc): LinkedEntryReason {
+function getDefaultReason(
+  sourceDoc: Doc,
+  linkedDoc: LinkedDoc
+): LinkedEntryReason {
   const schemaLabel =
-    sourceDoc.fyo.schemaMap[linkedDoc.schemaName]?.label || linkedDoc.schemaName;
+    sourceDoc.fyo.schemaMap[linkedDoc.schemaName]?.label ||
+    linkedDoc.schemaName;
   const name = linkedDoc.name as string | undefined;
 
   // Handle reference documents (Party, Item, Account, Location)
@@ -507,9 +523,7 @@ function getDefaultReason(sourceDoc: Doc, linkedDoc: LinkedDoc): LinkedEntryReas
 /**
  * Get aggregated impact summary for all linked entries
  */
-export function getLinkedEntriesImpactSummary(
-  reasons: LinkedEntryReason[]
-): {
+export function getLinkedEntriesImpactSummary(reasons: LinkedEntryReason[]): {
   totalPayments: Money | null;
   totalOutstanding: Money | null;
   itemsTransferred: number;
@@ -533,10 +547,7 @@ export function getLinkedEntriesImpactSummary(
       hasReturns = true;
     }
 
-    if (
-      reason.relationship === 'stock_transfer' &&
-      reason.metadata?.quantity
-    ) {
+    if (reason.relationship === 'stock_transfer' && reason.metadata?.quantity) {
       itemsTransferred += reason.metadata.quantity;
     }
   }
@@ -554,8 +565,14 @@ export function getLinkedEntriesImpactSummary(
  */
 export function groupLinkedEntriesByRelationship(
   entries: Array<LinkedDoc & { reason: LinkedEntryReason }>
-): Record<LinkedEntryRelationship, Array<LinkedDoc & { reason: LinkedEntryReason }>> {
-  const groups: Record<LinkedEntryRelationship, Array<LinkedDoc & { reason: LinkedEntryReason }>> = {
+): Record<
+  LinkedEntryRelationship,
+  Array<LinkedDoc & { reason: LinkedEntryReason }>
+> {
+  const groups: Record<
+    LinkedEntryRelationship,
+    Array<LinkedDoc & { reason: LinkedEntryReason }>
+  > = {
     payment: [],
     return: [],
     stock_transfer: [],

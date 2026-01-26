@@ -154,9 +154,9 @@
 </template>
 
 <script lang="ts">
- import { fyo } from 'src/initFyo';
- import type { DashboardSummary } from 'utils/db/types';
- import { defineComponent, PropType } from 'vue';
+import { fyo } from 'src/initFyo';
+import type { DashboardSummary } from 'utils/db/types';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   name: 'KpiSummaryStrip',

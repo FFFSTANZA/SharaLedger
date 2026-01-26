@@ -13,14 +13,20 @@
       <!-- Header Section -->
       <div class="px-10 pt-10 pb-8">
         <div class="flex items-center gap-4 mb-3">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-300 dark:shadow-violet-900/50 flex items-center justify-center">
+          <div
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-300 dark:shadow-violet-900/50 flex items-center justify-center"
+          >
             <feather-icon name="book" class="text-white w-7 h-7" />
           </div>
           <div>
-            <h1 class="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            <h1
+              class="text-4xl font-bold text-slate-900 dark:text-white tracking-tight"
+            >
               Versoll Books
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-base font-medium mt-1">
+            <p
+              class="text-slate-500 dark:text-slate-400 text-base font-medium mt-1"
+            >
               Smart accounting for modern businesses
             </p>
           </div>
@@ -48,7 +54,9 @@
               <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 New Company
               </h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p
+                class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed"
+              >
                 Start fresh with a new accounting setup
               </p>
             </div>
@@ -80,7 +88,9 @@
               <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Existing Company
               </h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p
+                class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed"
+              >
                 Import your existing accounting data
               </p>
             </div>
@@ -113,7 +123,9 @@
               <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Explore Demo
               </h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p
+                class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed"
+              >
                 Try Versoll Books with sample data
               </p>
             </div>
@@ -134,7 +146,9 @@
           v-if="files?.length"
           class="flex items-center justify-between mb-4"
         >
-          <h3 class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <h3
+            class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
+          >
             Recent Companies
           </h3>
           <button
@@ -148,10 +162,7 @@
         </div>
 
         <!-- File List -->
-        <div
-          class="space-y-2 overflow-y-auto"
-          style="max-height: 200px"
-        >
+        <div class="space-y-2 overflow-y-auto" style="max-height: 200px">
           <div
             v-for="(file, i) in files"
             :key="file.dbPath"
@@ -198,10 +209,7 @@
       <div
         class="w-full flex justify-between items-center absolute bottom-0 left-0 p-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800"
       >
-        <LanguageSelector
-          v-show="!creatingDemo"
-          class="text-sm w-36"
-        />
+        <LanguageSelector v-show="!creatingDemo" class="text-sm w-36" />
       </div>
     </div>
     <Loading
@@ -220,14 +228,14 @@
       >
         <h2 class="text-2xl font-bold select-none mb-2">Set Base Count</h2>
         <p class="text-base mt-2 text-slate-600 dark:text-slate-400">
-          Base Count is a lower bound on the number of entries created
-          when setting up the demo instance.
+          Base Count is a lower bound on the number of entries created when
+          setting up the demo instance.
         </p>
         <div class="flex my-8 justify-center items-baseline gap-4 text-base">
           <label
             for="basecount"
             class="text-slate-700 dark:text-slate-300 font-medium"
-          >Base Count</label
+            >Base Count</label
           >
           <input
             v-model="baseCount"

@@ -9,12 +9,14 @@ The Timeline View is a chronological visualization of all linked documents, maki
 ### 1. View Modes
 
 **Grouped View (Default)**
+
 - Documents grouped by type (Payments, Invoices, etc.)
 - Shows count for each type
 - Collapsible sections
 - Priority ordering (Payments first)
 
 **Timeline View**
+
 - All documents in chronological order
 - Most recent documents at the top
 - Visual timeline with colored dots
@@ -23,12 +25,14 @@ The Timeline View is a chronological visualization of all linked documents, maki
 ### 2. Switching Views
 
 Toggle between views using the buttons in the header:
+
 - **Grouped** button with list icon
 - **Timeline** button with clock icon
 
 ### 3. Timeline Visualization
 
 Each timeline entry shows:
+
 - **Vertical timeline line**: Connects all events
 - **Colored dot**: Indicates relationship type
   - Green: Payments
@@ -45,11 +49,13 @@ Each timeline entry shows:
 ### 4. Currency Formatting
 
 ✅ **Properly Implemented**: All currency values use `sourceDoc.fyo.format(amount, 'Currency')` which:
+
 - Uses the system's configured currency (INR/₹ for Indian businesses)
 - Respects user's locale and currency settings
 - NO hardcoded dollar signs
 
 Examples:
+
 - Indian business: `₹1,200.00`
 - US business: `$1,200.00`
 - European business: `€1,200.00`
@@ -151,8 +157,8 @@ timelineEntries.sort((a, b) => {
 
 Timeline dots use the same color scheme as reason icons:
 
-| Color  | Document Types                     |
-|--------|-----------------------------------|
+| Color  | Document Types                    |
+| ------ | --------------------------------- |
 | Green  | Payments (received/made)          |
 | Blue   | Stock transfers, Invoices, Quotes |
 | Orange | Returns, Outstanding amounts      |
@@ -172,6 +178,7 @@ All timeline entries are clickable and navigate to the respective document:
 ### Hover Effects
 
 Timeline entries have hover effects for better UX:
+
 - Shadow increase
 - Smooth transition
 - Visual feedback
@@ -196,12 +203,14 @@ Timeline entries have hover effects for better UX:
 ## Comparison: Before vs After
 
 ### Before (Only Grouped View)
+
 - Documents grouped by type only
 - No chronological ordering within groups
 - Hard to understand sequence of events
 - Limited temporal context
 
 ### After (With Timeline View)
+
 - **Two view modes**: Grouped and Timeline
 - **Chronological ordering**: Clear event sequence
 - **Visual timeline**: Easy to scan and understand
@@ -211,6 +220,7 @@ Timeline entries have hover effects for better UX:
 ## Future Enhancements
 
 Potential improvements:
+
 1. Date range filtering (show last 30 days, last quarter, etc.)
 2. Search within timeline
 3. Export timeline to PDF
@@ -225,10 +235,11 @@ Potential improvements:
 ✅ **Verified**: The implementation correctly uses the Fyo framework's formatting system:
 
 ```typescript
-sourceDoc.fyo.format(amount, 'Currency')
+sourceDoc.fyo.format(amount, 'Currency');
 ```
 
 This ensures:
+
 - **Indian businesses**: Will see ₹ (INR)
 - **US businesses**: Will see $ (USD)
 - **Other currencies**: Automatically detected and formatted
@@ -238,9 +249,11 @@ This ensures:
 ## Example Use Cases
 
 ### Use Case 1: Payment Tracking
+
 **Scenario**: Check when payments were received for an invoice
 
-**Action**: 
+**Action**:
+
 1. Open invoice
 2. Click "Linked Entries"
 3. Switch to "Timeline" view
@@ -249,9 +262,11 @@ This ensures:
 **Result**: Clear visibility of payment schedule and timing
 
 ### Use Case 2: Fulfillment Audit
+
 **Scenario**: Verify when goods were shipped
 
 **Action**:
+
 1. Open invoice
 2. Click "Linked Entries"
 3. Switch to "Timeline" view
@@ -260,9 +275,11 @@ This ensures:
 **Result**: Exact dates and quantities shipped
 
 ### Use Case 3: Return Investigation
+
 **Scenario**: Understand when and why returns happened
 
 **Action**:
+
 1. Open invoice
 2. Click "Linked Entries"
 3. Switch to "Timeline" view
@@ -273,6 +290,7 @@ This ensures:
 ## Code Structure
 
 ### Key Files
+
 - `src/pages/CommonForm/LinkedEntries.vue`: Main component
 - `src/utils/linkedEntriesReason.ts`: Reason logic
 - View toggle UI in header
@@ -280,6 +298,7 @@ This ensures:
 - Grouped view section (existing)
 
 ### Key Components
+
 1. **View Toggle Buttons**: Header controls
 2. **Timeline Container**: Vertical line and entries
 3. **Timeline Entry Cards**: Individual event display

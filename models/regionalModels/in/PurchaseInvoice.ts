@@ -226,26 +226,49 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
         // Check if 194Q vs 206C1H conditions
         const applicableSection = TDSSection.getApplicableSection(
           tdsSection,
-          await this.fyo.doc.getDoc('TDSSection', tdsSection.mutualExclusiveWith) as TDSSection,
+          (await this.fyo.doc.getDoc(
+            'TDSSection',
+            tdsSection.mutualExclusiveWith
+          )) as TDSSection,
           {
-            buyerTurnover: this.fyo.singles.AccountingSettings?.businessTurnover,
-            sellerTurnover: this.fyo.singles.AccountingSettings?.businessTurnover,
-            amount: absBaseApplicableAmount
+            buyerTurnover:
+              this.fyo.singles.AccountingSettings?.businessTurnover,
+            sellerTurnover:
+              this.fyo.singles.AccountingSettings?.businessTurnover,
+            amount: absBaseApplicableAmount,
           }
         );
-        otherSectionApplicable = applicableSection !== null && applicableSection.name !== tdsSection.name;
+        otherSectionApplicable =
+          applicableSection !== null &&
+          applicableSection.name !== tdsSection.name;
       }
 
       let cumulativeTotal = zeroAmount;
-      
+
       // Check threshold with enhanced validation
-      if (!tdsSection.isApplicableForAmount(absBaseApplicableAmount, undefined, party.businessTurnover, undefined, undefined, undefined, false, undefined, party.businessTurnover, party.professionalIncome)) {
+      if (
+        !tdsSection.isApplicableForAmount(
+          absBaseApplicableAmount,
+          undefined,
+          party.businessTurnover,
+          undefined,
+          undefined,
+          undefined,
+          false,
+          undefined,
+          party.businessTurnover,
+          party.professionalIncome
+        )
+      ) {
         // Check cumulative threshold for sections like 194C
-        if (tdsSection.cumulativeThreshold && tdsSection.cumulativeThreshold.gt(0)) {
+        if (
+          tdsSection.cumulativeThreshold &&
+          tdsSection.cumulativeThreshold.gt(0)
+        ) {
           const invoiceDate = DateTime.fromISO(
             (this.date as string) || DateTime.local().toISODate()
           );
-          
+
           // Use fiscal year start based on Indian financial year (April 1)
           let startYear = invoiceDate.year;
           if (invoiceDate.month < 4) {
@@ -266,13 +289,16 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
 
           for (const inv of previousInvoices) {
             if (inv.name === this.name) continue;
-            
+
             const invDate = DateTime.fromISO(inv.date);
             // Only include invoices from same fiscal year
-            if (invDate < DateTime.fromISO(fyStart) || invDate > DateTime.fromISO(fyEnd)) {
+            if (
+              invDate < DateTime.fromISO(fyStart) ||
+              invDate > DateTime.fromISO(fyEnd)
+            ) {
               continue;
             }
-            
+
             const amount = this.fyo
               .pesa(inv.netTotal || 0)
               .mul(inv.exchangeRate ?? 1);
@@ -295,21 +321,23 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
       // Calculate TDS with enhanced rate determination
       const hasPan = party.panAvailable ?? true;
       const isNonFiler = !party.itrFiled; // Assuming party has itrFiled field
-      
+
       const tdsRate = tdsSection.getApplicableRate(
-        hasPan, 
-        absBaseApplicableAmount, 
+        hasPan,
+        absBaseApplicableAmount,
         cumulativeTotal,
         party.itrFiled, // isITRFiler parameter
         otherSectionApplicable,
         isNonFiler
       );
-      
+
       // Apply TDS calculation with proper rounding
       const tdsAmount = absBaseApplicableAmount.mul(tdsRate / 100);
-      
+
       // Round TDS amount to 2 decimal places
-      const roundedTdsAmount = this.fyo.pesa(Math.round(tdsAmount.toNumber() * 100) / 100);
+      const roundedTdsAmount = this.fyo.pesa(
+        Math.round(tdsAmount.toNumber() * 100) / 100
+      );
 
       return {
         tdsAmount: roundedTdsAmount,

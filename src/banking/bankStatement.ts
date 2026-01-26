@@ -5,7 +5,9 @@ export type DebitCredit = 'Debit' | 'Credit';
 /**
  * Enhanced bank statement CSV column detection with better pattern matching
  */
-export function detectBankStatementCsvColumns(headers: string[]): BankStatementCsvColumns {
+export function detectBankStatementCsvColumns(
+  headers: string[]
+): BankStatementCsvColumns {
   const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
   const keys = headers.map(norm);
 
@@ -21,8 +23,8 @@ export function detectBankStatementCsvColumns(headers: string[]): BankStatementC
   );
 
   const descriptionIdx = findIdx((h) =>
-    ['description', 'narration', 'details', 'particulars', 'remarks'].some((k) =>
-      h.includes(k)
+    ['description', 'narration', 'details', 'particulars', 'remarks'].some(
+      (k) => h.includes(k)
     )
   );
 
@@ -57,8 +59,8 @@ export function detectBankStatementCsvColumns(headers: string[]): BankStatementC
   );
 
   const referenceIdx = findIdx((h) =>
-    ['reference', 'ref', 'transactionid', 'txnid', 'cheque', 'chequeno'].some((k) =>
-      h.includes(k)
+    ['reference', 'ref', 'transactionid', 'txnid', 'cheque', 'chequeno'].some(
+      (k) => h.includes(k)
     )
   );
 
@@ -156,10 +158,7 @@ export function parseStatementAmount(value: string): number {
 }
 
 function normalizeHashToken(value: string): string {
-  return value
-    .trim()
-    .replace(/\s+/g, ' ')
-    .toLowerCase();
+  return value.trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
 /**
@@ -248,7 +247,9 @@ export function parseDebitCredit(params: {
       : 0;
 
   const indicatorRaw =
-    columns.debitCreditIdx !== undefined ? row[columns.debitCreditIdx] ?? '' : '';
+    columns.debitCreditIdx !== undefined
+      ? row[columns.debitCreditIdx] ?? ''
+      : '';
 
   const indicator = indicatorRaw.trim().toLowerCase();
 
@@ -278,53 +279,151 @@ export interface CategorizationSuggestion {
   suggestedAccount?: string;
 }
 
-export function categorizeTransaction(description: string, amount: number, debitCredit: DebitCredit): CategorizationSuggestion {
+export function categorizeTransaction(
+  description: string,
+  amount: number,
+  debitCredit: DebitCredit
+): CategorizationSuggestion {
   const desc = description.toLowerCase();
-  
+
   // Enhanced payment patterns (money going out)
   const paymentPatterns = [
-    { pattern: /transfer|wire|neft|imps|rtgs|online.*transfer/, category: 'Bank Transfer', confidence: 0.9 },
-    { pattern: /atm|withdrawal|cash.*draw/, category: 'Cash Withdrawal', confidence: 0.9 },
-    { pattern: /cheque|chq|chk|check.*payment/, category: 'Cheque Payment', confidence: 0.8 },
-    { pattern: /utility|electricity|water|gas|internet|phone|bill.*payment/, category: 'Utilities', confidence: 0.8 },
-    { pattern: /salary|wages|payroll|employee.*payment/, category: 'Salary Payment', confidence: 0.9 },
-    { pattern: /rent|lease|property.*rent/, category: 'Rent Payment', confidence: 0.8 },
-    { pattern: /vendor|supplier|purchase|procurement/, category: 'Vendor Payment', confidence: 0.7 },
-    { pattern: /tax|gst|tds|income.*tax/, category: 'Tax Payment', confidence: 0.9 },
-    { pattern: /insurance|premium|life.*insurance/, category: 'Insurance Payment', confidence: 0.8 },
-    { pattern: /loan.*payment|emi|home.*loan/, category: 'Loan EMI', confidence: 0.8 },
-    { pattern: /credit.*card|credit.*payment/, category: 'Credit Card Payment', confidence: 0.8 },
-    { pattern: /subscription|netflix|spotify|software.*license/, category: 'Subscription', confidence: 0.7 },
+    {
+      pattern: /transfer|wire|neft|imps|rtgs|online.*transfer/,
+      category: 'Bank Transfer',
+      confidence: 0.9,
+    },
+    {
+      pattern: /atm|withdrawal|cash.*draw/,
+      category: 'Cash Withdrawal',
+      confidence: 0.9,
+    },
+    {
+      pattern: /cheque|chq|chk|check.*payment/,
+      category: 'Cheque Payment',
+      confidence: 0.8,
+    },
+    {
+      pattern: /utility|electricity|water|gas|internet|phone|bill.*payment/,
+      category: 'Utilities',
+      confidence: 0.8,
+    },
+    {
+      pattern: /salary|wages|payroll|employee.*payment/,
+      category: 'Salary Payment',
+      confidence: 0.9,
+    },
+    {
+      pattern: /rent|lease|property.*rent/,
+      category: 'Rent Payment',
+      confidence: 0.8,
+    },
+    {
+      pattern: /vendor|supplier|purchase|procurement/,
+      category: 'Vendor Payment',
+      confidence: 0.7,
+    },
+    {
+      pattern: /tax|gst|tds|income.*tax/,
+      category: 'Tax Payment',
+      confidence: 0.9,
+    },
+    {
+      pattern: /insurance|premium|life.*insurance/,
+      category: 'Insurance Payment',
+      confidence: 0.8,
+    },
+    {
+      pattern: /loan.*payment|emi|home.*loan/,
+      category: 'Loan EMI',
+      confidence: 0.8,
+    },
+    {
+      pattern: /credit.*card|credit.*payment/,
+      category: 'Credit Card Payment',
+      confidence: 0.8,
+    },
+    {
+      pattern: /subscription|netflix|spotify|software.*license/,
+      category: 'Subscription',
+      confidence: 0.7,
+    },
   ];
 
   // Enhanced receipt patterns (money coming in)
   const receiptPatterns = [
-    { pattern: /deposit|cash.*deposit|bank.*deposit/, category: 'Cash Deposit', confidence: 0.9 },
-    { pattern: /interest|dividend|roi|return.*investment/, category: 'Investment Income', confidence: 0.9 },
+    {
+      pattern: /deposit|cash.*deposit|bank.*deposit/,
+      category: 'Cash Deposit',
+      confidence: 0.9,
+    },
+    {
+      pattern: /interest|dividend|roi|return.*investment/,
+      category: 'Investment Income',
+      confidence: 0.9,
+    },
     { pattern: /refund|return|reversal/, category: 'Refund', confidence: 0.8 },
-    { pattern: /customer|client|sales|revenue/, category: 'Customer Receipt', confidence: 0.8 },
-    { pattern: /loan|advance|borrowing/, category: 'Loan/Advance Receipt', confidence: 0.8 },
-    { pattern: /freelance|consulting|service.*income/, category: 'Service Income', confidence: 0.8 },
-    { pattern: /rent.*income|property.*income/, category: 'Rental Income', confidence: 0.8 },
+    {
+      pattern: /customer|client|sales|revenue/,
+      category: 'Customer Receipt',
+      confidence: 0.8,
+    },
+    {
+      pattern: /loan|advance|borrowing/,
+      category: 'Loan/Advance Receipt',
+      confidence: 0.8,
+    },
+    {
+      pattern: /freelance|consulting|service.*income/,
+      category: 'Service Income',
+      confidence: 0.8,
+    },
+    {
+      pattern: /rent.*income|property.*income/,
+      category: 'Rental Income',
+      confidence: 0.8,
+    },
   ];
 
   // Journal patterns (adjustments/transfers)
   const journalPatterns = [
-    { pattern: /adjustment|correction|reversal|write.*off/, category: 'Adjustment Entry', confidence: 0.9 },
-    { pattern: /opening|balance|carried.*forward/, category: 'Balance Transfer', confidence: 0.8 },
-    { pattern: /commission|charges|fee|bank.*charge/, category: 'Bank Charges', confidence: 0.8 },
-    { pattern: /forex|foreign.*exchange|currency.*exchange/, category: 'Forex Exchange', confidence: 0.8 },
-    { pattern: /dividend|bonus|profit.*sharing/, category: 'Dividend Income', confidence: 0.8 },
+    {
+      pattern: /adjustment|correction|reversal|write.*off/,
+      category: 'Adjustment Entry',
+      confidence: 0.9,
+    },
+    {
+      pattern: /opening|balance|carried.*forward/,
+      category: 'Balance Transfer',
+      confidence: 0.8,
+    },
+    {
+      pattern: /commission|charges|fee|bank.*charge/,
+      category: 'Bank Charges',
+      confidence: 0.8,
+    },
+    {
+      pattern: /forex|foreign.*exchange|currency.*exchange/,
+      category: 'Forex Exchange',
+      confidence: 0.8,
+    },
+    {
+      pattern: /dividend|bonus|profit.*sharing/,
+      category: 'Dividend Income',
+      confidence: 0.8,
+    },
   ];
 
   // Add more context-aware patterns
-  const enhancedPatterns = debitCredit === 'Debit' ? paymentPatterns : receiptPatterns;
+  const enhancedPatterns =
+    debitCredit === 'Debit' ? paymentPatterns : receiptPatterns;
   const allPatterns = [...enhancedPatterns, ...journalPatterns];
 
   // First pass: exact pattern matching
   for (const { pattern, category, confidence } of allPatterns) {
     if (pattern.test(desc)) {
-      const docType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+      const docType =
+        debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
       return {
         docType: docType as 'Payment' | 'Receipt Entry',
         category,
@@ -335,17 +434,40 @@ export function categorizeTransaction(description: string, amount: number, debit
   }
 
   // Second pass: keyword-based fuzzy matching for better accuracy
-  const keywordCategories: { [key: string]: { category: string, keywords: string[], confidence: number } } = {
-    'Insurance': { category: 'Insurance Payment', keywords: ['policy', 'premium', 'claim'], confidence: 0.7 },
-    'Investment': { category: 'Investment Income', keywords: ['sip', 'mutual fund', 'equity', 'stock'], confidence: 0.7 },
-    'Food': { category: 'Food & Dining', keywords: ['restaurant', 'food', 'meal', 'dining'], confidence: 0.6 },
-    'Transport': { category: 'Transport', keywords: ['uber', 'ola', 'fuel', 'gas', 'petrol'], confidence: 0.6 },
-    'Healthcare': { category: 'Healthcare', keywords: ['hospital', 'medicine', 'doctor', 'medical'], confidence: 0.6 },
+  const keywordCategories: {
+    [key: string]: { category: string; keywords: string[]; confidence: number };
+  } = {
+    Insurance: {
+      category: 'Insurance Payment',
+      keywords: ['policy', 'premium', 'claim'],
+      confidence: 0.7,
+    },
+    Investment: {
+      category: 'Investment Income',
+      keywords: ['sip', 'mutual fund', 'equity', 'stock'],
+      confidence: 0.7,
+    },
+    Food: {
+      category: 'Food & Dining',
+      keywords: ['restaurant', 'food', 'meal', 'dining'],
+      confidence: 0.6,
+    },
+    Transport: {
+      category: 'Transport',
+      keywords: ['uber', 'ola', 'fuel', 'gas', 'petrol'],
+      confidence: 0.6,
+    },
+    Healthcare: {
+      category: 'Healthcare',
+      keywords: ['hospital', 'medicine', 'doctor', 'medical'],
+      confidence: 0.6,
+    },
   };
 
   for (const [key, config] of Object.entries(keywordCategories)) {
-    if (config.keywords.some(keyword => desc.includes(keyword))) {
-      const docType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+    if (config.keywords.some((keyword) => desc.includes(keyword))) {
+      const docType =
+        debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
       return {
         docType: docType as 'Payment' | 'Receipt Entry',
         category: config.category,
@@ -356,9 +478,11 @@ export function categorizeTransaction(description: string, amount: number, debit
   }
 
   // Default categorization with better fallback logic
-  const defaultDocType = debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
-  const defaultCategory = debitCredit === 'Debit' ? 'General Expense' : 'General Income';
-  
+  const defaultDocType =
+    debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+  const defaultCategory =
+    debitCredit === 'Debit' ? 'General Expense' : 'General Income';
+
   return {
     docType: defaultDocType as 'Payment' | 'Receipt Entry',
     category: defaultCategory,
@@ -393,7 +517,7 @@ export function parseCsvRow(
   seenInFile: Set<string>
 ): EnhancedPreviewRow {
   const emptyRow = !row?.length || row.every((c) => !String(c ?? '').trim());
-  
+
   if (emptyRow) {
     return {
       rowIndex,
@@ -408,21 +532,21 @@ export function parseCsvRow(
   }
 
   try {
-    const transactionDate = parseStatementDate(
-      row[columns.dateIdx] ?? ''
-    );
-    
+    const transactionDate = parseStatementDate(row[columns.dateIdx] ?? '');
+
     const description = String(row[columns.descriptionIdx] ?? '').trim();
-    
+
     const { amount, debitCredit } = parseDebitCredit({ row, columns });
-    
-    const reference = columns.referenceIdx !== undefined 
-      ? String(row[columns.referenceIdx] ?? '').trim() 
-      : undefined;
-    
-    const balance = columns.balanceIdx !== undefined
-      ? parseStatementAmount(row[columns.balanceIdx] ?? '')
-      : undefined;
+
+    const reference =
+      columns.referenceIdx !== undefined
+        ? String(row[columns.referenceIdx] ?? '').trim()
+        : undefined;
+
+    const balance =
+      columns.balanceIdx !== undefined
+        ? parseStatementAmount(row[columns.balanceIdx] ?? '')
+        : undefined;
 
     const hash = getBankStatementEntryHash({
       transactionDate,
@@ -435,7 +559,11 @@ export function parseCsvRow(
     const isDuplicate = seenInFile.has(hash);
     seenInFile.add(hash);
 
-    const categorization = categorizeTransaction(description, amount, debitCredit);
+    const categorization = categorizeTransaction(
+      description,
+      amount,
+      debitCredit
+    );
 
     return {
       rowIndex,

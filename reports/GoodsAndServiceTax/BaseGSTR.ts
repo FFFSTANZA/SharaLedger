@@ -66,28 +66,30 @@ export abstract class BaseGSTR extends Report {
 
   async getGstrRows(): Promise<GSTRRow[]> {
     const gstrRows: GSTRRow[] = [];
-    
+
     try {
       // Validate filters before proceeding
       this.setDefaultFilters();
-      
+
       // Validate date range
       if (this.fromDate && this.toDate) {
         const fromDate = DateTime.fromISO(this.fromDate);
         const toDate = DateTime.fromISO(this.toDate);
-        
+
         if (!fromDate.isValid || !toDate.isValid || fromDate > toDate) {
           throw new Error('Invalid date range specified');
         }
-        
+
         // Limit date range to prevent performance issues
         if (fromDate.diff(toDate, 'months').months > 12) {
-          throw new Error('Date range cannot exceed 12 months for performance reasons');
+          throw new Error(
+            'Date range cannot exceed 12 months for performance reasons'
+          );
         }
       }
 
       // Use efficient query with proper indexing
-      const invoices = await this.fyo.db.getAll(this.schemaName, {
+      const invoices = (await this.fyo.db.getAll(this.schemaName, {
         filters: {
           submitted: true,
           cancelled: false,
@@ -102,13 +104,13 @@ export abstract class BaseGSTR extends Report {
           'baseGrandTotal',
           'taxes',
           'items',
-          'outstandingAmount'
+          'outstandingAmount',
         ],
         orderBy: {
           field: 'date',
-          order: 'desc'
-        }
-      }) as any[];
+          order: 'desc',
+        },
+      })) as any[];
 
       // Process invoices with enhanced error handling
       for (const invoice of invoices) {
@@ -122,10 +124,13 @@ export abstract class BaseGSTR extends Report {
           // Continue processing other invoices
         }
       }
-
     } catch (error) {
       console.error('Error fetching invoices for GST report:', error);
-      throw new Error(`Failed to generate GST report: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to generate GST report: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     }
 
     return gstrRows;
@@ -143,8 +148,8 @@ export abstract class BaseGSTR extends Report {
       const gstrRow: GSTRRow = {
         invoice: invoice.name,
         party: party.name as string,
-        partyName: party.get('fullName') as string || party.name,
-        gstin: party.get('gstin') as string || '',
+        partyName: (party.get('fullName') as string) || party.name,
+        gstin: (party.get('gstin') as string) || '',
         date: invoice.date,
         place: this.getPlaceFromGSTIN(party.get('gstin') as string),
         taxableAmount: this.fyo.pesa(0),
@@ -176,7 +181,6 @@ export abstract class BaseGSTR extends Report {
       }
 
       return gstrRow;
-
     } catch (error) {
       console.error(`Error processing invoice ${invoice.name}:`, error);
       return null;

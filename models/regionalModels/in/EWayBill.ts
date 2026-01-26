@@ -111,12 +111,17 @@ export class EWayBill extends Doc {
     vehicleNo: (value) => {
       if (this.transportMode === 'Road') {
         if (!value) {
-          throw new ValidationError(t`Vehicle Number is required for Road transport`);
+          throw new ValidationError(
+            t`Vehicle Number is required for Road transport`
+          );
         }
 
         // Indian vehicle number validation: 2 letters + 2 digits + 1-2 letters + 1-4 digits
         const vehicleRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{1,4}$/;
-        if (typeof value === 'string' && !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))) {
+        if (
+          typeof value === 'string' &&
+          !vehicleRegex.test(value.toUpperCase().replace(/\s/g, ''))
+        ) {
           throw new ValidationError(
             t`Invalid vehicle number format. Expected format: MH12AB1234 or MH12A1234`
           );
@@ -130,7 +135,9 @@ export class EWayBill extends Doc {
         if (this.transportMode === 'Air') docLabel = t`AWB Number`;
         if (this.transportMode === 'Ship') docLabel = t`Bill of Lading Number`;
 
-        throw new ValidationError(t`${docLabel} is required for ${this.transportMode} transport`);
+        throw new ValidationError(
+          t`${docLabel} is required for ${this.transportMode} transport`
+        );
       }
     },
     fromGstin: (value) => {
@@ -141,7 +148,9 @@ export class EWayBill extends Doc {
       // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
       const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
       if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
-        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
+        throw new ValidationError(
+          t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`
+        );
       }
     },
     toGstin: (value) => {
@@ -152,7 +161,9 @@ export class EWayBill extends Doc {
       // Indian GSTIN validation: 2 digits + 5 letters + 4 digits + 1 letter + 1 digit + 1 letter + 1 digit
       const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z][Z][0-9A-Z]$/;
       if (typeof value === 'string' && !gstinRegex.test(value.toUpperCase())) {
-        throw new ValidationError(t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`);
+        throw new ValidationError(
+          t`Invalid GSTIN format. Expected format: 27AAAAA0000A1Z5`
+        );
       }
     },
     validUpto: () => {
@@ -163,7 +174,13 @@ export class EWayBill extends Doc {
       const billDate = this._toDateTime(this.ewayBillDate);
       const validUptoDate = this._toDateTime(this.validUpto);
 
-      if (billDate && validUptoDate && billDate.isValid && validUptoDate.isValid && validUptoDate <= billDate) {
+      if (
+        billDate &&
+        validUptoDate &&
+        billDate.isValid &&
+        validUptoDate.isValid &&
+        validUptoDate <= billDate
+      ) {
         throw new ValidationError(
           t`Valid Upto date must be after E-Way Bill Date`
         );
@@ -174,7 +191,8 @@ export class EWayBill extends Doc {
   hidden: HiddenMap = {
     vehicleNo: () => this.transportMode !== 'Road',
     transportDocNo: () => !this.transportMode || this.transportMode === 'Road',
-    transportDocDate: () => !this.transportMode || this.transportMode === 'Road',
+    transportDocDate: () =>
+      !this.transportMode || this.transportMode === 'Road',
     statusChangeReason: () => {
       return this.status !== 'Cancelled' && this.status !== 'Expired';
     },
@@ -215,7 +233,12 @@ export class EWayBill extends Doc {
     const previousStatus = this.status;
 
     // Ensure invoice details are populated
-    if (!this.invoiceNo || !this.invoiceDate || !this.invoiceValue || this.invoiceValue.isZero()) {
+    if (
+      !this.invoiceNo ||
+      !this.invoiceDate ||
+      !this.invoiceValue ||
+      this.invoiceValue.isZero()
+    ) {
       await this.populateFromInvoice();
     }
 
@@ -246,7 +269,7 @@ export class EWayBill extends Doc {
 
     if (this.validUpto) {
       const validUptoDate = this._toDateTime(this.validUpto);
-      
+
       if (validUptoDate && validUptoDate.isValid) {
         const validUptoEndOfDay = validUptoDate.endOf('day');
         if (DateTime.local() > validUptoEndOfDay) {
@@ -304,7 +327,7 @@ export class EWayBill extends Doc {
         ModelNameEnum.SalesInvoice,
         this.salesInvoice
       );
-      
+
       if (!invoice) {
         console.warn(`Invoice ${this.salesInvoice} not found for E-Way Bill`);
         return;
@@ -312,19 +335,23 @@ export class EWayBill extends Doc {
 
       // Set invoiceNo
       this.invoiceNo = invoice.name as string;
-      
+
       // Handle invoice date - convert to Date object (schema expects Date fieldtype)
       if (invoice.date instanceof Date) {
         this.invoiceDate = invoice.date;
       } else if (typeof invoice.date === 'string') {
         this.invoiceDate = new Date(invoice.date);
-      } else if (invoice.date && typeof (invoice.date as any).toJSDate === 'function') {
+      } else if (
+        invoice.date &&
+        typeof (invoice.date as any).toJSDate === 'function'
+      ) {
         // Handle Luxon DateTime
         this.invoiceDate = (invoice.date as any).toJSDate();
       }
-      
+
       // Use baseGrandTotal or grandTotal if base is missing/zero
-      const value = (invoice.baseGrandTotal as Money) || (invoice.grandTotal as Money);
+      const value =
+        (invoice.baseGrandTotal as Money) || (invoice.grandTotal as Money);
       if (value) {
         this.invoiceValue = value;
       }

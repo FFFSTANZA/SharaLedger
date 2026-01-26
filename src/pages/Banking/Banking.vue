@@ -64,15 +64,22 @@
         </Button>
       </div>
 
-      <p v-if="importFileName" class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-        {{ t`Selected` }}: <span class="font-semibold">{{ importFileName }}</span>
+      <p
+        v-if="importFileName"
+        class="text-sm text-gray-600 dark:text-gray-400 mt-2"
+      >
+        {{ t`Selected` }}:
+        <span class="font-semibold">{{ importFileName }}</span>
       </p>
 
       <p v-if="importMessage" class="text-sm mt-2" :class="importMessageClass">
         {{ importMessage }}
       </p>
 
-      <div v-if="previewRows.length" class="mt-4 border dark:border-gray-800 rounded-xl overflow-hidden">
+      <div
+        v-if="previewRows.length"
+        class="mt-4 border dark:border-gray-800 rounded-xl overflow-hidden"
+      >
         <div
           class="grid grid-cols-12 gap-2 px-3 py-2 text-[10px] tracking-widest font-bold uppercase bg-gray-50/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400"
         >
@@ -83,7 +90,9 @@
           <div class="col-span-2 text-end">{{ t`Amount` }}</div>
         </div>
 
-        <div class="max-h-[60vh] overflow-auto custom-scroll custom-scroll-thumb1">
+        <div
+          class="max-h-[60vh] overflow-auto custom-scroll custom-scroll-thumb1"
+        >
           <div
             v-for="row in previewRows"
             :key="row.rowIndex"
@@ -95,17 +104,29 @@
               <div class="truncate" :title="row.description">
                 {{ row.description }}
               </div>
-              <div v-if="row.categorization" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                      :class="getCategorizationClass(row.categorization.confidence)">
-                  {{ row.categorization.docType }} - {{ row.categorization.category }}
-                  <span class="ml-1">({{ Math.round(row.categorization.confidence * 100) }}%)</span>
+              <div
+                v-if="row.categorization"
+                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+              >
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                  :class="getCategorizationClass(row.categorization.confidence)"
+                >
+                  {{ row.categorization.docType }} -
+                  {{ row.categorization.category }}
+                  <span class="ml-1"
+                    >({{
+                      Math.round(row.categorization.confidence * 100)
+                    }}%)</span
+                  >
                 </span>
               </div>
             </div>
             <div class="col-span-2">
               <span v-if="row.error" class="text-red-600">{{ t`Error` }}</span>
-              <span v-else-if="row.isDuplicate" class="text-amber-600">{{ t`Duplicate` }}</span>
+              <span v-else-if="row.isDuplicate" class="text-amber-600">{{
+                t`Duplicate`
+              }}</span>
               <span v-else class="flex flex-col gap-1">
                 <span>{{ row.debitCredit }}</span>
                 <span v-if="row.balance" class="text-xs text-gray-500">
@@ -114,7 +135,11 @@
               </span>
             </div>
             <div class="col-span-1">
-              <span v-if="row.reference" class="text-xs text-gray-500 dark:text-gray-400 truncate block" :title="row.reference">
+              <span
+                v-if="row.reference"
+                class="text-xs text-gray-500 dark:text-gray-400 truncate block"
+                :title="row.reference"
+              >
                 {{ row.reference }}
               </span>
             </div>
@@ -127,24 +152,39 @@
     </div>
 
     <div v-else class="flex overflow-hidden flex-1" @keydown="handleKeydown">
-      <div class="w-1/2 border-e dark:border-gray-800 overflow-auto custom-scroll custom-scroll-thumb1">
+      <div
+        class="w-1/2 border-e dark:border-gray-800 overflow-auto custom-scroll custom-scroll-thumb1"
+      >
         <div class="px-4 py-3 border-b dark:border-gray-800 space-y-3">
-          <div v-if="reconciliationStats" class="p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
-            <p class="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">
+          <div
+            v-if="reconciliationStats"
+            class="p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg"
+          >
+            <p
+              class="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2"
+            >
               {{ t`Reconciliation Summary` }}
             </p>
             <div class="flex gap-4 text-xs">
               <div>
-                <p class="text-gray-500 dark:text-gray-400">{{ t`Unreconciled` }}</p>
-                <p class="font-semibold text-gray-900 dark:text-gray-100">{{ reconciliationStats.unreconciled }}</p>
+                <p class="text-gray-500 dark:text-gray-400">
+                  {{ t`Unreconciled` }}
+                </p>
+                <p class="font-semibold text-gray-900 dark:text-gray-100">
+                  {{ reconciliationStats.unreconciled }}
+                </p>
               </div>
               <div>
                 <p class="text-gray-500 dark:text-gray-400">{{ t`Matched` }}</p>
-                <p class="font-semibold text-green-600">{{ reconciliationStats.matched }}</p>
+                <p class="font-semibold text-green-600">
+                  {{ reconciliationStats.matched }}
+                </p>
               </div>
               <div>
                 <p class="text-gray-500 dark:text-gray-400">{{ t`Ignored` }}</p>
-                <p class="font-semibold text-amber-600">{{ reconciliationStats.ignored }}</p>
+                <p class="font-semibold text-amber-600">
+                  {{ reconciliationStats.ignored }}
+                </p>
               </div>
             </div>
           </div>
@@ -164,7 +204,12 @@
               :border="true"
               :df="bankAccountFilterDf"
               :value="reconcileBankAccount"
-              @change="(v) => { reconcileBankAccount = v; refreshUnreconciled(); }"
+              @change="
+                (v) => {
+                  reconcileBankAccount = v;
+                  refreshUnreconciled();
+                }
+              "
             />
           </div>
 
@@ -176,7 +221,10 @@
           />
         </div>
 
-        <div v-if="!filteredUnreconciledEntries.length" class="p-4 text-sm text-gray-500 dark:text-gray-400">
+        <div
+          v-if="!filteredUnreconciledEntries.length"
+          class="p-4 text-sm text-gray-500 dark:text-gray-400"
+        >
           {{ t`No unreconciled entries.` }}
         </div>
 
@@ -184,27 +232,45 @@
           v-for="entry in filteredUnreconciledEntries"
           :key="entry.name"
           class="w-full text-left px-4 py-3 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/30"
-          :class="selectedEntry?.name === entry.name ? 'bg-violet-50 dark:bg-violet-900/20' : ''"
+          :class="
+            selectedEntry?.name === entry.name
+              ? 'bg-violet-50 dark:bg-violet-900/20'
+              : ''
+          "
           @click="selectEntry(entry)"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="min-w-0">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+              <p
+                class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate"
+              >
                 {{ entry.description }}
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ formatDate(entry.transactionDate) }} · {{ entry.bankAccount }}
+                {{ formatDate(entry.transactionDate) }} ·
+                {{ entry.bankAccount }}
               </p>
             </div>
-            <div class="text-sm font-semibold" :class="entry.debitCredit === 'Debit' ? 'text-red-600' : 'text-green-600'">
-              {{ entry.debitCredit === 'Debit' ? '-' : '+' }}{{ formatCurrency(entry.amount) }}
+            <div
+              class="text-sm font-semibold"
+              :class="
+                entry.debitCredit === 'Debit'
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              "
+            >
+              {{ entry.debitCredit === 'Debit' ? '-' : '+'
+              }}{{ formatCurrency(entry.amount) }}
             </div>
           </div>
         </button>
       </div>
 
       <div class="w-1/2 overflow-auto custom-scroll custom-scroll-thumb1 p-4">
-        <div v-if="!selectedEntry" class="text-sm text-gray-500 dark:text-gray-400">
+        <div
+          v-if="!selectedEntry"
+          class="text-sm text-gray-500 dark:text-gray-400"
+        >
           {{ t`Select an entry to reconcile.` }}
         </div>
 
@@ -214,34 +280,48 @@
               {{ t`Selected Entry` }} #{{ selectedEntry.name }}
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {{ formatDate(selectedEntry.transactionDate) }} · {{ selectedEntry.bankAccount }}
+              {{ formatDate(selectedEntry.transactionDate) }} ·
+              {{ selectedEntry.bankAccount }}
             </p>
             <p class="text-sm mt-3 whitespace-pre-line">
               {{ selectedEntry.description }}
             </p>
             <p class="text-sm mt-2 font-semibold">
-              {{ selectedEntry.debitCredit }} · {{ formatCurrency(selectedEntry.amount) }}
+              {{ selectedEntry.debitCredit }} ·
+              {{ formatCurrency(selectedEntry.amount) }}
             </p>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2">
             <button
               class="px-3 py-2 rounded-xl text-sm font-semibold"
-              :class="reconcileMode === 'match' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'"
+              :class="
+                reconcileMode === 'match'
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'
+              "
               @click="reconcileMode = 'match'"
             >
               {{ t`Match Existing` }}
             </button>
             <button
               class="px-3 py-2 rounded-xl text-sm font-semibold"
-              :class="reconcileMode === 'create' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'"
+              :class="
+                reconcileMode === 'create'
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'
+              "
               @click="reconcileMode = 'create'"
             >
               {{ t`Create New` }}
             </button>
             <button
               class="px-3 py-2 rounded-xl text-sm font-semibold"
-              :class="reconcileMode === 'ignore' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'"
+              :class="
+                reconcileMode === 'ignore'
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300'
+              "
               @click="reconcileMode = 'ignore'"
             >
               {{ t`Ignore` }}
@@ -278,8 +358,13 @@
             </div>
           </div>
 
-          <div v-if="reconcileMode === 'match'" class="mt-4 border dark:border-gray-800 rounded-xl p-4">
-            <p class="text-sm font-semibold mb-3">{{ t`Match with existing accounting entry` }}</p>
+          <div
+            v-if="reconcileMode === 'match'"
+            class="mt-4 border dark:border-gray-800 rounded-xl p-4"
+          >
+            <p class="text-sm font-semibold mb-3">
+              {{ t`Match with existing accounting entry` }}
+            </p>
 
             <Select
               :border="true"
@@ -300,8 +385,13 @@
             />
           </div>
 
-          <div v-else-if="reconcileMode === 'create'" class="mt-4 border dark:border-gray-800 rounded-xl p-4">
-            <p class="text-sm font-semibold mb-3">{{ t`Create a new accounting entry (Draft)` }}</p>
+          <div
+            v-else-if="reconcileMode === 'create'"
+            class="mt-4 border dark:border-gray-800 rounded-xl p-4"
+          >
+            <p class="text-sm font-semibold mb-3">
+              {{ t`Create a new accounting entry (Draft)` }}
+            </p>
 
             <Select
               :border="true"
@@ -347,7 +437,11 @@
             <p class="text-sm font-semibold mb-3">{{ t`Ignore this entry` }}</p>
           </div>
 
-          <p v-if="reconcileMessage" class="text-sm mt-3" :class="reconcileMessageClass">
+          <p
+            v-if="reconcileMessage"
+            class="text-sm mt-3"
+            :class="reconcileMessageClass"
+          >
             {{ reconcileMessage }}
           </p>
         </div>
@@ -454,14 +548,17 @@ export default defineComponent({
       let entries = this.unreconciledEntries;
 
       if (this.reconcileBankAccount) {
-        entries = entries.filter(e => e.bankAccount === this.reconcileBankAccount);
+        entries = entries.filter(
+          (e) => e.bankAccount === this.reconcileBankAccount
+        );
       }
 
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        entries = entries.filter(e =>
-          e.description.toLowerCase().includes(query) ||
-          String(e.amount).includes(query)
+        entries = entries.filter(
+          (e) =>
+            e.description.toLowerCase().includes(query) ||
+            String(e.amount).includes(query)
         );
       }
 
@@ -654,7 +751,7 @@ export default defineComponent({
             new Set(), // We don't have existing hashes yet
             seenInFile
           );
-          
+
           preview.push(parsedRow);
           if (parsedRow.hash) {
             hashes.push(parsedRow.hash);
@@ -694,7 +791,8 @@ export default defineComponent({
         this.previewRows = preview;
         const dupes = preview.filter((r) => r.isDuplicate).length;
         if (dupes) {
-          this.importMessage = this.t`${dupes} duplicate rows detected (will be skipped on save).`;
+          this.importMessage = this
+            .t`${dupes} duplicate rows detected (will be skipped on save).`;
           this.importMessageType = 'info';
         }
       } catch (err) {
@@ -753,10 +851,12 @@ export default defineComponent({
       this.isImporting = false;
 
       if (failed) {
-        this.importMessage = this.t`Imported ${imported} entries. Skipped ${duplicates} duplicates. ${failed} failed.`;
+        this.importMessage = this
+          .t`Imported ${imported} entries. Skipped ${duplicates} duplicates. ${failed} failed.`;
         this.importMessageType = 'error';
       } else {
-        this.importMessage = this.t`Imported ${imported} entries. Skipped ${duplicates} duplicates.`;
+        this.importMessage = this
+          .t`Imported ${imported} entries. Skipped ${duplicates} duplicates.`;
         this.importMessageType = 'success';
       }
 
@@ -808,7 +908,8 @@ export default defineComponent({
       this.matchDocType = 'Payment';
       this.matchDocName = '';
 
-      this.createDocType = entry.debitCredit === 'Credit' ? 'Receipt Entry' : 'Payment Entry';
+      this.createDocType =
+        entry.debitCredit === 'Credit' ? 'Receipt Entry' : 'Payment Entry';
       this.createParty = '';
       this.createPartyAccount = '';
       this.createLedgerAccount = '';
@@ -878,7 +979,8 @@ export default defineComponent({
           docName: this.matchDocName,
         });
       } catch (err) {
-        this.reconcileMessage = err instanceof Error ? err.message : String(err);
+        this.reconcileMessage =
+          err instanceof Error ? err.message : String(err);
         this.reconcileMessageType = 'error';
       } finally {
         this.isReconciling = false;
@@ -949,7 +1051,10 @@ export default defineComponent({
           }
 
           await journal.sync();
-          await this.markMatched({ docType: 'JournalEntry', docName: journal.name! });
+          await this.markMatched({
+            docType: 'JournalEntry',
+            docName: journal.name!,
+          });
           return;
         }
 
@@ -986,7 +1091,8 @@ export default defineComponent({
 
         await this.markMatched({ docType: 'Payment', docName: payment.name! });
       } catch (err) {
-        this.reconcileMessage = err instanceof Error ? err.message : String(err);
+        this.reconcileMessage =
+          err instanceof Error ? err.message : String(err);
         this.reconcileMessageType = 'error';
       } finally {
         this.isReconciling = false;
@@ -1014,7 +1120,8 @@ export default defineComponent({
         this.selectedEntry = null;
         this.ignoredCount++;
       } catch (err) {
-        this.reconcileMessage = err instanceof Error ? err.message : String(err);
+        this.reconcileMessage =
+          err instanceof Error ? err.message : String(err);
         this.reconcileMessageType = 'error';
       } finally {
         this.isReconciling = false;
@@ -1026,12 +1133,15 @@ export default defineComponent({
       }
 
       const currentIndex = this.filteredUnreconciledEntries.findIndex(
-        e => e.name === this.selectedEntry?.name
+        (e) => e.name === this.selectedEntry?.name
       );
 
       if (event.key === 'ArrowDown' || event.key === 'j') {
         event.preventDefault();
-        const nextIndex = Math.min(currentIndex + 1, this.filteredUnreconciledEntries.length - 1);
+        const nextIndex = Math.min(
+          currentIndex + 1,
+          this.filteredUnreconciledEntries.length - 1
+        );
         if (currentIndex === -1) {
           this.selectEntry(this.filteredUnreconciledEntries[0]);
         } else if (nextIndex !== currentIndex) {

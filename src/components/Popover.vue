@@ -14,7 +14,9 @@
           ref="popover"
           :class="popoverClass"
           class="bg-white dark:bg-gray-850 rounded-md border dark:border-gray-875 shadow-lg popover-container relative z-50"
-          :style="{ 'transition-delay': `${isOpen ? entryDelay : exitDelay}ms` }"
+          :style="{
+            'transition-delay': `${isOpen ? entryDelay : exitDelay}ms`,
+          }"
         >
           <slot name="content" :toggle-popover="togglePopover"></slot>
         </div>

@@ -633,13 +633,13 @@ export abstract class Invoice extends Transactional {
         row.tax as string,
         'details'
       )) as Doc[]) ?? [];
-    
+
     // Use Money arithmetic to avoid floating-point precision issues
     const totalRate = details.reduce((acc, doc) => {
-      const rate = this.fyo.pesa(doc.rate as number || 0);
+      const rate = this.fyo.pesa((doc.rate as number) || 0);
       return acc.add(rate);
     }, this.fyo.pesa(0));
-    
+
     // Convert back to number for compatibility, rounding to 2 decimal places
     return Math.round(totalRate.toNumber() * 100) / 100;
   }
@@ -671,9 +671,11 @@ export abstract class Invoice extends Transactional {
     }
 
     // Use Money arithmetic for tax calculations
-    const taxMultiplier = this.fyo.pesa(1).add(this.fyo.pesa(totalTaxRate).div(100));
+    const taxMultiplier = this.fyo
+      .pesa(1)
+      .add(this.fyo.pesa(totalTaxRate).div(100));
     const taxedTotal = rate.mul(quantity).mul(taxMultiplier);
-    
+
     if (row.setItemDiscountAmount) {
       return taxedTotal.sub(itemDiscountAmount);
     }
