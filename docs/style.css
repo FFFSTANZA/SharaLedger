@@ -1,0 +1,323 @@
+:root {
+    --primary: #4f46e5;
+    --primary-light: #eef2ff;
+    --primary-dark: #3730a3;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --text-main: #111827;
+    --text-muted: #4b5563;
+    --text-light: #9ca3af;
+    --bg-main: #ffffff;
+    --bg-sidebar: #f9fafb;
+    --border: #e5e7eb;
+    --radius: 0.5rem;
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Layout */
+.sidebar {
+    width: 300px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 1.5rem;
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.main-container {
+    margin-left: 300px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    padding: 4rem 5rem;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Typography */
+h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+}
+
+h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-top: 3.5rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+p {
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    color: var(--text-muted);
+}
+
+ul, ol {
+    margin-bottom: 1.5rem;
+    margin-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.75rem;
+    font-size: 1.125rem;
+    color: var(--text-muted);
+}
+
+strong {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+/* Sidebar Elements */
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: '';
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: var(--primary);
+    border-radius: 0.25rem;
+}
+
+.nav-section {
+    margin-bottom: 2rem;
+}
+
+.nav-section h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+}
+
+.nav-links {
+    list-style: none;
+    margin: 0;
+}
+
+.nav-links li {
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    display: block;
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.nav-links a.active {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+/* Components */
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.tutorial-step {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding: 2rem;
+    background: var(--bg-sidebar);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.step-content h3 {
+    margin-top: 0;
+}
+
+.callout {
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius);
+    margin: 2rem 0;
+    border-left: 4px solid;
+    display: flex;
+    gap: 1rem;
+}
+
+.callout-info {
+    background-color: #eff6ff;
+    border-left-color: var(--info);
+    color: #1e40af;
+}
+
+.callout-warning {
+    background-color: #fffbeb;
+    border-left-color: var(--warning);
+    color: #92400e;
+}
+
+.callout-success {
+    background-color: #ecfdf5;
+    border-left-color: var(--success);
+    color: #065f46;
+}
+
+.callout p {
+    margin: 0;
+    font-size: 1rem;
+    color: inherit;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
+    gap: 0.5rem;
+}
+
+.btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.btn-outline:hover {
+    background-color: var(--bg-sidebar);
+    color: var(--text-main);
+}
+
+.next-prev-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Tags & Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-primary { background: var(--primary-light); color: var(--primary); }
+
+/* Code blocks (Keep them clean) */
+code {
+    background-color: #f3f4f6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.9em;
+    color: #e11d48;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .sidebar { width: 260px; }
+    .main-container { margin-left: 260px; }
+    .main-content { padding: 3rem 2.5rem; }
+}
+
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 1.5rem;
+    }
+    .main-container { margin-left: 0; }
+    .main-content { padding: 2rem 1.5rem; }
+    .tutorial-step { flex-direction: column; gap: 1rem; }
+}
