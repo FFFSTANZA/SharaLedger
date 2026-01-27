@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart of Accounts - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="nav-section">
+            <h3>Introduction</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">The Experience</a></li>
+                <li><a href="getting-started.html">First-time Setup</a></li>
+                <li><a href="chart-of-accounts.html" class="active">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Daily Operations</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Sales & Invoices</a></li>
+                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
+                <li><a href="banking.html">Banking & Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="ledgers.html">Ledger & Audit</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <h1>Chart of Accounts</h1>
+            <p>The Chart of Accounts (CoA) is the backbone of your accounting system. It is a categorized list of all accounts where your business transactions are recorded.</p>
+
+            <h2>Understanding the Hierarchy</h2>
+            <p>Versoll Books uses a standard 5-category system to keep your financials organized. Every account falls under one of these primary groups:</p>
+
+            <div class="card">
+                <ul style="margin-bottom: 0;">
+                    <li><strong>Assets:</strong> What your business owns (Cash, Inventory, Equipment).</li>
+                    <li><strong>Liabilities:</strong> What your business owes (Loans, GST Payable, TDS Payable).</li>
+                    <li><strong>Equity:</strong> The owner's stake in the business.</li>
+                    <li><strong>Income:</strong> Revenue generated from sales and services.</li>
+                    <li><strong>Expenses:</strong> Costs incurred to run the business (Rent, Salaries).</li>
+                </ul>
+            </div>
+
+            <h2>Key Accounts in Versoll Books</h2>
+            <p>While you can create custom accounts, Versoll Books manages several critical accounts automatically to ensure compliance:</p>
+
+            <h3>Tax Accounts</h3>
+            <p>When you enable GST or TDS, Versoll Books automatically tracks these in dedicated liability accounts:</p>
+            <ul>
+                <li><strong>GST Payable:</strong> Tracks Output GST collected from customers.</li>
+                <li><strong>ITC (Input Tax Credit):</strong> Tracks GST paid to suppliers that you can claim back.</li>
+                <li><strong>TDS Payable:</strong> Tracks Tax Deducted at Source that needs to be paid to the government.</li>
+            </ul>
+
+            <h3>Bank and Cash</h3>
+            <p>Manage your liquid assets by creating separate accounts for each bank account and cash drawer. This is essential for the <strong>Banking & Reconciliation</strong> workflow.</p>
+
+            <div class="callout callout-info">
+                <p><strong>Pro Tip:</strong> Use a clear naming convention for your accounts (e.g., "HDFC Bank - Main Account") to make transaction entry faster and reports easier to read.</p>
+            </div>
+
+            <h2>Customizing your CoA</h2>
+            <p>To add or modify accounts, navigate to <strong>Accounting > Chart of Accounts</strong>. You can create sub-accounts to track expenses in more detail (e.g., creating "Office Rent" and "Warehouse Rent" under a parent "Rent" expense).</p>
+
+            <div class="next-prev-nav">
+                <a href="getting-started.html" class="btn btn-outline">← First-time Setup</a>
+                <a href="sales-invoices.html" class="btn">Sales & Invoices →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -3,65 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Versoll Books Documentation</title>
+    <title>Welcome to Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="sidebar">
-        <a href="index.html" class="logo">Versoll Books Docs</a>
+        <a href="index.html" class="logo">Versoll Books</a>
         
         <div class="nav-section">
             <h3>Introduction</h3>
             <ul class="nav-links">
-                <li><a href="index.html" class="active">What is Versoll Books?</a></li>
-                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="index.html" class="active">The Experience</a></li>
+                <li><a href="getting-started.html">First-time Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Core Modules</h3>
+            <h3>Daily Operations</h3>
             <ul class="nav-links">
-                <li><a href="#">Sales & Invoicing</a></li>
-                <li><a href="#">Purchase & Expenses</a></li>
-                <li><a href="#">Banking</a></li>
-                <li><a href="#">Inventory</a></li>
+                <li><a href="sales-invoices.html">Sales & Invoices</a></li>
+                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
+                <li><a href="banking.html">Banking & Reconciliation</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
             <h3>Compliance</h3>
             <ul class="nav-links">
-                <li><a href="#">GST</a></li>
-                <li><a href="#">TDS</a></li>
-                <li><a href="#">E-Way Bills</a></li>
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="ledgers.html">Ledger & Audit</a></li>
             </ul>
         </div>
     </nav>
 
-    <main class="main-content">
-        <h1>What is Versoll Books?</h1>
-        <p>Versoll Books is a comprehensive, modern accounting software designed to simplify financial management for businesses of all sizes. It provides a robust platform for tracking sales, managing expenses, handling banking operations, and ensuring tax compliance.</p>
-        
-        <h2>Key Features</h2>
-        <ul>
-            <li><strong>Intuitive Dashboard:</strong> Get a bird's-eye view of your business's financial health.</li>
-            <li><strong>Easy Invoicing:</strong> Create professional invoices in seconds and track payments.</li>
-            <li><strong>Automated Banking:</strong> Import bank statements and reconcile transactions with ease.</li>
-            <li><strong>Tax Compliance:</strong> Built-in support for GST, TDS, and E-Way Bill generation.</li>
-            <li><strong>Powerful Reporting:</strong> Generate Balance Sheets, P&L statements, and GST reports instantly.</li>
-        </ul>
+    <div class="main-container">
+        <main class="main-content">
+            <span class="badge badge-primary">Version 2.0</span>
+            <h1>The Versoll Books Experience</h1>
+            <p>Welcome to the official tutorial for Versoll Books. This guide is designed to transform the way you handle your business finances—making it simpler, faster, and more accurate.</p>
+            
+            <div class="callout callout-info">
+                <div>
+                    <p><strong>New to Versoll Books?</strong> We recommend following the tutorials in order. Start with the "First-time Setup" to get your business profile ready.</p>
+                </div>
+            </div>
 
-        <div class="info-box">
-            <p><strong>Note:</strong> This documentation is designed to help you get the most out of Versoll Books, whether you're a business owner or an accountant.</p>
-        </div>
+            <h2>What makes it powerful?</h2>
+            <p>Versoll Books isn't just an accounting tool; it's a financial engine for your business. We've built it with a focus on three core pillars:</p>
 
-        <h2>Why choose Versoll Books?</h2>
-        <p>Versoll Books stands out by offering a clean, user-friendly interface combined with powerful enterprise-grade features. We prioritize data integrity and precision, ensuring that your books are always accurate and up-to-date.</p>
-        
-        <div style="margin-top: 3rem;">
-            <a href="getting-started.html" style="background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 0.375rem; font-weight: bold;">Get Started →</a>
-        </div>
-    </main>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                <div class="card">
+                    <h3>⚡ Precision</h3>
+                    <p style="font-size: 1rem;">Calculations you can trust. From automated tax deductions to penny-perfect rounding.</p>
+                </div>
+                <div class="card">
+                    <h3>☁️ Simplicity</h3>
+                    <p style="font-size: 1rem;">A clean, distraction-free interface that lets you focus on your business, not the software.</p>
+                </div>
+                <div class="card">
+                    <h3>⚖️ Compliance</h3>
+                    <p style="font-size: 1rem;">Built-in Indian localization with GST, TDS, and E-Way Bill support right out of the box.</p>
+                </div>
+            </div>
+
+            <h2>Tutorial Path</h2>
+            <p>In this documentation, we will walk you through everything you need to know:</p>
+            <ul>
+                <li><strong>Setting up your Organization:</strong> Getting your profile and accounts ready.</li>
+                <li><strong>Managing Sales:</strong> From creating your first invoice to collecting payments.</li>
+                <li><strong>Handling Expenses:</strong> Tracking what you owe and what you've spent.</li>
+                <li><strong>Mastering Banking:</strong> The magic of automated reconciliation.</li>
+                <li><strong>Staying Compliant:</strong> Handling taxes without the headache.</li>
+            </ul>
+
+            <div class="next-prev-nav">
+                <div></div>
+                <a href="getting-started.html" class="btn">Start the Tutorial →</a>
+            </div>
+        </main>
+    </div>
 
     <script src="main.js"></script>
 </body>

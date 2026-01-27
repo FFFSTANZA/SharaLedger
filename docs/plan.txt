@@ -1,36 +1,39 @@
-Versoll Books Documentation Website - Implementation Plan
+Versoll Books Documentation Website - Implementation Plan (Tutorial Edition)
 
-Phase 1: Foundation & Introduction (Current)
+Phase 1: Welcome & First Steps (Current)
 -------------------------------------------
-- Basic structure (HTML5, CSS3, Vanilla JS)
-- Responsive layout with sidebar navigation
-- Home page: Introduction to Versoll Books
-- Getting Started: Installation and initial setup
-- Basic typography and styling
+- The Versoll Books Experience: A high-level introduction to the software.
+- Visual Foundation: Establishing a clean, distraction-free tutorial layout.
+- Business Profile Setup: Guided tutorial on configuring company details, GSTIN, and base currency.
+- Chart of Accounts: Understanding how to organize your finances from day one.
 
-Phase 2: Core Modules Documentation
+Phase 2: Sales & Customer Success
 -----------------------------------
-- Sales & Invoicing: Creating invoices, managing customers
-- Purchase & Expenses: Managing suppliers, tracking expenses
-- Banking: Importing statements, reconciliation
-- Inventory: Item management, stock tracking
+- Customer Directory: How to manage and track your business relationships.
+- Invoicing Mastery: Creating, customizing, and sending professional invoices.
+- Payment Collection: Recording payments and managing outstanding balances.
 
-Phase 3: Indian Localization & Compliance
-------------------------------------------
-- GST: Configuration and reporting
-- TDS: Section management, category setup, and automated calculations
-- E-Way Bills: Generation and management workflow
+Phase 3: Purchases & Vendor Management
+--------------------------------------
+- Supplier Management: Keeping track of your vendors.
+- Expense Tracking: Recording purchase invoices and out-of-pocket expenses.
+- Bill Payments: How to record and track payments made to suppliers.
 
-Phase 4: Advanced Features & Administration
--------------------------------------------
-- User management and roles
-- Multi-currency setup
-- Financial reports (Balance Sheet, Profit & Loss)
-- Settings and Customization
+Phase 4: Banking & Reconciliation
+---------------------------------
+- Bank Integration: Importing statements via CSV.
+- Smart Categorization: Using automated patterns to categorize transactions.
+- Reconciliation Workflow: Moving transactions from Unreconciled to Reconciled status.
+- GL Posting: How bank entries create proper accounting vouchers.
 
-Phase 5: Interactivity & Search
--------------------------------
-- Client-side search for documentation
-- Code snippet highlighting
-- Frequently Asked Questions (FAQ)
-- "How-to" guides and common workflows
+Phase 5: Tax Compliance (GST, TDS & E-Way Bills)
+-----------------------------------------------
+- GST Readiness: Configuring tax rates and generating GSTR reports.
+- TDS simplified: Setting up TDS sections, categories, and handling automated deductions.
+- E-Way Bill Management: Generating and tracking E-Way Bills directly from invoices.
+
+Phase 6: Insights & Reporting
+-----------------------------
+- Reading your Financials: Understanding the Balance Sheet and Profit & Loss.
+- Tax Reports: Navigating GST and TDS reports for filing.
+- Audit Trails: Using Ledgers to track every transaction.

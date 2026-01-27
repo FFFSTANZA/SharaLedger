@@ -3,93 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Getting Started - Versoll Books Documentation</title>
+    <title>First-time Setup - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="sidebar">
-        <a href="index.html" class="logo">Versoll Books Docs</a>
+        <a href="index.html" class="logo">Versoll Books</a>
         
         <div class="nav-section">
             <h3>Introduction</h3>
             <ul class="nav-links">
-                <li><a href="index.html">What is Versoll Books?</a></li>
-                <li><a href="getting-started.html" class="active">Getting Started</a></li>
+                <li><a href="index.html">The Experience</a></li>
+                <li><a href="getting-started.html" class="active">First-time Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Core Modules</h3>
+            <h3>Daily Operations</h3>
             <ul class="nav-links">
-                <li><a href="#">Sales & Invoicing</a></li>
-                <li><a href="#">Purchase & Expenses</a></li>
-                <li><a href="#">Banking</a></li>
-                <li><a href="#">Inventory</a></li>
+                <li><a href="sales-invoices.html">Sales & Invoices</a></li>
+                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
+                <li><a href="banking.html">Banking & Reconciliation</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
             <h3>Compliance</h3>
             <ul class="nav-links">
-                <li><a href="#">GST</a></li>
-                <li><a href="#">TDS</a></li>
-                <li><a href="#">E-Way Bills</a></li>
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="ledgers.html">Ledger & Audit</a></li>
             </ul>
         </div>
     </nav>
 
-    <main class="main-content">
-        <h1>Getting Started</h1>
-        <p>Follow this guide to set up your Versoll Books account and start managing your finances efficiently.</p>
-        
-        <h2>1. Initial Setup</h2>
-        <p>Once you've launched Versoll Books, the first step is to configure your company profile. Go to <strong>Settings > Company Profile</strong> and fill in the following details:</p>
-        <ul>
-            <li>Legal Company Name</li>
-            <li>Business Address</li>
-            <li>GSTIN (if applicable)</li>
-            <li>Base Currency (e.g., INR)</li>
-            <li>Financial Year start month</li>
-        </ul>
+    <div class="main-container">
+        <main class="main-content">
+            <h1>First-time Setup</h1>
+            <p>Ready to get started? Setting up Versoll Books is a breeze. Follow these three simple steps to prepare your business for modern accounting.</p>
 
-        <h2>2. Setting Up Chart of Accounts</h2>
-        <p>Versoll Books comes with a standard Chart of Accounts. You can customize this by going to <strong>Accounting > Chart of Accounts</strong>. Here you can:</p>
-        <ul>
-            <li>Add new expense categories</li>
-            <li>Create bank and cash accounts</li>
-            <li>Manage liability and asset accounts</li>
-        </ul>
+            <div class="tutorial-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Configure your Business Profile</h3>
+                    <p>Navigate to <strong>Settings > Company Profile</strong>. This is where you define your business identity. Ensure you provide:</p>
+                    <ul>
+                        <li><strong>Legal Name:</strong> Your registered business name.</li>
+                        <li><strong>Address:</strong> Your primary place of business.</li>
+                        <li><strong>GSTIN:</strong> Your 15-digit Goods and Services Tax Identification Number.</li>
+                    </ul>
+                    <div class="callout callout-warning">
+                        <p><strong>Note:</strong> Make sure your GSTIN format is correct (e.g., 27AAAPL1234C1Z5) as it will be used for all tax calculations and E-Way bills.</p>
+                    </div>
+                </div>
+            </div>
 
-        <h2>3. Adding Your First Product/Service</h2>
-        <p>Navigate to <strong>Inventory > Items</strong> to add the products or services you sell. Make sure to specify:</p>
-        <ul>
-            <li>Item Name and Code</li>
-            <li>Selling Price</li>
-            <li>Applicable Tax Rate</li>
-            <li>Initial Stock (for physical products)</li>
-        </ul>
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Set your Regional Preferences</h3>
+                    <p>Go to <strong>Settings > Localization</strong> to set your operational defaults:</p>
+                    <ul>
+                        <li><strong>Base Currency:</strong> Choose the primary currency for your books (e.g., INR).</li>
+                        <li><strong>Financial Year:</strong> Set the start and end dates for your accounting cycle.</li>
+                        <li><strong>Timezone:</strong> Ensure your transaction timestamps are accurate.</li>
+                    </ul>
+                </div>
+            </div>
 
-        <h2>4. Creating Your First Invoice</h2>
-        <p>Go to <strong>Sales > Invoices</strong> and click on "New Invoice". Select a customer (or create a new one), add your items, and click "Save & Submit".</p>
+            <div class="tutorial-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Initialize Opening Balances</h3>
+                    <p>If you are moving from another software, you'll need to set your starting point. Navigate to <strong>Accounting > Opening Balances</strong> to record:</p>
+                    <ul>
+                        <li>Current Bank and Cash balances.</li>
+                        <li>Outstanding Customer receivables.</li>
+                        <li>Outstanding Supplier payables.</li>
+                    </ul>
+                </div>
+            </div>
 
-        <pre><code>// Example: Accessing API for Invoice Creation
-POST /api/method/invoice.create
-{
-    "customer": "John Doe",
-    "items": [
-        { "item_code": "CONS-01", "qty": 1 }
-    ]
-}</code></pre>
+            <div class="callout callout-success">
+                <p><strong>Success!</strong> Once these steps are complete, you are ready to start recording transactions. Next, let's look at how your accounts are organized.</p>
+            </div>
 
-        <div class="info-box">
-            <p><strong>Pro Tip:</strong> Use the search bar at the top of the application to quickly find any module or document.</p>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
-            <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">← What is Versoll Books?</a>
-            <a href="#" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">Core Modules: Sales & Invoicing →</a>
-        </div>
-    </main>
+            <div class="next-prev-nav">
+                <a href="index.html" class="btn btn-outline">← Back to Welcome</a>
+                <a href="chart-of-accounts.html" class="btn">Chart of Accounts →</a>
+            </div>
+        </main>
+    </div>
 
     <script src="main.js"></script>
 </body>
