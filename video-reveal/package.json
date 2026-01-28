@@ -1,0 +1,32 @@
+{
+  "name": "versoll-books-reveal",
+  "version": "1.0.0",
+  "description": "Motion design product reveal video for Versoll Books",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render VideoReveal main out/video.mp4",
+    "install-deps": "npm install",
+    "upgrade": "npm install remotion@latest @remotion/cli@latest"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.155",
+    "@remotion/media-utils": "^4.0.155",
+    "@remotion/shapes": "^4.0.155",
+    "@remotion/google-fonts": "^4.0.155",
+    "@remotion/lottie": "^4.0.155",
+    "lottie-web": "^5.12.2",
+    "react": "^18.2.0",
+    "remotion": "^4.0.155",
+    "remotion-animated": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/web": "^0.0.130"
+  },
+  "keywords": [
+    "remotion",
+    "video",
+    "motion-design",
+    "product-reveal"
+  ]
+}
