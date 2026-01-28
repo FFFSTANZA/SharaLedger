@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items & Inventory Guide - Versoll Books</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Welcome Experience</a></li>
+                <li><a href="getting-started.html">Business Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html" class="active">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Insights</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 3</span>
+                <span class="badge badge-info">Next Steps</span>
+            </div>
+            <h1>📦 Items & Inventory Management</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Whether you sell physical products or professional services, Versoll Books helps you track what you sell, what it costs you, and how much you have left in stock. This is the foundation of both your sales and purchase modules.</p>
+
+            <div class="info-box">
+                <div>
+                    <span class="info-box-icon">📦</span>
+                    <strong>Goods vs. Services</strong>
+                </div>
+                <p>Versoll Books distinguishes between physical "Goods" (which have stock levels) and "Services" (which are intangible). Goods require HSN codes and inventory tracking, while Services require SAC codes and don't affect stock levels.</p>
+            </div>
+
+            <h2>Creating Your Item Master</h2>
+            <p>Go to <code>Inventory > Items > New Item</code> to populate your catalog.</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Item Classification</h3>
+                        <ul>
+                            <li><strong>Maintain Stock:</strong> Toggle this on for physical goods. Leave it off for services or non-stock consumables.</li>
+                            <li><strong>Item Group:</strong> Organize items into categories like "Electronics", "Consulting", or "Raw Materials". This is used for filtered reporting.</li>
+                            <li><strong>Valuation Method:</strong> Choose how the system calculates your stock value (FIFO is standard).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Pricing & Taxing</h3>
+                        <ul>
+                            <li><strong>Standard Selling Rate:</strong> The default price used in Invoices and POS.</li>
+                            <li><strong>Standard Buying Rate:</strong> The default price used in Purchase Invoices.</li>
+                            <li><strong>GST Rate & HSN/SAC:</strong> Critical for tax compliance. Ensure these match official government classifications.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <div>
+                    <p><strong>⚠️ Low Stock Alerts:</strong> Set a "Reorder Level" for each item. Versoll Books will automatically notify you when stock falls below this level, helping you prevent stockouts and lost sales.</p>
+                </div>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="payments.html" class="btn btn-outline">← Back to Payments</a>
+                <a href="warehouses.html" class="btn">Warehouse Management →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

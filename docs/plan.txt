@@ -1,40 +1,57 @@
-Versoll Books Documentation Website - Implementation Plan (Tutorial Edition)
+Versoll Books Documentation Website - The Ultimate Guide Implementation Plan
 
-Phase 1: Welcome & First Steps (COMPLETED ✅)
+Phase 1: Foundation & Onboarding (COMPLETED ✅ - NEEDS REVISION)
 -------------------------------------------
-- The Versoll Books Experience: A high-level introduction to the software.
+- The Versoll Books Experience: High-level philosophy and workflow.
 - Visual Foundation: Establishing a clean, distraction-free tutorial layout.
 - Business Profile Setup: Guided tutorial on configuring company details, GSTIN, and base currency.
-- Chart of Accounts: Understanding how to organize your finances from day one.
+- Company Creation: Step-by-step through the home page wizard.
+- Chart of Accounts: deep dive into organizing your finances from day one.
+- Global Settings: Configuring defaults for a seamless experience.
 
-Phase 2: Sales & Customer Success (COMPLETED ✅)
+Phase 2: Sales, POS & Loyalty (COMPLETED ✅ - NEEDS REVISION)
 -----------------------------------
-- Customer Directory: How to manage and track your business relationships.
-- Invoicing Mastery: Creating, customizing, and sending professional invoices.
-- Payment Collection: Recording payments and managing outstanding balances.
-- File: docs/sales-invoices.html (320 lines - comprehensive tutorial)
+- Customer Directory: Comprehensive relationship management.
+- Invoicing Mastery: Creating, customizing, and sending professional invoices (GST focus).
+- Point of Sale (POS): Quick billing interface, barcode scanning, and multi-mode payments.
+- Loyalty Programs: Setting up reward points, membership tiers, and redemptions.
+- Payment Collection: Recording payments, partial payments, and credit notes.
 
-Phase 3: Purchases & Vendor Management
---------------------------------------
-- Supplier Management: Keeping track of your vendors.
-- Expense Tracking: Recording purchase invoices and out-of-pocket expenses.
-- Bill Payments: How to record and track payments made to suppliers.
+Phase 3: Inventory & Warehouse Management
+-----------------------------------------
+- Item Catalog: Configuring goods, services, and non-stock items.
+- Multiple Warehouses: Managing stock across different physical locations.
+- Stock Movements: Handling transfers, receipts, and manual adjustments.
+- Inventory Valuation: Understanding FIFO/Weighted Average in Versoll.
 
-Phase 4: Banking & Reconciliation
+Phase 4: Purchases & Vendor Relations
+-------------------------------------
+- Supplier Management: Onboarding vendors and tracking performance.
+- Purchase Invoices: Handling bills, TDS deductions, and input tax credit (ITC).
+- Expense Management: Tracking operational costs and staff reimbursements.
+- Bill Payments: Managing payables and vendor reconciliation.
+
+Phase 5: Banking & Reconciliation
 ---------------------------------
-- Bank Integration: Importing statements via CSV.
-- Smart Categorization: Using automated patterns to categorize transactions.
-- Reconciliation Workflow: Moving transactions from Unreconciled to Reconciled status.
-- GL Posting: How bank entries create proper accounting vouchers.
+- Bank Integration: Importing statements and setting up automated feeds.
+- Smart Categorization: Training the engine to recognize recurring patterns.
+- The Reconciliation Workflow: Moving transactions from Unreconciled to Reconciled.
+- GL Posting: Understanding the link between bank entries and the ledger.
 
-Phase 5: Tax Compliance (GST, TDS & E-Way Bills)
+Phase 6: Tax Compliance (GST, TDS & E-Way Bills)
 -----------------------------------------------
-- GST Readiness: Configuring tax rates and generating GSTR reports.
-- TDS simplified: Setting up TDS sections, categories, and handling automated deductions.
-- E-Way Bill Management: Generating and tracking E-Way Bills directly from invoices.
+- GST Readiness: Mastering HSN/SAC, GSTIN validation, and GSTR reporting.
+- TDS Deep Dive: Thresholds, cumulative calculations, and payment vouchers.
+- E-Way Bill Integration: One-click generation from sales invoices.
 
-Phase 6: Insights & Reporting
------------------------------
-- Reading your Financials: Understanding the Balance Sheet and Profit & Loss.
-- Tax Reports: Navigating GST and TDS reports for filing.
-- Audit Trails: Using Ledgers to track every transaction.
+Phase 7: Advanced Insights & Controls
+-------------------------------------
+- Financial Statements: Deep analysis of Balance Sheet, P&L, and Cashflow.
+- User Management: Roles, permissions, and audit logs.
+- Reporting Engine: Custom filters, exports, and scheduled reports.
+
+Next Steps:
+- Add a search bar to the sidebar for quick navigation.
+- Implement more detailed "Tutorial Steps" for each section.
+- Add "Pro Tips" and "Common Pitfalls" callouts.
+- Enhance the CSS for better readability (larger fonts, better spacing).

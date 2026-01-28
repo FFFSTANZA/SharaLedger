@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty & Rewards Guide - Versoll Books</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Welcome Experience</a></li>
+                <li><a href="getting-started.html">Business Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html" class="active">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Insights</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 2</span>
+                <span class="badge badge-success">New</span>
+            </div>
+            <h1>💎 Loyalty Programs: Reward Your Customers</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Happy customers come back. Versoll Books includes a built-in loyalty engine that allows you to reward your frequent buyers with points, tiers, and exclusive discounts without needing any third-party apps.</p>
+
+            <div class="info-box">
+                <div>
+                    <span class="info-box-icon">🎁</span>
+                    <strong>How Loyalty Points Work</strong>
+                </div>
+                <p>Every time a customer makes a purchase, they earn points based on your rules (e.g., ₹100 spent = 1 point). These points have a monetary value (e.g., 1 point = ₹1) that can be redeemed in future purchases.</p>
+            </div>
+
+            <h2>Configuring Your Reward Rules</h2>
+            <p>Go to <code>Customers > Loyalty Program Settings</code> to define your strategy.</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Earning Rules</h3>
+                        <p>Define how points are granted. You can set a global rule or category-specific rules:</p>
+                        <ul>
+                            <li><strong>Points per Currency Unit:</strong> Grant 0.05 points for every ₹1 spent.</li>
+                            <li><strong>Minimum Purchase Amount:</strong> Only grant points if the bill exceeds ₹500.</li>
+                            <li><strong>Excluded Items:</strong> Disable point earning on discounted items or specific categories.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Redemption Rules</h3>
+                        <p>Define how customers can spend their points:</p>
+                        <ul>
+                            <li><strong>Point Value:</strong> Set how much each point is worth in currency (e.g., 1 point = ₹0.50).</li>
+                            <li><strong>Redemption Cap:</strong> Limit points usage to a percentage of the total bill (e.g., max 50% of bill value can be paid via points).</li>
+                            <li><strong>Expiry:</strong> Set points to expire after a certain number of months to encourage repeat visits.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Managing Tiers (VIP Levels)</h2>
+            <p>Create tiers based on total customer spend to offer increasing rewards:</p>
+            <div class="account-type-grid">
+                <div class="account-type-card">
+                    <h4>Silver</h4>
+                    <p>Spend > ₹10,000</p>
+                    <p style="font-size: 0.85rem;">Standard earning rate</p>
+                </div>
+                <div class="account-type-card">
+                    <h4>Gold</h4>
+                    <p>Spend > ₹50,000</p>
+                    <p style="font-size: 0.85rem;">1.5x points earning</p>
+                </div>
+                <div class="account-type-card">
+                    <h4>Platinum</h4>
+                    <p>Spend > ₹2,00,000</p>
+                    <p style="font-size: 0.85rem;">2x points earning + Free Shipping</p>
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <div>
+                    <p><strong>⚠️ Accounting for Loyalty</strong> Loyalty points are technically a liability for your business (you "owe" that value to customers). Versoll Books automatically tracks this in a "Loyalty Points Liability" account in your Balance Sheet.</p>
+                </div>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="pos-billing.html" class="btn btn-outline">← Back to POS</a>
+                <a href="payments.html" class="btn">Payments & Credit →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -13,21 +13,52 @@
     <nav class="sidebar">
         <a href="index.html" class="logo">Versoll Books</a>
         
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
         <div class="nav-section">
-            <h3>Introduction</h3>
+            <h3>Getting Started</h3>
             <ul class="nav-links">
-                <li><a href="index.html">The Experience</a></li>
-                <li><a href="getting-started.html" class="active">First-time Setup</a></li>
+                <li><a href="index.html">Welcome Experience</a></li>
+                <li><a href="getting-started.html" class="active">Business Setup</a></li>
                 <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Daily Operations</h3>
+            <h3>Sales & POS</h3>
             <ul class="nav-links">
-                <li><a href="sales-invoices.html">Sales & Invoices</a></li>
-                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
-                <li><a href="banking.html">Banking & Reconciliation</a></li>
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
             </ul>
         </div>
 
@@ -35,16 +66,16 @@
             <h3>Compliance</h3>
             <ul class="nav-links">
                 <li><a href="gst-compliance.html">GST Management</a></li>
-                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
                 <li><a href="eway-bills.html">E-Way Bills</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Reports</h3>
+            <h3>Insights</h3>
             <ul class="nav-links">
                 <li><a href="financial-statements.html">Financial Statements</a></li>
-                <li><a href="ledgers.html">Ledger & Audit</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
             </ul>
         </div>
     </nav>
@@ -75,30 +106,20 @@
                 <div class="tutorial-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>🏢 Configure Your Business Profile</h3>
-                        <p>Navigate to <code>Settings > Company Profile</code>. This is where you define your business identity. Your profile information will appear on all invoices, reports, and official documents.</p>
-                        
-                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Essential Fields:</h4>
-                        <ul>
-                            <li><strong>Legal Name:</strong> Your registered business name (as per government records)</li>
-                            <li><strong>Display Name:</strong> The name you use for day-to-day operations</li>
-                            <li><strong>Address:</strong> Your primary place of business (required for tax compliance)</li>
-                            <li><strong>GSTIN:</strong> Your 15-digit Goods and Services Tax Identification Number</li>
-                            <li><strong>PAN:</strong> Permanent Account Number (for tax deductions)</li>
-                            <li><strong>Email:</strong> Primary business email for communications</li>
-                            <li><strong>Phone:</strong> Contact number for customers and vendors</li>
-                        </ul>
-                        
-                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
-                            <p><strong>⚠️ GSTIN Format is Critical!</strong> Ensure your GSTIN format is correct (e.g., <code>27AAAPL1234C1Z5</code>). This 15-character code is used for all GST calculations, E-Way bills, and GSTR reports. An incorrect GSTIN will cause tax filing issues!</p>
-                        </div>
+                        <h3>🏢 Comprehensive Business Profile</h3>
+                        <p>Your business profile is the digital identity of your company. Every piece of information here is used for legal compliance and professional branding.</p>
 
-                        <div class="info-box" style="margin-top: 1.5rem;">
-                            <div>
-                                <span class="info-box-icon">💡</span>
-                                <h4>Pro Tip: Logo & Branding</h4>
-                            </div>
-                            <p>Upload your company logo (recommended size: 200x200px) to appear on invoices. You can also set brand colors for a professional look.</p>
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Deep Dive into Profile Fields:</h4>
+                        <ul>
+                            <li><strong>Legal Name & Entity:</strong> Must match your GST registration. Choose between Sole Proprietorship, Partnership, LLP, or Pvt Ltd. This determines the tax forms applicable to you.</li>
+                            <li><strong>Address (Place of Supply):</strong> The full address of your primary place of business. This is used to determine whether to apply IGST or CGST/SGST on your sales.</li>
+                            <li><strong>GSTIN Validation:</strong> Enter your 15-digit GSTIN. Versoll Books performs a format check to ensure it follows the <code>##AAAAA####A#Z#</code> pattern.</li>
+                            <li><strong>PAN (Permanent Account Number):</strong> Crucial for TDS calculations. If your supplier doesn't have a PAN, the system will automatically apply a higher TDS rate (usually 20%).</li>
+                            <li><strong>Digital Signature & Seal:</strong> Upload a transparent PNG of your authorized signatory and business seal. These will be automatically placed on your invoices for a professional touch.</li>
+                        </ul>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ The Importance of Place of Supply:</strong> In the Indian GST system, your business address determines your "Home State". If you sell to a customer in the same state, CGST+SGST applies. If the states differ, IGST applies. Accurate address setup is the foundation of tax compliance!</p>
                         </div>
                     </div>
                 </div>
@@ -106,36 +127,23 @@
                 <div class="tutorial-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>🌏 Set Your Regional Preferences</h3>
-                        <p>Go to <code>Settings > Localization</code> to set your operational defaults. These settings ensure dates, numbers, and currencies display correctly for your region.</p>
-                        
-                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Configuration Options:</h4>
+                        <h3>🌏 Advanced Global Settings</h3>
+                        <p>Before you create your first transaction, you must define how the system behaves globally. Navigate to <code>Settings > Global Preferences</code>.</p>
+
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Automated Defaults:</h4>
                         <ul>
-                            <li><strong>Country:</strong> Select "India" for proper GST and TDS handling</li>
-                            <li><strong>Base Currency:</strong> Choose INR (₹) for Indian Rupees</li>
-                            <li><strong>Financial Year:</strong> Set start date (typically April 1) and end date (March 31)</li>
-                            <li><strong>Date Format:</strong> DD/MM/YYYY (Indian standard) or customize</li>
-                            <li><strong>Number Format:</strong> Indian (1,00,000) vs International (100,000)</li>
-                            <li><strong>Timezone:</strong> Asia/Kolkata for accurate transaction timestamps</li>
+                            <li><strong>Auto-Numbering:</strong> Set your prefix and starting number for Invoices (e.g., INV/24-25/001). We recommend separate prefixes for different fiscal years.</li>
+                            <li><strong>Credit Terms:</strong> Define default payment terms (Net 15, Net 30, Due on Receipt). These will be automatically applied to new customers.</li>
+                            <li><strong>Inventory Method:</strong> Choose between FIFO (First-In, First-Out) or Weighted Average. Most Indian businesses prefer FIFO for accurate cost tracking.</li>
+                            <li><strong>Rounding Preferences:</strong> Enable "Nearest Rupee" rounding for final invoice totals to simplify cash handling and payments.</li>
                         </ul>
 
-                        <div class="callout callout-info" style="margin-top: 1.5rem;">
-                            <p><strong>📅 Financial Year Matters!</strong> Your financial year setting determines when books close, which periods appear in reports, and when GST filing cycles begin. Most Indian businesses use April-March, but you can customize based on your needs.</p>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
-                                <strong style="color: var(--success);">✓ Currency</strong>
-                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">INR (₹) for Indian businesses</p>
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">⚙️</span>
+                                <h4>Fiscal Year Transition</h4>
                             </div>
-                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
-                                <strong style="color: var(--success);">✓ Date Format</strong>
-                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">DD/MM/YYYY (e.g., 15/03/2025)</p>
-                            </div>
-                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
-                                <strong style="color: var(--success);">✓ Financial Year</strong>
-                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Apr 1 - Mar 31</p>
-                            </div>
+                            <p>Versoll Books handles year-end closings automatically. When April 1st arrives, the system prepares your books for the new fiscal year while allowing you to finish pending audits for the previous year.</p>
                         </div>
                     </div>
                 </div>
@@ -143,41 +151,18 @@
                 <div class="tutorial-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>💰 Initialize Opening Balances</h3>
-                        <p>If you're migrating from another accounting system, you need to set your starting point. Navigate to <code>Accounting > Opening Balances</code> to record your current financial position as of your start date.</p>
-                        
-                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">What to Enter:</h4>
-                        <ul>
-                            <li><strong>Bank & Cash Balances:</strong> Current balance in each bank account and cash drawer</li>
-                            <li><strong>Customer Receivables:</strong> Money owed to you by customers (from old invoices)</li>
-                            <li><strong>Supplier Payables:</strong> Money you owe to suppliers (from old bills)</li>
-                            <li><strong>Asset Values:</strong> Current value of equipment, inventory, vehicles, etc.</li>
-                            <li><strong>Loan Balances:</strong> Outstanding principal on business loans</li>
-                            <li><strong>Capital/Equity:</strong> Your investment in the business</li>
-                        </ul>
+                        <h3>💰 Master Opening Balances</h3>
+                        <p>Migration shouldn't be scary. Your opening balance is a "Snapshot" of your business's health on the day you start using Versoll Books.</p>
 
-                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
-                            <p><strong>⚖️ Balance Check:</strong> Total Assets must equal Total Liabilities + Equity. Versoll Books will alert you if your opening balance doesn't balance. This is an accounting fundamental—if it doesn't balance, you've missed something!</p>
-                        </div>
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">The Reconciliation Process:</h4>
+                        <ol>
+                            <li><strong>Trial Balance Upload:</strong> If you have a Trial Balance from Tally or Zoho, you can import it directly via CSV.</li>
+                            <li><strong>Inventory Opening:</strong> Upload your current stock quantities and their purchase costs. This sets your initial "Inventory Value" on the Balance Sheet.</li>
+                            <li><strong>Aging Receivables/Payables:</strong> Don't just enter a total amount. Enter the specific outstanding invoices from your previous system. This allows you to track payments against them later.</li>
+                        </ol>
 
-                        <div class="info-box" style="margin-top: 1.5rem;">
-                            <div>
-                                <span class="info-box-icon">🎯</span>
-                                <h4>Starting Fresh? Skip This Step!</h4>
-                            </div>
-                            <p>If this is a brand new business with no prior transactions, you can skip opening balances. Just start entering new transactions from today, and Versoll Books will build your financial records from scratch.</p>
-                        </div>
-
-                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Example Opening Balance Entry:</h4>
-                        <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1rem;">
-                            <p style="margin: 0; font-family: monospace; font-size: 0.95rem; color: var(--text-main);">
-                                <strong>Date:</strong> April 1, 2024<br>
-                                <strong>HDFC Bank Account:</strong> ₹2,50,000 (Asset)<br>
-                                <strong>Cash in Hand:</strong> ₹15,000 (Asset)<br>
-                                <strong>Customer - ABC Corp:</strong> ₹45,000 (Receivable)<br>
-                                <strong>Supplier - XYZ Ltd:</strong> ₹30,000 (Payable)<br>
-                                <strong>Owner's Capital:</strong> ₹2,80,000 (Equity)<br>
-                            </p>
+                        <div class="callout callout-info" style="margin-top: 1.5rem;">
+                            <p><strong>💡 Why it must balance:</strong> Double-entry bookkeeping requires that every debit has a credit. If you have ₹1,00,000 in the bank (Asset), it either came from your profit (Equity) or a loan (Liability). If your opening entry is out of balance, the system will place the difference in a "Temporary Opening Balance" account until you fix it.</p>
                         </div>
                     </div>
                 </div>

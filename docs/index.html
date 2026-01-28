@@ -13,21 +13,52 @@
     <nav class="sidebar">
         <a href="index.html" class="logo">Versoll Books</a>
         
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
         <div class="nav-section">
-            <h3>Introduction</h3>
+            <h3>Getting Started</h3>
             <ul class="nav-links">
-                <li><a href="index.html" class="active">The Experience</a></li>
-                <li><a href="getting-started.html">First-time Setup</a></li>
+                <li><a href="index.html" class="active">Welcome Experience</a></li>
+                <li><a href="getting-started.html">Business Setup</a></li>
                 <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Daily Operations</h3>
+            <h3>Sales & POS</h3>
             <ul class="nav-links">
-                <li><a href="sales-invoices.html">Sales & Invoices</a></li>
-                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
-                <li><a href="banking.html">Banking & Reconciliation</a></li>
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
             </ul>
         </div>
 
@@ -35,16 +66,16 @@
             <h3>Compliance</h3>
             <ul class="nav-links">
                 <li><a href="gst-compliance.html">GST Management</a></li>
-                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
                 <li><a href="eway-bills.html">E-Way Bills</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
-            <h3>Reports</h3>
+            <h3>Insights</h3>
             <ul class="nav-links">
                 <li><a href="financial-statements.html">Financial Statements</a></li>
-                <li><a href="ledgers.html">Ledger & Audit</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
             </ul>
         </div>
     </nav>
@@ -55,113 +86,91 @@
                 <span class="badge badge-primary">Phase 1</span>
                 <span class="badge badge-success">Complete</span>
             </div>
-            <h1>Welcome to Versoll Books</h1>
-            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Transform the way you handle your business finances—making it simpler, faster, and more accurate. This comprehensive guide will take you from setup to mastery in just a few easy steps.</p>
+            <h1>The Versoll Books Guide</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">The complete, deep-dive manual for mastering your business finances with Versoll Books. From your first company creation to complex tax compliance, we cover every detail.</p>
             
             <div class="info-box">
                 <div>
-                    <span class="info-box-icon">💡</span>
-                    <strong>New to Versoll Books?</strong>
+                    <span class="info-box-icon">📖</span>
+                    <strong>How to use this guide</strong>
                 </div>
-                <p>We recommend following the tutorials in order. Start with "First-time Setup" to get your business profile ready, then move through each section at your own pace.</p>
+                <p>This is not just a high-level overview. It is a comprehensive manual. We recommend beginners start with the "Getting Started" section, while experienced users can use the 🔍 Search bar to jump directly to specific features like TDS or POS.</p>
             </div>
 
-            <h2>Why Versoll Books?</h2>
-            <p>Versoll Books isn't just an accounting tool; it's a complete financial engine designed specifically for Indian businesses. We've built it with a focus on three core pillars:</p>
+            <h2>Creating Your First Company</h2>
+            <p>Your journey with Versoll Books starts at the Home Page. Unlike other systems that bury setup in deep menus, we've designed a streamlined onboarding wizard right at the front.</p>
+            
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Access the Home Page</h3>
+                        <p>When you first log in, you'll be greeted by the "Create Company" dashboard. If you're a multi-business owner, this is where you'll see all your existing entities at a glance.</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Basic Information</h3>
+                        <p>Enter your Business Name and Legal Entity type (Proprietorship, Partnership, Pvt Ltd, etc.). This information will appear on all your official documents and invoices.</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Regional & Fiscal Settings</h3>
+                        <p>Select your Base Currency (Default: INR) and your Fiscal Year start date. For Indian businesses, this is typically April 1st. You'll also set your Timezone here to ensure accurate transaction timestamps.</p>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>GST Activation</h3>
+                        <p>If your business is GST-registered, toggle the GST option. You'll need to enter your 15-digit GSTIN. Versoll Books will automatically validate the format and prepare your account for GST-compliant invoicing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <div>
+                    <p><strong>Pro Tip:</strong> Don't worry if you don't have all your details handy. You can always update your company profile later in the Settings menu, though we recommend setting up GST before creating your first invoice.</p>
+                </div>
+            </div>
+
+            <h2>Core Pillars of Versoll Books</h2>
+            <p>Our software is built to handle the entire lifecycle of a modern Indian business. Here's a deep look at what you can achieve:</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <div class="icon-badge">⚡</div>
-                    <h3>Precision & Accuracy</h3>
-                    <p>Calculations you can trust with automated tax deductions, penny-perfect rounding, and real-time validation. Every number is accurate, every time.</p>
+                    <div class="icon-badge">🛍️</div>
+                    <h3>Omnichannel Sales</h3>
+                    <p>Manage traditional B2B invoicing alongside a high-speed Retail POS (Point of Sale) system. Integrated loyalty programs keep your customers coming back.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="icon-badge">☁️</div>
-                    <h3>Simple & Intuitive</h3>
-                    <p>A clean, distraction-free interface designed for business owners, not accountants. Focus on growing your business, not learning software.</p>
+                    <div class="icon-badge">📦</div>
+                    <h3>Intelligent Inventory</h3>
+                    <p>Track stock levels across multiple warehouses. Automatic valuation (FIFO) and stock movement logs ensure you never lose a single item.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="icon-badge">⚖️</div>
-                    <h3>100% Compliant</h3>
-                    <p>Built-in Indian localization with GST, TDS, and E-Way Bill support. Stay compliant without the complexity or extra cost.</p>
+                    <div class="icon-badge">🏛️</div>
+                    <h3>Tax & Compliance</h3>
+                    <p>Automated GST (GSTR-1, 3B), TDS cumulative threshold tracking, and instant E-Way Bill generation. We handle the complexity so you don't have to.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-badge">🏦</div>
+                    <h3>Smart Banking</h3>
+                    <p>Import statements and let our pattern-matching engine categorize transactions for you. Reconcile in minutes, not days.</p>
                 </div>
             </div>
 
             <div class="highlight-box">
-                <h3>🚀 Get Started in 15 Minutes</h3>
-                <p>Follow our step-by-step tutorials and you'll be creating invoices, tracking expenses, and generating reports in no time!</p>
+                <h3>🚀 Your Journey Starts Here</h3>
+                <p>Move to the next section to complete your business setup and configure your global defaults.</p>
             </div>
 
-            <h2>Your Learning Path</h2>
-            <p>This documentation is organized into 6 phases, taking you from complete beginner to power user:</p>
-
-            <div class="workflow-grid">
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">✓ Phase 1</span>
-                    </h3>
-                    <ol>
-                        <li>Understanding the Experience</li>
-                        <li>First-time Setup Guide</li>
-                        <li>Chart of Accounts Basics</li>
-                    </ol>
-                </div>
-
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">✓ Phase 2</span>
-                    </h3>
-                    <ol>
-                        <li>Managing Customer Directory</li>
-                        <li>Creating Professional Invoices</li>
-                        <li>Recording & Tracking Payments</li>
-                    </ol>
-                </div>
-
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--bg-accent); color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">Phase 3</span>
-                    </h3>
-                    <ol>
-                        <li>Supplier Management</li>
-                        <li>Expense Tracking</li>
-                        <li>Bill Payment Processing</li>
-                    </ol>
-                </div>
-
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--bg-accent); color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">Phase 4</span>
-                    </h3>
-                    <ol>
-                        <li>Bank Statement Import</li>
-                        <li>Smart Categorization</li>
-                        <li>Reconciliation Workflow</li>
-                    </ol>
-                </div>
-
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--bg-accent); color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">Phase 5</span>
-                    </h3>
-                    <ol>
-                        <li>GST Configuration & Reports</li>
-                        <li>TDS Setup & Deductions</li>
-                        <li>E-Way Bill Generation</li>
-                    </ol>
-                </div>
-
-                <div class="workflow-card">
-                    <h3>
-                        <span style="background: var(--bg-accent); color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.9rem;">Phase 6</span>
-                    </h3>
-                    <ol>
-                        <li>Financial Statement Analysis</li>
-                        <li>Tax Report Navigation</li>
-                        <li>Audit Trail & Ledgers</li>
-                    </ol>
-                </div>
-            </div>
 
             <div class="callout callout-success">
                 <div>
