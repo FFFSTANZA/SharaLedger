@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Invoices - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="nav-section">
+            <h3>Introduction</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">The Experience</a></li>
+                <li><a href="getting-started.html">First-time Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Daily Operations</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html" class="active">Sales & Invoices</a></li>
+                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
+                <li><a href="banking.html">Banking & Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="ledgers.html">Ledger & Audit</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 2</span>
+                <span class="badge badge-success">Complete</span>
+            </div>
+            <h1>💰 Sales & Customer Success</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Master the complete revenue management cycle with Versoll Books. From organizing your customer directory to creating GST-compliant invoices and efficiently collecting payments—this comprehensive guide covers everything you need to keep your sales cycle running smoothly and your cash flow healthy.</p>
+
+            <div class="highlight-box" style="text-align: left;">
+                <h3>🎯 What you'll master in this guide:</h3>
+                <p style="margin-bottom: 1rem;">✓ Building and managing a complete customer directory<br>
+                ✓ Creating professional, GST-compliant invoices<br>
+                ✓ Recording payments and tracking outstanding balances<br>
+                ✓ Using aging reports to stay on top of collections</p>
+            </div>
+
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>Managing Your Customer Directory</h2>
+            </div>
+            <p>Your customers are the heart of your business. Versoll Books makes it simple to organize and track every customer relationship, from small one-time buyers to major recurring clients. A well-maintained customer directory saves time and improves accuracy when creating invoices.</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>👤 Creating a New Customer</h3>
+                        <p>Navigate to <code>Customers > New Customer</code> to add a customer to your directory. Think of this as creating a complete business profile for each customer.</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Essential Information:</h4>
+                        <ul>
+                            <li><strong>Customer Name:</strong> Legal or business name (exactly as per their records)</li>
+                            <li><strong>Display Name:</strong> Shorter name for internal use (optional)</li>
+                            <li><strong>Email:</strong> For sending invoices, payment reminders, and statements</li>
+                            <li><strong>Phone:</strong> Primary contact number for follow-ups</li>
+                            <li><strong>Billing Address:</strong> Complete address where invoices should be sent</li>
+                            <li><strong>Shipping Address:</strong> Delivery location (if different from billing)</li>
+                        </ul>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">💡</span>
+                                <h4>Pro Tip: Consistent Naming Convention</h4>
+                            </div>
+                            <p>Use a format like "Company Name - Location" or "First Name Last Name - Business". This makes searching and filtering much easier when you have hundreds of customers. Example: "ABC Electronics - Mumbai" or "Rajesh Sharma - Retail Store"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>🏛️ GST & Tax Configuration</h3>
+                        <p>For Indian businesses, accurate GST tracking is critical for compliance and tax filing. When creating or editing a customer, configure their tax details carefully:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Tax Settings:</h4>
+                        <ul>
+                            <li><strong>GSTIN:</strong> Customer's 15-digit GST Identification Number (e.g., <code>27AAAPL1234C1Z5</code>)</li>
+                            <li><strong>State:</strong> Customer's state for calculating inter-state vs intra-state GST</li>
+                            <li><strong>Customer Type:</strong> Registered (has GSTIN) or Unregistered</li>
+                            <li><strong>Place of Supply:</strong> Automatically set based on state, but can be overridden</li>
+                        </ul>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ State Matters for GST!</strong> If the customer's state differs from your company state, Versoll Books automatically applies IGST (Integrated GST) instead of CGST+SGST (Central + State GST). Incorrect state = incorrect tax calculation = filing problems!</p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
+                                <strong style="color: var(--success);">✓ Same State</strong>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Apply CGST + SGST<br>Example: 9% + 9% = 18%</p>
+                            </div>
+                            <div style="background: var(--info-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--info);">
+                                <strong style="color: var(--info);">✓ Different State</strong>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Apply IGST<br>Example: 18% IGST</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>💳 Credit Terms & Payment Preferences</h3>
+                        <p>Define how and when you expect to be paid. These settings help automate due date calculations and prevent overdue accounts:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Payment Configuration:</h4>
+                        <ul>
+                            <li><strong>Credit Days:</strong> Payment due period (e.g., Net 30, Net 15, Due on Receipt)</li>
+                            <li><strong>Credit Limit:</strong> Maximum outstanding amount allowed before alerts trigger</li>
+                            <li><strong>Default Payment Method:</strong> Cash, Bank Transfer, Cheque, UPI, Card</li>
+                            <li><strong>Bank Details:</strong> Customer's bank account for reference (optional)</li>
+                        </ul>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">🔔</span>
+                                <h4>Automatic Alerts & Due Dates</h4>
+                            </div>
+                            <p>Versoll Books automatically calculates due dates based on credit terms and alerts you when credit limits are exceeded. This helps prevent bad debts and keeps collections on track!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Creating Professional Invoices</h2>
+            </div>
+            <p>Invoicing is where your hard work turns into revenue. Versoll Books ensures every invoice is accurate, GST-compliant, and professional-looking. Let's walk through the complete invoice creation process:</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>📝 Starting a New Sales Invoice</h3>
+                        <p>Go to <code>Sales > New Sales Invoice</code>. The invoice form is intuitive and guides you through each required field:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Header Information:</h4>
+                        <ul>
+                            <li><strong>Customer:</strong> Select from your directory (or create new on-the-fly)</li>
+                            <li><strong>Invoice Number:</strong> Auto-generated with customizable format (e.g., INV-2024-001)</li>
+                            <li><strong>Invoice Date:</strong> Transaction date (defaults to today but can be backdated)</li>
+                            <li><strong>Due Date:</strong> Automatically calculated from customer's credit terms</li>
+                            <li><strong>Reference:</strong> PO number, project code, or internal reference (optional)</li>
+                        </ul>
+
+                        <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1.5rem;">
+                            <p style="margin: 0; font-family: monospace; font-size: 0.95rem; color: var(--text-main);">
+                                <strong>Example Header:</strong><br>
+                                Invoice #: INV-2024-045<br>
+                                Date: 15/03/2024<br>
+                                Due Date: 14/04/2024 (Net 30)<br>
+                                Customer: ABC Electronics - Mumbai<br>
+                                Reference: PO-ABC-789
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>📦 Adding Items and Services</h3>
+                        <p>In the <strong>Items</strong> section, add the products or services you're selling. Each line item requires specific details:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Item Details:</h4>
+                        <ul>
+                            <li><strong>Item Name:</strong> Select from Item Master or create new item</li>
+                            <li><strong>Description:</strong> Additional details about the item (optional)</li>
+                            <li><strong>HSN/SAC Code:</strong> For GST compliance (auto-filled from item)</li>
+                            <li><strong>Quantity:</strong> Number of units sold</li>
+                            <li><strong>Unit:</strong> Piece, Kg, Hour, Box, etc.</li>
+                            <li><strong>Rate:</strong> Price per unit (before discount and tax)</li>
+                            <li><strong>Discount:</strong> Percentage or fixed amount per item</li>
+                            <li><strong>Tax Rate:</strong> GST rate (5%, 12%, 18%, 28%) - auto-filled from item</li>
+                        </ul>
+
+                        <div class="highlight-box" style="margin-top: 1.5rem;">
+                            <h3>🔢 Automatic Calculations</h3>
+                            <p style="margin-bottom: 0.75rem;">Versoll Books calculates in real-time:</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>1.</strong> Line Total = (Quantity × Rate) - Discount</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>2.</strong> GST Amount = Line Total × GST Rate</p>
+                            <p style="margin-bottom: 0;"><strong>3.</strong> Grand Total = Sum of all Line Totals + Total GST</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>🎨 Invoice Customization & Notes</h3>
+                        <p>Make your invoices more informative and professional with additional details:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Additional Fields:</h4>
+                        <ul>
+                            <li><strong>Terms & Conditions:</strong> Payment terms, return policies, warranty information</li>
+                            <li><strong>Notes:</strong> Special instructions, thank you messages, delivery info</li>
+                            <li><strong>Footer Text:</strong> Custom message at bottom of invoice</li>
+                            <li><strong>Signature:</strong> Upload authorized signatory signature image</li>
+                        </ul>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">⚡</span>
+                                <h4>Save Time with Defaults</h4>
+                            </div>
+                            <p>Set default terms & conditions in <code>Settings > Invoice Defaults</code>. They'll auto-fill on every new invoice, saving you time while maintaining consistency!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>💾 Saving and Submitting Invoices</h3>
+                        <p>Versoll Books uses a two-stage invoice lifecycle to prevent accidental errors:</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                            <div style="background: var(--warning-light); padding: 1.25rem; border-radius: var(--radius); border: 2px solid var(--warning);">
+                                <strong style="color: var(--warning); font-size: 1.1rem;">📝 Draft Status</strong>
+                                <p style="margin: 0.75rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Invoice is editable but not recorded in books. Use while finalizing details. No GL entries created.</p>
+                            </div>
+                            <div style="background: var(--success-light); padding: 1.25rem; border-radius: var(--radius); border: 2px solid var(--success);">
+                                <strong style="color: var(--success); font-size: 1.1rem;">✓ Submitted Status</strong>
+                                <p style="margin: 0.75rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Invoice locked and recorded in ledger. Creates GL entries: Debit Receivables, Credit Sales, Credit GST Payable.</p>
+                            </div>
+                        </div>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ Important: Submission is Final!</strong> Once submitted, an invoice cannot be edited. If you need to make changes, you must cancel it and create a Credit Note. Always double-check before submitting!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, var(--primary-light) 0%, var(--info-light) 100%); border: 2px solid var(--primary);">
+                <h3 style="margin-top: 0; color: var(--primary);">📤 Sharing Your Invoice</h3>
+                <p>After submitting, you can distribute your invoice in multiple ways:</p>
+                <ul style="margin-bottom: 0;">
+                    <li><strong>Print PDF:</strong> Generate professional PDF for physical delivery</li>
+                    <li><strong>Email Direct:</strong> Send to customer's registered email instantly</li>
+                    <li><strong>WhatsApp:</strong> Share via WhatsApp for faster delivery (coming soon)</li>
+                    <li><strong>Export:</strong> Save as PDF for your records or customer portals</li>
+                </ul>
+            </div>
+
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Recording Payments & Managing Collections</h2>
+            </div>
+            <p>Creating invoices is only half the job—collecting payments is where cash flow happens. Versoll Books makes payment tracking simple, transparent, and accurate. Let's master the payment collection process:</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h3>💵 Creating a Payment Entry</h3>
+                        <p>When a customer pays, record it immediately for accurate cash flow. Navigate to <code>Sales > Payment Entry</code> or click <strong>Receive Payment</strong> from the invoice view.</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Payment Details:</h4>
+                        <ul>
+                            <li><strong>Customer:</strong> Who is making the payment</li>
+                            <li><strong>Payment Date:</strong> When payment was actually received</li>
+                            <li><strong>Payment Method:</strong> Cash, Bank Transfer, Cheque, UPI, Credit Card, Debit Card</li>
+                            <li><strong>Amount:</strong> Total payment received (can be less than invoice total)</li>
+                            <li><strong>Received In:</strong> Bank account or cash account where money is deposited</li>
+                            <li><strong>Reference Number:</strong> Cheque number, transaction ID, or receipt number</li>
+                        </ul>
+
+                        <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1.5rem;">
+                            <p style="margin: 0; font-family: monospace; font-size: 0.95rem; color: var(--text-main);">
+                                <strong>Example Payment Entry:</strong><br>
+                                Customer: ABC Electronics - Mumbai<br>
+                                Date: 20/03/2024<br>
+                                Method: Bank Transfer (UPI)<br>
+                                Amount: ₹59,000<br>
+                                Received In: HDFC Bank - Current<br>
+                                Reference: UTR-2024032012345
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">9</div>
+                    <div class="step-content">
+                        <h3>🎯 Allocating Payments to Invoices</h3>
+                        <p>In the <strong>Invoice Allocation</strong> section, Versoll Books automatically shows all outstanding invoices for the selected customer. You can allocate the payment in three ways:</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                            <div style="background: white; border: 2px solid var(--success); border-radius: var(--radius); padding: 1.25rem;">
+                                <strong style="color: var(--success);">💯 Full Payment</strong>
+                                <p style="margin: 0.75rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">Check the invoice to allocate entire outstanding amount. Invoice marked "Paid".</p>
+                            </div>
+                            <div style="background: white; border: 2px solid var(--info); border-radius: var(--radius); padding: 1.25rem;">
+                                <strong style="color: var(--info);">📊 Partial Payment</strong>
+                                <p style="margin: 0.75rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">Enter custom amount for installment payments. Invoice marked "Partially Paid".</p>
+                            </div>
+                            <div style="background: white; border: 2px solid var(--primary); border-radius: var(--radius); padding: 1.25rem;">
+                                <strong style="color: var(--primary);">📚 Multiple Invoices</strong>
+                                <p style="margin: 0.75rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">Allocate one payment across multiple invoices. Oldest first recommended.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">🔄</span>
+                                <h4>Real-time Balance Updates</h4>
+                            </div>
+                            <p>As you allocate payments, Versoll Books shows remaining amounts in real-time. Invoices automatically marked as "Paid" when fully settled. Customer balance updated immediately!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">10</div>
+                    <div class="step-content">
+                        <h3>💰 Handling Advances & Credits</h3>
+                        <p>Sometimes customers pay before the invoice is created (advance payments) or overpay. Here's how to handle these scenarios:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Advance Payments:</h4>
+                        <ul>
+                            <li><strong>Record Payment:</strong> Create Payment Entry without allocating to any invoice</li>
+                            <li><strong>Track Credit:</strong> Versoll Books tracks this as customer credit automatically</li>
+                            <li><strong>Apply Later:</strong> When creating future invoices, apply the advance credit to reduce payable amount</li>
+                        </ul>
+
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Overpayments & Refunds:</h4>
+                        <ul>
+                            <li><strong>Leave as Credit:</strong> Keep excess as credit for future purchases</li>
+                            <li><strong>Process Refund:</strong> Create Payment Entry with negative amount or use Refund option</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>📊 Tracking Outstanding Payments</h2>
+            <p>To monitor who owes you money and when payments are due, use these powerful built-in reports:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-badge">📈</div>
+                    <h3>Accounts Receivable Aging</h3>
+                    <p style="margin-bottom: 1rem;">Navigate to <code>Reports > Accounts Receivable Aging</code> to see outstanding invoices grouped by age:</p>
+                    <ul style="font-size: 0.95rem; margin: 0;">
+                        <li><strong>Current:</strong> Not yet due</li>
+                        <li><strong>1-30 Days:</strong> Recently overdue</li>
+                        <li><strong>31-60 Days:</strong> Requires follow-up</li>
+                        <li><strong>60+ Days:</strong> Critical collection needed</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-badge">👤</div>
+                    <h3>Customer Ledger</h3>
+                    <p style="margin-bottom: 1rem;">View complete transaction history with any customer:</p>
+                    <ul style="font-size: 0.95rem; margin: 0;">
+                        <li>All invoices (increases balance)</li>
+                        <li>All payments received (decreases balance)</li>
+                        <li>Credit notes and adjustments</li>
+                        <li>Running balance after each transaction</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>💡 Payment Collection Best Practices</h2>
+            <div class="workflow-grid">
+                <div class="workflow-card">
+                    <h3>✓ Record Promptly</h3>
+                    <p style="font-size: 0.95rem;">Enter payments as soon as received to keep cash flow reports accurate and real-time.</p>
+                </div>
+                <div class="workflow-card">
+                    <h3>✓ Review Weekly</h3>
+                    <p style="font-size: 0.95rem;">Check Aging report every Monday to identify overdue accounts early.</p>
+                </div>
+                <div class="workflow-card">
+                    <h3>✓ Follow Up Early</h3>
+                    <p style="font-size: 0.95rem;">Contact customers 5-7 days before due date to prevent late payments.</p>
+                </div>
+                <div class="workflow-card">
+                    <h3>✓ Reconcile Regular</h3>
+                    <p style="font-size: 0.95rem;">Match payment entries with bank statements monthly using Banking module.</p>
+                </div>
+            </div>
+
+            <h2>🚀 Quick Reference Workflows</h2>
+            <div class="workflow-grid">
+                <div class="workflow-card">
+                    <h3>🆕 New Customer Sale</h3>
+                    <ol>
+                        <li>Create Customer Profile</li>
+                        <li>Create Sales Invoice</li>
+                        <li>Review & Submit Invoice</li>
+                        <li>Share with Customer</li>
+                        <li>Record Payment when received</li>
+                    </ol>
+                </div>
+                
+                <div class="workflow-card">
+                    <h3>🔄 Existing Customer Sale</h3>
+                    <ol>
+                        <li>Open New Sales Invoice</li>
+                        <li>Select Customer from list</li>
+                        <li>Add Items with quantities</li>
+                        <li>Verify GST calculation</li>
+                        <li>Submit & Share</li>
+                    </ol>
+                </div>
+                
+                <div class="workflow-card">
+                    <h3>📊 Partial Payment</h3>
+                    <ol>
+                        <li>Create Payment Entry</li>
+                        <li>Select Customer</li>
+                        <li>Enter Partial Amount</li>
+                        <li>Allocate to Invoice</li>
+                        <li>Track remaining in Aging</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="callout callout-success" style="margin-top: 3rem;">
+                <div>
+                    <p><strong>🎉 Phase 2 Complete!</strong> You now know how to manage the complete sales cycle in Versoll Books—from adding customers to creating invoices to collecting payments. Next, let's explore how to handle the other side: purchases and expenses!</p>
+                </div>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="chart-of-accounts.html" class="btn btn-outline">← Chart of Accounts</a>
+                <a href="purchases-expenses.html" class="btn">Purchases & Expenses →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -51,42 +51,199 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>Chart of Accounts</h1>
-            <p>The Chart of Accounts (CoA) is the backbone of your accounting system. It is a categorized list of all accounts where your business transactions are recorded.</p>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 1</span>
+                <span class="badge badge-info">Step 3 of 3</span>
+            </div>
+            <h1>📊 Chart of Accounts</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">The Chart of Accounts (CoA) is the backbone of your accounting system. It's a categorized list of all accounts where your business transactions are recorded. Think of it as the filing system for your finances—everything has its place!</p>
+
+            <div class="progress-indicator">
+                <div class="progress-step completed"></div>
+                <div class="progress-step completed"></div>
+                <div class="progress-step active"></div>
+            </div>
+
+            <div class="highlight-box" style="text-align: left;">
+                <h3>📚 What you'll learn:</h3>
+                <p style="margin-bottom: 1rem;">✓ The 5 fundamental account categories<br>
+                ✓ How automated tax accounts work<br>
+                ✓ Best practices for customizing your CoA</p>
+            </div>
 
             <h2>Understanding the Hierarchy</h2>
-            <p>Versoll Books uses a standard 5-category system to keep your financials organized. Every account falls under one of these primary groups:</p>
+            <p>Versoll Books uses a standard 5-category accounting system to keep your financials organized. Every account falls under one of these primary groups, following the fundamental accounting equation: <strong>Assets = Liabilities + Equity</strong></p>
 
-            <div class="card">
-                <ul style="margin-bottom: 0;">
-                    <li><strong>Assets:</strong> What your business owns (Cash, Inventory, Equipment).</li>
-                    <li><strong>Liabilities:</strong> What your business owes (Loans, GST Payable, TDS Payable).</li>
-                    <li><strong>Equity:</strong> The owner's stake in the business.</li>
-                    <li><strong>Income:</strong> Revenue generated from sales and services.</li>
-                    <li><strong>Expenses:</strong> Costs incurred to run the business (Rent, Salaries).</li>
-                </ul>
+            <div class="account-type-grid">
+                <div class="account-type-card">
+                    <span class="icon">💰</span>
+                    <h4>Assets</h4>
+                    <p>What your business owns</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light);">
+                        Cash, Bank Accounts, Inventory, Equipment, Receivables
+                    </div>
+                </div>
+
+                <div class="account-type-card">
+                    <span class="icon">📋</span>
+                    <h4>Liabilities</h4>
+                    <p>What your business owes</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light);">
+                        Loans, GST Payable, TDS Payable, Supplier Bills
+                    </div>
+                </div>
+
+                <div class="account-type-card">
+                    <span class="icon">👤</span>
+                    <h4>Equity</h4>
+                    <p>Owner's stake in business</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light);">
+                        Capital, Retained Earnings, Drawings
+                    </div>
+                </div>
+
+                <div class="account-type-card">
+                    <span class="icon">📈</span>
+                    <h4>Income</h4>
+                    <p>Revenue from operations</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light);">
+                        Sales, Service Revenue, Interest Income
+                    </div>
+                </div>
+
+                <div class="account-type-card">
+                    <span class="icon">📉</span>
+                    <h4>Expenses</h4>
+                    <p>Costs of doing business</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light);">
+                        Rent, Salaries, Utilities, Marketing
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div>
+                    <span class="info-box-icon">🎓</span>
+                    <h4>The Accounting Equation Explained</h4>
+                </div>
+                <p><strong>Assets = Liabilities + Equity</strong> is the foundation of double-entry bookkeeping. Every transaction affects at least two accounts, keeping this equation always in balance. When you make a sale, Assets (Cash/Bank) increase and Income increases (which flows into Equity).</p>
             </div>
 
             <h2>Key Accounts in Versoll Books</h2>
-            <p>While you can create custom accounts, Versoll Books manages several critical accounts automatically to ensure compliance:</p>
+            <p>While you can create custom accounts, Versoll Books manages several critical accounts automatically to ensure Indian tax compliance:</p>
 
-            <h3>Tax Accounts</h3>
-            <p>When you enable GST or TDS, Versoll Books automatically tracks these in dedicated liability accounts:</p>
-            <ul>
-                <li><strong>GST Payable:</strong> Tracks Output GST collected from customers.</li>
-                <li><strong>ITC (Input Tax Credit):</strong> Tracks GST paid to suppliers that you can claim back.</li>
-                <li><strong>TDS Payable:</strong> Tracks Tax Deducted at Source that needs to be paid to the government.</li>
-            </ul>
+            <div class="tutorial-step">
+                <div class="step-number">🏛️</div>
+                <div class="step-content">
+                    <h3>Tax & Compliance Accounts</h3>
+                    <p>When you enable GST or TDS, Versoll Books automatically creates and manages these liability accounts:</p>
+                    
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>GST Payable (Output GST):</strong> Tracks GST collected from customers that must be paid to the government. When you create a sales invoice with 18% GST, this account is credited automatically.</li>
+                        <li><strong>ITC (Input Tax Credit):</strong> Tracks GST paid to suppliers that you can claim back. When you record a purchase invoice, this account is debited, reducing your net GST liability.</li>
+                        <li><strong>TDS Payable:</strong> Tracks Tax Deducted at Source on payments to contractors, professionals, and rent. This amount must be deposited with the government monthly/quarterly.</li>
+                        <li><strong>TCS (Tax Collected at Source):</strong> For businesses that need to collect tax on certain sales (e.g., scrap, mineral sales).</li>
+                    </ul>
 
-            <h3>Bank and Cash</h3>
-            <p>Manage your liquid assets by creating separate accounts for each bank account and cash drawer. This is essential for the <strong>Banking & Reconciliation</strong> workflow.</p>
-
-            <div class="callout callout-info">
-                <p><strong>Pro Tip:</strong> Use a clear naming convention for your accounts (e.g., "HDFC Bank - Main Account") to make transaction entry faster and reports easier to read.</p>
+                    <div style="background: var(--info-light); padding: 1.25rem; border-radius: var(--radius); border-left: 4px solid var(--info); margin-top: 1.5rem;">
+                        <p style="margin: 0; color: #1e40af; font-size: 1rem;"><strong>💡 Smart Automation:</strong> These tax accounts are updated in real-time as you create invoices and bills. You don't need to manually calculate or post entries—Versoll Books handles it all!</p>
+                    </div>
+                </div>
             </div>
 
-            <h2>Customizing your CoA</h2>
-            <p>To add or modify accounts, navigate to <strong>Accounting > Chart of Accounts</strong>. You can create sub-accounts to track expenses in more detail (e.g., creating "Office Rent" and "Warehouse Rent" under a parent "Rent" expense).</p>
+            <div class="tutorial-step">
+                <div class="step-number">🏦</div>
+                <div class="step-content">
+                    <h3>Bank & Cash Accounts</h3>
+                    <p>Manage your liquid assets by creating separate accounts for each bank account and cash drawer. This separation is essential for accurate cash flow tracking and bank reconciliation.</p>
+                    
+                    <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Best Practices for Bank Accounts:</h4>
+                    <ul>
+                        <li><strong>Clear Naming:</strong> Use format "Bank Name - Account Type" (e.g., "HDFC Bank - Current Account")</li>
+                        <li><strong>Separate Each Account:</strong> Don't combine multiple bank accounts into one</li>
+                        <li><strong>Include Account Numbers:</strong> Optionally add last 4 digits for clarity (e.g., "ICICI - 1234")</li>
+                        <li><strong>Cash Registers:</strong> Create separate accounts for "Cash in Hand - Store" vs "Cash in Hand - Office"</li>
+                    </ul>
+
+                    <div style="background: var(--success-light); padding: 1.25rem; border-radius: var(--radius); border-left: 4px solid var(--success); margin-top: 1.5rem;">
+                        <p style="margin: 0; color: #065f46; font-size: 1rem;"><strong>✓ Why This Matters:</strong> When you import bank statements for reconciliation, Versoll Books matches transactions to the correct account automatically. Clear naming saves you hours of manual matching!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">🔧</div>
+                <div class="step-content">
+                    <h3>Customizing Your Chart of Accounts</h3>
+                    <p>To add or modify accounts, navigate to <code>Accounting > Chart of Accounts</code>. You can create a hierarchy with parent and child accounts to track expenses in more detail.</p>
+                    
+                    <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Example: Expense Account Structure</h4>
+                    <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1rem; font-family: monospace; font-size: 0.95rem;">
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: var(--primary);">📁 Rent Expenses</strong> (Parent Account)<br>
+                            <span style="margin-left: 1.5rem;">└─ 🏢 Office Rent</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 🏭 Warehouse Rent</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 🚗 Parking Space Rent</span>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: var(--primary);">📁 Salaries & Wages</strong> (Parent Account)<br>
+                            <span style="margin-left: 1.5rem;">└─ 👔 Administrative Salaries</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 👷 Production Wages</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 💼 Sales Team Salaries</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--primary);">📁 Marketing & Advertising</strong> (Parent Account)<br>
+                            <span style="margin-left: 1.5rem;">└─ 🌐 Digital Marketing</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 📰 Print Advertising</span><br>
+                            <span style="margin-left: 1.5rem;">└─ 🎯 Event Sponsorships</span>
+                        </div>
+                    </div>
+
+                    <div class="callout callout-info" style="margin-top: 1.5rem;">
+                        <p><strong>💡 Pro Tip:</strong> Sub-accounts give you detailed insights in reports while keeping the main list clean. You can view totals by parent account or drill down into child accounts for specifics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Common Account Naming Conventions</h2>
+            <p>Consistent naming makes your Chart of Accounts easier to navigate and your reports more professional:</p>
+
+            <div class="workflow-grid">
+                <div class="workflow-card">
+                    <h3>✓ Good Examples</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✓ HDFC Bank - Current</li>
+                        <li>✓ Office Rent Expense</li>
+                        <li>✓ Customer - ABC Corp</li>
+                        <li>✓ Computer Equipment</li>
+                        <li>✓ GST Payable - Output</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-card" style="border-color: var(--warning);">
+                    <h3>⚠️ Avoid These</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✗ Bank123</li>
+                        <li>✗ Misc. Expense</li>
+                        <li>✗ Customer1</li>
+                        <li>✗ Stuff</li>
+                        <li>✗ Tax Account</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 Key Takeaways</h3>
+                <p style="margin-bottom: 0.75rem;"><strong>1.</strong> Your Chart of Accounts is organized into 5 categories: Assets, Liabilities, Equity, Income, Expenses</p>
+                <p style="margin-bottom: 0.75rem;"><strong>2.</strong> Tax accounts (GST, TDS) are managed automatically—no manual entries needed</p>
+                <p style="margin-bottom: 0;"><strong>3.</strong> Use clear, descriptive names and create sub-accounts for detailed tracking</p>
+            </div>
+
+            <div class="callout callout-success" style="margin-top: 3rem;">
+                <div>
+                    <p><strong>🎓 Phase 1 Complete!</strong> You've now mastered the foundations: setup, configuration, and understanding how accounts work. Ready to start making money? Let's move on to creating sales invoices and collecting payments!</p>
+                </div>
+            </div>
 
             <div class="next-prev-nav">
                 <a href="getting-started.html" class="btn btn-outline">← First-time Setup</a>
