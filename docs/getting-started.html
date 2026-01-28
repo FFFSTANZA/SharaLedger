@@ -51,53 +51,142 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>First-time Setup</h1>
-            <p>Ready to get started? Setting up Versoll Books is a breeze. Follow these three simple steps to prepare your business for modern accounting.</p>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 1</span>
+                <span class="badge badge-info">Step 2 of 3</span>
+            </div>
+            <h1>⚙️ First-time Setup</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Ready to get started? Setting up Versoll Books is a breeze. Follow these three simple steps to prepare your business for modern accounting. This should take less than 10 minutes!</p>
 
-            <div class="tutorial-step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h3>Configure your Business Profile</h3>
-                    <p>Navigate to <strong>Settings > Company Profile</strong>. This is where you define your business identity. Ensure you provide:</p>
-                    <ul>
-                        <li><strong>Legal Name:</strong> Your registered business name.</li>
-                        <li><strong>Address:</strong> Your primary place of business.</li>
-                        <li><strong>GSTIN:</strong> Your 15-digit Goods and Services Tax Identification Number.</li>
-                    </ul>
-                    <div class="callout callout-warning">
-                        <p><strong>Note:</strong> Make sure your GSTIN format is correct (e.g., 27AAAPL1234C1Z5) as it will be used for all tax calculations and E-Way bills.</p>
+            <div class="progress-indicator">
+                <div class="progress-step completed"></div>
+                <div class="progress-step active"></div>
+                <div class="progress-step"></div>
+            </div>
+
+            <div class="highlight-box" style="text-align: left;">
+                <h3>⏱️ What you'll accomplish in this guide:</h3>
+                <p style="margin-bottom: 1rem;">✓ Configure your business profile with legal details<br>
+                ✓ Set regional preferences for currency and dates<br>
+                ✓ Initialize opening balances from your previous system</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>🏢 Configure Your Business Profile</h3>
+                        <p>Navigate to <code>Settings > Company Profile</code>. This is where you define your business identity. Your profile information will appear on all invoices, reports, and official documents.</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Essential Fields:</h4>
+                        <ul>
+                            <li><strong>Legal Name:</strong> Your registered business name (as per government records)</li>
+                            <li><strong>Display Name:</strong> The name you use for day-to-day operations</li>
+                            <li><strong>Address:</strong> Your primary place of business (required for tax compliance)</li>
+                            <li><strong>GSTIN:</strong> Your 15-digit Goods and Services Tax Identification Number</li>
+                            <li><strong>PAN:</strong> Permanent Account Number (for tax deductions)</li>
+                            <li><strong>Email:</strong> Primary business email for communications</li>
+                            <li><strong>Phone:</strong> Contact number for customers and vendors</li>
+                        </ul>
+                        
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ GSTIN Format is Critical!</strong> Ensure your GSTIN format is correct (e.g., <code>27AAAPL1234C1Z5</code>). This 15-character code is used for all GST calculations, E-Way bills, and GSTR reports. An incorrect GSTIN will cause tax filing issues!</p>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">💡</span>
+                                <h4>Pro Tip: Logo & Branding</h4>
+                            </div>
+                            <p>Upload your company logo (recommended size: 200x200px) to appear on invoices. You can also set brand colors for a professional look.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>🌏 Set Your Regional Preferences</h3>
+                        <p>Go to <code>Settings > Localization</code> to set your operational defaults. These settings ensure dates, numbers, and currencies display correctly for your region.</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Configuration Options:</h4>
+                        <ul>
+                            <li><strong>Country:</strong> Select "India" for proper GST and TDS handling</li>
+                            <li><strong>Base Currency:</strong> Choose INR (₹) for Indian Rupees</li>
+                            <li><strong>Financial Year:</strong> Set start date (typically April 1) and end date (March 31)</li>
+                            <li><strong>Date Format:</strong> DD/MM/YYYY (Indian standard) or customize</li>
+                            <li><strong>Number Format:</strong> Indian (1,00,000) vs International (100,000)</li>
+                            <li><strong>Timezone:</strong> Asia/Kolkata for accurate transaction timestamps</li>
+                        </ul>
+
+                        <div class="callout callout-info" style="margin-top: 1.5rem;">
+                            <p><strong>📅 Financial Year Matters!</strong> Your financial year setting determines when books close, which periods appear in reports, and when GST filing cycles begin. Most Indian businesses use April-March, but you can customize based on your needs.</p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
+                                <strong style="color: var(--success);">✓ Currency</strong>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">INR (₹) for Indian businesses</p>
+                            </div>
+                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
+                                <strong style="color: var(--success);">✓ Date Format</strong>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">DD/MM/YYYY (e.g., 15/03/2025)</p>
+                            </div>
+                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius); border: 2px solid var(--success);">
+                                <strong style="color: var(--success);">✓ Financial Year</strong>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Apr 1 - Mar 31</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>💰 Initialize Opening Balances</h3>
+                        <p>If you're migrating from another accounting system, you need to set your starting point. Navigate to <code>Accounting > Opening Balances</code> to record your current financial position as of your start date.</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">What to Enter:</h4>
+                        <ul>
+                            <li><strong>Bank & Cash Balances:</strong> Current balance in each bank account and cash drawer</li>
+                            <li><strong>Customer Receivables:</strong> Money owed to you by customers (from old invoices)</li>
+                            <li><strong>Supplier Payables:</strong> Money you owe to suppliers (from old bills)</li>
+                            <li><strong>Asset Values:</strong> Current value of equipment, inventory, vehicles, etc.</li>
+                            <li><strong>Loan Balances:</strong> Outstanding principal on business loans</li>
+                            <li><strong>Capital/Equity:</strong> Your investment in the business</li>
+                        </ul>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚖️ Balance Check:</strong> Total Assets must equal Total Liabilities + Equity. Versoll Books will alert you if your opening balance doesn't balance. This is an accounting fundamental—if it doesn't balance, you've missed something!</p>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <div>
+                                <span class="info-box-icon">🎯</span>
+                                <h4>Starting Fresh? Skip This Step!</h4>
+                            </div>
+                            <p>If this is a brand new business with no prior transactions, you can skip opening balances. Just start entering new transactions from today, and Versoll Books will build your financial records from scratch.</p>
+                        </div>
+
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Example Opening Balance Entry:</h4>
+                        <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1rem;">
+                            <p style="margin: 0; font-family: monospace; font-size: 0.95rem; color: var(--text-main);">
+                                <strong>Date:</strong> April 1, 2024<br>
+                                <strong>HDFC Bank Account:</strong> ₹2,50,000 (Asset)<br>
+                                <strong>Cash in Hand:</strong> ₹15,000 (Asset)<br>
+                                <strong>Customer - ABC Corp:</strong> ₹45,000 (Receivable)<br>
+                                <strong>Supplier - XYZ Ltd:</strong> ₹30,000 (Payable)<br>
+                                <strong>Owner's Capital:</strong> ₹2,80,000 (Equity)<br>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="tutorial-step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h3>Set your Regional Preferences</h3>
-                    <p>Go to <strong>Settings > Localization</strong> to set your operational defaults:</p>
-                    <ul>
-                        <li><strong>Base Currency:</strong> Choose the primary currency for your books (e.g., INR).</li>
-                        <li><strong>Financial Year:</strong> Set the start and end dates for your accounting cycle.</li>
-                        <li><strong>Timezone:</strong> Ensure your transaction timestamps are accurate.</li>
-                    </ul>
+            <div class="callout callout-success" style="margin-top: 3rem;">
+                <div>
+                    <p><strong>🎉 Congratulations!</strong> Your business is now configured and ready to go. Next, we'll explore how your Chart of Accounts is organized so you understand where every transaction gets recorded.</p>
                 </div>
-            </div>
-
-            <div class="tutorial-step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h3>Initialize Opening Balances</h3>
-                    <p>If you are moving from another software, you'll need to set your starting point. Navigate to <strong>Accounting > Opening Balances</strong> to record:</p>
-                    <ul>
-                        <li>Current Bank and Cash balances.</li>
-                        <li>Outstanding Customer receivables.</li>
-                        <li>Outstanding Supplier payables.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="callout callout-success">
-                <p><strong>Success!</strong> Once these steps are complete, you are ready to start recording transactions. Next, let's look at how your accounts are organized.</p>
             </div>
 
             <div class="next-prev-nav">
