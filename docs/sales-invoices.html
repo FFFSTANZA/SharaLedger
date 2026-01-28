@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Invoices - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="nav-section">
+            <h3>Introduction</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">The Experience</a></li>
+                <li><a href="getting-started.html">First-time Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Daily Operations</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html" class="active">Sales & Invoices</a></li>
+                <li><a href="purchases-expenses.html">Purchases & Expenses</a></li>
+                <li><a href="banking.html">Banking & Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Handling</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="ledgers.html">Ledger & Audit</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <span class="badge badge-primary">Phase 2</span>
+            <h1>Sales & Customer Success</h1>
+            <p>Master the art of revenue management with Versoll Books. From tracking your customers to creating professional invoices and collecting payments—this comprehensive guide covers everything you need to keep your sales cycle running smoothly.</p>
+
+            <div class="callout callout-info">
+                <p><strong>What you'll learn:</strong> How to manage customer relationships, create GST-compliant invoices, and efficiently track payments to keep your cash flow healthy.</p>
+            </div>
+
+            <h2>Part 1: Managing Your Customer Directory</h2>
+            <p>Your customers are the heart of your business. Versoll Books makes it simple to organize and track every customer relationship, from small one-time buyers to major recurring clients.</p>
+
+            <div class="tutorial-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Creating a New Customer</h3>
+                    <p>Navigate to <strong>Customers > New Customer</strong> to add a customer to your directory. Essential fields include:</p>
+                    <ul>
+                        <li><strong>Customer Name:</strong> The legal or business name of your customer.</li>
+                        <li><strong>Email:</strong> For sending invoices and payment reminders.</li>
+                        <li><strong>Phone:</strong> Primary contact number.</li>
+                        <li><strong>Billing Address:</strong> Where invoices should be sent.</li>
+                    </ul>
+                    <div class="callout callout-info">
+                        <p><strong>Pro Tip:</strong> Use a consistent naming format (e.g., "Company Name - Location") to easily search and identify customers when creating invoices.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>GST & Tax Configuration</h3>
+                    <p>For Indian businesses, accurate GST tracking is critical. When creating or editing a customer, specify:</p>
+                    <ul>
+                        <li><strong>GSTIN:</strong> The customer's 15-digit GST Identification Number (e.g., 27AAAPL1234C1Z5).</li>
+                        <li><strong>State:</strong> Customer's state for inter-state vs intra-state GST calculation.</li>
+                        <li><strong>Customer Type:</strong> Registered (has GSTIN) or Unregistered.</li>
+                    </ul>
+                    <div class="callout callout-warning">
+                        <p><strong>Important:</strong> If the customer's state differs from your company state, Versoll Books will automatically apply IGST instead of CGST+SGST. Ensure the state is set correctly!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Credit Terms & Payment Preferences</h3>
+                    <p>Define how and when you expect to be paid:</p>
+                    <ul>
+                        <li><strong>Credit Days:</strong> Payment due period (e.g., Net 30, Net 15).</li>
+                        <li><strong>Credit Limit:</strong> Maximum outstanding amount allowed for the customer.</li>
+                        <li><strong>Default Payment Method:</strong> Cash, Bank Transfer, Cheque, UPI, etc.</li>
+                    </ul>
+                    <p>Versoll Books will automatically calculate due dates based on credit terms and alert you when credit limits are exceeded.</p>
+                </div>
+            </div>
+
+            <h2>Part 2: Creating Professional Invoices</h2>
+            <p>Invoicing is where your hard work turns into revenue. Versoll Books ensures every invoice is accurate, compliant, and professional.</p>
+
+            <div class="tutorial-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Starting a New Sales Invoice</h3>
+                    <p>Go to <strong>Sales > New Sales Invoice</strong>. The invoice form includes:</p>
+                    <ul>
+                        <li><strong>Customer:</strong> Select from your customer directory (or create new).</li>
+                        <li><strong>Invoice Number:</strong> Auto-generated, but you can customize the format in Settings.</li>
+                        <li><strong>Invoice Date:</strong> Transaction date (defaults to today).</li>
+                        <li><strong>Due Date:</strong> Automatically calculated based on customer's credit terms.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Adding Items and Services</h3>
+                    <p>In the <strong>Items</strong> section, add the products or services you're selling:</p>
+                    <ul>
+                        <li><strong>Item Name:</strong> Select from your Item Master or create new.</li>
+                        <li><strong>Quantity:</strong> Number of units sold.</li>
+                        <li><strong>Rate:</strong> Price per unit.</li>
+                        <li><strong>Discount:</strong> Optional discount (percentage or fixed amount).</li>
+                        <li><strong>Tax Rate:</strong> GST rate will auto-fill based on item configuration (5%, 12%, 18%, 28%).</li>
+                    </ul>
+                    <p>Versoll Books automatically calculates:</p>
+                    <ul style="margin-bottom: 0;">
+                        <li>Subtotal (Quantity × Rate - Discount)</li>
+                        <li>GST breakdown (CGST+SGST for intra-state, IGST for inter-state)</li>
+                        <li>Grand Total (Subtotal + Taxes)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Invoice Customization & Notes</h3>
+                    <p>Make your invoices more informative with additional details:</p>
+                    <ul>
+                        <li><strong>Terms & Conditions:</strong> Payment terms, return policies, warranty info.</li>
+                        <li><strong>Notes:</strong> Special instructions or thank you messages.</li>
+                        <li><strong>Reference Number:</strong> PO number or project code for customer's tracking.</li>
+                    </ul>
+                    <div class="callout callout-info">
+                        <p><strong>Tip:</strong> Set default terms & conditions in <strong>Settings > Invoice Defaults</strong> to save time on every invoice.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <h3>Saving and Submitting Invoices</h3>
+                    <p>Versoll Books uses a two-stage invoice lifecycle:</p>
+                    <ul>
+                        <li><strong>Save as Draft:</strong> Invoice is editable but not recorded in books. Use this while you're still finalizing details.</li>
+                        <li><strong>Submit:</strong> Locks the invoice and records it in your accounting ledger. This creates proper GL entries (Debit Receivables, Credit Sales, Credit GST Payable).</li>
+                    </ul>
+                    <div class="callout callout-warning">
+                        <p><strong>Important:</strong> Once submitted, an invoice cannot be edited. You can only cancel it and create a Credit Note if corrections are needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Printing and Sharing Invoices</h3>
+            <p>After submitting an invoice, you can:</p>
+            <ul>
+                <li><strong>Print:</strong> Generate a professional PDF for physical delivery.</li>
+                <li><strong>Email:</strong> Send directly to customer's registered email.</li>
+                <li><strong>Export:</strong> Save as PDF for your records or customer portals.</li>
+            </ul>
+
+            <h2>Part 3: Recording Payments & Managing Collections</h2>
+            <p>Creating invoices is only half the job—collecting payments is where cash flow happens. Versoll Books makes payment tracking simple and transparent.</p>
+
+            <div class="tutorial-step">
+                <div class="step-number">8</div>
+                <div class="step-content">
+                    <h3>Creating a Payment Entry</h3>
+                    <p>When a customer pays, record it immediately. Navigate to <strong>Sales > Payment Entry</strong> or click <strong>Receive Payment</strong> from the invoice view. Fill in:</p>
+                    <ul>
+                        <li><strong>Customer:</strong> Who is making the payment.</li>
+                        <li><strong>Payment Date:</strong> When payment was received.</li>
+                        <li><strong>Payment Method:</strong> Cash, Bank Transfer, Cheque, UPI, Credit Card.</li>
+                        <li><strong>Amount:</strong> Total payment received.</li>
+                        <li><strong>Received In:</strong> Select the bank account or cash account where money is deposited.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">9</div>
+                <div class="step-content">
+                    <h3>Allocating Payments to Invoices</h3>
+                    <p>In the <strong>Invoice Allocation</strong> section, Versoll Books shows all outstanding invoices for the selected customer:</p>
+                    <ul>
+                        <li><strong>Full Payment:</strong> Check the invoice to allocate the full outstanding amount.</li>
+                        <li><strong>Partial Payment:</strong> Enter a custom amount if the customer is paying in installments.</li>
+                        <li><strong>Multiple Invoices:</strong> Allocate a single payment across multiple invoices.</li>
+                    </ul>
+                    <p>Versoll Books will show remaining amounts and automatically mark invoices as "Paid" when fully settled.</p>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">10</div>
+                <div class="step-content">
+                    <h3>Handling Advances & Credits</h3>
+                    <p>Sometimes customers pay before the invoice is created (advance payments) or overpay:</p>
+                    <ul>
+                        <li><strong>Advance Payment:</strong> Create a Payment Entry without allocating to any invoice. Versoll Books tracks this as a customer credit.</li>
+                        <li><strong>Using Advances:</strong> When creating future invoices for that customer, apply the advance credit to reduce the payable amount.</li>
+                        <li><strong>Refunds:</strong> If you need to return money, create a Payment Entry with negative amount or use the Refund option.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Tracking Outstanding Payments</h3>
+            <p>To monitor who owes you money and when, use these powerful reports:</p>
+            
+            <div class="card">
+                <h3 style="margin-top: 0;">📊 Accounts Receivable Aging</h3>
+                <p>Navigate to <strong>Reports > Accounts Receivable Aging</strong> to see outstanding invoices grouped by age:</p>
+                <ul>
+                    <li><strong>Current:</strong> Not yet due</li>
+                    <li><strong>1-30 Days:</strong> Recently overdue</li>
+                    <li><strong>31-60 Days:</strong> Requires follow-up</li>
+                    <li><strong>60+ Days:</strong> Critical collection needed</li>
+                </ul>
+                <p style="margin-bottom: 0;">This report helps you prioritize collection efforts and identify problematic customers.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0;">👤 Customer Ledger</h3>
+                <p>View a complete transaction history with any customer by going to <strong>Reports > General Ledger</strong> and filtering by customer account. This shows:</p>
+                <ul style="margin-bottom: 0;">
+                    <li>All invoices (increases balance)</li>
+                    <li>All payments received (decreases balance)</li>
+                    <li>Credit notes and adjustments</li>
+                    <li>Running balance after each transaction</li>
+                </ul>
+            </div>
+
+            <h3>Payment Collection Best Practices</h3>
+            <ul>
+                <li><strong>Record Promptly:</strong> Enter payments as soon as they're received to keep your cash flow reports accurate.</li>
+                <li><strong>Set Reminders:</strong> Use credit terms to automatically calculate due dates, then review your Aging report weekly.</li>
+                <li><strong>Reconcile Regularly:</strong> Match payment entries with your bank statements using the Banking module (covered in the next tutorial).</li>
+                <li><strong>Follow Up Early:</strong> Contact customers 5-7 days before payment is due to prevent late payments.</li>
+            </ul>
+
+            <div class="callout callout-success">
+                <p><strong>Congratulations!</strong> You now know how to manage the complete sales cycle in Versoll Books—from adding customers to creating invoices to collecting payments. Next, let's explore how to handle purchases and expenses.</p>
+            </div>
+
+            <h2>Quick Reference</h2>
+            <p><strong>Common Workflows:</strong></p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                <div class="card">
+                    <h3 style="margin-top: 0;">New Customer Sale</h3>
+                    <ol style="margin-bottom: 0; padding-left: 1.2rem;">
+                        <li>Create Customer</li>
+                        <li>Create Sales Invoice</li>
+                        <li>Submit Invoice</li>
+                        <li>Share with Customer</li>
+                        <li>Record Payment when received</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-top: 0;">Existing Customer Sale</h3>
+                    <ol style="margin-bottom: 0; padding-left: 1.2rem;">
+                        <li>Create Sales Invoice</li>
+                        <li>Select Customer</li>
+                        <li>Add Items</li>
+                        <li>Submit Invoice</li>
+                        <li>Record Payment</li>
+                    </ol>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-top: 0;">Partial Payment</h3>
+                    <ol style="margin-bottom: 0; padding-left: 1.2rem;">
+                        <li>Create Payment Entry</li>
+                        <li>Select Customer</li>
+                        <li>Enter Partial Amount</li>
+                        <li>Submit Payment</li>
+                        <li>Track remaining in Aging report</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="chart-of-accounts.html" class="btn btn-outline">← Chart of Accounts</a>
+                <a href="purchases-expenses.html" class="btn">Purchases & Expenses →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
