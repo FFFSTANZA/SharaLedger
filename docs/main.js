@@ -8,24 +8,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (linkPath === currentPath) {
             link.classList.add('active');
         } else {
-            // Remove active class if it was set in the HTML template but doesn't match
             if (linkPath !== '#') {
                 link.classList.remove('active');
             }
         }
     });
 
-    // Simple interaction for cards
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-2px)';
-            card.style.transition = 'transform 0.2s ease';
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
-        });
-    });
+    // Search Functionality
+    const searchInput = document.getElementById('doc-search');
+    const navSections = document.querySelectorAll('.nav-section');
 
-    console.log('Versoll Books Docs: Tutorial mode active');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            navSections.forEach(section => {
+                let sectionHasMatch = false;
+                const links = section.querySelectorAll('li');
+                
+                links.forEach(li => {
+                    const text = li.textContent.toLowerCase();
+                    if (text.includes(term)) {
+                        li.style.display = 'block';
+                        sectionHasMatch = true;
+                    } else {
+                        li.style.display = 'none';
+                    }
+                });
+
+                if (sectionHasMatch || term === '') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    console.log('Versoll Books Docs: Complete Guide mode active');
 });

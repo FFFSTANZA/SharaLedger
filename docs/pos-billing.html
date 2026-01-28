@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS (Point of Sale) Guide - Versoll Books</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Welcome Experience</a></li>
+                <li><a href="getting-started.html">Business Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html" class="active">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Insights</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 2</span>
+                <span class="badge badge-success">New</span>
+            </div>
+            <h1>🛒 Point of Sale (POS): High-Speed Billing</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">For retail businesses, speed is everything. Versoll Books' POS interface is optimized for quick transactions, barcode scanning, and multi-mode payments. This guide shows you how to turn your computer into a high-performance checkout counter.</p>
+
+            <div class="info-box">
+                <div>
+                    <span class="info-box-icon">⚡</span>
+                    <strong>POS vs. Regular Invoicing</strong>
+                </div>
+                <p>Regular invoices are for B2B deals with credit terms. POS is for over-the-counter retail sales where payment is collected immediately. The POS interface is designed for mouse-free operation and thermal receipt printing.</p>
+            </div>
+
+            <h2>Setting Up Your POS Terminal</h2>
+            <p>Before you start selling, you need to configure your POS profile. Navigate to <code>Settings > POS Settings</code>.</p>
+
+            <div class="steps-container">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Configure Default Accounts</h3>
+                        <p>Tell the system where to record POS transactions automatically:</p>
+                        <ul>
+                            <li><strong>Default Cash Account:</strong> Where cash payments are recorded.</li>
+                            <li><strong>Default Bank Account:</strong> For Card or UPI payments.</li>
+                            <li><strong>Default Income Account:</strong> Usually your main "Sales" account.</li>
+                            <li><strong>Default Warehouse:</strong> The location from which stock is deducted.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Hardware Integration</h3>
+                        <p>Versoll Books POS works with standard retail hardware:</p>
+                        <ul>
+                            <li><strong>Barcode Scanners:</strong> Simply plug and play. Ensure your cursor is in the item search field.</li>
+                            <li><strong>Thermal Printers:</strong> Select your printer and choose "POS Receipt" as the default print format (usually 3-inch or 2-inch width).</li>
+                            <li><strong>Cash Drawers:</strong> Connect through your thermal printer for automatic "pop" on payment.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Running a Checkout</h2>
+            <p>Access the billing screen via <code>Sales > POS Terminal</code>.</p>
+
+            <div class="tutorial-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Adding Items</h3>
+                    <p>You can add items in three ways:</p>
+                    <ul>
+                        <li><strong>Scan:</strong> Use a barcode scanner for instant addition.</li>
+                        <li><strong>Search:</strong> Type the item name or SKU in the search bar.</li>
+                        <li><strong>Quick Keys:</strong> Use the touch-friendly item grid for frequently sold products.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Multi-Mode Payments</h3>
+                    <p>Customers rarely pay with just one method. Our POS supports splitting a single bill across:</p>
+                    <ul>
+                        <li><strong>Cash:</strong> Enter amount received; the system calculates change.</li>
+                        <li><strong>Credit/Debit Card:</strong> Record the transaction reference.</li>
+                        <li><strong>UPI/QR:</strong> Display your dynamic QR code for instant scan-and-pay.</li>
+                        <li><strong>Store Credit:</strong> Deduct from the customer's loyalty balance.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout callout-success">
+                <div>
+                    <p><strong>Pro Tip: Offline Mode</strong> The POS terminal is designed to handle temporary internet drops. It will sync your transactions to the cloud once you're back online, ensuring you never stop a sale.</p>
+                </div>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="sales-invoices.html" class="btn btn-outline">← Back to Invoicing</a>
+                <a href="loyalty-programs.html" class="btn">Loyalty Programs →</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
