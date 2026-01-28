@@ -1,10 +1,4 @@
 import React from 'react';
-import { VideoReveal } from './src/VideoReveal';
+import { RemotionRoot } from './src/index';
 
-export const RemotionRoot: React.FC = () => {
-	return (
-		<>
-			<VideoReveal />
-		</>
-	);
-};
+export { RemotionRoot };
