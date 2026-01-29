@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Overview - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+
+        <div class="search-container">
+            <span class="search-icon">Search</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup & Company Creation</a></li>
+                <li><a href="dashboard-overview.html" class="active">Dashboard Overview</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <h1>Dashboard Overview</h1>
+            <p>After creating your company, you will be taken to the Dashboard. This is the main screen where you can see an overview of your business finances at a glance. This section explains every part of the Dashboard in detail.</p>
+
+            <h2>Accessing the Dashboard</h2>
+            <p>The Dashboard is the first screen you see after logging in to your company. You can always return to the Dashboard by clicking on "Dashboard" in the sidebar navigation on the left.</p>
+
+            <div class="info-box">
+                <h4>Navigation Reminder</h4>
+                <p>The sidebar on the left contains all the main sections of Versoll Books. Click on any item to navigate to that section. The active item is highlighted in the primary color.</p>
+            </div>
+
+            <h2>Period Selector</h2>
+            <p>At the top of the Dashboard, you will see a Period Selector. This allows you to view data for different time periods.</p>
+
+            <div class="field-explanation">
+                <h4>Available Options</h4>
+                <ul>
+                    <li><strong>This Month</strong> - Shows data for the current calendar month</li>
+                    <li><strong>This Quarter</strong> - Shows data for the current quarter (3 months)</li>
+                    <li><strong>This Year</strong> - Shows data for the current financial year</li>
+                    <li><strong>YTD (Year to Date)</strong> - Shows data from the start of the financial year to today</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>How to Use</h4>
+                <p>Click on the period selector to change the time period. All charts, summaries, and reports on the Dashboard will update to show data for the selected period. The period label is displayed above each section to remind you which period you are viewing.</p>
+            </div>
+
+            <h2>KPI Summary Strip</h2>
+            <p>The KPI (Key Performance Indicator) Summary Strip displays four key metrics at the top of the Dashboard. These cards give you an instant overview of your financial position.</p>
+
+            <h3>Cash Balance</h3>
+            <p>The Cash Balance card shows your current cash position. It includes a status indicator that changes color based on your cash health:</p>
+            <ul>
+                <li><strong>Green</strong> - You have sufficient cash to cover upcoming payments</li>
+                <li><strong>Amber</strong> - Cash is low relative to upcoming payables</li>
+                <li><strong>Red</strong> - Cash balance is zero or negative</li>
+            </ul>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Cash Balance Amount</strong> - Your total cash balance in bank accounts</li>
+                    <li><strong>Status Indicator</strong> - A colored dot showing your cash health</li>
+                    <li><strong>vs last period</strong> - Comparison with the previous period showing change in amount or percentage</li>
+                </ul>
+            </div>
+
+            <h3>Net Profit (This Period)</h3>
+            <p>This card shows your net profit for the selected period. Net profit is calculated as total income minus total expenses.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Net Profit Amount</strong> - Your profit or loss for the period (positive = profit, negative = loss)</li>
+                    <li><strong>Margin</strong> - Profit margin as a percentage of total income</li>
+                    <li><strong>vs last period</strong> - Comparison with the previous period showing change</li>
+                </ul>
+            </div>
+
+            <h3>Receivables</h3>
+            <p>The Receivables card shows money owed to you by customers.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Receivables Total</strong> - Total amount outstanding from all customers</li>
+                    <li><strong>Overdue</strong> - Amount that is overdue (past due date)</li>
+                    <li><strong>Overdue bills</strong> - Number of sales bills that are overdue</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>What It Means</h4>
+                <p>Receivables represent sales invoices that have been sent to customers but not yet paid. Monitoring this helps you track cash flow and follow up on overdue payments.</p>
+            </div>
+
+            <h3>Payables</h3>
+            <p>The Payables card shows money you owe to vendors and suppliers.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Payables Total</strong> - Total amount outstanding to all vendors</li>
+                    <li><strong>Due in 7 days</strong> - Amount that needs to be paid within the next 7 days</li>
+                    <li><strong>Overdue</strong> - Amount that is overdue (past due date)</li>
+                    <li><strong>Overdue bills</strong> - Number of purchase bills that are overdue</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>What It Means</h4>
+                <p>Payables represent purchase bills from vendors that you have received but not yet paid. This helps you plan your cash flow and ensure timely payments.</p>
+            </div>
+
+            <h2>Cashflow Chart</h2>
+            <p>The Cashflow chart shows your cash inflows and outflows over time. This helps you understand cash flow patterns and identify any potential cash flow issues.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Cash Inflow</strong> - Money coming into your business (sales, payments received)</li>
+                    <li><strong>Cash Outflow</strong> - Money going out of your business (payments to vendors, expenses)</li>
+                    <li><strong>Net Cashflow</strong> - The difference between inflow and outflow</li>
+                </ul>
+            </div>
+
+            <h2>Sales and Purchase Panels</h2>
+            <p>These two panels provide detailed information about your sales and purchases for the selected period.</p>
+
+            <h3>Sales Panel</h3>
+            <p>The Sales panel (Receipts Control) shows comprehensive sales data:</p>
+
+            <div class="field-explanation">
+                <h4>Metrics Displayed</h4>
+                <ul>
+                    <li><strong>Total Sales</strong> - Total value of all sales invoices for the period</li>
+                    <li><strong>Amount Received</strong> - Total amount actually received from customers</li>
+                    <li><strong>Amount Outstanding</strong> - Total amount still owed by customers</li>
+                    <li><strong>Overdue Sales</strong> - Amount of overdue invoices</li>
+                    <li><strong>Avg. Collection Period</strong> - Average number of days to collect payment from customers</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Actions Available</h4>
+                <ul>
+                    <li><strong>View overdue bills</strong> - Takes you to a filtered list of overdue sales invoices</li>
+                    <li><strong>Send reminders</strong> - Takes you to overdue invoices where you can send payment reminders to customers</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Paid Percentage</h4>
+                <p>Below the metrics, you will see the percentage of sales that have been paid (e.g., "75% paid") and the number of unpaid bills for the period. This helps you quickly assess your collection efficiency.</p>
+            </div>
+
+            <h3>Purchases Panel</h3>
+            <p>The Purchases panel (Payments Control) shows comprehensive purchase data:</p>
+
+            <div class="field-explanation">
+                <h4>Metrics Displayed</h4>
+                <ul>
+                    <li><strong>Total Purchases</strong> - Total value of all purchase invoices for the period</li>
+                    <li><strong>Amount Paid</strong> - Total amount actually paid to vendors</li>
+                    <li><strong>Amount Due</strong> - Total amount still owed to vendors</li>
+                    <li><strong>Due in next 7 days</strong> - Amount that needs to be paid within the next 7 days</li>
+                    <li><strong>Overdue vendor bills</strong> - Amount and count of overdue purchase invoices</li>
+                </ul>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Actions Available</h4>
+                <ul>
+                    <li><strong>Pay bills</strong> - Takes you to unpaid purchase bills where you can record payments</li>
+                    <li><strong>View overdue vendors</strong> - Takes you to a filtered list of overdue purchase invoices</li>
+                </ul>
+            </div>
+
+            <h2>Profit Overview</h2>
+            <p>The Profit Overview provides a visual representation of your income and expenses for the selected period.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Income</strong> - Total income from sales and other sources</li>
+                    <li><strong>Expenses</strong> - Total expenses including purchases and other costs</li>
+                    <li><strong>Net Profit</strong> - Income minus expenses</li>
+                </ul>
+            </div>
+
+            <h2>Expense Breakdown</h2>
+            <p>The Expense Breakdown shows a detailed breakdown of your expenses by category. This helps you understand where your money is going and identify areas for cost optimization.</p>
+
+            <div class="field-explanation">
+                <h4>What You See</h4>
+                <ul>
+                    <li><strong>Expense Categories</strong> - Different types of expenses (purchases, operating expenses, etc.)</li>
+                    <li><strong>Amount by Category</strong> - The value of expenses for each category</li>
+                    <li><strong>Percentage</strong> - Each category as a percentage of total expenses</li>
+                </ul>
+            </div>
+
+            <h2>Attention Panel</h2>
+            <p>The Attention panel (on the right side) shows actionable items that require your attention. This panel helps you prioritize tasks and stay on top of important matters.</p>
+
+            <h3>Types of Alerts</h3>
+
+            <div class="field-explanation">
+                <h4>Overdue Sales Bills</h4>
+                <p>Shows the number and amount of overdue sales invoices. Clicking this alert takes you to a filtered list of overdue sales bills where you can follow up with customers.</p>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Upcoming Vendor Payments</h4>
+                <p>Shows the amount of purchase bills due in the next 7 days. Clicking this alert takes you to upcoming bills that need payment.</p>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Overdue Purchase Bills</h4>
+                <p>Shows the number and amount of overdue purchase invoices. Clicking this alert takes you to a filtered list of overdue purchase bills.</p>
+            </div>
+
+            <div class="field-explanation">
+                <h4>Low Cash Warning</h4>
+                <p>Appears when your cash balance is low relative to upcoming payments. The warning shows your current cash balance. Clicking takes you to the Balance Sheet report for more details.</p>
+            </div>
+
+            <div class="field-explanation">
+                <h4>GST Payable/Receivable</h4>
+                <p>Shows the net GST amount. If positive, it shows "GST payable" (you owe tax). If negative, it shows "GST receivable" (you will receive a refund). This only appears if you have registered for GST.</p>
+            </div>
+
+            <div class="field-explanation">
+                <h4>GST Filing Reminder</h4>
+                <p>Reminds you to review your GSTR1/GSTR2 reports for the period. Clicking takes you to the GSTR1 report. This only appears if you have registered for GST.</p>
+            </div>
+
+            <div class="note">
+                <p><strong>No Urgent Items:</strong> If there are no urgent items requiring attention, the Attention panel will show a message indicating "No urgent items right now."</p>
+            </div>
+
+            <h2>Sidebar Navigation</h2>
+            <p>The sidebar on the left provides access to all sections of Versoll Books. Here is an overview of the main sections:</p>
+
+            <h3>Get Started</h3>
+            <p>A guided walkthrough for new users to understand basic concepts and features.</p>
+
+            <h3>Dashboard</h3>
+            <p>The main dashboard you are currently viewing.</p>
+
+            <h3>Sales</h3>
+            <p>Manage all sales-related activities:</p>
+            <ul>
+                <li><strong>Quotations</strong> - Create and manage price quotes for customers</li>
+                <li><strong>Sales Bills</strong> - Create and manage sales invoices</li>
+                <li><strong>Sales Payments</strong> - Record payments received from customers</li>
+                <li><strong>Customers</strong> - Manage customer information and details</li>
+                <li><strong>Sales Items</strong> - Manage items sold to customers</li>
+                <li><strong>Loyalty Program</strong> - Set up customer loyalty programs (optional feature)</li>
+                <li><strong>Lead</strong> - Manage potential customers (optional feature)</li>
+                <li><strong>Pricing Rule</strong> - Create pricing rules and discounts (optional feature)</li>
+                <li><strong>Coupon Code</strong> - Create discount coupons (optional feature)</li>
+            </ul>
+
+            <h3>Purchases</h3>
+            <p>Manage all purchase-related activities:</p>
+            <ul>
+                <li><strong>Purchase Bills</strong> - Create and manage purchase invoices from vendors</li>
+                <li><strong>Purchase Payments</strong> - Record payments made to vendors</li>
+                <li><strong>Vendors</strong> - Manage vendor/supplier information and details</li>
+                <li><strong>Purchase Items</strong> - Manage items purchased from vendors</li>
+            </ul>
+
+            <h3>Common</h3>
+            <p>Common entries used across sales and purchases:</p>
+            <ul>
+                <li><strong>Journal Entry</strong> - Create manual journal entries for adjustments</li>
+                <li><strong>Party</strong> - View all parties (customers and vendors)</li>
+                <li><strong>Items</strong> - View all items (both sales and purchase items)</li>
+                <li><strong>Price List</strong> - Manage price lists for items (optional feature)</li>
+            </ul>
+
+            <h3>Reports</h3>
+            <p>Access various financial and accounting reports:</p>
+            <ul>
+                <li><strong>General Ledger</strong> - Detailed record of all transactions</li>
+                <li><strong>Profit & Loss</strong> - Income and expenses statement</li>
+                <li><strong>Balance Sheet</strong> - Financial position at a point in time</li>
+                <li><strong>Trial Balance</strong> - Summary of all account balances</li>
+                <li><strong>Receivables Ageing</strong> - Outstanding amounts by age period</li>
+                <li><strong>Payables Ageing</strong> - Outstanding payables by age period</li>
+            </ul>
+
+            <h3>Inventory</h3>
+            <p>Inventory-related features (only appears if inventory is enabled):</p>
+            <ul>
+                <li><strong>Stock Movement</strong> - Track stock transfers and movements</li>
+                <li><strong>Shipment</strong> - Manage goods shipments</li>
+                <li><strong>Purchase Receipt</strong> - Record receipt of goods from vendors</li>
+                <li><strong>Stock Ledger</strong> - Detailed stock transaction history</li>
+                <li><strong>Stock Balance</strong> - Current stock levels across items</li>
+            </ul>
+
+            <h3>POS</h3>
+            <p>Point of Sale system for retail billing (optional feature, only appears if enabled).</p>
+
+            <h3>GST</h3>
+            <p>GST-related features (only appears if you have registered for GST):</p>
+            <ul>
+                <li><strong>GSTR1</strong> - GST return for outward supplies</li>
+                <li><strong>GSTR2</strong> - GST return for inward supplies</li>
+                <li><strong>GSTR3B</strong> - Summary GST return</li>
+                <li><strong>E-Way Bill Register</strong> - Report of all E-Way bills</li>
+                <li><strong>E-Way Bills</strong> - Manage E-Way bill generation</li>
+            </ul>
+
+            <h3>Setup</h3>
+            <p>Configure and customize Versoll Books:</p>
+            <ul>
+                <li><strong>Chart of Accounts</strong> - View and manage your account structure</li>
+                <li><strong>Tax Templates</strong> - Configure tax rates and templates</li>
+                <li><strong>Import Wizard</strong> - Import data from other systems</li>
+                <li><strong>Banking</strong> - Bank accounts and statement management</li>
+                <li><strong>Print Templates</strong> - Customize print formats for documents</li>
+                <li><strong>Customize Form</strong> - Customize form layouts (optional feature)</li>
+                <li><strong>Settings</strong> - System and company settings</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Sidebar Actions:</strong> At the bottom of the sidebar, you will find quick actions: Help (opens documentation), Shortcuts (view keyboard shortcuts), Change DB (switch to a different company), and Report Issue (report bugs or problems).</p>
+            </div>
+
+            <h2>Summary</h2>
+            <p>The Dashboard is designed to give you a complete overview of your business finances in one screen. By regularly reviewing the KPIs, charts, and alerts, you can stay informed about your financial position, identify issues early, and make better business decisions.</p>
+
+            <p>The next sections of this documentation will explain each feature in detail, showing you how to create invoices, manage customers and vendors, record payments, and generate reports.</p>
+
+            <div class="info-box">
+                <h4>Pro Tip</h4>
+                <p>Visit the Dashboard daily or weekly to stay on top of your business finances. The Attention panel will highlight urgent items that need your focus.</p>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="first-time-setup.html" class="btn-outline">&larr; First-Time Setup</a>
+                <div></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation - Under Development</p>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

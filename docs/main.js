@@ -1,49 +1,40 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Current page highlighting in sidebar
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+// Simple navigation highlighting
+document.addEventListener('DOMContentLoaded', function() {
+    // Highlight the current page in the sidebar
+    const currentPath = window.location.pathname;
+    const currentFile = currentPath.split('/').pop();
+
     const navLinks = document.querySelectorAll('.nav-links a');
-    
     navLinks.forEach(link => {
-        const linkPath = link.getAttribute('href');
-        if (linkPath === currentPath) {
+        const linkFile = link.getAttribute('href').split('/').pop();
+        if (linkFile === currentFile) {
             link.classList.add('active');
-        } else {
-            if (linkPath !== '#') {
-                link.classList.remove('active');
-            }
         }
     });
 
-    // Search Functionality
+    // Simple search functionality
     const searchInput = document.getElementById('doc-search');
-    const navSections = document.querySelectorAll('.nav-section');
-
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            
-            navSections.forEach(section => {
-                let sectionHasMatch = false;
-                const links = section.querySelectorAll('li');
-                
-                links.forEach(li => {
-                    const text = li.textContent.toLowerCase();
-                    if (text.includes(term)) {
-                        li.style.display = 'block';
-                        sectionHasMatch = true;
-                    } else {
-                        li.style.display = 'none';
-                    }
-                });
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
 
-                if (sectionHasMatch || term === '') {
-                    section.style.display = 'block';
+            // If search is empty, show all nav links
+            if (searchTerm === '') {
+                navLinks.forEach(link => {
+                    link.style.display = 'block';
+                });
+                return;
+            }
+
+            // Filter nav links based on search term
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    link.style.display = 'block';
                 } else {
-                    section.style.display = 'none';
+                    link.style.display = 'none';
                 }
             });
         });
     }
-
-    console.log('Versoll Books Docs: Complete Guide mode active');
 });

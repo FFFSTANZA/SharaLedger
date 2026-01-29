@@ -1,57 +1,230 @@
-Versoll Books Documentation Website - The Ultimate Guide Implementation Plan
+Versoll Books Documentation - User-First, Practical Guide
 
-Phase 1: Foundation & Onboarding (COMPLETED ✅ - NEEDS REVISION)
--------------------------------------------
-- The Versoll Books Experience: High-level philosophy and workflow.
-- Visual Foundation: Establishing a clean, distraction-free tutorial layout.
-- Business Profile Setup: Guided tutorial on configuring company details, GSTIN, and base currency.
-- Company Creation: Step-by-step through the home page wizard.
-- Chart of Accounts: deep dive into organizing your finances from day one.
-- Global Settings: Configuring defaults for a seamless experience.
+This documentation is designed to teach users how to use Versoll Books step-by-step, screen by screen, action by action.
 
-Phase 2: Sales, POS & Loyalty (COMPLETED ✅ - NEEDS REVISION)
------------------------------------
-- Customer Directory: Comprehensive relationship management.
-- Invoicing Mastery: Creating, customizing, and sending professional invoices (GST focus).
-- Point of Sale (POS): Quick billing interface, barcode scanning, and multi-mode payments.
-- Loyalty Programs: Setting up reward points, membership tiers, and redemptions.
-- Payment Collection: Recording payments, partial payments, and credit notes.
+==========================================================================
 
-Phase 3: Inventory & Warehouse Management
+PHASE 1: Fundamentals & Orientation (COMPLETED ✅)
+-------------------------------------------------
+
+Goal: Make the user understand what the software is and why they need it.
+
+Topics Covered:
+1. What is Accounting?
+2. What is an Accounting Software?
+3. Why Use Versoll Books?
+
+Files:
+- index.html
+
+==========================================================================
+
+PHASE 2: First-Time Setup & Company Creation (COMPLETED ✅)
+------------------------------------------------------------
+
+Goal: Help the user successfully enter the software and create (or demo) their first company.
+
+Topics Covered:
+1. Welcome Page Overview
+2. Create New Company
+3. Setup Your Organization Page (Field-by-Field Explanation)
+4. Create Demo Company
+
+Files:
+- first-time-setup.html
+
+==========================================================================
+
+PHASE 3: Dashboard Overview (PENDING)
+---------------------------------------
+
+Goal: Explain every section of the main dashboard.
+
+Topics to Cover:
+1. Dashboard Layout Overview
+2. Navigation Menu
+3. Quick Actions
+4. Summary Cards
+5. Recent Transactions
+6. Notifications and Alerts
+
+Files to Create:
+- dashboard-overview.html
+
+==========================================================================
+
+PHASE 4: Core Accounting Features (PENDING)
+---------------------------------------------
+
+Goal: Explain how to actually do accounting (sales, purchases, expenses, etc.).
+
+Topics to Cover:
+1. Customers and Parties
+2. Sales Invoices - Step by Step
+3. Purchase Invoices - Step by Step
+4. Payments and Receipts
+5. Journal Entries
+6. Credit Notes and Debit Notes
+7. Each Field Explained for Every Screen
+
+Files to Create:
+- customers-parties.html
+- sales-invoices-guide.html
+- purchase-invoices-guide.html
+- payments-receipts.html
+- journal-entries.html
+- credit-debit-notes.html
+
+==========================================================================
+
+PHASE 5: Reports & Insights (PENDING)
+-------------------------------------
+
+Goal: Teach users how to read and use financial reports.
+
+Topics to Cover:
+1. Profit and Loss Statement
+2. Balance Sheet
+3. Cash Flow Statement
+4. Trial Balance
+5. General Ledger
+6. Party-wise Reports
+7. GST Reports (GSTR-1, GSTR-3B)
+8. Each Report Explained Field by Field
+
+Files to Create:
+- profit-loss.html
+- balance-sheet.html
+- cash-flow.html
+- trial-balance.html
+- general-ledger.html
+- party-reports.html
+- gst-reports.html
+
+==========================================================================
+
+PHASE 6: Settings, Permissions & Advanced Options (PENDING)
+-------------------------------------------------------------
+
+Goal: Customization, users, roles, taxes, and configurations.
+
+Topics to Cover:
+1. Company Settings
+2. User Management
+3. Role-based Permissions
+4. Tax Settings (GST, TDS)
+5. Payment Terms and Methods
+6. Number Series and Sequences
+7. Backup and Restore
+8. Each Setting Explained in Detail
+
+Files to Create:
+- company-settings.html
+- user-management.html
+- permissions.html
+- tax-settings.html
+- payment-settings.html
+- number-series.html
+- backup-restore.html
+
+==========================================================================
+
+PHASE 7: Inventory Management (PENDING)
 -----------------------------------------
-- Item Catalog: Configuring goods, services, and non-stock items.
-- Multiple Warehouses: Managing stock across different physical locations.
-- Stock Movements: Handling transfers, receipts, and manual adjustments.
-- Inventory Valuation: Understanding FIFO/Weighted Average in Versoll.
 
-Phase 4: Purchases & Vendor Relations
--------------------------------------
-- Supplier Management: Onboarding vendors and tracking performance.
-- Purchase Invoices: Handling bills, TDS deductions, and input tax credit (ITC).
-- Expense Management: Tracking operational costs and staff reimbursements.
-- Bill Payments: Managing payables and vendor reconciliation.
+Topics to Cover:
+1. Items and Services
+2. Stock Entry
+3. Stock Reconciliation
+4. Warehouses
+5. Serial Numbers and Batches
 
-Phase 5: Banking & Reconciliation
----------------------------------
-- Bank Integration: Importing statements and setting up automated feeds.
-- Smart Categorization: Training the engine to recognize recurring patterns.
-- The Reconciliation Workflow: Moving transactions from Unreconciled to Reconciled.
-- GL Posting: Understanding the link between bank entries and the ledger.
+Files to Create:
+- items-services.html
+- stock-entry.html
+- stock-reconciliation.html
+- warehouses.html
+- serial-batches.html
 
-Phase 6: Tax Compliance (GST, TDS & E-Way Bills)
------------------------------------------------
-- GST Readiness: Mastering HSN/SAC, GSTIN validation, and GSTR reporting.
-- TDS Deep Dive: Thresholds, cumulative calculations, and payment vouchers.
-- E-Way Bill Integration: One-click generation from sales invoices.
+==========================================================================
 
-Phase 7: Advanced Insights & Controls
--------------------------------------
-- Financial Statements: Deep analysis of Balance Sheet, P&L, and Cashflow.
-- User Management: Roles, permissions, and audit logs.
-- Reporting Engine: Custom filters, exports, and scheduled reports.
+PHASE 8: Banking and Reconciliation (PENDING)
+----------------------------------------------
 
-Next Steps:
-- Add a search bar to the sidebar for quick navigation.
-- Implement more detailed "Tutorial Steps" for each section.
-- Add "Pro Tips" and "Common Pitfalls" callouts.
-- Enhance the CSS for better readability (larger fonts, better spacing).
+Topics to Cover:
+1. Bank Accounts Setup
+2. Bank Statement Import
+3. Transaction Reconciliation
+4. Payment Modes and Gateways
+
+Files to Create:
+- bank-accounts.html
+- statement-import.html
+- reconciliation.html
+- payment-modes.html
+
+==========================================================================
+
+PHASE 9: Compliance and Taxes (PENDING)
+---------------------------------------
+
+Topics to Cover:
+1. GST Configuration
+2. GSTIN Validation
+3. TDS Setup and Calculation
+4. E-Way Bill Generation
+5. Each Compliance Requirement Explained
+
+Files to Create:
+- gst-configuration.html
+- gstin-validation.html
+- tds-setup.html
+- eway-bills.html
+
+==========================================================================
+
+DESIGN PRINCIPLES
+-----------------
+
+This documentation follows these principles:
+
+1. Minimal and Clean
+   - No decorative elements
+   - No animations
+   - No unnecessary visual effects
+   - Focus on content readability
+
+2. Practical and Action-Oriented
+   - Every screen explained
+   - Every field explained
+   - Step-by-step instructions
+   - Real examples
+
+3. User-Friendly
+   - Simple language
+   - Clear navigation
+   - Logical progression
+   - No jargon without explanation
+
+4. Consistent Structure
+   - Screen overview
+   - Field-by-field explanation
+   - Step-by-step actions
+   - Examples where helpful
+
+==========================================================================
+
+PROGRESS TRACKING
+-----------------
+
+Phase 1: COMPLETED ✅
+Phase 2: COMPLETED ✅
+Phase 3: COMPLETED ✅
+Phase 4: PENDING
+Phase 5: PENDING
+Phase 6: PENDING
+Phase 7: PENDING
+Phase 8: PENDING
+Phase 9: PENDING
+
+==========================================================================
