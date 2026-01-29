@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bills & Expenses Management - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="doc-search" class="search-input" placeholder="Search the guide...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Welcome Experience</a></li>
+                <li><a href="getting-started.html">Business Setup</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+                <li><a href="warehouses.html">Warehouse Management</a></li>
+                <li><a href="stock-entries.html">Stock Operations</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html" class="active">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Insights</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="audit-logs.html">Audit & Security</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Phase 3</span>
+                <span class="badge badge-success">Complete</span>
+            </div>
+            <h1>📋 Bills & Expenses Mastery</h1>
+            <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2.5rem;">Master the complete purchase cycle with Versoll Books. From recording supplier bills and tracking expenses to managing GST input credits and TDS deductions—this comprehensive guide covers everything you need to maintain accurate books and maximize your tax benefits.</p>
+
+            <div class="highlight-box" style="text-align: left;">
+                <h3>🎯 What you'll master in this guide:</h3>
+                <p style="margin-bottom: 1rem;">✓ Creating professional purchase bills with GST compliance<br>
+                ✓ Recording expenses and cash transactions<br>
+                ✓ Managing GST input tax credits effectively<br>
+                ✓ Understanding TDS calculations and compliance<br>
+                ✓ Tracking vendor payments and outstanding balances<br>
+                ✓ Handling returns, credit notes, and adjustments</p>
+            </div>
+
+            <div style="margin-top: 3rem;">
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>🏢 Understanding Purchase Management</h3>
+                        <p>Effective purchase management is crucial for maintaining accurate books and maximizing tax benefits. Versoll Books handles all types of purchases—from inventory purchases to professional services and operational expenses.</p>
+                        
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <h4>📚 Purchase Types Supported</h4>
+                            <p>Versoll Books handles diverse purchase scenarios with specialized features for each:</p>
+                            <ul style="margin-top: 0.75rem;">
+                                <li><strong>Inventory Purchases:</strong> Stock items that increase inventory levels</li>
+                                <li><strong>Service Purchases:</strong> Professional services, consulting, maintenance</li>
+                                <li><strong>Expense Purchases:</strong> Office supplies, utilities, travel expenses</li>
+                                <li><strong>Asset Purchases:</strong> Equipment, furniture, vehicles (capital assets)</li>
+                                <li><strong>Recurring Purchases:</strong> Monthly subscriptions, rent, utilities</li>
+                            </ul>
+                        </div>
+
+                        <div class="callout callout-success" style="margin-top: 1.5rem;">
+                            <p><strong>💡 Key Insight:</strong> Every purchase entry affects your books differently. Inventory purchases increase stock levels, service purchases are expensed immediately, and asset purchases affect your balance sheet. Versoll Books automatically handles all these distinctions correctly!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>📝 Creating Your First Purchase Invoice</h3>
+                        <p>Navigate to <code>Purchases > New Purchase Invoice</code>. The purchase invoice is designed to capture all necessary details for GST compliance and accurate accounting:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Essential Header Fields:</h4>
+                        <ul>
+                            <li><strong>Supplier:</strong> Select from your supplier directory (or create new)</li>
+                            <li><strong>Bill Number:</strong> Supplier's invoice/bill number for reference</li>
+                            <li><strong>Bill Date:</strong> Date of the supplier's invoice</li>
+                            <li><strong>Due Date:</strong> Payment due date (auto-calculated from supplier terms)</li>
+                            <li><strong>Purchase Order:</strong> Your PO number if applicable</li>
+                            <li><strong>Credit Terms:</strong> Net 30, Net 60, or custom terms</li>
+                        </ul>
+
+                        <div style="background: var(--bg-sidebar); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1.5rem;">
+                            <p style="margin: 0; font-family: monospace; font-size: 0.95rem; color: var(--text-main);">
+                                <strong>Example Bill Header:</strong><br>
+                                Bill #: SUP-2024-156<br>
+                                Date: 15/03/2024<br>
+                                Due Date: 14/04/2024 (Net 30)<br>
+                                Supplier: ABC Electronics - Mumbai<br>
+                                PO #: PO-2024-089
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>🛍️ Adding Items and Services</h3>
+                        <p>The items section captures what you're purchasing with detailed breakdown for accurate accounting and GST compliance:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Item Line Details:</h4>
+                        <ul>
+                            <li><strong>Item Name:</strong> Select from Item Master or create new</li>
+                            <li><strong>Description:</strong> Detailed description of the item/service</li>
+                            <li><strong>HSN/SAC Code:</strong> GST classification code (auto-filled from item)</li>
+                            <li><strong>Quantity:</strong> Number of units purchased</li>
+                            <li><strong>Rate:</strong> Price per unit (excluding tax)</li>
+                            <li><strong>Discount:</strong> Any trade discount received</li>
+                            <li><strong>GST Rate:</strong> Applicable GST rate (auto-filled)</li>
+                            <li><strong>Taxable Value:</strong> Amount subject to GST calculation</li>
+                        </ul>
+
+                        <div class="highlight-box" style="margin-top: 1.5rem;">
+                            <h3>🧮 Automatic GST Calculations</h3>
+                            <p style="margin-bottom: 0.75rem;">Versoll Books handles complex GST scenarios automatically:</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>1.</strong> Taxable Value = (Quantity × Rate) - Discount</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>2.</strong> GST Amount = Taxable Value × GST Rate</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>3.</strong> Total = Taxable Value + Total GST</p>
+                            <p style="margin: 0;"><strong>4.</strong> Input Tax Credit = GST Amount (claimed as credit)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>💰 Expense Recording (Non-Inventory)</h3>
+                        <p>For services and expenses that don't affect inventory, use the expenses section for immediate recognition:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Expense Categories:</h4>
+                        <ul>
+                            <li><strong>Professional Services:</strong> Legal, accounting, consulting fees</li>
+                            <li><strong>Office Expenses:</strong> Stationery, utilities, internet, phone</li>
+                            <li><strong>Travel & Entertainment:</strong> Flights, hotels, client meals</li>
+                            <li><strong>Marketing & Advertising:</strong> Campaign costs, website, social media</li>
+                            <li><strong>Maintenance & Repairs:</strong> Equipment servicing, software licenses</li>
+                        </ul>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <h4>⚡ Quick Expense Entry</h4>
+                            <p>For recurring expenses like rent or utilities, use the Quick Expense feature to save time while maintaining accuracy. Set up default accounts and descriptions for your most frequent expenses.</p>
+                        </div>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ GST Input Credit Alert:</strong> Not all expenses qualify for GST input credit. Professional services may have TDS implications, and certain expenses are blocked credits. Versoll Books automatically identifies these scenarios and guides you appropriately!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>🏗️ Asset Purchases and Capitalization</h3>
+                        <p>Major purchases that will benefit your business for multiple years should be capitalized as assets rather than expensed:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Asset Purchase Criteria:</h4>
+                        <ul>
+                            <li><strong>Cost Threshold:</strong> Purchases above ₹5,000 (varies by business)</li>
+                            <li><strong>Useful Life:</strong> Expected to benefit business for 1+ years</li>
+                            <li><strong>Business Use:</strong> Used in business operations (not personal)</li>
+                            <li><strong>Depreciable:</strong> Subject to depreciation under income tax rules</li>
+                        </ul>
+
+                        <div style="background: var(--info-light); padding: 1.5rem; border-radius: var(--radius); border: 2px solid var(--info); margin-top: 1.5rem;">
+                            <p style="margin: 0; color: var(--text-main);">
+                                <strong>📊 Example:</strong> ₹75,000 laptop purchase<br>
+                                • <strong>Correct:</strong> Create Asset Purchase (increases Fixed Assets)<br>
+                                • <strong>Wrong:</strong> Expense entry (reduces profit immediately)<br>
+                                • <strong>Result:</strong> Asset shows on Balance Sheet, depreciates over 3-5 years
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>🧾 TDS Management and Compliance</h3>
+                        <p>TDS (Tax Deducted at Source) applies to many purchase categories. Versoll Books automatically calculates TDS based on transaction type and supplier details:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Common TDS Scenarios:</h4>
+                        <ul>
+                            <li><strong>Professional Services (194J):</strong> 10% TDS if PAN provided, 20% if no PAN</li>
+                            <li><strong>Contractor Payments (194C):</strong> 1% (individuals) or 2% (companies)</li>
+                            <li><strong>Rent (194I):</strong> 10% TDS</li>
+                            <li><strong>Commission (194H):</strong> 5% TDS</li>
+                            <li><strong>Royalty (194Q):</strong> 10% TDS</li>
+                        </ul>
+
+                        <div class="highlight-box" style="margin-top: 1.5rem;">
+                            <h3>📋 TDS Calculation Example</h3>
+                            <p style="margin-bottom: 0.75rem;"><strong>Consulting Bill: ₹1,00,000 (with PAN)</strong></p>
+                            <p style="margin-bottom: 0.5rem;"><strong>Base Amount:</strong> ₹1,00,000</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>TDS Rate:</strong> 10%</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>TDS Amount:</strong> ₹10,000</p>
+                            <p style="margin-bottom: 0.5rem;"><strong>Net Payment:</strong> ₹90,000</p>
+                            <p style="margin: 0;"><strong>Supplier Credit:</strong> ₹1,00,000 (full bill amount)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>📊 Purchase Returns and Credit Notes</h3>
+                        <p>When you need to return goods or dispute charges, create a Purchase Credit Note to reverse the original transaction:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Return Scenarios:</h4>
+                        <ul>
+                            <li><strong>Damaged Goods:</strong> Products received in damaged condition</li>
+                            <li><strong>Wrong Items:</strong> Products different from what was ordered</li>
+                            <li><strong>Quality Issues:</strong> Products not meeting specifications</li>
+                            <li><strong>Pricing Disputes:</strong> Charges different from agreed rates</li>
+                            <li><strong>Excess Quantities:</strong> More items received than ordered</li>
+                        </ul>
+
+                        <div class="callout callout-info" style="margin-top: 1.5rem;">
+                            <p><strong>💡 Best Practice:</strong> Always attach supporting documents (photos, emails) to credit notes for audit trail. This helps during supplier disputes and tax audits!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h3>💳 Payment Management and Outstanding Tracking</h3>
+                        <p>Track and manage payments to suppliers efficiently with aging reports and automated reminders:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Payment Workflow:</h4>
+                        <ul>
+                            <li><strong>Review Outstanding:</strong> Check aging report for due amounts</li>
+                            <li><strong>Prepare Payment:</strong> Create payment entry against multiple bills</li>
+                            <li><strong>Bank Integration:</strong> Match with bank statements for reconciliation</li>
+                            <li><strong>Payment Confirmation:</strong> Record payment date and reference</li>
+                            <li><strong>Supplier Update:</strong> Automatic balance update</li>
+                        </ul>
+
+                        <div style="background: var(--success-light); padding: 1.5rem; border-radius: var(--radius); border: 2px solid var(--success); margin-top: 1.5rem;">
+                            <p style="margin: 0; color: var(--text-main);">
+                                <strong>🎯 Aging Report Benefits:</strong><br>
+                                • Identify overdue payments for early resolution<br>
+                                • Maintain good supplier relationships<br>
+                                • Take advantage of early payment discounts<br>
+                                • Avoid late payment penalties
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">9</div>
+                    <div class="step-content">
+                        <h3>📈 GST Input Tax Credit Management</h3>
+                        <p>Maximize your GST input tax credits with proper documentation and timely compliance:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">ITC Claim Requirements:</h4>
+                        <ul>
+                            <li><strong>Valid GST Invoice:</strong> From registered GST supplier</li>
+                            <li><strong>GSTIN Verification:</strong> Supplier's GSTIN must be active</li>
+                            <li><strong>Time Limit:</strong> Claim within due date of GSTR-3B return</li>
+                            <li><strong>Business Purpose:</strong> Goods/services used for business</li>
+                            <li><strong>Payment Made:</strong> For reverse charge scenario (if applicable)</li>
+                        </ul>
+
+                        <div class="callout callout-warning" style="margin-top: 1.5rem;">
+                            <p><strong>⚠️ Blocked Credits Alert:</strong> Certain purchases don't qualify for ITC (personal expenses, motor cars, food & beverages). Versoll Books flags these automatically to ensure compliance!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">10</div>
+                    <div class="step-content">
+                        <h3>✅ Approval Workflow and Controls</h3>
+                        <p>Implement approval processes for purchase control and audit compliance:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Approval Stages:</h4>
+                        <ul>
+                            <li><strong>Draft Creation:</strong> Purchase entry created by operational staff</li>
+                            <li><strong>Manager Review:</strong> Department head approval for amounts</li>
+                            <li><strong>Finance Verification:</strong> Accounting team validates GST and accounts</li>
+                            <li><strong>Final Approval:</strong> Senior management authorization for large purchases</li>
+                            <li><strong>Submission:</strong> Final posting to books</li>
+                        </ul>
+
+                        <div class="info-box" style="margin-top: 1.5rem;">
+                            <h4>🔒 Audit Trail Benefits</h4>
+                            <p>Versoll Books maintains complete audit trails showing who created each entry, who approved it, and what changes were made. This ensures compliance with tax audits and internal control requirements!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">11</div>
+                    <div class="step-content">
+                        <h3>📋 Purchase Reports and Analytics</h3>
+                        <p>Leverage comprehensive reporting for better vendor management and cost control:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Essential Purchase Reports:</h4>
+                        <ul>
+                            <li><strong>Purchase Summary:</strong> Period-wise purchase totals by category</li>
+                            <li><strong>Vendor Analysis:</strong> Spend analysis by supplier</li>
+                            <li><strong>Tax Reports:</strong> GST input tax credit summary</li>
+                            <li><strong>TDS Reports:</strong> TDS deducted and deposited status</li>
+                            <li><strong>Aging Analysis:</strong> Outstanding amounts by age</li>
+                            <li><strong>Expense Trends:</strong> Monthly expense pattern analysis</li>
+                        </ul>
+
+                        <div class="highlight-box" style="margin-top: 1.5rem;">
+                            <h3>📊 Cost Control Insights</h3>
+                            <p style="margin-bottom: 0.75rem;">Use purchase analytics to identify:</p>
+                            <p style="margin-bottom: 0.5rem;">✓ Unusual spending patterns requiring investigation</p>
+                            <p style="margin-bottom: 0.5rem;">✓ Opportunities for bulk purchase discounts</p>
+                            <p style="margin-bottom: 0.5rem;">✓ Supplier performance and reliability metrics</p>
+                            <p style="margin: 0;">✓ Cost-saving opportunities and alternatives</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">12</div>
+                    <div class="step-content">
+                        <h3>🔄 Recurring Purchases and Automation</h3>
+                        <p>Set up recurring purchase entries for regular expenses to save time and ensure consistency:</p>
+                        
+                        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem;">Recurring Purchase Setup:</h4>
+                        <ul>
+                            <li><strong>Monthly Rent:</strong> Office, warehouse, equipment rental</li>
+                            <li><strong>Utilities:</strong> Electricity, water, internet, phone bills</li>
+                            <li><strong>Software Subscriptions:</strong> SaaS tools and licenses</li>
+                            <li><strong>Insurance Premiums:</strong> Annual or quarterly payments</li>
+                            <li><strong>Professional Services:</strong> Regular consulting or maintenance</li>
+                        </ul>
+
+                        <div class="callout callout-success" style="margin-top: 1.5rem;">
+                            <p><strong>⚡ Automation Benefits:</strong> Recurring purchases auto-generate based on your schedule, ensuring no bills are missed while maintaining accurate accounting records. Perfect for busy business owners!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--primary-light); padding: 2rem; border-radius: var(--radius); margin-top: 3rem; text-align: center;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem;">🎯 Purchase Mastery Checklist</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div>
+                            <h4 style="color: var(--text-main); margin-bottom: 0.75rem;">📝 Documentation</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-muted);">✓ Maintain GST-compliant invoices<br>
+                            ✓ Preserve supporting documents<br>
+                            ✓ Update supplier GSTIN details</p>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text-main); margin-bottom: 0.75rem;">💰 Financial Control</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-muted);">✓ Set up approval workflows<br>
+                            ✓ Monitor aging reports<br>
+                            ✓ Claim all eligible ITC</p>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--text-main); margin-bottom: 0.75rem;">🤝 Vendor Relations</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-muted);">✓ Maintain updated supplier directory<br>
+                            ✓ Process payments on time<br>
+                            ✓ Build strong supplier relationships</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <a href="dashboard-overview.html" style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none;">
+                    <span>←</span> Dashboard Overview
+                </a>
+                <a href="suppliers.html" style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none;">
+                    Supplier Directory <span>→</span>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
