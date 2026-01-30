@@ -5,18 +5,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GST Management - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html" class="active">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="main-container">
         <main class="main-content">
             <h1>GST Management</h1>
-            <p>Documentation for GST Management is coming soon.</p>
+            <p>Versoll Books streamlines Goods and Services Tax compliance by keeping GST data tied to every invoice, supplier bill, and payment. This guide walks through the complete setup and reporting flow so your monthly returns are accurate and audit-ready.</p>
+
+            <div class="highlight-box">
+                <h3>What this guide covers</h3>
+                <p>Company GST setup, GST rates and HSN/SAC codes, tax calculation logic, filing-ready reports, and reconciliation of input tax credit.</p>
+            </div>
+
+            <h2>Company GST Setup</h2>
+            <p>Start by confirming your company GST registration details. These fields drive the tax logic on every invoice and determine whether CGST/SGST or IGST is applied.</p>
+
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Enter GST Registration Details</h3>
+                <p>Go to <code>Settings &gt; Company</code> and verify the following:</p>
+                <ul>
+                    <li><strong>GSTIN:</strong> Your 15-digit GST identification number.</li>
+                    <li><strong>State:</strong> Determines your place of supply.</li>
+                    <li><strong>Registration Type:</strong> Regular, composition, or unregistered.</li>
+                    <li><strong>Return Frequency:</strong> Monthly or quarterly reporting.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Set Default GST Accounts</h3>
+                <p>Versoll Books auto-links tax accounts for output and input GST. Confirm they exist under <code>Duties and Taxes</code> in the Chart of Accounts:</p>
+                <ul>
+                    <li>Output CGST, Output SGST, Output IGST</li>
+                    <li>Input CGST, Input SGST, Input IGST</li>
+                    <li>GST Payable and GST Receivable</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <p>Tip: Keep tax accounts separate for clean reporting and faster reconciliation during audits.</p>
+            </div>
+
+            <h2>GST Rates and HSN/SAC Codes</h2>
+            <p>Each item or service should carry its GST rate and classification code. This improves accuracy and makes GSTR reports export-ready.</p>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Assign HSN or SAC Codes</h3>
+                <p>Open <code>Items &gt; New Item</code> or edit existing items:</p>
+                <ul>
+                    <li><strong>HSN:</strong> For goods (e.g., 8471 for computers).</li>
+                    <li><strong>SAC:</strong> For services (e.g., 9983 for IT services).</li>
+                    <li><strong>Default GST Rate:</strong> 0%, 5%, 12%, 18%, 28%.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 4</span>
+                <h3>Validate Tax Logic on Invoices</h3>
+                <p>Create a test sales invoice and confirm the tax split:</p>
+                <ul>
+                    <li><strong>Same-state customer:</strong> CGST + SGST apply.</li>
+                    <li><strong>Different-state customer:</strong> IGST applies.</li>
+                </ul>
+                <div class="highlight-box">
+                    <h3>Example Calculation</h3>
+                    <p>Taxable Value: ₹10,000<br>GST Rate: 18%<br>Same State: CGST ₹900 + SGST ₹900<br>Different State: IGST ₹1,800</p>
+                </div>
+            </div>
+
+            <h2>GST Compliance Workflow</h2>
+            <p>Once invoices and bills are recorded, use built-in GST reports to validate totals before filing.</p>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Review GSTR-1 (Sales)</h3>
+                <p>Navigate to <code>Reports &gt; GST &gt; GSTR-1</code> to see outward supplies:</p>
+                <ul>
+                    <li>B2B and B2C sales summary</li>
+                    <li>HSN-wise item summary</li>
+                    <li>Exports and zero-rated supplies</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>Review GSTR-3B (Summary)</h3>
+                <p>Use <code>Reports &gt; GST &gt; GSTR-3B</code> to verify tax liability and ITC:</p>
+                <ul>
+                    <li>Output tax liability by rate</li>
+                    <li>Eligible input tax credit</li>
+                    <li>Net GST payable after ITC set-off</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 7</span>
+                <h3>Reconcile Input Tax Credit</h3>
+                <p>Compare purchase invoices against supplier GST data before final filing:</p>
+                <ul>
+                    <li>Check GSTIN validity on each supplier.</li>
+                    <li>Ensure invoice numbers match vendor bills.</li>
+                    <li>Exclude blocked credits or reversed ITC.</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <p>Best practice: Run GST reports weekly to catch data issues early instead of waiting until filing day.</p>
+            </div>
+
+            <h2>Common GST Checks</h2>
+            <ul>
+                <li>Verify GSTIN format for customers and suppliers.</li>
+                <li>Keep place of supply accurate for inter-state invoices.</li>
+                <li>Use correct tax rates on every item line.</li>
+                <li>Ensure credit notes reflect returns or discounts properly.</li>
+            </ul>
+
             <div class="next-prev-nav">
-                <a href="journal-entries.html" class="btn"><- Journal Entries</a>
-                <a href="index.html" class="btn">Home</a>
+                <a href="reconciliation.html" class="btn"><- Reconciliation</a>
+                <a href="tds-handling.html" class="btn">TDS Simplified -></a>
             </div>
         </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
     </div>
+
     <script src="main.js"></script>
 </body>
 </html>

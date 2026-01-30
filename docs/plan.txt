@@ -43,9 +43,9 @@ Files:
 
 ==========================================================================
 
-PHASE 5: Compliance & Taxes (PENDING)
+PHASE 5: Compliance & Taxes (COMPLETED)
 -------------------------------------
-Files to Create:
+Files:
 - gst-compliance.html
 - tds-handling.html
 - eway-bills.html
@@ -82,7 +82,7 @@ Phase 1: COMPLETED
 Phase 2: COMPLETED
 Phase 3: COMPLETED
 Phase 4: COMPLETED
-Phase 5: PENDING
+Phase 5: COMPLETED
 Phase 6: PENDING
 
 ==========================================================================
