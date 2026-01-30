@@ -1,230 +1,88 @@
 Versoll Books Documentation - User-First, Practical Guide
 
-This documentation is designed to teach users how to use Versoll Books step-by-step, screen by screen, action by action.
+This documentation is designed to teach users how to use Versoll Books step-by-step.
 
 ==========================================================================
 
-PHASE 1: Fundamentals & Orientation (COMPLETED ✅)
+PHASE 1: Fundamentals & Orientation (COMPLETED)
 -------------------------------------------------
-
-Goal: Make the user understand what the software is and why they need it.
-
-Topics Covered:
-1. What is Accounting?
-2. What is an Accounting Software?
-3. Why Use Versoll Books?
-
 Files:
 - index.html
 
 ==========================================================================
 
-PHASE 2: First-Time Setup & Company Creation (COMPLETED ✅)
+PHASE 2: First-Time Setup & Sales (COMPLETED)
 ------------------------------------------------------------
-
-Goal: Help the user successfully enter the software and create (or demo) their first company.
-
-Topics Covered:
-1. Welcome Page Overview
-2. Create New Company
-3. Setup Your Organization Page (Field-by-Field Explanation)
-4. Create Demo Company
-
 Files:
 - first-time-setup.html
-
-==========================================================================
-
-PHASE 3: Dashboard Overview (PENDING)
----------------------------------------
-
-Goal: Explain every section of the main dashboard.
-
-Topics to Cover:
-1. Dashboard Layout Overview
-2. Navigation Menu
-3. Quick Actions
-4. Summary Cards
-5. Recent Transactions
-6. Notifications and Alerts
-
-Files to Create:
+- getting-started.html
 - dashboard-overview.html
+- sales-invoices.html
+- pos-billing.html
+- loyalty-programs.html
+- payments.html
 
 ==========================================================================
 
-PHASE 4: Core Accounting Features (PENDING)
----------------------------------------------
-
-Goal: Explain how to actually do accounting (sales, purchases, expenses, etc.).
-
-Topics to Cover:
-1. Customers and Parties
-2. Sales Invoices - Step by Step
-3. Purchase Invoices - Step by Step
-4. Payments and Receipts
-5. Journal Entries
-6. Credit Notes and Debit Notes
-7. Each Field Explained for Every Screen
-
-Files to Create:
-- customers-parties.html
-- sales-invoices-guide.html
-- purchase-invoices-guide.html
-- payments-receipts.html
-- journal-entries.html
-- credit-debit-notes.html
-
-==========================================================================
-
-PHASE 5: Reports & Insights (PENDING)
--------------------------------------
-
-Goal: Teach users how to read and use financial reports.
-
-Topics to Cover:
-1. Profit and Loss Statement
-2. Balance Sheet
-3. Cash Flow Statement
-4. Trial Balance
-5. General Ledger
-6. Party-wise Reports
-7. GST Reports (GSTR-1, GSTR-3B)
-8. Each Report Explained Field by Field
-
-Files to Create:
-- profit-loss.html
-- balance-sheet.html
-- cash-flow.html
-- trial-balance.html
-- general-ledger.html
-- party-reports.html
-- gst-reports.html
-
-==========================================================================
-
-PHASE 6: Settings, Permissions & Advanced Options (PENDING)
--------------------------------------------------------------
-
-Goal: Customization, users, roles, taxes, and configurations.
-
-Topics to Cover:
-1. Company Settings
-2. User Management
-3. Role-based Permissions
-4. Tax Settings (GST, TDS)
-5. Payment Terms and Methods
-6. Number Series and Sequences
-7. Backup and Restore
-8. Each Setting Explained in Detail
-
-Files to Create:
-- company-settings.html
-- user-management.html
-- permissions.html
-- tax-settings.html
-- payment-settings.html
-- number-series.html
-- backup-restore.html
-
-==========================================================================
-
-PHASE 7: Inventory Management (PENDING)
------------------------------------------
-
-Topics to Cover:
-1. Items and Services
-2. Stock Entry
-3. Stock Reconciliation
-4. Warehouses
-5. Serial Numbers and Batches
-
-Files to Create:
-- items-services.html
-- stock-entry.html
-- stock-reconciliation.html
-- warehouses.html
-- serial-batches.html
-
-==========================================================================
-
-PHASE 8: Banking and Reconciliation (PENDING)
-----------------------------------------------
-
-Topics to Cover:
-1. Bank Accounts Setup
-2. Bank Statement Import
-3. Transaction Reconciliation
-4. Payment Modes and Gateways
-
-Files to Create:
-- bank-accounts.html
-- statement-import.html
-- reconciliation.html
-- payment-modes.html
-
-==========================================================================
-
-PHASE 9: Compliance and Taxes (PENDING)
+PHASE 3: Purchases & Inventory (COMPLETED)
 ---------------------------------------
+Files:
+- purchase-invoices.html
+- suppliers.html
+- items-inventory.html
+- chart-of-accounts.html
 
-Topics to Cover:
-1. GST Configuration
-2. GSTIN Validation
-3. TDS Setup and Calculation
-4. E-Way Bill Generation
-5. Each Compliance Requirement Explained
+==========================================================================
 
+PHASE 4: Banking, Reconciliation & Accounting (COMPLETED)
+---------------------------------------------
+Files:
+- banking.html
+- reconciliation.html
+- journal-entries.html
+
+==========================================================================
+
+PHASE 5: Compliance & Taxes (PENDING)
+-------------------------------------
 Files to Create:
-- gst-configuration.html
-- gstin-validation.html
-- tds-setup.html
+- gst-compliance.html
+- tds-handling.html
 - eway-bills.html
 
 ==========================================================================
 
-DESIGN PRINCIPLES
+PHASE 6: Reports & Insights (PENDING)
+-------------------------------------
+Files to Create:
+- financial-statements.html
+- audit-logs.html
+
+==========================================================================
+
+DESIGN PRINCIPLES (UPDATED)
 -----------------
-
-This documentation follows these principles:
-
 1. Minimal and Clean
    - No decorative elements
-   - No animations
-   - No unnecessary visual effects
-   - Focus on content readability
-
-2. Practical and Action-Oriented
-   - Every screen explained
-   - Every field explained
-   - Step-by-step instructions
-   - Real examples
-
-3. User-Friendly
-   - Simple language
-   - Clear navigation
-   - Logical progression
-   - No jargon without explanation
-
-4. Consistent Structure
-   - Screen overview
-   - Field-by-field explanation
-   - Step-by-step actions
-   - Examples where helpful
+   - No emojis
+   - Simple typography
+   - High contrast (Black & White mostly)
+2. Functional Search
+   - Sidebar filtering
+   - Quick access to all sections
+3. Practical Content
+   - Step-by-step guides
+   - Field explanations
 
 ==========================================================================
 
 PROGRESS TRACKING
 -----------------
-
-Phase 1: COMPLETED ✅ - Fundamentals & Orientation
-Phase 2: COMPLETED ✅ - First-Time Setup & Company Creation
-Phase 3: COMPLETED ✅ - Dashboard Overview & Purchases
-Phase 4: PENDING - Core Accounting Features (Sales)
-Phase 5: PENDING - Reports & Insights
-Phase 6: PENDING - Settings, Permissions & Advanced Options
-Phase 7: PENDING - Inventory Management
-Phase 8: PENDING - Banking and Reconciliation
-Phase 9: PENDING - Compliance and Taxes
+Phase 1: COMPLETED
+Phase 2: COMPLETED
+Phase 3: COMPLETED
+Phase 4: COMPLETED
+Phase 5: PENDING
+Phase 6: PENDING
 
 ==========================================================================

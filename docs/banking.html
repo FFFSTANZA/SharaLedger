@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking & Statements - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+                <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html" class="active">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div >
+                
+            </div>
+            <h1>Banking and Statements</h1>
+            <p>Managing your bank transactions in Versoll Books is designed to be straightforward. Instead of manual entry for every transaction, you can import your bank statements and categorize them quickly.</p>
+
+            <h2>Bank Statement Import</h2>
+            <p>Versoll Books supports CSV statement imports from almost any bank. The system uses intelligent column detection to map your statement fields to the correct data points.</p>
+            
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Upload Statement</h3>
+                <p>Navigate to the Banking section and click on 'Import Statement'. Select the CSV file exported from your bank's net banking portal.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Column Mapping</h3>
+                <p>The system will attempt to automatically detect columns for Date, Description, Reference, and Amount. If it fails or misidentifies a column, you can manually select the correct headers from the dropdown menus.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Review Transactions</h3>
+                <p>Once imported, transactions appear in the Unreconciled list. Each record displays the raw bank narration, date, and amount.</p>
+            </div>
+
+            <h2>Transaction Categorization</h2>
+            <p>Versoll Books uses pattern matching to help you categorize transactions. For example, a transaction with "Airtel" in the narration might be automatically suggested as an "Internet Expense".</p>
+
+            <h3>Manual Categorization</h3>
+            <p>For transactions that aren't automatically recognized, you can manually assign:</p>
+            <ul>
+                <li><strong>Party</strong> - The customer or supplier involved in the transaction.</li>
+                <li><strong>Account</strong> - The specific ledger account (e.g., Electricity Expense, Sales Revenue).</li>
+                <li><strong>Voucher Type</strong> - Whether it should create a Payment, Receipt, or Journal Entry.</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Pro Tip:</strong> Setting a Party for a transaction allows the system to filter outstanding invoices for that party during the reconciliation step.</p>
+            </div>
+
+            <h2>Bank Accounts Management</h2>
+            <p>You can manage multiple bank accounts and credit cards within Versoll Books. Each account is linked to a corresponding ledger in your Chart of Accounts, allowing for accurate financial reporting.</p>
+
+            <div class="next-prev-nav">
+                <a href="suppliers.html" class="btn"><- Suppliers</a>
+                <a href="reconciliation.html" class="btn">Reconciliation -></a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

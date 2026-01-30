@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Reconciliation - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+                <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+        
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html" class="active">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <div >
+                
+            </div>
+            <h1>Bank Reconciliation</h1>
+            <p>Reconciliation is the process of matching bank transactions with your accounting records. This ensures that your books accurately reflect your bank balance and that no transactions are missing or duplicated.</p>
+
+            <h2>Matching Workflow</h2>
+            <p>When you select an unreconciled bank transaction, Versoll Books offers two primary ways to reconcile it:</p>
+
+            <h3>1. Match with Existing Voucher</h3>
+            <p>If you have already recorded a Payment, Receipt, or Purchase Invoice in the system, you can match it to the bank transaction.</p>
+            <ul>
+                <li>The system searches for vouchers with matching amounts and similar dates.</li>
+                <li>You can manually search for vouchers if the automatic matching doesn't find the correct one.</li>
+                <li>Once matched, the bank transaction is linked to the voucher, and its status changes to 'Reconciled'.</li>
+            </ul>
+
+            <h3>2. Create New Voucher</h3>
+            <p>For transactions not yet recorded (like bank charges or direct deposits), you can create a new voucher directly from the reconciliation screen.</p>
+            <ul>
+                <li>Select the appropriate Account and Party.</li>
+                <li>The system pre-fills the amount and date from the bank transaction.</li>
+                <li>Upon saving, a new Payment or Receipt voucher is created and automatically linked to the bank transaction.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3>Understanding Reconciled Status</h3>
+                <p>A bank transaction is considered 'Reconciled' only when it is linked to a valid accounting voucher. This ensures that every entry in your bank statement has a corresponding entry in your General Ledger.</p>
+            </div>
+
+            <h2>Reconciliation Reports</h2>
+            <p>After completing reconciliation, you can generate reports to verify your work:</p>
+            <ul>
+                <li><strong>Bank Reconciliation Statement</strong> - Shows the difference between your bank balance and book balance.</li>
+                <li><strong>Uncleared Vouchers</strong> - Lists vouchers that have been recorded in the books but haven't appeared in the bank statement yet.</li>
+                <li><strong>Missing Transactions</strong> - Highlights bank transactions that haven't been accounted for in the books.</li>
+            </ul>
+
+            <div class="note">
+                <p>Regular reconciliation (ideally weekly or monthly) is crucial for maintaining accurate financial records and detecting errors or fraud early.</p>
+            </div>
+
+            <div class="next-prev-nav">
+                <a href="banking.html" class="btn"><- Banking</a>
+                <a href="gst-compliance.html" class="btn">Compliance -></a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
