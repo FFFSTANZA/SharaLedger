@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const linkFile = link.getAttribute('href').split('/').pop();
         if (linkFile === currentFile) {
             link.classList.add('active');
-            // Ensure the parent section is visible (if we had collapsible sections)
         }
     });
 
@@ -35,20 +34,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // Filter nav links and sections
             navSections.forEach(section => {
                 const links = section.querySelectorAll('.nav-links li');
+                const sectionHeader = section.querySelector('h3');
+                const sectionHeaderText = sectionHeader ? sectionHeader.textContent.toLowerCase() : '';
+                
                 let sectionHasVisibleLink = false;
 
-                links.forEach(li => {
-                    const link = li.querySelector('a');
-                    const text = link.textContent.toLowerCase();
-                    if (text.includes(searchTerm)) {
+                // If section header matches, show all links in it
+                if (sectionHeaderText.includes(searchTerm)) {
+                    links.forEach(li => {
                         li.style.display = 'block';
-                        sectionHasVisibleLink = true;
-                    } else {
-                        li.style.display = 'none';
-                    }
-                });
+                    });
+                    sectionHasVisibleLink = true;
+                } else {
+                    links.forEach(li => {
+                        const link = li.querySelector('a');
+                        const text = link.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            li.style.display = 'block';
+                            sectionHasVisibleLink = true;
+                        } else {
+                            li.style.display = 'none';
+                        }
+                    });
+                }
 
-                // Show/hide section based on whether it has visible links
+                // Show/hide section based on whether it has visible content
                 if (sectionHasVisibleLink) {
                     section.style.display = 'block';
                 } else {

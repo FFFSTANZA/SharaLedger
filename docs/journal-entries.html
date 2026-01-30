@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Reconciliation - Versoll Books Documentation</title>
+    <title>Journal Entries - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-                <nav class="sidebar">
+        <nav class="sidebar">
         <a href="index.html" class="logo">Versoll Books</a>
         
         <div class="search-container">
@@ -56,14 +56,14 @@
             <h3>Banking</h3>
             <ul class="nav-links">
                 <li><a href="banking.html">Statements & Sync</a></li>
-                <li><a href="reconciliation.html" class="active">Reconciliation</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
             </ul>
         </div>
 
         <div class="nav-section">
             <h3>Accounting</h3>
             <ul class="nav-links">
-                <li><a href="journal-entries.html">Journal Entries</a></li>
+                <li><a href="journal-entries.html" class="active">Journal Entries</a></li>
             </ul>
         </div>
 
@@ -79,50 +79,42 @@
 
     <div class="main-container">
         <main class="main-content">
-            <div >
-                
-            </div>
-            <h1>Bank Reconciliation</h1>
-            <p>Reconciliation is the process of matching bank transactions with your accounting records. This ensures that your books accurately reflect your bank balance and that no transactions are missing or duplicated.</p>
+            <h1>Journal Entries</h1>
+            <p>Journal Entries are the foundation of double-entry accounting. While most transactions in Versoll Books are recorded through specialized forms (like Invoices or Payments), Journal Entries allow you to record complex or non-standard financial adjustments.</p>
 
-            <h2>Matching Workflow</h2>
-            <p>When you select an unreconciled bank transaction, Versoll Books offers two primary ways to reconcile it:</p>
-
-            <h3>1. Match with Existing Voucher</h3>
-            <p>If you have already recorded a Payment, Receipt, or Purchase Invoice in the system, you can match it to the bank transaction.</p>
+            <h2>When to Use Journal Entries</h2>
             <ul>
-                <li>The system searches for vouchers with matching amounts and similar dates.</li>
-                <li>You can manually search for vouchers if the automatic matching doesn't find the correct one.</li>
-                <li>Once matched, the bank transaction is linked to the voucher, and its status changes to 'Reconciled'.</li>
+                <li><strong>Opening Balances:</strong> Recording the initial state of your accounts when starting with Versoll Books.</li>
+                <li><strong>Depreciation:</strong> Recording the loss in value of fixed assets over time.</li>
+                <li><strong>Adjustments:</strong> Correcting errors or reclassifying amounts between accounts.</li>
+                <li><strong>Inter-Account Transfers:</strong> Moving money between accounts that don't involve a bank (e.g., owner's equity to business).</li>
+                <li><strong>Accruals & Prepayments:</strong> Recording expenses or income that don't coincide with a cash transaction.</li>
             </ul>
 
-            <h3>2. Create New Voucher</h3>
-            <p>For transactions not yet recorded (like bank charges or direct deposits), you can create a new voucher directly from the reconciliation screen.</p>
-            <ul>
-                <li>Select the appropriate Account and Party.</li>
-                <li>The system pre-fills the amount and date from the bank transaction.</li>
-                <li>Upon saving, a new Payment or Receipt voucher is created and automatically linked to the bank transaction.</li>
-            </ul>
-
-            <div class="highlight-box">
-                <h3>Understanding Reconciled Status</h3>
-                <p>A bank transaction is considered 'Reconciled' only when it is linked to a valid accounting voucher. This ensures that every entry in your bank statement has a corresponding entry in your General Ledger.</p>
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Select Accounts</h3>
+                <p>Every Journal Entry must involve at least two accounts. One account will be debited, and another will be credited.</p>
             </div>
 
-            <h2>Reconciliation Reports</h2>
-            <p>After completing reconciliation, you can generate reports to verify your work:</p>
-            <ul>
-                <li><strong>Bank Reconciliation Statement</strong> - Shows the difference between your bank balance and book balance.</li>
-                <li><strong>Uncleared Vouchers</strong> - Lists vouchers that have been recorded in the books but haven't appeared in the bank statement yet.</li>
-                <li><strong>Missing Transactions</strong> - Highlights bank transactions that haven't been accounted for in the books.</li>
-            </ul>
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Enter Amounts</h3>
+                <p>Enter the debit and credit amounts. Versoll Books requires that the total debits must equal the total credits for the entry to be valid.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Add Narration</h3>
+                <p>Provide a clear explanation for the transaction. This is crucial for future audits and understanding the purpose of the adjustment.</p>
+            </div>
 
             <div class="note">
-                <p>Regular reconciliation (ideally weekly or monthly) is crucial for maintaining accurate financial records and detecting errors or fraud early.</p>
+                <p><strong>Warning:</strong> Journal Entries bypass the automated logic of specialized forms. Use them only when a dedicated form (like Sales Invoice or Payment Entry) is not appropriate.</p>
             </div>
 
             <div class="next-prev-nav">
-                <a href="banking.html" class="btn"><- Banking</a>
+                <a href="reconciliation.html" class="btn"><- Reconciliation</a>
                 <a href="gst-compliance.html" class="btn">Compliance -></a>
             </div>
         </main>

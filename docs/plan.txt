@@ -34,11 +34,12 @@ Files:
 
 ==========================================================================
 
-PHASE 4: Banking & Reconciliation (COMPLETED)
+PHASE 4: Banking, Reconciliation & Accounting (COMPLETED)
 ---------------------------------------------
 Files:
 - banking.html
 - reconciliation.html
+- journal-entries.html
 
 ==========================================================================
 
