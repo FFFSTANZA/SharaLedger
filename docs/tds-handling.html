@@ -5,18 +5,184 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TDS Simplified - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html" class="active">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="main-container">
         <main class="main-content">
             <h1>TDS Simplified</h1>
-            <p>Documentation for TDS Handling is coming soon.</p>
+            <p>Versoll Books automates Tax Deducted at Source (TDS) so that every qualifying purchase, expense, or contractor payment applies the right deduction. Use this guide to configure sections, calculate deductions, and generate compliance-ready reports.</p>
+
+            <div class="highlight-box">
+                <h3>What you'll learn</h3>
+                <p>Setting up TDS sections, applying rates to suppliers, calculating deductions on bills, and tracking payable balances for filing.</p>
+            </div>
+
+            <h2>Configure TDS Foundations</h2>
+            <p>TDS rules are driven by sections and categories. Start with the statutory section, then link it to a category and default accounts.</p>
+
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Create TDS Sections</h3>
+                <p>Go to <code>Settings &gt; Tax Withholding</code> and add sections such as 194C, 194J, or 194I. Each section requires:</p>
+                <ul>
+                    <li><strong>Rate:</strong> Default deduction percentage.</li>
+                    <li><strong>Threshold:</strong> Minimum annual amount before TDS applies.</li>
+                    <li><strong>Higher Rate (No PAN):</strong> Applied when PAN is missing.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Link TDS Categories</h3>
+                <p>Under <code>TDS Categories</code>, group sections based on vendor type (Contractor, Professional Services, Rent). Select a default payable account for each category.</p>
+                <ul>
+                    <li>Connects suppliers to the right deduction logic.</li>
+                    <li>Ensures the correct TDS payable ledger is used.</li>
+                </ul>
+            </div>
+
+            <h2>Apply TDS to Suppliers</h2>
+            <p>Once categories exist, update your supplier master so every bill applies the correct TDS rate automatically.</p>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Assign TDS Category on Supplier</h3>
+                <p>Edit a supplier and set:</p>
+                <ul>
+                    <li><strong>TDS Category:</strong> Contractor, Professional Services, Rent.</li>
+                    <li><strong>PAN:</strong> Required to avoid higher TDS.</li>
+                    <li><strong>Default Expense Account:</strong> Keeps booking consistent.</li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <p>Missing PAN automatically triggers the higher TDS rate configured in the section.</p>
+            </div>
+
+            <h2>Deduction Workflow on Purchase Bills</h2>
+            <p>TDS is applied at the time of bill entry. The system reduces the payable amount and records the deduction as a separate liability.</p>
+
+            <div class="step">
+                <span class="step-number">Step 4</span>
+                <h3>Record a TDS-Applicable Bill</h3>
+                <p>Create a purchase invoice for a supplier with a TDS category:</p>
+                <ul>
+                    <li>Enter taxable value and GST as usual.</li>
+                    <li>Versoll Books calculates TDS on the net amount.</li>
+                    <li>The payable is reduced by the deducted amount.</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Example Calculation</h3>
+                <p>Bill Amount (excluding GST): ₹80,000<br>TDS Section 194J @ 10%<br>TDS Deducted: ₹8,000<br>Payable to Supplier: ₹72,000</p>
+            </div>
+
+            <h2>Track TDS Payable and Filing</h2>
+            <p>Use TDS reports to monitor liabilities and prepare for quarterly filings.</p>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Review TDS Payable Report</h3>
+                <p>Open <code>Reports &gt; TDS Payable</code> to see:</p>
+                <ul>
+                    <li>Section-wise deductions and totals</li>
+                    <li>Suppliers with pending remittance</li>
+                    <li>Monthly or quarterly deductions summary</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>Record TDS Payment</h3>
+                <p>Create a <code>Payment</code> entry to remit TDS to the government. Select the TDS payable account and the appropriate section.</p>
+            </div>
+
+            <div class="note">
+                <p>When you clear the payable, Versoll Books automatically updates the supplier ledger to reflect the net amount paid.</p>
+            </div>
+
             <div class="next-prev-nav">
                 <a href="gst-compliance.html" class="btn"><- GST Management</a>
-                <a href="index.html" class="btn">Home</a>
+                <a href="eway-bills.html" class="btn">E-Way Bills -></a>
             </div>
         </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
     </div>
+
     <script src="main.js"></script>
 </body>
 </html>
