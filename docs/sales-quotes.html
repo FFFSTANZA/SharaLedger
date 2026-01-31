@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journal Entries - Versoll Books Documentation</title>
+    <title>Sales Quotations - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-        <nav class="sidebar">
+    <nav class="sidebar">
         <a href="index.html" class="logo">Versoll Books</a>
-        
+
         <div class="search-container">
             <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
         </div>
@@ -41,7 +41,7 @@
             <h3>CRM & Quotations</h3>
             <ul class="nav-links">
                 <li><a href="leads.html">Lead Management</a></li>
-                <li><a href="sales-quotes.html">Sales Quotations</a></li>
+                <li><a href="sales-quotes.html" class="active">Sales Quotations</a></li>
             </ul>
         </div>
 
@@ -71,7 +71,7 @@
         <div class="nav-section">
             <h3>Accounting</h3>
             <ul class="nav-links">
-                <li><a href="journal-entries.html" class="active">Journal Entries</a></li>
+                <li><a href="journal-entries.html">Journal Entries</a></li>
             </ul>
         </div>
 
@@ -96,43 +96,85 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>Journal Entries</h1>
-            <p>Journal Entries are the foundation of double-entry accounting. While most transactions in Versoll Books are recorded through specialized forms (like Invoices or Payments), Journal Entries allow you to record complex or non-standard financial adjustments.</p>
+            <h1>Sales Quotations</h1>
+            <p>Quotations help you propose pricing and terms before committing to an invoice. Versoll Books keeps every quotation linked to the customer, so you can track approvals and convert instantly when the deal is confirmed.</p>
 
-            <h2>When to Use Journal Entries</h2>
-            <ul>
-                <li><strong>Opening Balances:</strong> Recording the initial state of your accounts when starting with Versoll Books.</li>
-                <li><strong>Depreciation:</strong> Recording the loss in value of fixed assets over time.</li>
-                <li><strong>Adjustments:</strong> Correcting errors or reclassifying amounts between accounts.</li>
-                <li><strong>Inter-Account Transfers:</strong> Moving money between accounts that don't involve a bank (e.g., owner's equity to business).</li>
-                <li><strong>Accruals & Prepayments:</strong> Recording expenses or income that don't coincide with a cash transaction.</li>
-            </ul>
+            <div class="highlight-box">
+                <h3>Core outcomes</h3>
+                <p>Create professional quotes, track status, manage revisions, and convert approved quotations to invoices.</p>
+            </div>
+
+            <h2>Create a New Quotation</h2>
+            <p>Use quotations for large orders, custom work, or when pricing needs customer approval.</p>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Select Accounts</h3>
-                <p>Every Journal Entry must involve at least two accounts. One account will be debited, and another will be credited.</p>
+                <h3>Start a Quote</h3>
+                <p>Go to <code>Sales &gt; Quotations &gt; New</code> and choose the customer.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Enter Amounts</h3>
-                <p>Enter the debit and credit amounts. Versoll Books requires that the total debits must equal the total credits for the entry to be valid.</p>
+                <h3>Add Items and Pricing</h3>
+                <p>Enter the products or services, quantities, and rates. Apply discounts, taxes, or bundled pricing as required.</p>
+                <ul>
+                    <li><strong>Price List:</strong> Select a customer-specific price list if available.</li>
+                    <li><strong>Taxes:</strong> Versoll Books applies GST based on customer state.</li>
+                    <li><strong>Terms:</strong> Mention delivery timeline, payment terms, and warranty notes.</li>
+                </ul>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Add Narration</h3>
-                <p>Provide a clear explanation for the transaction. This is crucial for future audits and understanding the purpose of the adjustment.</p>
+                <h3>Set Validity Date</h3>
+                <p>Define how long the quotation is valid (e.g., 15 or 30 days). Expired quotes help avoid disputes on pricing changes.</p>
+            </div>
+
+            <h2>Quote Management</h2>
+            <p>Track quotation status to keep the pipeline organized.</p>
+
+            <div class="step">
+                <span class="step-number">Step 4</span>
+                <h3>Update Status</h3>
+                <p>Use statuses such as Draft, Sent, Follow-Up, Accepted, or Rejected. This makes pipeline tracking easier in weekly reviews.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Revisions and Versions</h3>
+                <p>Clone the quotation to create a new version while keeping a record of earlier pricing. This is helpful for negotiated deals.</p>
             </div>
 
             <div class="note">
-                <p><strong>Warning:</strong> Journal Entries bypass the automated logic of specialized forms. Use them only when a dedicated form (like Sales Invoice or Payment Entry) is not appropriate.</p>
+                <p>If a customer accepts a quote by email, attach the confirmation as a note for future reference.</p>
             </div>
 
+            <h2>Convert to Invoice</h2>
+            <p>Once approved, convert the quotation to an invoice in a single step.</p>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>Generate Invoice</h3>
+                <p>Open the quotation and click <strong>Convert to Invoice</strong>. Versoll Books carries over items, taxes, and terms automatically.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 7</span>
+                <h3>Collect Advance (Optional)</h3>
+                <p>If the quotation requires an advance payment, create a Payment Entry before issuing the final invoice. This keeps receivables accurate.</p>
+            </div>
+
+            <h2>Quotation Checklist</h2>
+            <ul>
+                <li>Use a clear validity date and terms.</li>
+                <li>Track status and follow-up dates.</li>
+                <li>Maintain versions for negotiated quotes.</li>
+                <li>Convert accepted quotes quickly to invoices.</li>
+            </ul>
+
             <div class="next-prev-nav">
-                <a href="reconciliation.html" class="btn"><- Reconciliation</a>
-                <a href="gst-compliance.html" class="btn">Compliance -></a>
+                <a href="leads.html" class="btn"><- Lead Management</a>
+                <a href="items-inventory.html" class="btn">Items & Services -></a>
             </div>
         </main>
 
