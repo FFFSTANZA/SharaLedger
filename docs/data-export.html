@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Export & Backup - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="reports-overview.html">Reports Overview</a></li>
+                <li><a href="data-export.html" class="active">Data Export & Backup</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <h1>Data Export & Backup</h1>
+            <p>Protecting your financial data is essential. Versoll Books provides tools to export reports, back up your company database, and restore data when needed. This guide covers all data management operations.</p>
+
+            <div class="highlight-box">
+                <h3>Key topics</h3>
+                <p>Report exports, database backup, data restore, best practices for data protection, and compliance archiving.</p>
+            </div>
+
+            <h2>Exporting Reports</h2>
+            <p>Every report in Versoll Books can be exported for external use, analysis, or archiving.</p>
+
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Open the Report</h3>
+                <p>Navigate to any report (e.g., <code>Reports > Balance Sheet</code>) and apply your desired filters and date range.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Click Export</h3>
+                <p>Click the Export button in the report toolbar. Choose from available formats:</p>
+                <ul>
+                    <li><strong>PDF:</strong> Formatted document suitable for printing and sharing.</li>
+                    <li><strong>Excel:</strong> Spreadsheet format for further analysis and manipulation.</li>
+                    <li><strong>CSV:</strong> Plain text format compatible with any data tool.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Save the File</h3>
+                <p>Choose a location on your computer. Use a consistent naming convention:</p>
+                <ul>
+                    <li><code>BalanceSheet_CompanyName_2024-03-31.pdf</code></li>
+                    <li><code>GSTR1_CompanyName_Mar2024.xlsx</code></li>
+                    <li><code>ReceivablesAgeing_2024-03-31.csv</code></li>
+                </ul>
+            </div>
+
+            <div class="note">
+                <p>Always include the date or period in exported file names. This helps identify the data context when reviewing historical files.</p>
+            </div>
+
+            <h2>Database Backup</h2>
+            <p>Your company data is stored in a local database file. Regular backups protect against data loss from hardware failure, accidental deletion, or corruption.</p>
+
+            <div class="step">
+                <span class="step-number">Step 4</span>
+                <h3>Locate the Database</h3>
+                <p>Versoll Books stores company data in a SQLite database file. The default location varies by operating system:</p>
+                <ul>
+                    <li><strong>Windows:</strong> <code>C:\Users\YourName\AppData\Roaming\versoll-books\</code></li>
+                    <li><strong>macOS:</strong> <code>~/Library/Application Support/versoll-books/</code></li>
+                    <li><strong>Linux:</strong> <code>~/.config/versoll-books/</code></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Create a Backup</h3>
+                <p>Close Versoll Books before backing up. Copy the entire database file to a safe location:</p>
+                <ul>
+                    <li>External hard drive or USB drive.</li>
+                    <li>Cloud storage (Google Drive, OneDrive, Dropbox).</li>
+                    <li>Network attached storage (NAS).</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>Name the Backup</h3>
+                <p>Include the date in the backup file name:</p>
+                <ul>
+                    <li><code>companyname_backup_2024-03-31.db</code></li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Backup Frequency Recommendation</h3>
+                <p>Daily: High-volume businesses processing many transactions.<br>
+                Weekly: Standard businesses with moderate activity.<br>
+                Monthly: Small businesses with low transaction volume.</p>
+            </div>
+
+            <h2>Restoring Data</h2>
+            <p>If your database becomes corrupted or you need to recover from an error, restore from a backup.</p>
+
+            <div class="step">
+                <span class="step-number">Step 7</span>
+                <h3>Close the Application</h3>
+                <p>Ensure Versoll Books is completely closed before restoring.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 8</span>
+                <h3>Replace the Database</h3>
+                <p>Navigate to the database location. Rename the current file (e.g., add <code>_corrupted</code> suffix) and copy your backup file to the same location with the original name.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 9</span>
+                <h3>Reopen Versoll Books</h3>
+                <p>Launch the application. Your data should appear as it was at the backup point. Verify by checking recent transactions.</p>
+            </div>
+
+            <div class="note">
+                <p>After restoring, transactions created after the backup date will be missing. You may need to re-enter them manually.</p>
+            </div>
+
+            <h2>Compliance Archiving</h2>
+            <p>Financial records must be retained for legal and tax compliance. Establish a systematic archiving process.</p>
+
+            <div class="step">
+                <span class="step-number">Step 10</span>
+                <h3>Monthly Archives</h3>
+                <p>At the end of each month, export and save:</p>
+                <ul>
+                    <li>Balance Sheet as of month-end.</li>
+                    <li>Profit and Loss for the month.</li>
+                    <li>Receivables and Payables Ageing.</li>
+                    <li>Bank reconciliation status.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 11</span>
+                <h3>GST Filing Archives</h3>
+                <p>Before each GST filing deadline, export:</p>
+                <ul>
+                    <li>GSTR-1 report for the period.</li>
+                    <li>GSTR-3B summary.</li>
+                    <li>GSTR-2 for purchase verification.</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 12</span>
+                <h3>Annual Archives</h3>
+                <p>At fiscal year-end, create a comprehensive archive:</p>
+                <ul>
+                    <li>Full Trial Balance.</li>
+                    <li>Final Balance Sheet and P&L.</li>
+                    <li>General Ledger for all accounts.</li>
+                    <li>Complete database backup.</li>
+                    <li>TDS summary for the year.</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Retention Requirements</h3>
+                <p>Indian tax law requires businesses to retain financial records for a minimum of 8 years from the end of the relevant assessment year. Consult your tax advisor for specific requirements.</p>
+            </div>
+
+            <h2>Data Security Best Practices</h2>
+            <p>Protect your financial data from unauthorized access and loss.</p>
+
+            <h3>Access Control</h3>
+            <ul>
+                <li>Use strong passwords for your computer and cloud storage.</li>
+                <li>Limit access to financial data to authorized personnel only.</li>
+                <li>Log out of the application when not in use.</li>
+            </ul>
+
+            <h3>Backup Verification</h3>
+            <ul>
+                <li>Periodically test restore from backup to ensure files are valid.</li>
+                <li>Keep multiple backup copies in different locations.</li>
+                <li>Verify backup file sizes to detect incomplete backups.</li>
+            </ul>
+
+            <h3>Encryption</h3>
+            <ul>
+                <li>Enable encryption on cloud storage for backup files.</li>
+                <li>Use encrypted external drives for physical backups.</li>
+                <li>Consider password-protecting sensitive exported reports.</li>
+            </ul>
+
+            <h2>Exporting Master Data</h2>
+            <p>Export lists of customers, suppliers, items, and accounts for reference or migration.</p>
+
+            <div class="step">
+                <span class="step-number">Step 13</span>
+                <h3>Export Customer List</h3>
+                <p>Navigate to <code>Parties</code> and filter for customers. Use the list export option to download customer details including contact information and balances.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 14</span>
+                <h3>Export Item List</h3>
+                <p>Navigate to <code>Items</code> and export the complete inventory list with quantities, rates, and tax details.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 15</span>
+                <h3>Export Chart of Accounts</h3>
+                <p>Navigate to <code>Chart of Accounts</code> and export the account structure for documentation or migration purposes.</p>
+            </div>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Export Fails</h3>
+            <ul>
+                <li>Check available disk space.</li>
+                <li>Ensure you have write permissions to the destination folder.</li>
+                <li>Try exporting to a different location.</li>
+                <li>Reduce the date range to export smaller data sets.</li>
+            </ul>
+
+            <h3>Backup File Cannot Be Restored</h3>
+            <ul>
+                <li>Verify the file is not corrupted (check file size).</li>
+                <li>Ensure you are using the correct version of Versoll Books.</li>
+                <li>Try restoring to a different computer as a test.</li>
+            </ul>
+
+            <h3>Database Corruption</h3>
+            <ul>
+                <li>Do not force-close the application during transactions.</li>
+                <li>Ensure stable power supply to prevent sudden shutdowns.</li>
+                <li>Use a UPS (Uninterruptible Power Supply) for critical workstations.</li>
+            </ul>
+
+            <h2>Summary Checklist</h2>
+            <ul>
+                <li>Export reports regularly for compliance and analysis.</li>
+                <li>Back up the database based on your transaction volume.</li>
+                <li>Store backups in multiple locations (local and cloud).</li>
+                <li>Archive year-end reports and database for 8+ years.</li>
+                <li>Test restore procedures periodically.</li>
+                <li>Protect access to financial data with strong passwords.</li>
+            </ul>
+
+            <div class="next-prev-nav">
+                <a href="reports-overview.html" class="btn"><- Reports Overview</a>
+                <a href="index.html" class="btn">Documentation Home -></a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Overview - Versoll Books Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="index.html" class="logo">Versoll Books</a>
+
+        <div class="search-container">
+            <input type="text" id="doc-search" class="search-input" placeholder="Search documentation...">
+        </div>
+
+        <div class="nav-section">
+            <h3>Getting Started</h3>
+            <ul class="nav-links">
+                <li><a href="index.html">Fundamentals & Orientation</a></li>
+                <li><a href="first-time-setup.html">First-Time Setup</a></li>
+                <li><a href="dashboard-overview.html">Dashboard Overview</a></li>
+                <li><a href="chart-of-accounts.html">Chart of Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Sales & POS</h3>
+            <ul class="nav-links">
+                <li><a href="sales-invoices.html">Invoicing Mastery</a></li>
+                <li><a href="pos-billing.html">Point of Sale (POS)</a></li>
+                <li><a href="loyalty-programs.html">Loyalty & Rewards</a></li>
+                <li><a href="payments.html">Payments & Credit</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Inventory</h3>
+            <ul class="nav-links">
+                <li><a href="items-inventory.html">Items & Services</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Purchases</h3>
+            <ul class="nav-links">
+                <li><a href="purchase-invoices.html">Bills & Expenses</a></li>
+                <li><a href="suppliers.html">Supplier Directory</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Banking</h3>
+            <ul class="nav-links">
+                <li><a href="banking.html">Statements & Sync</a></li>
+                <li><a href="reconciliation.html">Reconciliation</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Accounting</h3>
+            <ul class="nav-links">
+                <li><a href="journal-entries.html">Journal Entries</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Compliance</h3>
+            <ul class="nav-links">
+                <li><a href="gst-compliance.html">GST Management</a></li>
+                <li><a href="tds-handling.html">TDS Simplified</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Reports</h3>
+            <ul class="nav-links">
+                <li><a href="financial-statements.html">Financial Statements</a></li>
+                <li><a href="reports-overview.html" class="active">Reports Overview</a></li>
+                <li><a href="data-export.html">Data Export & Backup</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <main class="main-content">
+            <h1>Reports Overview</h1>
+            <p>Versoll Books provides a comprehensive set of reports to help you analyze business performance, track outstanding balances, manage inventory, and stay compliant with tax regulations. This guide covers all available reports and when to use each one.</p>
+
+            <div class="highlight-box">
+                <h3>Report categories</h3>
+                <p>Financial statements, ageing analysis, inventory tracking, GST compliance, TDS compliance, and operational registers.</p>
+            </div>
+
+            <h2>Accessing Reports</h2>
+            <p>All reports are available from the Reports section in the main navigation. Each report can be filtered, sorted, and exported as needed.</p>
+
+            <div class="step">
+                <span class="step-number">Step 1</span>
+                <h3>Navigate to Reports</h3>
+                <p>Click <code>Reports</code> in the sidebar to see the complete list of available reports organized by category.</p>
+            </div>
+
+            <h2>Financial Reports</h2>
+            <p>These reports provide a view of overall business health and are essential for management decisions and compliance.</p>
+
+            <h3>Balance Sheet</h3>
+            <p>Shows assets, liabilities, and equity at a specific point in time. Use it to understand what the business owns and owes.</p>
+            <ul>
+                <li><strong>When to use:</strong> Month-end review, loan applications, investor reporting.</li>
+                <li><strong>Key insight:</strong> Total Assets must equal Total Liabilities plus Equity.</li>
+            </ul>
+
+            <h3>Profit and Loss</h3>
+            <p>Displays income and expenses over a period, calculating net profit or loss.</p>
+            <ul>
+                <li><strong>When to use:</strong> Monthly performance review, budgeting, tax planning.</li>
+                <li><strong>Key insight:</strong> Track gross margin and operating expenses separately.</li>
+            </ul>
+
+            <h3>Trial Balance</h3>
+            <p>Lists all accounts with opening balances, period transactions, and closing balances.</p>
+            <ul>
+                <li><strong>When to use:</strong> Before closing books, audit preparation, error detection.</li>
+                <li><strong>Key insight:</strong> Total debits must equal total credits.</li>
+            </ul>
+
+            <h3>General Ledger</h3>
+            <p>Complete transaction history for all accounts with source document references.</p>
+            <ul>
+                <li><strong>When to use:</strong> Investigating specific transactions, audit evidence, reconciliation.</li>
+                <li><strong>Key insight:</strong> Group by account or party for focused analysis.</li>
+            </ul>
+
+            <h2>Ageing Reports</h2>
+            <p>Track outstanding balances by age to manage cash flow and collections.</p>
+
+            <div class="step">
+                <span class="step-number">Step 2</span>
+                <h3>Receivables Ageing</h3>
+                <p>Navigate to <code>Reports > Receivables Ageing</code> to see customer outstanding amounts grouped by age buckets.</p>
+            </div>
+
+            <p>The report shows outstanding amounts in these categories:</p>
+            <ul>
+                <li><strong>0-30 days:</strong> Current, within standard payment terms.</li>
+                <li><strong>31-60 days:</strong> Slightly overdue, follow up recommended.</li>
+                <li><strong>61-90 days:</strong> Significantly overdue, escalate collection.</li>
+                <li><strong>90+ days:</strong> Severely overdue, consider write-off or legal action.</li>
+            </ul>
+
+            <div class="note">
+                <p>Review Receivables Ageing weekly. Contact customers in the 31-60 day bucket before they move to higher buckets.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">Step 3</span>
+                <h3>Payables Ageing</h3>
+                <p>Navigate to <code>Reports > Payables Ageing</code> to see supplier outstanding amounts by age.</p>
+            </div>
+
+            <p>Use Payables Ageing to:</p>
+            <ul>
+                <li>Prioritize payments based on age and supplier relationships.</li>
+                <li>Identify invoices approaching due dates.</li>
+                <li>Plan cash outflows for the coming weeks.</li>
+                <li>Negotiate better terms with vendors for early payments.</li>
+            </ul>
+
+            <h2>Inventory Reports</h2>
+            <p>Monitor stock levels and movement across locations.</p>
+
+            <div class="step">
+                <span class="step-number">Step 4</span>
+                <h3>Stock Balance</h3>
+                <p>Navigate to <code>Reports > Stock Balance</code> to see current inventory levels.</p>
+            </div>
+
+            <p>The Stock Balance report shows for each item:</p>
+            <ul>
+                <li><strong>Opening Quantity/Value:</strong> Stock at the start of the period.</li>
+                <li><strong>Incoming Quantity/Value:</strong> Stock received during the period.</li>
+                <li><strong>Outgoing Quantity/Value:</strong> Stock sold or transferred.</li>
+                <li><strong>Balance Quantity/Value:</strong> Current stock on hand.</li>
+                <li><strong>Valuation Rate:</strong> Average cost per unit.</li>
+            </ul>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Stock Ledger</h3>
+                <p>Navigate to <code>Reports > Stock Ledger</code> to see detailed inventory transactions.</p>
+            </div>
+
+            <p>Filter the Stock Ledger by:</p>
+            <ul>
+                <li><strong>Item:</strong> View transactions for a specific product.</li>
+                <li><strong>Location:</strong> Filter by warehouse or store.</li>
+                <li><strong>Batch:</strong> Track specific batch movements (if enabled).</li>
+                <li><strong>Date Range:</strong> Analyze a specific period.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3>Use Case: Inventory Audit</h3>
+                <p>Run Stock Balance before physical counting. Compare system quantities to actual counts. Investigate discrepancies using Stock Ledger to trace transactions.</p>
+            </div>
+
+            <h2>GST Reports</h2>
+            <p>Generate filing-ready reports for GST compliance.</p>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>GSTR-1 (Outward Supplies)</h3>
+                <p>Navigate to <code>Reports > GST > GSTR-1</code> for sales data formatted for GST filing.</p>
+            </div>
+
+            <p>GSTR-1 includes:</p>
+            <ul>
+                <li>B2B sales with GSTIN details.</li>
+                <li>B2C sales summary by rate.</li>
+                <li>HSN-wise summary of items sold.</li>
+                <li>Exports and zero-rated supplies.</li>
+            </ul>
+
+            <div class="step">
+                <span class="step-number">Step 7</span>
+                <h3>GSTR-2 (Inward Supplies)</h3>
+                <p>Navigate to <code>Reports > GST > GSTR-2</code> for purchase data.</p>
+            </div>
+
+            <p>GSTR-2 shows purchase invoices organized by:</p>
+            <ul>
+                <li>Supplier GSTIN and invoice details.</li>
+                <li>Tax amounts split by CGST, SGST, IGST.</li>
+                <li>Eligible input tax credit.</li>
+            </ul>
+
+            <div class="step">
+                <span class="step-number">Step 8</span>
+                <h3>GSTR-3B (Summary)</h3>
+                <p>Navigate to <code>Reports > GST > GSTR-3B</code> for the monthly summary return.</p>
+            </div>
+
+            <p>GSTR-3B provides:</p>
+            <ul>
+                <li>Output tax liability by rate.</li>
+                <li>Input tax credit available.</li>
+                <li>Net GST payable after set-off.</li>
+            </ul>
+
+            <div class="note">
+                <p>Run GST reports weekly during the month to catch data issues early. Do not wait until the filing deadline.</p>
+            </div>
+
+            <h2>TDS Reports</h2>
+            <p>Track tax deducted at source for compliance and payment.</p>
+
+            <div class="step">
+                <span class="step-number">Step 9</span>
+                <h3>TDS Summary</h3>
+                <p>Navigate to <code>Reports > TDS > TDS Summary</code> to see deductions grouped by section and deductee.</p>
+            </div>
+
+            <p>TDS Summary helps with:</p>
+            <ul>
+                <li>Tracking total TDS deducted by category.</li>
+                <li>Identifying amounts due for deposit.</li>
+                <li>Preparing quarterly TDS returns.</li>
+            </ul>
+
+            <div class="step">
+                <span class="step-number">Step 10</span>
+                <h3>TDS Payable</h3>
+                <p>Navigate to <code>Reports > TDS > TDS Payable</code> to see outstanding TDS amounts.</p>
+            </div>
+
+            <p>TDS Payable shows:</p>
+            <ul>
+                <li>Section-wise TDS amounts.</li>
+                <li>Due dates for government deposit.</li>
+                <li>Deductee details for certificate generation.</li>
+            </ul>
+
+            <h2>E-Way Bill Register</h2>
+            <p>Track all E-Way Bills created for goods movement.</p>
+
+            <div class="step">
+                <span class="step-number">Step 11</span>
+                <h3>Access E-Way Bill Register</h3>
+                <p>Navigate to <code>Reports > E-Way Bill Register</code> to see all bills with status and validity.</p>
+            </div>
+
+            <p>The register displays:</p>
+            <ul>
+                <li><strong>E-Way Bill Number:</strong> Unique identifier.</li>
+                <li><strong>Status:</strong> Active, Cancelled, or Expired.</li>
+                <li><strong>Validity Date:</strong> When the bill expires.</li>
+                <li><strong>Linked Invoice:</strong> Reference to the source document.</li>
+                <li><strong>Transport Details:</strong> Vehicle and transporter information.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3>Use Case: Transit Monitoring</h3>
+                <p>Filter the register by status to find E-Way Bills expiring within the next 24 hours. Extend validity if goods are still in transit to avoid penalties.</p>
+            </div>
+
+            <h2>Common Report Actions</h2>
+            <p>All reports support these standard actions:</p>
+
+            <h3>Filtering</h3>
+            <p>Use the filter panel at the top of each report to narrow down data. Common filters include date range, account, party, and document type.</p>
+
+            <h3>Sorting</h3>
+            <p>Click column headers to sort data ascending or descending. Some reports offer an Ascending Order checkbox in filters.</p>
+
+            <h3>Exporting</h3>
+            <p>Click the Export button to download the report. Choose PDF for printing or Excel for further analysis.</p>
+
+            <h3>Pagination</h3>
+            <p>Large reports use pagination. Navigate between pages using the controls at the bottom of the report.</p>
+
+            <h2>Report Schedule Recommendations</h2>
+            <p>Establish a regular reporting routine:</p>
+            <ul>
+                <li><strong>Daily:</strong> Review dashboard for quick insights.</li>
+                <li><strong>Weekly:</strong> Run Receivables Ageing and Payables Ageing.</li>
+                <li><strong>Monthly:</strong> Generate Balance Sheet, P&L, and GST reports.</li>
+                <li><strong>Quarterly:</strong> Prepare TDS summary and compare to previous quarters.</li>
+                <li><strong>Annually:</strong> Run full Trial Balance and archive all reports.</li>
+            </ul>
+
+            <div class="next-prev-nav">
+                <a href="financial-statements.html" class="btn"><- Financial Statements</a>
+                <a href="data-export.html" class="btn">Data Export & Backup -></a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Versoll Books Documentation</p>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
