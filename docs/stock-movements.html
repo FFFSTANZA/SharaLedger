@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lead Management - Versoll Books Documentation</title>
+    <title>Stock Movements - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
         <div class="nav-section">
             <h3>CRM & Quotations</h3>
             <ul class="nav-links">
-                <li><a href="leads.html" class="active">Lead Management</a></li>
+                <li><a href="leads.html">Lead Management</a></li>
                 <li><a href="sales-quotes.html">Sales Quotations</a></li>
             </ul>
         </div>
@@ -64,7 +64,7 @@
         <div class="nav-section">
             <h3>Advanced Inventory</h3>
             <ul class="nav-links">
-                <li><a href="stock-movements.html">Stock Movements</a></li>
+                <li><a href="stock-movements.html" class="active">Stock Movements</a></li>
                 <li><a href="shipments-receipts.html">Shipments & Receipts</a></li>
                 <li><a href="batches-serials.html">Batches & Serials</a></li>
             </ul>
@@ -130,80 +130,71 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>Lead Management & Conversion</h1>
-            <p>Leads are potential customers who have shown interest but are not ready to buy yet. Versoll Books helps you capture leads, track conversations, and convert qualified prospects into customers and quotations without losing context.</p>
+            <h1>Stock Movements</h1>
+            <p>Stock movements track every change in quantity across your warehouses. Versoll Books records transfers, adjustments, and corrections so inventory valuation and availability always stay accurate.</p>
 
             <div class="highlight-box">
                 <h3>What this guide covers</h3>
-                <p>Lead capture, qualification, follow-ups, ownership, and the handoff from lead to customer and quotation.</p>
+                <p>Movement types, warehouse transfers, stock adjustments, audit trails, and best practices for keeping quantity and value aligned.</p>
             </div>
 
-            <h2>Capturing Leads</h2>
-            <p>Create a lead record whenever someone requests information, asks for a price, or fills out a contact form.</p>
+            <h2>Understand Movement Types</h2>
+            <ul>
+                <li><strong>Transfers:</strong> Move stock from one location to another.</li>
+                <li><strong>Adjustments:</strong> Correct quantities after a count, damage, or shrinkage.</li>
+                <li><strong>Returns:</strong> Record stock coming back from customers or going back to suppliers.</li>
+                <li><strong>Production Consumption:</strong> Reduce raw materials based on manufacturing usage.</li>
+            </ul>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Create a Lead</h3>
-                <p>Navigate to <code>CRM &gt; Leads &gt; New</code> and enter the primary details.</p>
-                <ul>
-                    <li><strong>Lead Name:</strong> Person or company name.</li>
-                    <li><strong>Lead Source:</strong> Website, referral, campaign, or walk-in.</li>
-                    <li><strong>Contact Info:</strong> Email, phone number, and location.</li>
-                    <li><strong>Industry:</strong> Helps prioritize similar opportunities.</li>
-                </ul>
+                <h3>Select the Movement Type</h3>
+                <p>Go to <code>Inventory &gt; Stock Movements</code> and choose the movement type. This determines which fields you must complete (source warehouse, destination warehouse, or reason codes).</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Add Requirements</h3>
-                <p>Capture what the lead is looking for in the Notes or Requirements section. This keeps the sales conversation consistent across team members.</p>
+                <h3>Add Items and Quantities</h3>
+                <p>Search for the items being moved and enter the quantities. For adjustments, include the reason (damage, expiry, shrinkage, or count variance).</p>
             </div>
-
-            <h2>Qualification and Ownership</h2>
-            <p>Qualified leads are more likely to convert. Use the built-in status and ownership fields to keep follow-ups structured.</p>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Set Lead Status</h3>
-                <p>Choose a status such as New, Contacted, Qualified, or Lost. Update the status after every call or meeting.</p>
+                <h3>Review Value Impact</h3>
+                <p>Check the valuation preview. Transfers keep total value unchanged, while adjustments alter inventory value and post to the configured adjustment account.</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">Step 4</span>
-                <h3>Assign an Owner</h3>
-                <p>Assign the lead to a specific sales person. This ensures accountability and prevents duplicated outreach.</p>
-            </div>
+            <h2>Warehouse Transfers</h2>
+            <p>Use transfers for branch-to-branch moves or internal storage reallocation. Always record the shipment date and arrival date so availability is accurate at both locations.</p>
 
             <div class="note">
-                <p>Use reminders or calendar follow-ups for qualified leads. A lead without a next action is likely to be forgotten.</p>
+                <p>Transfers do not affect profit. They only reassign stock across locations.</p>
             </div>
 
-            <h2>Convert to Customer</h2>
-            <p>Once the lead is ready to buy, convert it into a customer and move directly to a quotation or invoice.</p>
-
-            <div class="step">
-                <span class="step-number">Step 5</span>
-                <h3>Convert to Customer</h3>
-                <p>Click <strong>Convert</strong> on the lead record. Versoll Books creates a customer with all captured contact details.</p>
-            </div>
-
-            <div class="step">
-                <span class="step-number">Step 6</span>
-                <h3>Create the First Quote</h3>
-                <p>After conversion, click <strong>Create Quotation</strong> to begin the proposal process without re-entering details.</p>
-            </div>
-
-            <h2>Lead Management Checklist</h2>
+            <h2>Stock Adjustments</h2>
+            <p>Adjustments should follow a physical count or approved variance report. Configure an inventory adjustment account for posting the difference.</p>
             <ul>
-                <li>Capture lead source and requirements.</li>
-                <li>Set a clear status after every interaction.</li>
-                <li>Assign ownership and schedule follow-ups.</li>
-                <li>Convert qualified leads to customers quickly.</li>
+                <li>Use <strong>Increase</strong> when counted stock is higher than system stock.</li>
+                <li>Use <strong>Decrease</strong> for write-offs, spoilage, or theft.</li>
+            </ul>
+
+            <h2>Audit Trail and Controls</h2>
+            <ul>
+                <li>Every movement keeps a timestamp and user signature.</li>
+                <li>Approved movements lock quantities from further edits.</li>
+                <li>Stock ledgers show running balances by item and location.</li>
+            </ul>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Schedule regular cycle counts for high-value items.</li>
+                <li>Require approval for adjustments above a threshold.</li>
+                <li>Link movements to purchase receipts or sales deliveries for clarity.</li>
             </ul>
 
             <div class="next-prev-nav">
-                <a href="payments.html" class="btn"><- Payments & Credit</a>
-                <a href="sales-quotes.html" class="btn">Sales Quotations -></a>
+                <a href="items-inventory.html" class="btn"><- Items & Services</a>
+                <a href="shipments-receipts.html" class="btn">Shipments & Receipts -></a>
             </div>
         </main>
 

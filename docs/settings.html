@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lead Management - Versoll Books Documentation</title>
+    <title>Settings & Configuration - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
         <div class="nav-section">
             <h3>CRM & Quotations</h3>
             <ul class="nav-links">
-                <li><a href="leads.html" class="active">Lead Management</a></li>
+                <li><a href="leads.html">Lead Management</a></li>
                 <li><a href="sales-quotes.html">Sales Quotations</a></li>
             </ul>
         </div>
@@ -122,7 +122,7 @@
         <div class="nav-section">
             <h3>Settings</h3>
             <ul class="nav-links">
-                <li><a href="settings.html">Configuration</a></li>
+                <li><a href="settings.html" class="active">Configuration</a></li>
             </ul>
         </div>
 
@@ -130,80 +130,89 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>Lead Management & Conversion</h1>
-            <p>Leads are potential customers who have shown interest but are not ready to buy yet. Versoll Books helps you capture leads, track conversations, and convert qualified prospects into customers and quotations without losing context.</p>
+            <h1>Settings & Configuration</h1>
+            <p>Use Settings to define company information, fiscal rules, user access, and system defaults. These configurations keep workflows consistent across your organization.</p>
 
             <div class="highlight-box">
-                <h3>What this guide covers</h3>
-                <p>Lead capture, qualification, follow-ups, ownership, and the handoff from lead to customer and quotation.</p>
+                <h3>What you will configure</h3>
+                <p>Company profile, fiscal year, tax settings, permissions, notifications, and integrations.</p>
             </div>
 
-            <h2>Capturing Leads</h2>
-            <p>Create a lead record whenever someone requests information, asks for a price, or fills out a contact form.</p>
+            <h2>Company Profile</h2>
+            <p>Set up the legal and operational details that appear on invoices and reports.</p>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Create a Lead</h3>
-                <p>Navigate to <code>CRM &gt; Leads &gt; New</code> and enter the primary details.</p>
-                <ul>
-                    <li><strong>Lead Name:</strong> Person or company name.</li>
-                    <li><strong>Lead Source:</strong> Website, referral, campaign, or walk-in.</li>
-                    <li><strong>Contact Info:</strong> Email, phone number, and location.</li>
-                    <li><strong>Industry:</strong> Helps prioritize similar opportunities.</li>
-                </ul>
+                <h3>Update Company Information</h3>
+                <p>Go to <code>Settings &gt; Company</code> and enter legal name, address, GSTIN, PAN, and contact details.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Add Requirements</h3>
-                <p>Capture what the lead is looking for in the Notes or Requirements section. This keeps the sales conversation consistent across team members.</p>
+                <h3>Define Fiscal Year</h3>
+                <p>Select the fiscal year start month and set the current financial year. This governs GST reporting and year-end closing.</p>
             </div>
 
-            <h2>Qualification and Ownership</h2>
-            <p>Qualified leads are more likely to convert. Use the built-in status and ownership fields to keep follow-ups structured.</p>
+            <h2>Users and Permissions</h2>
+            <p>Assign access based on roles such as Accountant, Sales, or Inventory Manager.</p>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Set Lead Status</h3>
-                <p>Choose a status such as New, Contacted, Qualified, or Lost. Update the status after every call or meeting.</p>
+                <h3>Create Roles</h3>
+                <p>Use the role builder to define allowed modules, reports, and approval limits.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 4</span>
-                <h3>Assign an Owner</h3>
-                <p>Assign the lead to a specific sales person. This ensures accountability and prevents duplicated outreach.</p>
+                <h3>Invite Users</h3>
+                <p>Add team members with their email IDs and assign them to roles. Each user gets a login with audit trails.</p>
             </div>
 
-            <div class="note">
-                <p>Use reminders or calendar follow-ups for qualified leads. A lead without a next action is likely to be forgotten.</p>
-            </div>
+            <h2>Tax and Compliance Defaults</h2>
+            <p>Set defaults for GST rates, TDS sections, and invoice numbering so transactions stay compliant.</p>
+            <ul>
+                <li>Configure GST registration type and default state.</li>
+                <li>Define TDS sections used most frequently.</li>
+                <li>Set invoice numbering series per document type.</li>
+            </ul>
 
-            <h2>Convert to Customer</h2>
-            <p>Once the lead is ready to buy, convert it into a customer and move directly to a quotation or invoice.</p>
+            <h2>Banking and Payment Settings</h2>
+            <ul>
+                <li>Map default bank accounts for receipts and payments.</li>
+                <li>Enable UPI and payment links on sales invoices.</li>
+                <li>Set approval thresholds for large payments.</li>
+            </ul>
+
+            <h2>Notifications and Alerts</h2>
+            <p>Manage automatic reminders and alerts for overdue invoices, low stock, and compliance deadlines.</p>
 
             <div class="step">
                 <span class="step-number">Step 5</span>
-                <h3>Convert to Customer</h3>
-                <p>Click <strong>Convert</strong> on the lead record. Versoll Books creates a customer with all captured contact details.</p>
+                <h3>Configure Notification Rules</h3>
+                <p>Select which events trigger emails or in-app alerts. Use templates to standardize the messaging.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 6</span>
-                <h3>Create the First Quote</h3>
-                <p>After conversion, click <strong>Create Quotation</strong> to begin the proposal process without re-entering details.</p>
+                <h3>Set Approval Workflows</h3>
+                <p>Define approval paths for purchases, expenses, and stock adjustments.</p>
             </div>
 
-            <h2>Lead Management Checklist</h2>
+            <h2>Integrations</h2>
+            <p>Connect external services such as payroll, CRM tools, or payment gateways for streamlined operations.</p>
             <ul>
-                <li>Capture lead source and requirements.</li>
-                <li>Set a clear status after every interaction.</li>
-                <li>Assign ownership and schedule follow-ups.</li>
-                <li>Convert qualified leads to customers quickly.</li>
+                <li>Enable API access keys and manage tokens.</li>
+                <li>Schedule data syncs with third-party apps.</li>
+                <li>Review logs for integration health.</li>
             </ul>
 
+            <div class="note">
+                <p>Review settings quarterly to keep tax rates, contact details, and approval workflows up to date.</p>
+            </div>
+
             <div class="next-prev-nav">
-                <a href="payments.html" class="btn"><- Payments & Credit</a>
-                <a href="sales-quotes.html" class="btn">Sales Quotations -></a>
+                <a href="template-builder.html" class="btn"><- Template Builder</a>
+                <a href="index.html" class="btn">Documentation Home -></a>
             </div>
         </main>
 
