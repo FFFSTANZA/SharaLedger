@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Way Bills - Versoll Books Documentation</title>
+    <title>Price Lists - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,13 +45,12 @@
             </ul>
         </div>
 
-
         <div class="nav-section">
             <h3>Pricing & Promotions</h3>
             <ul class="nav-links">
                 <li><a href="pricing-rules.html">Pricing Rules</a></li>
                 <li><a href="coupon-codes.html">Coupon Codes</a></li>
-                <li><a href="price-lists.html">Price Lists</a></li>
+                <li><a href="price-lists.html" class="active">Price Lists</a></li>
             </ul>
         </div>
 
@@ -90,7 +89,7 @@
             <ul class="nav-links">
                 <li><a href="gst-compliance.html">GST Management</a></li>
                 <li><a href="tds-handling.html">TDS Simplified</a></li>
-                <li><a href="eway-bills.html" class="active">E-Way Bills</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
             </ul>
         </div>
 
@@ -106,94 +105,69 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>E-Way Bills</h1>
-            <p>E-Way Bills are mandatory for transporting goods above specified value thresholds. Versoll Books helps you create, track, and validate E-Way Bills while keeping invoice data aligned for GST compliance.</p>
+            <h1>Price Lists</h1>
+            <p>Price lists help you maintain multiple pricing tiers without touching the item master every time. Assign default price lists to customers, territories, or sales channels to keep pricing consistent across teams.</p>
 
             <div class="highlight-box">
-                <h3>Key outcomes</h3>
-                <p>Generate accurate E-Way Bills, track validity, capture transport details, and maintain compliance for goods movement.</p>
+                <h3>Common price list types</h3>
+                <p>Retail, wholesale, distributor, online marketplace, and export pricing.</p>
             </div>
 
-            <h2>When E-Way Bills Are Required</h2>
-            <p>E-Way Bills apply to inter-state and intra-state movements over the threshold set by GST authorities.</p>
-            <ul>
-                <li><strong>Value threshold:</strong> Typically ₹50,000 per invoice.</li>
-                <li><strong>Movement types:</strong> Supply, job work, or transfer between branches.</li>
-                <li><strong>Transport modes:</strong> Road, rail, air, or ship.</li>
-            </ul>
-
-            <div class="note">
-                <p>Always verify state-specific rules for intra-state movement, as some states apply lower thresholds.</p>
-            </div>
-
-            <h2>Create an E-Way Bill</h2>
-            <p>You can generate an E-Way Bill directly from a sales invoice or create one independently if required.</p>
+            <h2>Set Up a Price List</h2>
+            <p>Create a base price list for each pricing strategy you offer.</p>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Start from a Sales Invoice</h3>
-                <p>Open the submitted sales invoice and select <code>Create &gt; E-Way Bill</code>. Versoll Books pulls:</p>
-                <ul>
-                    <li>Invoice number, date, and value</li>
-                    <li>GSTIN and address of the recipient</li>
-                    <li>Item-wise HSN details</li>
-                </ul>
+                <h3>Create the Price List</h3>
+                <p>Go to <code>Items &gt; Price Lists &gt; New</code> and enter a name such as “Wholesale FY24”.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Enter Transport Details</h3>
-                <p>Fill in the logistics section to complete compliance:</p>
-                <ul>
-                    <li><strong>Transporter Name:</strong> Logistics partner or own transport.</li>
-                    <li><strong>Vehicle Number:</strong> Required for road transport.</li>
-                    <li><strong>Distance:</strong> Used to calculate validity.</li>
-                    <li><strong>Transport Document No/Date:</strong> LR, consignment note, or challan reference.</li>
-                </ul>
+                <h3>Set Currency and Validity</h3>
+                <p>Select the currency and, if needed, define an effective date range for seasonal pricing.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Validate and Submit</h3>
-                <p>Review the generated data and submit the E-Way Bill to lock the record. The status updates to Active with a validity end date.</p>
+                <h3>Add Item Rates</h3>
+                <p>Add items to the list with their specific rates. You can import rates in bulk if you have many items.</p>
+                <ul>
+                    <li><strong>Item Code:</strong> The product or service.</li>
+                    <li><strong>Rate:</strong> The selling price for this list.</li>
+                    <li><strong>Minimum Qty:</strong> Optional quantity requirement for the rate.</li>
+                </ul>
             </div>
 
-            <div class="highlight-box">
-                <h3>Validity Calculation</h3>
-                <p>Validity = 1 day per 200 km of distance traveled. Example: 600 km gives 3 days validity.</p>
-            </div>
-
-            <h2>Track E-Way Bill Status</h2>
-            <p>Use the E-Way Bill register to monitor validity and compliance during transit.</p>
+            <h2>Assign Price Lists</h2>
+            <p>Price lists become effective when they are linked to a customer or sales channel.</p>
 
             <div class="step">
                 <span class="step-number">Step 4</span>
-                <h3>Monitor the Register</h3>
-                <p>Go to <code>Reports &gt; E-Way Bill Register</code> to review:</p>
-                <ul>
-                    <li>Status (Active, Cancelled, Expired)</li>
-                    <li>Validity end date</li>
-                    <li>Linked invoice details</li>
-                </ul>
+                <h3>Assign to Customers</h3>
+                <p>Open a customer profile and set the <strong>Default Price List</strong>. This rate will auto-fill in quotations, invoices, and POS sales.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 5</span>
-                <h3>Update Transport or Cancel</h3>
-                <p>If vehicle details change, update the E-Way Bill. For cancellations, record the cancellation reason and submit within the permitted window.</p>
+                <h3>Assign to Sales Channels</h3>
+                <p>Set a default price list for a sales channel or territory to simplify regional pricing management.</p>
             </div>
 
-            <h2>Compliance Checklist</h2>
+            <div class="note">
+                <p>Price lists and pricing rules can work together. The price list sets the base rate, while pricing rules add conditional discounts or overrides.</p>
+            </div>
+
+            <h2>Price List Governance</h2>
             <ul>
-                <li>Ensure invoice value and GSTIN match the E-Way Bill.</li>
-                <li>Validate HSN codes for all items.</li>
-                <li>Confirm transport document details for audit trail.</li>
-                <li>Monitor validity to avoid penalties during transit.</li>
+                <li>Review price lists quarterly to keep margins healthy.</li>
+                <li>Deactivate expired lists instead of deleting them to preserve historical reporting.</li>
+                <li>Use a naming convention that includes the year and audience.</li>
             </ul>
 
             <div class="next-prev-nav">
-                <a href="tds-handling.html" class="btn"><- TDS Simplified</a>
-                <a href="financial-statements.html" class="btn">Financial Statements -></a>
+                <a href="coupon-codes.html" class="btn"><- Coupon Codes</a>
+                <a href="items-inventory.html" class="btn">Items & Services -></a>
             </div>
         </main>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Way Bills - Versoll Books Documentation</title>
+    <title>Coupon Codes - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,12 +45,11 @@
             </ul>
         </div>
 
-
         <div class="nav-section">
             <h3>Pricing & Promotions</h3>
             <ul class="nav-links">
                 <li><a href="pricing-rules.html">Pricing Rules</a></li>
-                <li><a href="coupon-codes.html">Coupon Codes</a></li>
+                <li><a href="coupon-codes.html" class="active">Coupon Codes</a></li>
                 <li><a href="price-lists.html">Price Lists</a></li>
             </ul>
         </div>
@@ -90,7 +89,7 @@
             <ul class="nav-links">
                 <li><a href="gst-compliance.html">GST Management</a></li>
                 <li><a href="tds-handling.html">TDS Simplified</a></li>
-                <li><a href="eway-bills.html" class="active">E-Way Bills</a></li>
+                <li><a href="eway-bills.html">E-Way Bills</a></li>
             </ul>
         </div>
 
@@ -106,94 +105,84 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>E-Way Bills</h1>
-            <p>E-Way Bills are mandatory for transporting goods above specified value thresholds. Versoll Books helps you create, track, and validate E-Way Bills while keeping invoice data aligned for GST compliance.</p>
+            <h1>Coupon Codes & Promotions</h1>
+            <p>Coupon codes help you run targeted campaigns without rewriting your price lists. Use them for seasonal promotions, referral perks, or partner discounts while maintaining clear redemption controls.</p>
 
             <div class="highlight-box">
-                <h3>Key outcomes</h3>
-                <p>Generate accurate E-Way Bills, track validity, capture transport details, and maintain compliance for goods movement.</p>
+                <h3>Best for</h3>
+                <p>Short-term campaigns, influencer promotions, first-order discounts, and employee purchase programs.</p>
             </div>
 
-            <h2>When E-Way Bills Are Required</h2>
-            <p>E-Way Bills apply to inter-state and intra-state movements over the threshold set by GST authorities.</p>
-            <ul>
-                <li><strong>Value threshold:</strong> Typically ₹50,000 per invoice.</li>
-                <li><strong>Movement types:</strong> Supply, job work, or transfer between branches.</li>
-                <li><strong>Transport modes:</strong> Road, rail, air, or ship.</li>
-            </ul>
-
-            <div class="note">
-                <p>Always verify state-specific rules for intra-state movement, as some states apply lower thresholds.</p>
-            </div>
-
-            <h2>Create an E-Way Bill</h2>
-            <p>You can generate an E-Way Bill directly from a sales invoice or create one independently if required.</p>
+            <h2>Create a Coupon Campaign</h2>
+            <p>Each coupon code belongs to a campaign that defines the discount and the valid period.</p>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Start from a Sales Invoice</h3>
-                <p>Open the submitted sales invoice and select <code>Create &gt; E-Way Bill</code>. Versoll Books pulls:</p>
-                <ul>
-                    <li>Invoice number, date, and value</li>
-                    <li>GSTIN and address of the recipient</li>
-                    <li>Item-wise HSN details</li>
-                </ul>
+                <h3>Start a New Campaign</h3>
+                <p>Navigate to <code>Marketing &gt; Coupon Codes &gt; New</code>.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Enter Transport Details</h3>
-                <p>Fill in the logistics section to complete compliance:</p>
+                <h3>Define the Offer</h3>
+                <p>Choose the discount format and limits:</p>
                 <ul>
-                    <li><strong>Transporter Name:</strong> Logistics partner or own transport.</li>
-                    <li><strong>Vehicle Number:</strong> Required for road transport.</li>
-                    <li><strong>Distance:</strong> Used to calculate validity.</li>
-                    <li><strong>Transport Document No/Date:</strong> LR, consignment note, or challan reference.</li>
+                    <li><strong>Discount Type:</strong> Percentage, flat amount, or free item.</li>
+                    <li><strong>Maximum Discount:</strong> Cap the value for percentage-based offers.</li>
+                    <li><strong>Minimum Cart Value:</strong> Ensure healthy order sizes.</li>
                 </ul>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Validate and Submit</h3>
-                <p>Review the generated data and submit the E-Way Bill to lock the record. The status updates to Active with a validity end date.</p>
-            </div>
-
-            <div class="highlight-box">
-                <h3>Validity Calculation</h3>
-                <p>Validity = 1 day per 200 km of distance traveled. Example: 600 km gives 3 days validity.</p>
-            </div>
-
-            <h2>Track E-Way Bill Status</h2>
-            <p>Use the E-Way Bill register to monitor validity and compliance during transit.</p>
-
-            <div class="step">
-                <span class="step-number">Step 4</span>
-                <h3>Monitor the Register</h3>
-                <p>Go to <code>Reports &gt; E-Way Bill Register</code> to review:</p>
+                <h3>Set Validity and Usage</h3>
+                <p>Control how and when the coupon can be used:</p>
                 <ul>
-                    <li>Status (Active, Cancelled, Expired)</li>
-                    <li>Validity end date</li>
-                    <li>Linked invoice details</li>
+                    <li><strong>Valid From / To:</strong> Limit the campaign period.</li>
+                    <li><strong>Usage Limit:</strong> Total redemptions allowed.</li>
+                    <li><strong>Per Customer Limit:</strong> Restrict repeat usage.</li>
                 </ul>
             </div>
 
             <div class="step">
-                <span class="step-number">Step 5</span>
-                <h3>Update Transport or Cancel</h3>
-                <p>If vehicle details change, update the E-Way Bill. For cancellations, record the cancellation reason and submit within the permitted window.</p>
+                <span class="step-number">Step 4</span>
+                <h3>Generate Codes</h3>
+                <p>Create unique codes manually or auto-generate a batch (e.g., FESTIVE10, WELCOME500). Share them in marketing channels.</p>
             </div>
 
-            <h2>Compliance Checklist</h2>
+            <h2>Apply Coupons in Sales</h2>
+            <p>Coupons can be applied during quotation, invoice, or POS billing to reduce the customer’s payable amount.</p>
+
+            <div class="step">
+                <span class="step-number">Step 5</span>
+                <h3>Apply on an Invoice</h3>
+                <p>Open a draft invoice, select the coupon code in the <strong>Promotions</strong> section, and confirm the discount preview.</p>
+            </div>
+
+            <div class="note">
+                <p>If a coupon is not eligible, Versoll Books shows a validation message explaining the rule it violates.</p>
+            </div>
+
+            <h2>Monitor Performance</h2>
+            <p>Track campaign results to learn what drives repeat purchases.</p>
+
+            <div class="step">
+                <span class="step-number">Step 6</span>
+                <h3>Review Coupon Analytics</h3>
+                <p>Use <code>Reports &gt; Promotions</code> to see redemptions, revenue generated, and the average discount per order.</p>
+            </div>
+
+            <h2>Campaign Checklist</h2>
             <ul>
-                <li>Ensure invoice value and GSTIN match the E-Way Bill.</li>
-                <li>Validate HSN codes for all items.</li>
-                <li>Confirm transport document details for audit trail.</li>
-                <li>Monitor validity to avoid penalties during transit.</li>
+                <li>Define eligibility rules before launching.</li>
+                <li>Set clear start and end dates.</li>
+                <li>Communicate terms to customers and staff.</li>
+                <li>Monitor results and disable unused codes.</li>
             </ul>
 
             <div class="next-prev-nav">
-                <a href="tds-handling.html" class="btn"><- TDS Simplified</a>
-                <a href="financial-statements.html" class="btn">Financial Statements -></a>
+                <a href="pricing-rules.html" class="btn"><- Pricing Rules</a>
+                <a href="price-lists.html" class="btn">Price Lists -></a>
             </div>
         </main>
 
