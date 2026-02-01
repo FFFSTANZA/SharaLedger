@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lead Management - Versoll Books Documentation</title>
+    <title>Import Wizard - Versoll Books Documentation</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
         <div class="nav-section">
             <h3>CRM & Quotations</h3>
             <ul class="nav-links">
-                <li><a href="leads.html" class="active">Lead Management</a></li>
+                <li><a href="leads.html">Lead Management</a></li>
                 <li><a href="sales-quotes.html">Sales Quotations</a></li>
             </ul>
         </div>
@@ -114,7 +114,7 @@
         <div class="nav-section">
             <h3>Import & Templates</h3>
             <ul class="nav-links">
-                <li><a href="import-wizard.html">Import Wizard</a></li>
+                <li><a href="import-wizard.html" class="active">Import Wizard</a></li>
                 <li><a href="template-builder.html">Template Builder</a></li>
             </ul>
         </div>
@@ -130,80 +130,75 @@
 
     <div class="main-container">
         <main class="main-content">
-            <h1>Lead Management & Conversion</h1>
-            <p>Leads are potential customers who have shown interest but are not ready to buy yet. Versoll Books helps you capture leads, track conversations, and convert qualified prospects into customers and quotations without losing context.</p>
+            <h1>Import Wizard</h1>
+            <p>The Import Wizard helps you migrate data from spreadsheets into Versoll Books. Use it to load customers, suppliers, items, opening balances, and historical transactions.</p>
 
             <div class="highlight-box">
-                <h3>What this guide covers</h3>
-                <p>Lead capture, qualification, follow-ups, ownership, and the handoff from lead to customer and quotation.</p>
+                <h3>Key capabilities</h3>
+                <p>Bulk import with validation, error previews, reusable templates, and mapping hints for faster onboarding.</p>
             </div>
 
-            <h2>Capturing Leads</h2>
-            <p>Create a lead record whenever someone requests information, asks for a price, or fills out a contact form.</p>
+            <h2>Prepare Your Data</h2>
+            <p>Before importing, clean your spreadsheet to match the required format. Each row should represent a single record.</p>
+            <ul>
+                <li>Use consistent column names (e.g., Customer Name, GSTIN, Email).</li>
+                <li>Remove merged cells and summary rows.</li>
+                <li>Format dates as <code>YYYY-MM-DD</code>.</li>
+                <li>Ensure numeric fields contain numbers only.</li>
+            </ul>
 
             <div class="step">
                 <span class="step-number">Step 1</span>
-                <h3>Create a Lead</h3>
-                <p>Navigate to <code>CRM &gt; Leads &gt; New</code> and enter the primary details.</p>
-                <ul>
-                    <li><strong>Lead Name:</strong> Person or company name.</li>
-                    <li><strong>Lead Source:</strong> Website, referral, campaign, or walk-in.</li>
-                    <li><strong>Contact Info:</strong> Email, phone number, and location.</li>
-                    <li><strong>Industry:</strong> Helps prioritize similar opportunities.</li>
-                </ul>
+                <h3>Choose Import Type</h3>
+                <p>Go to <code>Settings &gt; Import Wizard</code>. Select the data type to import such as Customers, Suppliers, Items, or Opening Balances.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
-                <h3>Add Requirements</h3>
-                <p>Capture what the lead is looking for in the Notes or Requirements section. This keeps the sales conversation consistent across team members.</p>
+                <h3>Upload the File</h3>
+                <p>Select your CSV or Excel file. The wizard scans the headers and provides a preview of the first 20 rows.</p>
             </div>
-
-            <h2>Qualification and Ownership</h2>
-            <p>Qualified leads are more likely to convert. Use the built-in status and ownership fields to keep follow-ups structured.</p>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Set Lead Status</h3>
-                <p>Choose a status such as New, Contacted, Qualified, or Lost. Update the status after every call or meeting.</p>
+                <h3>Map the Columns</h3>
+                <p>Match each spreadsheet column to the required field in Versoll Books. Required fields appear with a lock icon.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 4</span>
-                <h3>Assign an Owner</h3>
-                <p>Assign the lead to a specific sales person. This ensures accountability and prevents duplicated outreach.</p>
+                <h3>Validate Data</h3>
+                <p>Run validation to catch missing mandatory fields, invalid GSTINs, or duplicate rows. Errors are highlighted for correction.</p>
             </div>
-
-            <div class="note">
-                <p>Use reminders or calendar follow-ups for qualified leads. A lead without a next action is likely to be forgotten.</p>
-            </div>
-
-            <h2>Convert to Customer</h2>
-            <p>Once the lead is ready to buy, convert it into a customer and move directly to a quotation or invoice.</p>
 
             <div class="step">
                 <span class="step-number">Step 5</span>
-                <h3>Convert to Customer</h3>
-                <p>Click <strong>Convert</strong> on the lead record. Versoll Books creates a customer with all captured contact details.</p>
+                <h3>Run the Import</h3>
+                <p>Confirm the import. Successful rows are created, while failed rows are logged with reasons so you can correct and re-upload.</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">Step 6</span>
-                <h3>Create the First Quote</h3>
-                <p>After conversion, click <strong>Create Quotation</strong> to begin the proposal process without re-entering details.</p>
-            </div>
-
-            <h2>Lead Management Checklist</h2>
+            <h2>Importing Opening Balances</h2>
+            <p>Use the opening balance template for accounts payable, accounts receivable, inventory quantities, and bank balances.</p>
             <ul>
-                <li>Capture lead source and requirements.</li>
-                <li>Set a clear status after every interaction.</li>
-                <li>Assign ownership and schedule follow-ups.</li>
-                <li>Convert qualified leads to customers quickly.</li>
+                <li>Make sure totals match your trial balance.</li>
+                <li>Import balances before entering new transactions.</li>
+                <li>Use a single cutover date for all opening entries.</li>
+            </ul>
+
+            <div class="note">
+                <p>Once imported, opening balances are locked and can only be changed through adjustment entries.</p>
+            </div>
+
+            <h2>Error Handling Tips</h2>
+            <ul>
+                <li>Use the error log export to fix issues in bulk.</li>
+                <li>Check for duplicate GSTINs or email IDs.</li>
+                <li>Ensure referenced items and accounts exist before import.</li>
             </ul>
 
             <div class="next-prev-nav">
-                <a href="payments.html" class="btn"><- Payments & Credit</a>
-                <a href="sales-quotes.html" class="btn">Sales Quotations -></a>
+                <a href="batches-serials.html" class="btn"><- Batches & Serials</a>
+                <a href="template-builder.html" class="btn">Template Builder -></a>
             </div>
         </main>
 
