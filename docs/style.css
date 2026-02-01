@@ -192,15 +192,74 @@ strong {
 }
 
 /* Components */
-.note, .info-box, .highlight-box {
+.note, .info-box, .highlight-box, .callout {
     border: 1px solid var(--border);
     padding: 1rem;
     margin: 1.5rem 0;
 }
 
-.note p, .info-box p, .highlight-box p {
+.note p, .info-box p, .highlight-box p, .callout p {
     margin: 0;
     font-size: 0.9rem;
+}
+
+.callout {
+    background-color: var(--primary-light);
+    border-left: 3px solid var(--primary);
+}
+
+.lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+/* Card Grid */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.card {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background-color: var(--bg-main);
+}
+
+.card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.card ul {
+    margin-left: 1rem;
+    margin-bottom: 0;
+}
+
+.card li {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+/* Tutorial Steps */
+.tutorial-step {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.tutorial-step h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.tutorial-step ul {
+    margin-bottom: 0;
 }
 
 .btn {
