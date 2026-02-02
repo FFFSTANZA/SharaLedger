@@ -35,7 +35,7 @@ DOCUMENTATION SECTIONS
 4. PRICING & PROMOTIONS
    - pricing-rules.html (Dynamic pricing)
    - coupon-codes.html (Promotional campaigns)
-   - price-lists.html (Multiple price tiers)
+   - price-lists.html (Multiple price lists)
 
 5. INVENTORY
    - items-inventory.html (Product and service management)
