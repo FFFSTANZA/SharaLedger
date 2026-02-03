@@ -1,0 +1,59 @@
+{
+  "name": "License",
+  "label": "License",
+  "isSingle": true,
+  "isChild": false,
+  "fields": [
+    {
+      "fieldname": "deviceId",
+      "label": "Device ID",
+      "fieldtype": "Data",
+      "readOnly": 1,
+      "section": "Device Information"
+    },
+    {
+      "fieldname": "licenseStatus",
+      "label": "License Status",
+      "fieldtype": "Data",
+      "readOnly": 1,
+      "section": "License Information"
+    },
+    {
+      "fieldname": "licenseType",
+      "label": "License Type",
+      "fieldtype": "Data",
+      "readOnly": 1,
+      "section": "License Information"
+    },
+    {
+      "fieldname": "issuedTo",
+      "label": "Issued To",
+      "fieldtype": "Data",
+      "readOnly": 1,
+      "section": "License Information"
+    },
+    {
+      "fieldname": "expiryDate",
+      "label": "Expiry Date",
+      "fieldtype": "Date",
+      "readOnly": 1,
+      "section": "License Information"
+    },
+    {
+      "fieldname": "daysLeft",
+      "label": "Days Remaining",
+      "fieldtype": "Int",
+      "readOnly": 1,
+      "section": "License Information"
+    },
+    {
+      "fieldname": "gracePeriodEnd",
+      "label": "Grace Period Ends",
+      "fieldtype": "Date",
+      "readOnly": 1,
+      "dependsOn": "licenseStatus",
+      "hidden": 1,
+      "section": "License Information"
+    }
+  ]
+}

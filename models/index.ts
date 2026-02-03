@@ -55,6 +55,7 @@ import { POSOpeningShift } from './inventory/Point of Sale/POSOpeningShift';
 import { POSClosingShift } from './inventory/Point of Sale/POSClosingShift';
 import { IntegrationErrorLog } from './baseModels/IntegrationErrorLog/IntegrationErrorLog';
 import { ItemEnquiry } from './baseModels/ItemEnquiry/ItemEnquiry';
+import { License } from './baseModels/License/License';
 
 export const models = {
   Account,
@@ -116,6 +117,8 @@ export const models = {
   POSClosingShift,
   // Error Log
   IntegrationErrorLog,
+  // License
+  License,
 } as ModelMap;
 
 export async function getRegionalModels(
