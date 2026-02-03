@@ -28,3 +28,8 @@ yarn-error.log*
 #Electron-builder output
 /dist_electron
 log_creds.txt
+
+# License files (generated)
+*.key
+license_*.key
+.userData/.last_seen

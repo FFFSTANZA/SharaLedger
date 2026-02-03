@@ -4,6 +4,7 @@ import Dashboard from 'src/pages/Dashboard/Dashboard.vue';
 import GetStarted from 'src/pages/GetStarted.vue';
 import ImportWizard from 'src/pages/ImportWizard.vue';
 import Banking from 'src/pages/Banking/Banking.vue';
+import License from 'src/pages/License/License.vue';
 import ListView from 'src/pages/ListView/ListView.vue';
 import PrintView from 'src/pages/PrintView/PrintView.vue';
 import ReportPrintView from 'src/pages/PrintView/ReportPrintView.vue';
@@ -107,6 +108,11 @@ const routes: RouteRecordRaw[] = [
     path: '/banking',
     name: 'Banking',
     component: Banking,
+  },
+  {
+    path: '/license',
+    name: 'License',
+    component: License,
   },
   {
     path: '/template-builder/:name',

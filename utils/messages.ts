@@ -42,6 +42,11 @@ export enum IPC_ACTIONS {
   DB_CALL = 'db-call',
   DB_BESPOKE = 'db-bespoke',
   DB_SCHEMA = 'db-schema',
+  // License actions
+  LICENSE_GET_DEVICE_ID = 'license-get-device-id',
+  LICENSE_VALIDATE = 'license-validate',
+  LICENSE_IMPORT = 'license-import',
+  LICENSE_DELETE = 'license-delete',
 }
 
 // ipcMain.send(...)
