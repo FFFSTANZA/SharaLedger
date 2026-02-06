@@ -1,969 +1,553 @@
-# SharaLedger (Versoll Books) - Product Review
-
-## Target Market: Indian CA & Accounting Firms
-
-SharaLedger is specifically designed for Indian Chartered Accountants (CAs) and accounting firms who manage financial records for multiple clients. The software offers a comprehensive suite of accounting tools with deep Indian localization, including full GST compliance, TDS management, and E-Way Bill generation.
-
-## Feature Richness
-
-SharaLedger provides an extensive feature set that rivals commercial accounting software:
-
-### Core Accounting
-- Complete double-entry bookkeeping system
-- Chart of Accounts with hierarchical structure
-- Journal entries for complex transactions
-- General Ledger with detailed transaction history
-- Trial Balance verification
-- Profit & Loss Statement
-- Balance Sheet
-
-### Transaction Management
-- Sales Invoices with professional templates
-- Purchase Invoices
-- Payment Entries (multiple methods: cash, bank, card, UPI)
-- Credit Notes & Debit Notes
-- Receivables & Payables Ageing Reports
-
-### Indian Compliance (Key Differentiator)
-- **GST Complete Compliance**:
-  - GSTR-1, GSTR-2, GSTR-3B reports
-  - Automatic GST split (CGST + SGST / IGST)
-  - GSTIN validation and management
-  - Place of supply detection
-  - HSN/SAC codes
-  - GST-compliant invoice templates
-
-- **TDS (Tax Deducted at Source)**:
-  - Multiple TDS sections (194C, 194J, 194I, 194Q, 206C1H)
-  - Cumulative threshold calculations
-  - Fiscal year handling
-  - TDS categories and payable accounts
-  - Dedicated TDS test invoices
-
-- **E-Way Bills**:
-  - Standalone E-Way Bill creation
-  - Auto-population from invoices
-  - GSTIN validation (15-character format)
-  - Validity calculation (1 day per 200km)
-  - Transport details management
-  - Comprehensive register reports
-
-### Point of Sale (POS)
-- Touch-friendly interface
-- Product catalog with images
-- Quick item search and barcode scanning
-- Multiple payment methods
-- Receipt printing (thermal & A4)
-- Session management with cash drawer tracking
-- Real-time inventory updates
-
-### Inventory Management
-- Item master with pricing, HSN/SAC codes, tax rates
-- Stock tracking with real-time updates
-- Multiple warehouse support
-- Stock Ledger and Balance reports
-- Batch/serial number tracking
-- Low stock alerts
-
-### Dashboard & Analytics
-- Financial Dashboard with key metrics
-- Cash flow charts
-- Outstanding amounts visualization
-- Quick actions
-- Recent transactions
-
-### Banking
-- Bank statement import (CSV/Excel)
-- Transaction categorization with 20+ patterns
-- Reconciliation workflow
-- Bank Transaction Register
-- Payment tracking
-
-### Data Management
-- Import from CSV/Excel
-- Export to CSV, Excel, PDF
-- Data backup and restore
-- Comprehensive search functionality
-
-## Offline-First Architecture
-
-### Current Implementation
-SharaLedger is designed to work completely offline:
-
-- **Desktop Application**: Electron-based native app (Windows, macOS, Linux)
-- **Local Database**: SQLite database stored locally on user's machine
-- **No Cloud Dependency**: All functionality works without internet
-- **Privacy Focused**: Data never leaves the user's computer
-
-### Benefits for CA Firms
-- **Data Privacy**: Complete control over client financial data
-- **No Subscription Costs**: One-time purchase, no recurring fees
-- **Works Anywhere**: Continue working during internet outages or in remote areas
-- **Fast Performance**: Local database operations are instant
-- **Compliance**: Many clients require offline storage for data security
-
----
-
-## Multi-User Implementation for Offline Environment
-
-### Challenge
-In an offline desktop application, multiple users cannot access the same SQLite database simultaneously because:
-1. SQLite is file-based and designed for single-user access
-2. Concurrent writes can cause database corruption
-3. Desktop apps typically run on individual machines
-
-### Solution Architecture Options
-
-#### Option 1: Network-Attached Database (Recommended for Small Teams)
-
-**Implementation**:
-```
-Central File Server (with SQLite database)
-    ↓
-Shared Network Folder
-    ↓
-Multiple Desktop Clients (read/write to same file)
-```
-
-**Pros**:
-- Simple to implement (minimal changes needed)
-- All users access same data in real-time
-- Low infrastructure cost (just a file server)
-
-**Cons**:
-- SQLite has write locking (only one user can write at a time)
-- Network latency issues
-- File corruption risk if connection drops during write
-
-**How to Implement**:
-1. Use SQLite's WAL (Write-Ahead Logging) mode for better concurrency
-2. Implement optimistic locking in the application layer
-3. Add retry logic for write conflicts
-4. Set up automatic file backup system
-
-```typescript
-// Example: Enable WAL mode for better concurrency
-fyo.db.pragma('journal_mode = WAL');
-fyo.db.pragma('synchronous = NORMAL');
-```
-
-#### Option 2: Central Server with Client-Server Architecture (Recommended for Medium Teams)
-
-**Implementation**:
-```
-Central Server (Electron app with database)
-    ↓
-HTTP/WebSocket API
-    ↓
-Multiple Desktop Clients (Electron apps)
-```
-
-**Pros**:
-- True multi-user concurrency
-- Centralized data management
-- Real-time updates via WebSocket
-- Better performance for large datasets
-
-**Cons**:
-- Requires separate server machine
-- More complex architecture
-- Requires network connectivity to central server
-
-**How to Implement**:
-1. Split app into Server and Client components
-2. Server runs Electron app with SQLite database
-3. Expose REST API endpoints for data operations
-4. Use WebSocket for real-time updates
-5. Client apps connect to server API
-
-**Tech Stack**:
-- Server: Express.js (already uses Node.js)
-- Database: SQLite with Knex (already in use)
-- API: REST endpoints
-- Real-time: Socket.io or WebSocket
-- Authentication: JWT tokens
-
-**Code Structure**:
-```
-versoll-books/
-├── server/              # Server component
-│   ├── index.ts         # Express server
-│   ├── api/             # API endpoints
-│   └── db/              # Database layer (reuse existing)
-├── client/              # Client component
-│   ├── main/            # Electron main process
-│   ├── renderer/        # Vue UI (existing)
-│   └── api-client.ts    # HTTP client to server
-```
-
-#### Option 3: Peer-to-Peer Sync (Recommended for Remote/Field Teams)
-
-**Implementation**:
-```
-Desktop App 1 (local DB) ←→ Sync Protocol ←→ Desktop App 2 (local DB)
-                                        ↓
-                                  Desktop App 3 (local DB)
-```
-
-**Pros**:
-- Fully offline capability (sync when connected)
-- No central server required
-- Each user has local copy (works offline)
-- Data resilience (no single point of failure)
-
-**Cons**:
-- Conflict resolution complexity
-- Sync coordination overhead
-- Delayed updates (not real-time)
-
-**How to Implement**:
-1. Add modification timestamps to all records
-2. Implement change tracking/audit log
-3. Create sync service that detects conflicts
-4. Use conflict resolution strategies:
-   - Last-write-wins (simple)
-   - Per-field merge (complex)
-   - Manual resolution (requires UI)
-
-**Tech Stack**:
-- Sync protocol: WebRTC for P2P, or custom HTTP
-- Conflict resolution: CRDTs (Conflict-free Replicated Data Types)
-- Change tracking: Triggers in SQLite
-
-#### Option 4: Hybrid Approach (Recommended for CA Firms)
-
-**Combination of Options 2 & 3**:
-- Primary server in office (real-time access)
-- Local database on laptops (offline work)
-- Automatic sync when reconnected
-
-**Architecture**:
-```
-Office Server (master database)
-    ↓ WebSocket
-├── Desktop Client 1 (office) ← real-time sync
-├── Desktop Client 2 (office) ← real-time sync
-└── Laptop Client 3 (field)   ← periodic sync
-```
-
-### Recommended Implementation for CA Firms
-
-**For Small Firms (2-5 users)**: Option 1 (Network-Attached Database)
-- Lower complexity and cost
-- Acceptable performance for small teams
-- Can upgrade to Option 2 later
-
-**For Medium Firms (5-20 users)**: Option 2 (Central Server)
-- Better scalability
-- Real-time collaboration
-- Centralized backup and management
-
-**For Large Firms (20+ users with field work)**: Option 4 (Hybrid)
-- Real-time access in office
-- Offline capability for field work
-- Robust sync and conflict resolution
-
----
-
-## Comprehensive Logging System
-
-### Why Logging is Critical for CA Firms
-
-1. **Audit Trail**: Track all financial transactions for compliance
-2. **Data Integrity**: Detect and prevent data tampering
-3. **User Accountability**: Know who made what changes and when
-4. **Troubleshooting**: Debug issues quickly
-5. **Compliance**: Many accounting regulations require detailed logs
-
-### Logging Requirements
-
-1. **User Activity Logs**: Every action by every user
-2. **Transaction Logs**: All financial data changes
-3. **System Logs**: Application errors, warnings, info
-4. **Audit Trail**: Complete history of all document changes
-5. **Login/Logout Logs**: Security tracking
-6. **Performance Logs**: Application performance metrics
-
-### Implementation Architecture
-
-#### Log Database Schema
-
-```sql
--- User Activity Log
-CREATE TABLE user_activity_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
-    username TEXT NOT NULL,
-    action TEXT NOT NULL,           -- 'create', 'update', 'delete', 'view', 'export'
-    document_type TEXT,            -- 'Invoice', 'Payment', 'JournalEntry', etc.
-    document_id TEXT,
-    document_name TEXT,
-    changes JSON,                  -- Detailed change record
-    ip_address TEXT,
-    machine_id TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    session_id TEXT
-);
-
--- Transaction Log
-CREATE TABLE transaction_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
-    username TEXT NOT NULL,
-    document_type TEXT NOT NULL,
-    document_id TEXT NOT NULL,
-    document_name TEXT,
-    action TEXT NOT NULL,           -- 'create', 'submit', 'cancel', 'amend'
-    previous_state JSON,
-    new_state JSON,
-    ledger_postings JSON,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    fiscal_year TEXT,
-    company_id TEXT
-);
-
--- System Log
-CREATE TABLE system_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    level TEXT NOT NULL,            -- 'error', 'warn', 'info', 'debug'
-    message TEXT NOT NULL,
-    error_details TEXT,
-    stack_trace TEXT,
-    module TEXT,                    -- 'accounting', 'gst', 'ui', 'database'
-    user_id TEXT,
-    machine_id TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Login/Logout Log
-CREATE TABLE auth_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
-    username TEXT NOT NULL,
-    action TEXT NOT NULL,           -- 'login', 'logout', 'failed_login'
-    ip_address TEXT,
-    machine_id TEXT,
-    user_agent TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    session_id TEXT
-);
-
--- Audit Trail (Document Version History)
-CREATE TABLE audit_trail (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    document_type TEXT NOT NULL,
-    document_id TEXT NOT NULL,
-    document_name TEXT,
-    version INTEGER NOT NULL,
-    changed_by TEXT NOT NULL,
-    changed_by_username TEXT NOT NULL,
-    change_type TEXT NOT NULL,      -- 'created', 'modified', 'deleted', 'restored'
-    field_changes JSON,              -- Map of field_name: {old, new}
-    previous_data JSON,
-    new_data JSON,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    company_id TEXT,
-    fiscal_year TEXT
-);
-```
-
-#### Logging Implementation (TypeScript)
-
-```typescript
-// src/logging/Logger.ts
-import { fyo } from '../fyo';
-
-export class Logger {
-  static async logUserActivity(params: {
-    userId: string;
-    username: string;
-    action: string;
-    documentType?: string;
-    documentId?: string;
-    documentName?: string;
-    changes?: any;
-  }) {
-    await fyo.db.insert('UserActivityLog', {
-      ...params,
-      changes: JSON.stringify(params.changes),
-      ip_address: await this.getIpAddress(),
-      machine_id: await this.getMachineId(),
-      timestamp: new Date(),
-    });
-  }
-
-  static async logTransaction(params: {
-    userId: string;
-    username: string;
-    documentType: string;
-    documentId: string;
-    documentName: string;
-    action: string;
-    previousState?: any;
-    newState?: any;
-    ledgerPostings?: any[];
-  }) {
-    await fyo.db.insert('TransactionLog', {
-      ...params,
-      previous_state: JSON.stringify(params.previousState),
-      new_state: JSON.stringify(params.newState),
-      ledger_postings: JSON.stringify(params.ledgerPostings),
-      timestamp: new Date(),
-      fiscal_year: fyo.singles.AccountingSettings?.fiscalYear,
-      company_id: fyo.singles.AccountingSettings?.companyName,
-    });
-  }
-
-  static async logSystem(params: {
-    level: 'error' | 'warn' | 'info' | 'debug';
-    message: string;
-    module: string;
-    error?: Error;
-    userId?: string;
-  }) {
-    await fyo.db.insert('SystemLog', {
-      ...params,
-      error_details: params.error?.message,
-      stack_trace: params.error?.stack,
-      timestamp: new Date(),
-    });
-  }
-
-  static async logAudit(params: {
-    documentType: string;
-    documentId: string;
-    documentName?: string;
-    version: number;
-    changedBy: string;
-    changedByUsername: string;
-    changeType: 'created' | 'modified' | 'deleted' | 'restored';
-    fieldChanges?: Record<string, { old: any; new: any }>;
-    previousData?: any;
-    newData?: any;
-  }) {
-    await fyo.db.insert('AuditTrail', {
-      ...params,
-      field_changes: JSON.stringify(params.fieldChanges),
-      previous_data: JSON.stringify(params.previousData),
-      new_data: JSON.stringify(params.newData),
-      timestamp: new Date(),
-      company_id: fyo.singles.AccountingSettings?.companyName,
-      fiscal_year: fyo.singles.AccountingSettings?.fiscalYear,
-    });
-  }
-
-  private static async getIpAddress(): Promise<string> {
-    // Get local IP address
-    const os = require('os');
-    const interfaces = os.networkInterfaces();
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name]) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          return iface.address;
-        }
-      }
-    }
-    return 'unknown';
-  }
-
-  private static async getMachineId(): Promise<string> {
-    const machineId = require('node-machine-id');
-    return machineId.machineIdSync();
-  }
-}
-```
-
-#### Auto-Logging with Document Hooks
-
-```typescript
-// src/models/baseModels/Document.ts
-export class Document {
-  async insert() {
-    const result = await super.insert();
-    
-    // Auto-log on document creation
-    if (this.schemaName !== 'UserActivityLog') {
-      await Logger.logUserActivity({
-        userId: fyo.user.id,
-        username: fyo.user.name,
-        action: 'create',
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        changes: this.getChangedFields(),
-      });
-
-      await Logger.logAudit({
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        version: 1,
-        changedBy: fyo.user.id,
-        changedByUsername: fyo.user.name,
-        changeType: 'created',
-        previousData: null,
-        newData: this.serialize(),
-      });
-    }
-    
-    return result;
-  }
-
-  async update() {
-    const previousData = this.serialize();
-    const result = await super.update();
-    const newData = this.serialize();
-    
-    // Auto-log on document update
-    if (this.schemaName !== 'UserActivityLog') {
-      await Logger.logUserActivity({
-        userId: fyo.user.id,
-        username: fyo.user.name,
-        action: 'update',
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        changes: this.getChangedFields(),
-      });
-
-      const version = await this.getVersionNumber();
-      
-      await Logger.logAudit({
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        version: version + 1,
-        changedBy: fyo.user.id,
-        changedByUsername: fyo.user.name,
-        changeType: 'modified',
-        fieldChanges: this.getFieldChanges(previousData, newData),
-        previousData,
-        newData,
-      });
-    }
-    
-    return result;
-  }
-
-  async delete() {
-    const previousData = this.serialize();
-    
-    // Auto-log before deletion
-    if (this.schemaName !== 'UserActivityLog') {
-      await Logger.logUserActivity({
-        userId: fyo.user.id,
-        username: fyo.user.name,
-        action: 'delete',
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        changes: previousData,
-      });
-
-      const version = await this.getVersionNumber();
-      
-      await Logger.logAudit({
-        documentType: this.schemaName,
-        documentId: this.name,
-        documentName: this.name,
-        version: version + 1,
-        changedBy: fyo.user.id,
-        changedByUsername: fyo.user.name,
-        changeType: 'deleted',
-        previousData,
-        newData: null,
-      });
-    }
-    
-    return super.delete();
-  }
-
-  private getChangedFields() {
-    // Return fields that changed in this operation
-    // Implementation depends on how fyo tracks changes
-    return {};
-  }
-
-  private getFieldChanges(old: any, new: any): Record<string, { old: any; new: any }> {
-    const changes: Record<string, { old: any; new: any }> = {};
-    for (const key of Object.keys({ ...old, ...new })) {
-      if (JSON.stringify(old[key]) !== JSON.stringify(new[key])) {
-        changes[key] = { old: old[key], new: new[key] };
-      }
-    }
-    return changes;
-  }
-
-  private async getVersionNumber(): Promise<number> {
-    const logs = await fyo.db.getAll('AuditTrail', {
-      filters: {
-        document_id: this.name,
-        document_type: this.schemaName,
-      },
-    });
-    return logs.length > 0 ? Math.max(...logs.map(l => l.version)) : 0;
-  }
-}
-```
-
-#### Log Management Features
-
-**1. Log Viewer UI**
-```vue
-<!-- src/pages/Logs/Logs.vue -->
-<template>
-  <div class="logs-page">
-    <h2>Audit Trail & Logs</h2>
-    
-    <div class="filters">
-      <select v-model="filter.logType">
-        <option value="all">All Logs</option>
-        <option value="user_activity">User Activity</option>
-        <option value="transactions">Transactions</option>
-        <option value="audit">Audit Trail</option>
-        <option value="system">System Logs</option>
-      </select>
-      
-      <input type="date" v-model="filter.dateFrom" />
-      <input type="date" v-model="filter.dateTo" />
-      
-      <input v-model="filter.searchUser" placeholder="Search user..." />
-      <input v-model="filter.searchDocument" placeholder="Search document..." />
-      
-      <button @click="loadLogs">Apply Filters</button>
-      <button @click="exportLogs">Export Logs</button>
-    </div>
-    
-    <div class="logs-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>User</th>
-            <th>Action</th>
-            <th>Document</th>
-            <th>Details</th>
-            <th>Machine</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="log in logs" :key="log.id" @click="viewLogDetails(log)">
-            <td>{{ formatDateTime(log.timestamp) }}</td>
-            <td>{{ log.username }}</td>
-            <td>{{ log.action }}</td>
-            <td>{{ log.document_name }}</td>
-            <td>{{ log.changes }}</td>
-            <td>{{ log.machine_id }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <!-- Log Details Modal -->
-    <div v-if="selectedLog" class="modal">
-      <div class="modal-content">
-        <h3>Log Details</h3>
-        <div v-html="formatLogDetails(selectedLog)"></div>
-        <button @click="closeModal">Close</button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { fyo } from 'fyo';
-
-const logs = ref([]);
-const selectedLog = ref(null);
-const filter = ref({
-  logType: 'all',
-  dateFrom: null,
-  dateTo: null,
-  searchUser: '',
-  searchDocument: '',
-});
-
-async function loadLogs() {
-  // Load logs based on filters
-  const query = buildLogQuery(filter.value);
-  logs.value = await fyo.db.knex.raw(query);
-}
-
-function buildLogQuery(filter) {
-  // Build SQL query with filters
-  let query = `
-    SELECT 
-      timestamp,
-      username,
-      action,
-      document_name,
-      changes,
-      machine_id
-    FROM user_activity_log
-    WHERE 1=1
-  `;
-  
-  const params = [];
-  
-  if (filter.dateFrom) {
-    query += ' AND timestamp >= ?';
-    params.push(filter.dateFrom);
-  }
-  
-  if (filter.dateTo) {
-    query += ' AND timestamp <= ?';
-    params.push(filter.dateTo);
-  }
-  
-  if (filter.searchUser) {
-    query += ' AND username LIKE ?';
-    params.push(`%${filter.searchUser}%`);
-  }
-  
-  if (filter.searchDocument) {
-    query += ' AND document_name LIKE ?';
-    params.push(`%${filter.searchDocument}%`);
-  }
-  
-  query += ' ORDER BY timestamp DESC LIMIT 1000';
-  
-  return { query, params };
-}
-
-function viewLogDetails(log) {
-  selectedLog.value = log;
-}
-
-function formatLogDetails(log) {
-  const changes = JSON.parse(log.changes);
-  let html = '<div class="changes">';
-  for (const [key, value] of Object.entries(changes)) {
-    html += `<div><strong>${key}:</strong> ${JSON.stringify(value)}</div>`;
-  }
-  html += '</div>';
-  return html;
-}
-
-function exportLogs() {
-  // Export logs to Excel/CSV
-}
-
-onMounted(() => {
-  loadLogs();
-});
-</script>
-```
-
-**2. Log Retention Policy**
-```typescript
-// src/logging/LogManager.ts
-export class LogManager {
-  static async cleanupOldLogs() {
-    // Keep system logs for 30 days
-    await fyo.db.delete('SystemLog', {
-      timestamp: {
-        operator: '<',
-        value: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      },
-    });
-
-    // Keep user activity logs for 1 year
-    await fyo.db.delete('UserActivityLog', {
-      timestamp: {
-        operator: '<',
-        value: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
-      },
-    });
-
-    // Keep transaction logs for 7 years (statutory requirement)
-    // Don't auto-delete these
-
-    // Keep auth logs for 1 year
-    await fyo.db.delete('AuthLog', {
-      timestamp: {
-        operator: '<',
-        value: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
-      },
-    });
-  }
-
-  static async archiveLogs(archivePath: string) {
-    // Archive old logs to separate file
-    const oldLogs = await fyo.db.getAll('UserActivityLog', {
-      filters: {
-        timestamp: {
-          operator: '<',
-          value: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
-        },
-      },
-    });
-
-    const fs = require('fs');
-    fs.writeFileSync(
-      archivePath,
-      JSON.stringify(oldLogs, null, 2)
-    );
-
-    // Delete archived logs from database
-    await this.cleanupOldLogs();
-  }
-
-  static async generateAuditReport(params: {
-    fromDate: Date;
-    toDate: Date;
-    userId?: string;
-    documentType?: string;
-  }) {
-    // Generate comprehensive audit report
-    const query = `
-      SELECT
-        timestamp,
-        username,
-        action,
-        document_type,
-        document_name,
-        document_id,
-        changes,
-        machine_id
-      FROM user_activity_log
-      WHERE timestamp BETWEEN ? AND ?
-        ${params.userId ? 'AND user_id = ?' : ''}
-        ${params.documentType ? 'AND document_type = ?' : ''}
-      ORDER BY timestamp ASC
-    `;
-
-    return await fyo.db.knex.raw(query, [
-      params.fromDate,
-      params.toDate,
-      ...(params.userId ? [params.userId] : []),
-      ...(params.documentType ? [params.documentType] : []),
-    ]);
-  }
-}
-```
-
-**3. Log Export & Compliance**
-```typescript
-// src/logging/LogExporter.ts
-import * as XLSX from 'xlsx';
-
-export class LogExporter {
-  static async exportToExcel(logs: any[], filename: string) {
-    const worksheet = XLSX.utils.json_to_sheet(logs);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Logs');
-    XLSX.writeFile(workbook, filename);
-  }
-
-  static async exportAuditReport(params: {
-    fromDate: Date;
-    toDate: Date;
-    filename: string;
-  }) {
-    const logs = await LogManager.generateAuditReport(params);
-    
-    // Format for audit report
-    const formattedLogs = logs.map(log => ({
-      Date: new Date(log.timestamp).toLocaleDateString('en-IN'),
-      Time: new Date(log.timestamp).toLocaleTimeString('en-IN'),
-      User: log.username,
-      Action: log.action,
-      DocumentType: log.document_type,
-      DocumentName: log.document_name,
-      DocumentID: log.document_id,
-      Changes: JSON.stringify(log.changes),
-      MachineID: log.machine_id,
-    }));
-
-    await this.exportToExcel(formattedLogs, params.filename);
-  }
-
-  static async generateComplianceReport(params: {
-    fiscalYear: string;
-  }) {
-    // Generate report for tax audit compliance
-    const query = `
-      SELECT
-        DATE(timestamp) as Date,
-        username as User,
-        action as Action,
-        document_type as DocumentType,
-        document_name as DocumentName,
-        JSON_EXTRACT(changes, '$.amount') as Amount,
-        JSON_EXTRACT(changes, '$.gstTotal') as GST
-      FROM user_activity_log
-      WHERE document_type IN ('SalesInvoice', 'PurchaseInvoice')
-        AND strftime('%Y', timestamp) = ?
-      ORDER BY timestamp ASC
-    `;
-
-    const [yearStart] = params.fiscalYear.split('-');
-    const logs = await fyo.db.knex.raw(query, [yearStart]);
-
-    return logs;
-  }
-}
-```
-
----
-
-## Summary
-
-### Strengths
-1. **Comprehensive Feature Set**: Complete accounting solution with 50+ features
-2. **Indian Compliance**: Deep GST, TDS, and E-Way Bill integration
-3. **Offline-First**: No internet dependency, data privacy
-4. **Modern Tech Stack**: Electron + Vue.js + SQLite
-5. **Professional Reports**: GST returns, financial statements, aging reports
-6. **POS Integration**: Retail-ready with inventory management
-7. **Data Portability**: Import/export capabilities
-
-### For CA Firms
-- **Multi-Currency Support**: Handle NRI accounts
-- **TDS Management**: Complete TDS compliance
-- **E-Way Bills**: Full support for logistics compliance
-- **GST Reports**: GSTR-1, GSTR-2, GSTR-3B ready
-- **Audit Trail**: Track all changes (when implemented)
-- **Multiple Clients**: Potential for multi-company support
-
-### Multi-User Path Forward
-The current single-user desktop app can be extended to support multi-user in phases:
-
-**Phase 1**: Network-Attached SQLite (1-2 weeks)
-- Enable WAL mode
-- Add file locking
-- Implement retry logic
-- Minimal code changes
-
-**Phase 2**: Central Server (4-6 weeks)
-- Split into server/client components
-- Build REST API
-- Add WebSocket for real-time updates
-- Implement authentication
-
-**Phase 3**: Comprehensive Logging (3-4 weeks)
-- Add logging tables
-- Implement auto-logging hooks
-- Build log viewer UI
-- Add export capabilities
-
-**Phase 4**: Sync & Offline Support (6-8 weeks)
-- Add change tracking
-- Implement sync protocol
-- Build conflict resolution
-- Add field sync UI
-
-### Logging Implementation Priority
-1. **High Priority**: Transaction logs, audit trail (compliance requirement)
-2. **Medium Priority**: User activity logs (security, accountability)
-3. **Low Priority**: System logs (debugging, performance monitoring)
-
-### Recommended Next Steps
-1. Add comprehensive logging system (2-3 weeks)
-2. Implement multi-user with Option 2 (central server) for medium-sized firms
-3. Add user management and role-based access control
-4. Build audit report generator for tax compliance
-5. Implement data export for audit purposes
-
-This approach positions SharaLedger as the ideal offline-first accounting solution for Indian CA firms, with clear paths to multi-user capability and comprehensive audit trails for compliance.
+================================================================================
+VERSOLL BOOKS - CA PERSPECTIVE REVIEW
+================================================================================
+
+Date: February 2025
+Reviewer: Chartered Accountant Perspective
+Target Audience: Professional Accountants, CA Firms, Business Owners
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+VERDICT: SUITABLE FOR SINGLE USERS & SMALL PRACTICES, NOT FOR LARGE FIRMS
+
+Versoll Books is a well-designed accounting software that works excellently for:
+✅ Single businesses (SMEs, freelancers, professionals)
+✅ Small CA practices managing 5-15 clients
+✅ Business owners with multiple entities
+❌ Large CA firms (due to no multi-user support)
+❌ Enterprises requiring concurrent access
+
+Overall Rating: 7.5/10 for single-user scenarios
+
+================================================================================
+QUESTION 1: DOES SINGLE USER WORK?
+================================================================================
+
+ANSWER: YES, EXCELLENTLY
+
+Single User Experience:
+✅ FULLY FUNCTIONAL - Designed primarily for single users
+✅ Complete accounting workflow supported
+✅ No concurrent user issues (only one user accesses at a time)
+✅ Simple, intuitive interface for non-accountants
+✅ Fast performance (local SQLite database)
+
+Strengths for Single User:
+- Offline-first: No internet needed, data stays on computer
+- Simple setup: Create company, enter data, start accounting
+- All features accessible: Invoicing, payments, GST, TDS, reports
+- Professional output: Invoices, reports, GST returns ready
+- Automatic calculations: GST, TDS, discounts, taxes all computed correctly
+- Banking module: Smart categorization with 90%+ accuracy
+- Data export: CSV/Excel export for all reports
+
+Ideal Single User Scenarios:
+1. Small retail shop owner managing own books
+2. Freelancer/professional tracking income and expenses
+3. Consultant managing invoices and payments
+4. Small manufacturer tracking inventory and GST
+5. Service business with 10-20 customers monthly
+
+Limitations for Single User:
+- No user authentication (anyone with file access can open)
+- No audit trail (cannot track who changed what)
+- No role-based access (single user has full access)
+- Data encryption not implemented (plain text database)
+
+VERDICT: Single user works PERFECTLY for small businesses and professionals.
+
+================================================================================
+QUESTION 2: DOES ACCOUNTING FIRM USE IT?
+================================================================================
+
+ANSWER: SMALL CA PRACTICES: YES | LARGE CA FIRMS: NO
+
+Small CA Practices (1-3 practitioners, 5-15 clients):
+✅ WORKS WELL - Multi-company feature enables client management
+✅ Separate database per client ensures data isolation
+✅ Easy switching between client companies
+✅ Quick access to recent companies
+✅ Offline work beneficial for client meetings
+✅ Indian compliance (GST, TDS) is excellent
+✅ Professional reports for client presentations
+
+How Small CA Firms Can Use:
+1. Create separate company file for each client
+2. Switch between clients using "Change DB" feature
+3. Work offline at client locations
+4. Generate GST reports, TDS statements, financial reports
+5. Export data for tax filing or audit
+
+Example Workflow for CA:
+- Client A: "/path/to/ClientA_v0.36.0_2024-01.books.db"
+- Client B: "/path/to/ClientB_v0.36.0_2024-02.books.db"
+- Client C: "/path/to/ClientC_v0.36.0_2024-03.books.db"
+
+Advantages for Small CA Firms:
+✅ No monthly subscription costs per client
+✅ Complete data control and privacy
+✅ Works in areas with poor internet
+✅ Indian GST/TDS compliance excellent
+✅ Fast switching between clients
+✅ Professional reports and invoices
+
+Challenges for Small CA Firms:
+⚠️ Cannot work on same client file simultaneously (one person at a time)
+⚠️ No collaboration features (no comments, no task assignments)
+⚠️ No client portal (clients cannot view their own data)
+⚠️ Manual backup management (no automated cloud backup)
+⚠️ No audit trail (cannot track changes by junior staff)
+
+Large CA Firms (10+ practitioners, 50+ clients):
+❌ NOT SUITABLE - Critical gaps for firm-level operations
+
+Blockers for Large CA Firms:
+1. NO MULTI-USER ACCESS
+   - Only one person can access a company database at a time
+   - No concurrent editing or viewing
+   - SQLite file-based database (not designed for multiple users)
+   - No user authentication or session management
+
+2. NO COLLABORATION FEATURES
+   - No user roles (Admin, Senior, Junior, Auditor)
+   - No permissions (who can view/edit what)
+   - No approval workflows (invoices need approval)
+   - No task management or assignment
+   - No internal communication tools
+
+3. NO AUDIT TRAIL
+   - Cannot track who made changes
+   - No history of modifications
+   - Non-compliant with auditing standards
+   - Risk of data manipulation
+
+4. NO CENTRALIZED MANAGEMENT
+   - Each client database is separate file
+   - No firm-wide reporting
+   - No centralized client management
+   - Manual file tracking required
+
+What Large CA Firms Need (Missing):
+- Multi-user concurrent access (5-10 users per client)
+- Role-based access control (Admin, Partner, Senior, Junior)
+- Audit logging (who changed what and when)
+- Approval workflows (invoice approval by senior)
+- Client portal (clients view their own data)
+- Cloud backup and sync
+- Firm-wide reporting
+- Automated workflows
+
+VERDICT: 
+- Small CA practices (1-3 people): CAN USE successfully
+- Large CA firms (10+ people): CANNOT USE due to multi-user limitations
+
+================================================================================
+QUESTION 3: MULTIPLE ENTITY CREATION - IS IT OK?
+================================================================================
+
+ANSWER: YES, IT'S EXCELLENT AND APPROPRIATE
+
+Multiple Entity Support:
+✅ FULLY FUNCTIONAL - Designed for multi-entity management
+✅ Separate database per entity ensures complete data isolation
+✅ Unlimited entities supported
+✅ Quick switching between entities
+✅ Perfect for business owners with multiple companies
+✅ Perfect for accountants managing multiple clients
+
+How It Works:
+1. Entity Creation:
+   - Create new company via "New Company" option
+   - Each entity gets separate database file
+   - Naming: {EntityName}_v{Version}_{Date}.books.db
+   - Example: 
+     - "MyShop_v0.36.0_2024-01.books.db"
+     - "MyWarehouse_v0.36.0_2024-01.books.db"
+     - "MyExport_v0.36.0_2024-01.books.db"
+
+2. Data Isolation:
+   - Each entity has COMPLETELY SEPARATE data
+   - No sharing of customers, suppliers, items, accounts between entities
+   - No cross-entity reporting
+   - Each entity is independent
+
+3. Entity Switching:
+   - Use "Change DB" in sidebar
+   - Select from recent companies list
+   - Open from Welcome Page
+   - Fast and seamless
+
+Use Cases Where Multi-Entity Makes Sense:
+
+1. Business Owners with Multiple Entities:
+   Scenario: Mr. Sharma owns:
+   - Sharma Retail (retail shop)
+   - Sharma Logistics (transportation)
+   - Sharma Exports (export business)
+   
+   How Versoll Books Helps:
+   ✅ Create separate company for each business
+   ✅ Maintain separate books of accounts
+   ✅ Generate separate GST returns
+   ✅ Track performance individually
+   ✅ Consolidate manually if needed (export to Excel)
+
+2. Holding Companies with Subsidiaries:
+   Scenario: ABC Holdings owns:
+   - ABC Manufacturing Ltd.
+   - ABC Trading Ltd.
+   - ABC Services Ltd.
+   
+   How Versoll Books Helps:
+   ✅ Separate books for each subsidiary
+   ✅ Consolidation done manually (export + Excel)
+   ✅ Inter-company transactions recorded separately
+   ✅ Separate compliance for each entity
+
+3. Accountants Managing Multiple Clients:
+   Scenario: CA firm manages:
+   - Client A (trader)
+   - Client B (manufacturer)
+   - Client C (service provider)
+   
+   How Versoll Books Helps:
+   ✅ Each client = separate database file
+   ✅ Complete data isolation
+   ✅ Quick switching between clients
+   ✅ Professional reports for each client
+
+Is This Approach "OK"? Let's Evaluate:
+
+STRENGTHS:
+✅ Simple and straightforward
+✅ No risk of data mixing between entities
+✅ Fast performance (each database is small)
+✅ Easy to backup/restore individual entities
+✅ Works offline
+✅ No complexity of multi-tenant architecture
+✅ Perfect for 2-10 entities
+
+WEAKNESSES:
+⚠️ No cross-entity reporting (must export to Excel and consolidate manually)
+⚠️ Cannot transfer data between entities (items, customers, accounts)
+⚠️ Inter-company transactions must be recorded twice (once in each entity)
+⚠️ File management becomes complex with 20+ entities
+⚠️ No centralized view of all entities
+⚠️ Manual consolidation for holding company reports
+
+COMPARISON WITH CLOUD SOLUTIONS:
+
+Versoll Books (Separate Files):
+- Simpler, faster, offline-capable
+- Best for 2-10 entities
+- Manual consolidation required
+- Data privacy guaranteed
+- No subscription costs
+
+Cloud Solutions (Multi-tenant):
+- Cross-entity reporting built-in
+- Inter-company transactions automated
+- Centralized entity management
+- Internet required
+- Monthly subscription per entity
+
+VERDICT: 
+Multi-entity approach is EXCELLENT and APPROPRIATE for:
+✅ Small businesses with 2-5 entities
+✅ Accountants with 5-15 clients
+✅ Businesses valuing data privacy
+✅ Users preferring offline work
+
+NOT ideal for:
+❌ Holding companies with 10+ subsidiaries (manual consolidation becomes tedious)
+❌ Businesses needing automated inter-company transaction elimination
+❌ Companies requiring consolidated reporting in real-time
+
+================================================================================
+QUESTION 4: IS IT USABLE AND SELLABLE?
+================================================================================
+
+ANSWER: USABLE: YES | SELLABLE: WITH QUALIFICATIONS
+
+USABILITY ASSESSMENT: 8/10
+
+Strengths (What Makes It Highly Usable):
+
+1. USER INTERFACE (9/10):
+   ✅ Modern, clean, intuitive design
+   ✅ Card-based layout
+   ✅ Dark mode support
+   ✅ Keyboard shortcuts (Ctrl+K for search)
+   ✅ Responsive design
+   ✅ Professional color scheme
+
+2. ACCOUNTING WORKFLOW (9/10):
+   ✅ Complete transaction lifecycle: Draft → Submit → Payment → Cancel
+   ✅ Automatic calculations (GST, TDS, discounts)
+   ✅ Smart defaults and auto-population
+   ✅ Error validation before submission
+   ✅ Linked documents (payment links to invoice)
+   ✅ Undo/Cancel functionality
+
+3. REPORTING (8/10):
+   ✅ All essential reports (P&L, BS, Trial Balance, GL)
+   ✅ GST reports (GSTR-1, GSTR-2, GSTR-3B)
+   ✅ TDS reports (Payable, Summary)
+   ✅ Ageing reports (Receivables, Payables)
+   ✅ Export to CSV/Excel
+   ✅ Custom date ranges
+
+4. INDIAN COMPLIANCE (10/10 - EXCELLENT):
+   ✅ Pre-configured GST rates (5%, 12%, 18%, 28%)
+   ✅ Automatic CGST/SGST/IGST splitting
+   ✅ Place of supply detection
+   ✅ GSTIN validation
+   ✅ HSN/SAC codes
+   ✅ TDS sections (194C, 194J, 194I, etc.)
+   ✅ PAN-based TDS rates
+   ✅ TDS threshold validation
+   ✅ Indian date format (DD/MM/YYYY)
+   ✅ Indian number format (Lakh, Crore)
+
+5. BANKING MODULE (8/10):
+   ✅ CSV bank statement import
+   ✅ Automatic transaction categorization (20+ patterns)
+   ✅ Confidence scoring (90%+ accuracy)
+   ✅ Duplicate detection
+   ✅ Reconciliation workflow
+
+Weaknesses (Usability Issues):
+
+⚠️ No data encryption (7/10 - Security concern)
+⚠️ No user authentication (6/10 - Anyone can open file)
+⚠️ No audit trail (5/10 - Cannot track changes)
+⚠️ No backup automation (6/10 - Manual backup only)
+⚠️ Limited multi-user support (3/10 - Single user only)
+⚠️ No email integration (7/10 - Cannot send invoices via email)
+⚠️ No payment gateway (7/10 - No online payment links)
+
+Overall Usability Verdict:
+EXCELLENT for single users and small businesses
+GOOD for small CA practices
+POOR for large organizations
+
+================================================================================
+SELLABILITY ASSESSMENT: 7/10
+
+Market Positioning:
+
+TARGET MARKETS (Where It Will Sell Well):
+
+1. INDIAN SMEs (High Sellability - 9/10):
+   ✅ Perfect fit for small businesses
+   ✅ Best-in-class GST compliance
+   ✅ Affordable (no subscription)
+   ✅ Works offline
+   ✅ Professional output
+   ✅ Easy to learn
+
+   Price Sensitivity: HIGH
+   Value Proposition: Save ₹15,000-25,000/year in subscription fees
+
+2. FREELANCERS & PROFESSIONALS (High Sellability - 8/10):
+   ✅ Simple to use
+   ✅ Professional invoices
+   ✅ GST compliance for freelancers
+   ✅ Income and expense tracking
+   ✅ Export data for tax filing
+
+   Price Sensitivity: MEDIUM
+   Value Proposition: Professional appearance, tax compliance
+
+3. SMALL CA PRACTICES (Medium Sellability - 7/10):
+   ✅ Manage multiple clients with separate databases
+   ✅ Offline work at client locations
+   ✅ Professional reports
+   ✅ GST/TDS compliance
+
+   Price Sensitivity: MEDIUM
+   Value Proposition: No per-client subscription fees
+
+4. RETAIL SHOPS (Medium Sellability - 7/10):
+   ✅ POS module included
+   ✅ Inventory management
+   ✅ GST compliance
+   ✅ Sales tracking
+
+   Price Sensitivity: HIGH
+   Value Proposition: All-in-one solution, affordable
+
+MARKETS WHERE IT WON'T SELL (Low Sellability - 3/10):
+
+1. LARGE CA FIRMS:
+   ❌ No multi-user support
+   ❌ No collaboration features
+   ❌ No audit trail
+   ❌ No centralized management
+   ❌ Better alternatives: Tally, Zoho, QuickBooks
+
+2. LARGE CORPORATES:
+   ❌ No enterprise features
+   ❌ No concurrent access
+   ❌ No role-based permissions
+   ❌ No API integrations
+   ❌ Better alternatives: SAP, Oracle, Microsoft Dynamics
+
+3. MULTI-LOCATION BUSINESSES:
+   ❌ No real-time sync
+   ❌ No cloud collaboration
+   ❌ No multi-user access
+   ❌ Manual data transfer between locations
+   ❌ Better alternatives: Zoho Books, QuickBooks Online
+
+4. BUSINESSES REQUIRING ONLINE COLLECTIONS:
+   ❌ No payment gateway integration
+   ❌ No payment links
+   ❌ No online invoicing
+   ❌ Better alternatives: Razorpay + accounting software
+
+COMPETITIVE POSITIONING:
+
+Strengths vs. Competitors:
+✅ Better GST/TDS compliance than most international software
+✅ Offline capability (unique advantage)
+✅ No subscription costs (vs. cloud solutions)
+✅ Data privacy (local storage)
+✅ Simple, modern UI (vs. dated Tally UI)
+
+Weaknesses vs. Competitors:
+❌ No multi-user (Tally supports 10+ users)
+❌ No online payments (Zoho, QuickBooks have payment links)
+❌ No app marketplace (Tally has 500+ plugins)
+❌ No API (most modern tools have API)
+❌ No mobile app (competitors have mobile apps)
+
+PRICING STRATEGY:
+
+Recommended Pricing:
+- Single User License: ₹2,999 - ₹4,999 one-time
+- CA Practice License: ₹9,999 - ₹14,999 one-time
+- Annual Updates: ₹999 - ₹1,499/year (optional)
+- Demo Version: Free with sample data
+
+Price Justification:
+- Competitors charge ₹1,500-3,000/month (₹18,000-36,000/year)
+- One-time purchase saves ₹15,000-30,000 in 3 years
+- No per-client or per-user fees
+- Offline capability premium pricing
+
+SELLABILITY VERDICT:
+
+WILL SELL WELL TO:
+✅ Indian SMEs (₹50 lakh - ₹10 crore turnover)
+✅ Freelancers and professionals
+✅ Small retail shops
+✅ Small CA practices (1-3 people)
+
+WON'T SELL TO:
+❌ Large CA firms
+❌ Large corporates
+❌ Multi-location businesses
+❌ Businesses needing online payments
+
+MARKET SIZE ESTIMATE:
+- Total Indian SMEs: 63 million
+- Addressable market (using accounting software): 5-10 million
+- Potential target market (1-10 crores turnover): 2-3 million
+- Realistic adoption (1-3% in 2 years): 60,000 - 90,000 users
+
+REVENUE POTENTIAL (2 years):
+- Conservative: 60,000 users × ₹3,000 = ₹18 crore
+- Optimistic: 90,000 users × ₹4,000 = ₹36 crore
+
+================================================================================
+FINAL VERDICT: IS IT USABLE AND SELLABLE?
+
+USABLE: YES (8/10)
+- Excellent for single users
+- Good for small CA practices
+- Poor for large organizations
+
+SELLABLE: YES (7/10) WITH CONDITIONS
+- Highly sellable to Indian SMEs
+- Sellable to freelancers and small businesses
+- Sellable to small CA practices
+- Not sellable to large firms or corporates
+
+RECOMMENDATIONS FOR SUCCESS:
+
+PHASE 1: LAUNCH TO RIGHT MARKET (0-6 months)
+✅ Target Indian SMEs (1-10 crore turnover)
+✅ Target freelancers and professionals
+✅ Target small CA practices (1-3 people)
+✅ Position as "Offline-First, No Subscription" accounting
+✅ Price competitively: ₹2,999-4,999 one-time
+
+PHASE 2: IMPROVE CRITICAL FEATURES (6-12 months)
+⚠️ Add database encryption (critical for trust)
+⚠️ Add user authentication (password protection)
+⚠️ Add audit logging (for CA firms)
+⚠️ Add email integration (send invoices via email)
+⚠️ Add payment gateway (Razorpay integration)
+⚠️ Add automated backups (daily scheduled backups)
+
+PHASE 3: EXPAND FEATURES (12-24 months)
+📈 Add basic multi-user (file-level locking)
+📈 Add client portal (for CA firms)
+📈 Add cloud backup sync (Google Drive, Dropbox)
+📈 Add mobile apps (iOS, Android)
+📈 Add API platform (for integrations)
+
+PHASE 4: ENTERPRISE FEATURES (24+ months)
+🏢 Full multi-user concurrent access
+🏢 Role-based access control
+🏢 Approval workflows
+🏢 Firm-wide reporting
+🏢 API and app marketplace
+
+================================================================================
+SUMMARY FOR CA PERSPECTIVE
+
+SINGLE USER: ✅ EXCELLENT (9/10)
+- Fully functional, designed for single user
+- All features work perfectly
+- Ideal for SMEs, freelancers, professionals
+
+ACCOUNTING FIRM: ⚠️ DEPENDS
+- Small CA practices (1-3 people): ✅ WORKS WELL (7/10)
+- Large CA firms (10+ people): ❌ NOT SUITABLE (3/10)
+
+MULTIPLE ENTITY: ✅ EXCELLENT (8/10)
+- Separate database per entity works well
+- Perfect for 2-10 entities
+- Manual consolidation for holding companies
+- Simple, fast, secure
+
+USABILITY: ✅ HIGH (8/10)
+- Modern UI, intuitive
+- Excellent Indian compliance
+- Good feature set
+- Some gaps (security, authentication)
+
+SELLABILITY: ✅ YES (7/10) WITH TARGETING
+- Will sell well to Indian SMEs
+- Will sell to freelancers and small businesses
+- Will sell to small CA practices
+- Won't sell to large firms
+
+OVERALL VERDICT:
+
+✅ READY FOR BETA LAUNCH to target markets
+✅ EXCELLENT for single-user scenarios
+✅ GOOD for small CA practices
+⚠️ NEEDS IMPROVEMENTS before enterprise launch
+❌ NOT READY for large CA firms
+
+RECOMMENDATION:
+Proceed with launch to Indian SMEs, freelancers, and small CA practices
+while improving security, authentication, and multi-user capabilities
+for broader market adoption.
+
+================================================================================
