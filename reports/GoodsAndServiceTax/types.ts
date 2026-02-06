@@ -10,11 +10,12 @@ export type GSTRType = 'GSTR-1' | 'GSTR-2';
 export interface GSTRRow {
   gstin: string;
   partyName: string;
+  party?: string;
   invNo: string;
   invDate: Date;
   rate: number;
   reverseCharge: 'Y' | 'N';
-  inState: boolean;
+  inState?: boolean;
   place: string;
   invAmt: number;
   taxVal: number;
@@ -24,4 +25,6 @@ export interface GSTRRow {
   exempt?: boolean;
   nonGST?: boolean;
   nilRated?: boolean;
+  invoiceType?: string;
+  hsnCode?: string;
 }

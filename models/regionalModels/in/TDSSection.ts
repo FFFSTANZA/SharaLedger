@@ -66,11 +66,11 @@ export class TDSSection extends Doc {
 
     // For ITR filers: 2% above ₹1 crore
     if (isITRFiler) {
-      return amount.gte('100000000') ? this.rate ?? 2 : 0;
+      return amount.gte('10000000') ? this.rate ?? 2 : 0;
     }
 
     // For non-ITR filers: 2% above ₹20 lakh, 5% above ₹1 crore
-    if (amount.gte('100000000')) {
+    if (amount.gte('10000000')) {
       return this.tier2Rate ?? 5;
     } else if (amount.gte('2000000')) {
       return this.tier1Rate ?? 2;
@@ -133,14 +133,14 @@ export class TDSSection extends Doc {
       if (this.serviceType === 'Goods-Purchase') {
         // 194Q: Buyer conditions
         return (
-          amount.gte('50000000') && // ₹50 lakh purchase
+          amount.gte('5000000') && // ₹50 lakh purchase
           buyerTurnover &&
           buyerTurnover.gte(this.turnoverThreshold) // ₹10 crore buyer turnover
         );
       } else if (this.serviceType === 'Goods-Sale') {
         // 206C1H: Seller conditions
         return (
-          amount.gte('50000000') && // ₹50 lakh sale
+          amount.gte('5000000') && // ₹50 lakh sale
           sellerTurnover &&
           sellerTurnover.gte(this.turnoverThreshold) // ₹10 crore seller turnover
         );
@@ -261,9 +261,9 @@ export class TDSSection extends Doc {
       // Check if 194Q conditions are met (buyer turnover > ₹10 crore and purchase > ₹50 lakh)
       if (
         buyerTurnover &&
-        buyerTurnover.gte('1000000000') && // ₹10 crore
+        buyerTurnover.gte('100000000') && // ₹10 crore
         amount &&
-        amount.gte('50000000') // ₹50 lakh
+        amount.gte('5000000') // ₹50 lakh
       ) {
         return tdsSection; // 194Q applies
       }
@@ -271,9 +271,9 @@ export class TDSSection extends Doc {
       // Check if 206C1H conditions are met (seller turnover > ₹10 crore and sale > ₹50 lakh)
       if (
         sellerTurnover &&
-        sellerTurnover.gte('1000000000') && // ₹10 crore
+        sellerTurnover.gte('100000000') && // ₹10 crore
         amount &&
-        amount.gte('50000000') // ₹50 lakh
+        amount.gte('5000000') // ₹50 lakh
       ) {
         return tcsSection; // 206C1H applies
       }

@@ -423,7 +423,7 @@ export function categorizeTransaction(
   for (const { pattern, category, confidence } of allPatterns) {
     if (pattern.test(desc)) {
       const docType =
-        debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+        debitCredit === 'Debit' ? 'Payment' : 'Receipt Entry';
       return {
         docType: docType as 'Payment' | 'Receipt Entry',
         category,
@@ -467,7 +467,7 @@ export function categorizeTransaction(
   for (const [key, config] of Object.entries(keywordCategories)) {
     if (config.keywords.some((keyword) => desc.includes(keyword))) {
       const docType =
-        debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+        debitCredit === 'Debit' ? 'Payment' : 'Receipt Entry';
       return {
         docType: docType as 'Payment' | 'Receipt Entry',
         category: config.category,
@@ -479,7 +479,7 @@ export function categorizeTransaction(
 
   // Default categorization with better fallback logic
   const defaultDocType =
-    debitCredit === 'Debit' ? 'Payment Entry' : 'Receipt Entry';
+    debitCredit === 'Debit' ? 'Payment' : 'Receipt Entry';
   const defaultCategory =
     debitCredit === 'Debit' ? 'General Expense' : 'General Income';
 

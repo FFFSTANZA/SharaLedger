@@ -2,6 +2,7 @@ import { HiddenMap } from 'fyo/model/types';
 import { Party as BaseParty } from 'models/baseModels/Party/Party';
 import { GSTType } from './types';
 import { PartyRole } from 'models/baseModels/Party/types';
+import { Money } from 'pesa';
 
 export class Party extends BaseParty {
   gstin?: string;
@@ -11,6 +12,9 @@ export class Party extends BaseParty {
   tdsApplicable?: boolean;
   tdsCategory?: string;
   panAvailable?: boolean;
+  itrFiled?: boolean;
+  businessTurnover?: Money;
+  professionalIncome?: Money;
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async beforeSync() {
@@ -33,5 +37,8 @@ export class Party extends BaseParty {
     loyaltyPoints: () => !this.loyaltyProgram || this.role === 'Supplier',
     tdsCategory: () => !this.tdsApplicable,
     panAvailable: () => !this.tdsApplicable,
+    itrFiled: () => !this.tdsApplicable,
+    businessTurnover: () => !this.tdsApplicable,
+    professionalIncome: () => !this.tdsApplicable,
   };
 }

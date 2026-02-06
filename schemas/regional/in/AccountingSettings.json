@@ -15,6 +15,12 @@
       "target": "Account",
       "create": true,
       "section": "Accounts"
+    },
+    {
+      "fieldname": "businessTurnover",
+      "label": "Business Turnover (Previous FY)",
+      "fieldtype": "Currency",
+      "section": "Taxation"
     }
   ],
   "quickEditFields": [
@@ -26,6 +32,7 @@
     "fiscalYearStart",
     "fiscalYearEnd",
     "gstin",
-    "tdsPayableAccount"
+    "tdsPayableAccount",
+    "businessTurnover"
   ]
 }
