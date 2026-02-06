@@ -157,19 +157,103 @@
                 <p>Once imported, transactions appear in the Unreconciled list. Each record displays the raw bank narration, date, and amount.</p>
             </div>
 
-            <h2>Transaction Categorization</h2>
-            <p>Versoll Books uses pattern matching to help you categorize transactions. For example, a transaction with "Airtel" in the narration might be automatically suggested as an "Internet Expense".</p>
+            <h2>Automatic Transaction Categorization</h2>
+            <p>Versoll Books features <strong>intelligent automatic transaction categorization</strong> that dramatically reduces manual work. The system uses sophisticated pattern matching with confidence scoring to categorize your bank transactions automatically.</p>
 
-            <h3>Manual Categorization</h3>
-            <p>For transactions that aren't automatically recognized, you can manually assign:</p>
+            <h3>Smart Categorization Features</h3>
+
+            <h4>Pattern-Based Recognition</h4>
+            <p>The system recognizes 20+ transaction patterns automatically:</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Bank Transfers</h4>
+                    <p>NEFT, IMPS, RTGS, UPI, online transfers</p>
+                    <p><strong>Confidence:</strong> 90%+</p>
+                </div>
+                <div class="card">
+                    <h4>Utilities</h4>
+                    <p>Electricity, water, gas, internet, phone bills</p>
+                    <p><strong>Confidence:</strong> 80%+</p>
+                </div>
+                <div class="card">
+                    <h4>Salary & Payroll</h4>
+                    <p>Salary payments, wages, employee payments</p>
+                    <p><strong>Confidence:</strong> 90%+</p>
+                </div>
+                <div class="card">
+                    <h4>Tax Payments</h4>
+                    <p>GST, TDS, income tax payments</p>
+                    <p><strong>Confidence:</strong> 90%+</p>
+                </div>
+                <div class="card">
+                    <h4>Rent & Property</h4>
+                    <p>Rent payments, lease payments</p>
+                    <p><strong>Confidence:</strong> 80%+</p>
+                </div>
+                <div class="card">
+                    <h4>Insurance</h4>
+                    <p>Insurance premiums, life insurance</p>
+                    <p><strong>Confidence:</strong> 80%+</p>
+                </div>
+                <div class="card">
+                    <h4>Vendor Payments</h4>
+                    <p>Supplier payments, purchase expenses</p>
+                    <p><strong>Confidence:</strong> 70%+</p>
+                </div>
+                <div class="card">
+                    <h4>Customer Receipts</h4>
+                    <p>Customer payments, sales receipts</p>
+                    <p><strong>Confidence:</strong> 80%+</p>
+                </div>
+                <div class="card">
+                    <h4>Interest Income</h4>
+                    <p>Bank interest, dividends, ROI</p>
+                    <p><strong>Confidence:</strong> 90%+</p>
+                </div>
+                <div class="card">
+                    <h4>Loan EMI</h4>
+                    <p>Home loan, personal loan EMIs</p>
+                    <p><strong>Confidence:</strong> 80%+</p>
+                </div>
+            </div>
+
+            <h4>Confidence Scoring System</h4>
+            <p>Each categorization includes a confidence score:</p>
             <ul>
-                <li><strong>Party</strong> - The customer or supplier involved in the transaction.</li>
-                <li><strong>Account</strong> - The specific ledger account (e.g., Electricity Expense, Sales Revenue).</li>
-                <li><strong>Voucher Type</strong> - Whether it should create a Payment, Receipt, or Journal Entry.</li>
+                <li><strong>High Confidence (90%+)</strong>: Exact pattern match - very likely correct</li>
+                <li><strong>Medium Confidence (70-89%)</strong>: Keyword match - likely correct but verify</li>
+                <li><strong>Low Confidence (<70%)</strong>: General categorization - review needed</li>
             </ul>
 
-            <div class="note">
-                <p><strong>Pro Tip:</strong> Setting a Party for a transaction allows the system to filter outstanding invoices for that party during the reconciliation step.</p>
+            <h4>Automatic Document Type Detection</h4>
+            <p>Based on transaction direction and patterns, the system automatically suggests:</p>
+            <ul>
+                <li><strong>Payment Entry</strong> - For money going out (vendor payments, expenses)</li>
+                <li><strong>Receipt Entry</strong> - For money coming in (customer payments, income)</li>
+                <li><strong>Journal Entry</strong> - For adjustments (bank charges, transfers)</li>
+            </ul>
+
+            <h4>Duplicate Prevention</h4>
+            <p>Versoll Books automatically prevents duplicate imports using a sophisticated hashing algorithm:</p>
+            <ul>
+                <li>Generates unique hash based on: <code>date + amount + description + bank account + reference</code></li>
+                <li>Detects duplicates within the same CSV file</li>
+                <li>Prevents re-importing previously imported transactions</li>
+                <li>Shows duplicate indicators in import preview</li>
+            </ul>
+
+            <h3>Manual Categorization (When Needed)</h3>
+            <p>For transactions that need human review, you can manually adjust:</p>
+            <ul>
+                <li><strong>Party</strong> - Select the customer or supplier</li>
+                <li><strong>Account</strong> - Choose the specific ledger account</li>
+                <li><strong>Voucher Type</strong> - Override automatic suggestion</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3>Key Benefit: Time Savings</h3>
+                <p>With automatic categorization, most transactions are pre-filled with accurate suggestions. For typical businesses, this reduces reconciliation time by 60-80% compared to manual entry.</p>
             </div>
 
             <h2>Bank Accounts Management</h2>
