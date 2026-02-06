@@ -50,6 +50,25 @@
       "fieldtype": "Check",
       "default": true,
       "section": "Billing"
+    },
+    {
+      "fieldname": "itrFiled",
+      "label": "ITR Filed (Past 2 Years)",
+      "fieldtype": "Check",
+      "default": true,
+      "section": "Taxation"
+    },
+    {
+      "fieldname": "businessTurnover",
+      "label": "Business Turnover (Previous FY)",
+      "fieldtype": "Currency",
+      "section": "Taxation"
+    },
+    {
+      "fieldname": "professionalIncome",
+      "label": "Professional Income (Previous FY)",
+      "fieldtype": "Currency",
+      "section": "Taxation"
     }
   ],
   "quickEditFields": [
@@ -63,7 +82,10 @@
     "gstin",
     "tdsApplicable",
     "tdsCategory",
-    "panAvailable"
+    "panAvailable",
+    "itrFiled",
+    "businessTurnover",
+    "professionalIncome"
   ],
   "removeFields": ["taxId"]
 }

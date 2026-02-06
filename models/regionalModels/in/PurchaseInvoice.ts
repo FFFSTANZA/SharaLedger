@@ -233,8 +233,7 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
           {
             buyerTurnover:
               this.fyo.singles.AccountingSettings?.businessTurnover,
-            sellerTurnover:
-              this.fyo.singles.AccountingSettings?.businessTurnover,
+            sellerTurnover: party.businessTurnover,
             amount: absBaseApplicableAmount,
           }
         );

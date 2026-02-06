@@ -1,7 +1,6 @@
 import { t } from 'fyo';
 import { Action } from 'fyo/model/types';
 import { DateTime } from 'luxon';
-import { Invoice } from 'models/baseModels/Invoice/Invoice';
 import { Party } from 'models/regionalModels/in/Party';
 import { Money } from 'pesa';
 import { ModelNameEnum } from 'models/types';
@@ -71,6 +70,15 @@ export abstract class BaseGSTR extends Report {
       // Validate filters before proceeding
       this.setDefaultFilters();
 
+      // Get company GSTIN for inState calculation
+      const companyGstin = (await this.fyo.getValue(
+        ModelNameEnum.AccountingSettings,
+        'gstin'
+      )) as string | null;
+      const companyState = companyGstin
+        ? codeStateMap[companyGstin.slice(0, 2)]
+        : null;
+
       // Validate date range
       if (this.fromDate && this.toDate) {
         const fromDate = DateTime.fromISO(this.fromDate);
@@ -102,6 +110,7 @@ export abstract class BaseGSTR extends Report {
           'date',
           'grandTotal',
           'baseGrandTotal',
+          'netTotal',
           'taxes',
           'items',
           'outstandingAmount',
@@ -115,7 +124,7 @@ export abstract class BaseGSTR extends Report {
       // Process invoices with enhanced error handling
       for (const invoice of invoices) {
         try {
-          const row = await this.processInvoiceForGSTR(invoice);
+          const row = await this.processInvoiceForGSTR(invoice, companyState);
           if (row) {
             gstrRows.push(row);
           }
@@ -136,29 +145,39 @@ export abstract class BaseGSTR extends Report {
     return gstrRows;
   }
 
-  private async processInvoiceForGSTR(invoice: any): Promise<GSTRRow | null> {
+  private async processInvoiceForGSTR(
+    invoice: any,
+    companyState: string | null
+  ): Promise<GSTRRow | null> {
     try {
       // Get party details with validation
-      const party = await this.fyo.doc.getDoc('Party', invoice.party);
+      const party = (await this.fyo.doc.getDoc('Party', invoice.party)) as Party;
       if (!party) {
         console.warn(`Party not found for invoice ${invoice.name}`);
         return null;
       }
 
+      const gstin = party.gstin || '';
+      const place = this.getPlaceFromGSTIN(gstin);
+      const inState = companyState && place ? companyState === place : false;
+
       const gstrRow: GSTRRow = {
-        invoice: invoice.name,
+        invNo: invoice.name,
         party: party.name as string,
         partyName: (party.get('fullName') as string) || party.name,
-        gstin: (party.get('gstin') as string) || '',
-        date: invoice.date,
-        place: this.getPlaceFromGSTIN(party.get('gstin') as string),
-        taxableAmount: this.fyo.pesa(0),
+        gstin: gstin,
+        invDate: invoice.date,
+        place: place,
+        inState: inState,
+        taxVal: invoice.netTotal?.float ?? 0,
         igstAmt: 0,
         cgstAmt: 0,
         sgstAmt: 0,
-        grandTotal: this.fyo.pesa(invoice.grandTotal || 0),
+        invAmt: invoice.grandTotal?.float ?? 0,
         invoiceType: this.getInvoiceType(invoice),
         hsnCode: this.extractHSNCode(invoice),
+        reverseCharge: !gstin ? 'Y' : 'N',
+        rate: 0,
       };
 
       // Process tax details with precision handling
@@ -166,16 +185,22 @@ export abstract class BaseGSTR extends Report {
         this.processTaxDetailsForGSTR(gstrRow, invoice.taxes);
       }
 
-      // Calculate taxable amount from items
-      if (invoice.items && Array.isArray(invoice.items)) {
+      // If taxable amount is still zero but we have items, use netTotal or sum of items
+      if (
+        gstrRow.taxVal === 0 &&
+        invoice.items &&
+        Array.isArray(invoice.items)
+      ) {
+        let itemsTotal = this.fyo.pesa(0);
         for (const item of invoice.items) {
           const itemAmount = this.fyo.pesa(item.amount || 0);
-          gstrRow.taxableAmount = gstrRow.taxableAmount.add(itemAmount);
+          itemsTotal = itemsTotal.add(itemAmount);
         }
+        gstrRow.taxVal = itemsTotal.float;
       }
 
       // Validate minimum data requirements
-      if (!gstrRow.partyName || !gstrRow.date) {
+      if (!gstrRow.partyName || !gstrRow.invDate) {
         console.warn(`Insufficient data for invoice ${invoice.name}`);
         return null;
       }
@@ -187,11 +212,56 @@ export abstract class BaseGSTR extends Report {
     }
   }
 
+  private processTaxDetailsForGSTR(gstrRow: GSTRRow, taxes: any[]) {
+    gstrRow.rate = 0;
+
+    for (const tax of taxes) {
+      const rate = tax.rate ?? 0;
+      gstrRow.rate += rate;
+
+      const taxAmt =
+        tax.amount instanceof Money
+          ? tax.amount.float
+          : safeParseFloat(tax.amount || 0);
+
+      switch (tax.account) {
+        case 'IGST': {
+          gstrRow.igstAmt = (gstrRow.igstAmt ?? 0) + taxAmt;
+          gstrRow.inState = false;
+          break;
+        }
+        case 'CGST': {
+          gstrRow.cgstAmt = (gstrRow.cgstAmt ?? 0) + taxAmt;
+          break;
+        }
+        case 'SGST': {
+          gstrRow.sgstAmt = (gstrRow.sgstAmt ?? 0) + taxAmt;
+          break;
+        }
+        case 'Nil Rated': {
+          gstrRow.nilRated = true;
+          break;
+        }
+        case 'Exempt': {
+          gstrRow.exempt = true;
+          break;
+        }
+        case 'Non GST': {
+          gstrRow.nonGST = true;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+  }
+
   private getPlaceFromGSTIN(gstin?: string): string {
     if (!gstin || gstin.length < 2) {
       return '';
     }
-    return gstin.substring(0, 2); // First 2 digits represent state code
+    const code = gstin.substring(0, 2);
+    return codeStateMap[code] || '';
   }
 
   private getInvoiceType(invoice: any): string {
@@ -244,8 +314,7 @@ export abstract class BaseGSTR extends Report {
       if (this.place) {
         allow &&= codeStateMap[this.place] === row.place;
       }
-      this.place;
-      return (allow &&= this.transferFilterFunction(row));
+      return allow && this.transferFilterFunction(row);
     });
   }
 
@@ -255,11 +324,11 @@ export abstract class BaseGSTR extends Report {
     }
 
     if (this.transferType === 'B2CL') {
-      return (row) => !row.gstin && !row.inState && row.invAmt >= 250000;
+      return (row) => !row.gstin && !row.inState && (row.invAmt ?? 0) >= 250000;
     }
 
     if (this.transferType === 'B2CS') {
-      return (row) => !row.gstin && (row.inState || row.invAmt < 250000);
+      return (row) => !row.gstin && (row.inState || (row.invAmt ?? 0) < 250000);
     }
 
     if (this.transferType === 'NR') {
@@ -267,127 +336,6 @@ export abstract class BaseGSTR extends Report {
     }
 
     return () => true;
-  }
-
-  async getEntries() {
-    const date: string[] = [];
-    if (this.toDate) {
-      date.push('<=', this.toDate);
-    }
-
-    if (this.fromDate) {
-      date.push('>=', this.fromDate);
-    }
-
-    return (await this.fyo.db.getAllRaw(this.schemaName, {
-      filters: { date, submitted: true, cancelled: false },
-    })) as { name: string }[];
-  }
-
-  async getGstrRows(): Promise<GSTRRow[]> {
-    const entries = await this.getEntries();
-    const gstrRows: GSTRRow[] = [];
-    for (const entry of entries) {
-      const gstrRow = await this.getGstrRow(entry.name);
-      gstrRows.push(gstrRow);
-    }
-    return gstrRows;
-  }
-
-  async getGstrRow(entryName: string): Promise<GSTRRow> {
-    const entry = (await this.fyo.doc.getDoc(
-      this.schemaName,
-      entryName
-    )) as Invoice;
-    const gstin = (await this.fyo.getValue(
-      ModelNameEnum.AccountingSettings,
-      'gstin'
-    )) as string | null;
-
-    const party = (await this.fyo.doc.getDoc('Party', entry.party)) as Party;
-
-    let place = '';
-    if (party.address) {
-      const pos = (await this.fyo.getValue(
-        ModelNameEnum.Address,
-        party.address as string,
-        'pos'
-      )) as string | undefined;
-
-      place = pos ?? '';
-    } else if (party.gstin) {
-      const code = party.gstin.slice(0, 2);
-      place = codeStateMap[code] ?? '';
-    }
-
-    let inState = false;
-    if (gstin) {
-      inState = codeStateMap[gstin.slice(0, 2)] === place;
-    }
-
-    const gstrRow: GSTRRow = {
-      gstin: party.gstin ?? '',
-      partyName: entry.party!,
-      invNo: entry.name!,
-      invDate: entry.date!,
-      rate: 0,
-      reverseCharge: !party.gstin ? 'Y' : 'N',
-      inState,
-      place,
-      invAmt: entry.grandTotal?.float ?? 0,
-      taxVal: entry.netTotal?.float ?? 0,
-      igstAmt: 0,
-      cgstAmt: 0,
-      sgstAmt: 0,
-    };
-
-    this.setTaxValuesOnGSTRRow(entry, gstrRow);
-    return gstrRow;
-  }
-
-  setTaxValuesOnGSTRRow(entry: Invoice, gstrRow: GSTRRow) {
-    gstrRow.rate = 0;
-
-    for (const tax of entry.taxes ?? []) {
-      const rate = tax.rate ?? 0;
-      gstrRow.rate += rate;
-
-      const amountValue = (tax.amount as unknown) ?? 0;
-      const taxAmt =
-        amountValue instanceof Money
-          ? amountValue.float
-          : safeParseFloat(amountValue);
-
-      switch (tax.account) {
-        case 'IGST': {
-          gstrRow.igstAmt = (gstrRow.igstAmt ?? 0) + taxAmt;
-          gstrRow.inState = false;
-          break;
-        }
-        case 'CGST': {
-          gstrRow.cgstAmt = (gstrRow.cgstAmt ?? 0) + taxAmt;
-          break;
-        }
-        case 'SGST': {
-          gstrRow.sgstAmt = (gstrRow.sgstAmt ?? 0) + taxAmt;
-          break;
-        }
-        case 'Nil Rated': {
-          gstrRow.nilRated = true;
-          break;
-        }
-        case 'Exempt': {
-          gstrRow.exempt = true;
-          break;
-        }
-        case 'Non GST': {
-          gstrRow.nonGST = true;
-          break;
-        }
-        default:
-          break;
-      }
-    }
   }
 
   setDefaultFilters() {
@@ -490,7 +438,7 @@ export abstract class BaseGSTR extends Report {
         fieldtype: 'Data',
       },
       {
-        label: t`Intergrated Tax`,
+        label: t`Integrated Tax`,
         fieldname: 'igstAmt',
         fieldtype: 'Currency',
       },
