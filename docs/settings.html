@@ -131,11 +131,11 @@
     <div class="main-container">
         <main class="main-content">
             <h1>Settings & Configuration</h1>
-            <p>Use Settings to define company information, fiscal rules, user access, and system defaults. These configurations keep workflows consistent across your organization.</p>
+            <p>Use Settings to define company information, fiscal year, default accounts, feature toggles, print templates, and system preferences. These configurations control how Versoll Books behaves on this device.</p>
 
             <div class="highlight-box">
                 <h3>What you will configure</h3>
-                <p>Company profile, fiscal year, tax settings, permissions, notifications, and integrations.</p>
+                <p>Company profile, fiscal year, feature toggles, numbering series, print templates, and display preferences.</p>
             </div>
 
             <h2>Company Profile</h2>
@@ -144,70 +144,56 @@
             <div class="step">
                 <span class="step-number">Step 1</span>
                 <h3>Update Company Information</h3>
-                <p>Go to <code>Settings &gt; Company</code> and enter legal name, address, GSTIN, PAN, and contact details.</p>
+                <p>Go to <code>Settings &gt; General</code> and confirm your legal name, email, country, and related company details.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 2</span>
                 <h3>Define Fiscal Year</h3>
-                <p>Select the fiscal year start month and set the current financial year. This governs GST reporting and year-end closing.</p>
+                <p>Set the fiscal year start and end dates. This controls GST reporting and year-end closing.</p>
             </div>
 
-            <h2>Users and Permissions</h2>
-            <p>Assign access based on roles such as Accountant, Sales, or Inventory Manager.</p>
+            <h2>Features & Modules</h2>
+            <p>Enable only the modules you use so screens stay focused and lightweight.</p>
 
             <div class="step">
                 <span class="step-number">Step 3</span>
-                <h3>Create Roles</h3>
-                <p>Use the role builder to define allowed modules, reports, and approval limits.</p>
+                <h3>Toggle Features</h3>
+                <p>Turn on Inventory, POS, Pricing Rules, Loyalty Programs, or returns based on your workflow.</p>
             </div>
 
             <div class="step">
                 <span class="step-number">Step 4</span>
-                <h3>Invite Users</h3>
-                <p>Add team members with their email IDs and assign them to roles. Each user gets a login with audit trails.</p>
+                <h3>Set Default Accounts</h3>
+                <p>Choose write-off, round-off, and discount accounts so adjustments are posted consistently.</p>
             </div>
 
-            <h2>Tax and Compliance Defaults</h2>
-            <p>Set defaults for GST rates, TDS sections, and invoice numbering so transactions stay compliant.</p>
+            <h2>Defaults & Numbering</h2>
+            <p>Define default accounts and document series so everyday transactions are created with minimal manual input.</p>
             <ul>
-                <li>Configure GST registration type and default state.</li>
-                <li>Define TDS sections used most frequently.</li>
-                <li>Set invoice numbering series per document type.</li>
+                <li>Set number series for sales invoices, purchase invoices, journal entries, and payments.</li>
+                <li>Choose default payment accounts for auto payments.</li>
+                <li>Pick default locations for stock transfers and receipts (if inventory is enabled).</li>
             </ul>
 
-            <h2>Banking and Payment Settings</h2>
-            <ul>
-                <li>Map default bank accounts for receipts and payments.</li>
-                <li>Enable UPI and payment links on sales invoices.</li>
-                <li>Set approval thresholds for large payments.</li>
-            </ul>
-
-            <h2>Notifications and Alerts</h2>
-            <p>Manage automatic reminders and alerts for overdue invoices, low stock, and compliance deadlines.</p>
+            <h2>Print & Templates</h2>
+            <p>Control how invoices and receipts look when printed or shared.</p>
 
             <div class="step">
                 <span class="step-number">Step 5</span>
-                <h3>Configure Notification Rules</h3>
-                <p>Select which events trigger emails or in-app alerts. Use templates to standardize the messaging.</p>
+                <h3>Customize Print Settings</h3>
+                <p>Upload your logo, set contact details, choose colors and fonts, and enable invoice extras like terms &amp; conditions.</p>
             </div>
 
-            <div class="step">
-                <span class="step-number">Step 6</span>
-                <h3>Set Approval Workflows</h3>
-                <p>Define approval paths for purchases, expenses, and stock adjustments.</p>
-            </div>
-
-            <h2>Integrations</h2>
-            <p>Connect external services such as payroll, CRM tools, or payment gateways for streamlined operations.</p>
+            <h2>System Preferences</h2>
             <ul>
-                <li>Enable API access keys and manage tokens.</li>
-                <li>Schedule data syncs with third-party apps.</li>
-                <li>Review logs for integration health.</li>
+                <li>Set date format, locale, and decimal precision.</li>
+                <li>Toggle dark mode or hide the Get Started guide.</li>
+                <li>Review version information and display settings.</li>
             </ul>
 
             <div class="note">
-                <p>Review settings quarterly to keep tax rates, contact details, and approval workflows up to date.</p>
+                <p>Versoll Books is offline-first, so Settings does not include multi-user roles or invitations. If you need to move data between devices, use <a href="data-export.html">Data Export &amp; Backup</a>.</p>
             </div>
 
             <div class="next-prev-nav">
