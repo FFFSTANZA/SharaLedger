@@ -1,4 +1,20 @@
 import { ModelNameEnum } from 'models/types';
+import { fyo } from 'src/initFyo';
+
+export function formatDate(value: unknown): string {
+  if (value instanceof Date) {
+    return fyo.format(value, 'Date');
+  }
+
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) {
+      return fyo.format(d, 'Date');
+    }
+  }
+
+  return String(value ?? '');
+}
 
 export const routeFilters = {
   SalesItems: { for: ['in', ['Sales', 'Both']] },
