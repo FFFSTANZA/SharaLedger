@@ -233,7 +233,7 @@ export default defineComponent({
           {
             label: this.t`Yes`,
             isPrimary: true,
-            action: ipc.reloadWindow.bind(ipc),
+            action: () => window.ipc?.reloadWindow?.(),
           },
           {
             label: this.t`No`,

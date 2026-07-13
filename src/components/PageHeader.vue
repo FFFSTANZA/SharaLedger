@@ -3,7 +3,7 @@
     class="px-4 flex justify-between items-center h-row-largest flex-shrink-0 dark:bg-gray-875"
     :class="[
       border ? 'border-b dark:border-gray-800' : '',
-      platform !== 'Windows' ? 'window-drag' : '',
+      platform === 'Mac' ? 'window-drag' : '',
     ]"
   >
     <Transition name="spacer" class="border-none">

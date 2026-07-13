@@ -1,6 +1,7 @@
 import { Fyo, t } from 'fyo';
 import { Doc } from 'fyo/model/doc';
 import { Action } from 'fyo/model/types';
+import type { Money } from 'pesa';
 import { SalesInvoice as BaseSalesInvoice } from 'models/baseModels/SalesInvoice/SalesInvoice';
 import { getInvoiceActions } from 'models/helpers';
 import { ModelNameEnum } from 'models/types';
@@ -24,15 +25,14 @@ function getCreateEWayBillAction(fyo: Fyo): Action {
       }
 
       const companyGstin = fyo.singles.AccountingSettings?.gstin as
-        | string
-        | undefined;
+        string | undefined;
       if (!companyGstin) {
         console.warn('Company GSTIN is required to create E-Way Bills');
         return false;
       }
 
-      // Check if invoice has value that requires E-Way Bill
-      if (doc.baseGrandTotal && doc.baseGrandTotal.gte(fyo.pesa(50000))) {
+      const bgt = doc.baseGrandTotal as Money | undefined;
+      if (bgt && bgt.gte(fyo.pesa(50000))) {
         return true;
       }
 

@@ -130,9 +130,8 @@ export async function getPrintTemplatePropValues(
   const isIndian = fyo.singles.SystemSettings?.countryCode === 'in';
   (values.doc as PrintTemplateData).isIndian = isIndian;
   if (isIndian) {
-    (values.doc as PrintTemplateData).placeOfSupply = await getPlaceOfSupply(
-      doc
-    );
+    (values.doc as PrintTemplateData).placeOfSupply =
+      await getPlaceOfSupply(doc);
   }
 
   (values.doc as PrintTemplateData).grandTotalInWords = getGrandTotalInWords(
@@ -581,7 +580,7 @@ export async function getPathAndMakePDF(
     }
 
     const html = constructPrintDocument(innerHTML);
-    const success = await ipc.makePDF(html, savePath, width, height);
+    const success = await window.ipc?.makePDF(html, savePath, width, height);
     if (success) {
       showExportInFolder(t`Save as PDF Successful`, savePath);
     } else {
@@ -589,7 +588,7 @@ export async function getPathAndMakePDF(
     }
   } else {
     const html = constructPrintDocument(innerHTML);
-    const success = await ipc.printDocument(html, width, height);
+    const success = await window.ipc?.printDocument(html, width, height);
     if (success) {
       showToast({ message: t`Print Successful`, type: 'success' });
     } else {
@@ -655,9 +654,10 @@ function getAllCSSAsStyleElem() {
 }
 
 export async function updatePrintTemplates(fyo: Fyo) {
-  const templateFiles = await ipc.getTemplates(
-    fyo.singles.PrintSettings?.posPrintWidth as number
-  );
+  const templateFiles =
+    (await window.ipc?.getTemplates(
+      fyo.singles.PrintSettings?.posPrintWidth as number
+    )) ?? [];
   const existingTemplates = (await fyo.db.getAll(ModelNameEnum.PrintTemplate, {
     fields: ['name', 'modified'],
     filters: { isCustom: false },

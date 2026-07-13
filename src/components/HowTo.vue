@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     openHelpLink() {
-      ipc.openLink(this.link);
+      window.ipc?.openLink(this.link);
     },
   },
 };

@@ -55,7 +55,6 @@ import { POSOpeningShift } from './inventory/Point of Sale/POSOpeningShift';
 import { POSClosingShift } from './inventory/Point of Sale/POSClosingShift';
 import { IntegrationErrorLog } from './baseModels/IntegrationErrorLog/IntegrationErrorLog';
 import { ItemEnquiry } from './baseModels/ItemEnquiry/ItemEnquiry';
-import { License } from './baseModels/License/License';
 
 export const models = {
   Account,
@@ -117,8 +116,6 @@ export const models = {
   POSClosingShift,
   // Error Log
   IntegrationErrorLog,
-  // License
-  License,
 } as ModelMap;
 
 export async function getRegionalModels(
@@ -135,9 +132,8 @@ export async function getRegionalModels(
   const { TDSCategory } = await import('./regionalModels/in/TDSCategory');
   const { EWayBill } = await import('./regionalModels/in/EWayBill');
   const { SalesInvoice } = await import('./regionalModels/in/SalesInvoice');
-  const { PurchaseInvoice } = await import(
-    './regionalModels/in/PurchaseInvoice'
-  );
+  const { PurchaseInvoice } =
+    await import('./regionalModels/in/PurchaseInvoice');
 
   return {
     Address,

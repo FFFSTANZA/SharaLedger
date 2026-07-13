@@ -373,11 +373,6 @@ function getCompleteSidebar(): SidebarConfig {
           name: 'settings',
           route: '/settings',
         },
-        {
-          label: t`License`,
-          name: 'license',
-          route: '/license',
-        },
       ] as SidebarItem[],
     },
   ].flat();

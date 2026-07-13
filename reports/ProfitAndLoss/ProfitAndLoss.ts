@@ -77,12 +77,7 @@ export class ProfitAndLoss extends AccountReport {
     incomeRoots: AccountTreeNode[] | undefined,
     expenseRoots: AccountTreeNode[] | undefined
   ): ReportData {
-    if (
-      incomeRoots &&
-      incomeRoots.length &&
-      !expenseRoots &&
-      !expenseRoots.length
-    ) {
+    if (incomeRoots && incomeRoots.length && !expenseRoots?.length) {
       return this.getIncomeOrExpenseRows(
         incomeRoots,
         incomeRows,

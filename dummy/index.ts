@@ -7,6 +7,7 @@ import { Payment } from 'models/baseModels/Payment/Payment';
 import { PurchaseInvoice } from 'models/baseModels/PurchaseInvoice/PurchaseInvoice';
 import { SalesInvoice } from 'models/baseModels/SalesInvoice/SalesInvoice';
 import { ModelNameEnum } from 'models/types';
+import type { RawValueMap } from 'fyo/core/types';
 import setupInstance from 'src/setup/setupInstance';
 import { getMapFromList, safeParseInt } from 'utils';
 import { getFiscalYear } from 'utils/misc';
@@ -131,8 +132,9 @@ async function getJournalEntries(fyo: Fyo, salesInvoices: SalesInvoice[]) {
     .reduce((a, b) => a.add(b.amount!), fyo.pesa(0))
     .percent(75)
     .clip(0);
-  const lastInv = salesInvoices.sort((a, b) => +a.date! - +b.date!).at(-1)!
-    .date!;
+  const lastInv = salesInvoices
+    .sort((a, b) => +a.date! - +b.date!)
+    .at(-1)!.date!;
   const date = DateTime.fromJSDate(lastInv).minus({ months: 6 }).toJSDate();
 
   // Bank Entry - only create if accounts exist
@@ -400,11 +402,14 @@ async function getSalesPurchaseInvoices(
       const key = `${date.year}-${String(date.month).padStart(2, '0')}`;
       return { key, si };
     })
-    .reduce((acc, item) => {
-      acc[item.key] ??= [];
-      acc[item.key].push(item.si);
-      return acc;
-    }, {} as Record<string, SalesInvoice[]>);
+    .reduce(
+      (acc, item) => {
+        acc[item.key] ??= [];
+        acc[item.key].push(item.si);
+        return acc;
+      },
+      {} as Record<string, SalesInvoice[]>
+    );
 
   /**
    * Sort the YYYY-MM keys in ascending order.
@@ -421,18 +426,21 @@ async function getSalesPurchaseInvoices(
     /**
      * Group items by name to get the total quantity used in a month.
      */
-    const itemGrouped = dateGrouped[key].reduce((acc, si) => {
-      for (const item of si.items!) {
-        if (item.item === 'Dry-Cleaning') {
-          continue;
+    const itemGrouped = dateGrouped[key].reduce(
+      (acc, si) => {
+        for (const item of si.items!) {
+          if (item.item === 'Dry-Cleaning') {
+            continue;
+          }
+
+          acc[item.item as string] ??= 0;
+          acc[item.item as string] += item.quantity as number;
         }
 
-        acc[item.item as string] ??= 0;
-        acc[item.item as string] += item.quantity as number;
-      }
-
-      return acc;
-    }, {} as Record<string, number>);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     /**
      * Set order quantity for the first of the month.
@@ -449,13 +457,16 @@ async function getSalesPurchaseInvoices(
       purchaseQty[name] = Math.ceil(prevQty / 10) * 10;
     });
 
-    const supplierGrouped = Object.keys(itemGrouped).reduce((acc, item) => {
-      const supplier = purchaseItemPartyMap[item];
-      acc[supplier] ??= [];
-      acc[supplier].push(item);
+    const supplierGrouped = Object.keys(itemGrouped).reduce(
+      (acc, item) => {
+        const supplier = purchaseItemPartyMap[item];
+        acc[supplier] ??= [];
+        acc[supplier].push(item);
 
-      return acc;
-    }, {} as Record<string, string[]>);
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
 
     /**
      * For each supplier create a Purchase Invoice
@@ -842,7 +853,7 @@ async function generateParties(fyo: Fyo) {
       }
     }
 
-    const doc = fyo.doc.getNewDoc('Party', data, false);
+    const doc = fyo.doc.getNewDoc('Party', data as RawValueMap, false);
     await doc.sync();
   }
 }

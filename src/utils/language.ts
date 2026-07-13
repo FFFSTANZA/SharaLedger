@@ -36,7 +36,7 @@ export async function setLanguageMap(
   }
 
   if (!dontReload && success && initLanguage !== oldLanguage) {
-    ipc.reloadWindow();
+    window.ipc?.reloadWindow();
   }
   return success;
 }
@@ -54,7 +54,8 @@ function getLanguageCode(initLanguage: string, oldLanguage: string) {
 }
 
 async function fetchAndSetLanguageMap(code: string) {
-  const { success, message, languageMap } = await ipc.getLanguageMap(code);
+  const { success, message, languageMap } =
+    await window.ipc?.getLanguageMap(code);
 
   if (!success) {
     const { showToast } = await import('src/utils/interactive');

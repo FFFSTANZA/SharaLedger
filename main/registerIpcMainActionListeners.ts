@@ -29,11 +29,7 @@ import {
 import { saveHtmlAsPdf } from './saveHtmlAsPdf';
 import { sendAPIRequest } from './api';
 import { initScheduler } from './initSheduler';
-import { LicenseManager } from './licenseManager';
-
 export default function registerIpcMainActionListeners(main: Main) {
-  const licenseManager = new LicenseManager();
-
   ipcMain.handle(IPC_ACTIONS.CHECK_DB_ACCESS, async (_, filePath: string) => {
     try {
       await fs.access(filePath, constants.W_OK | constants.R_OK);
@@ -257,7 +253,7 @@ export default function registerIpcMainActionListeners(main: Main) {
   ipcMain.handle(
     IPC_ACTIONS.SEND_API_REQUEST,
     async (e, endpoint: string, options: RequestInit | undefined) => {
-      return sendAPIRequest(endpoint, options);
+      return sendAPIRequest(endpoint, options as any);
     }
   );
 
@@ -305,39 +301,5 @@ export default function registerIpcMainActionListeners(main: Main) {
     return await getErrorHandledReponse(() => {
       return databaseManager.getSchemaMap();
     });
-  });
-
-  /**
-   * License Related Actions
-   */
-
-  ipcMain.handle(IPC_ACTIONS.LICENSE_GET_DEVICE_ID, async () => {
-    return await getErrorHandledReponse(async () => {
-      return await licenseManager.getDeviceFingerprint();
-    });
-  });
-
-  ipcMain.handle(IPC_ACTIONS.LICENSE_VALIDATE, async () => {
-    return await getErrorHandledReponse(async () => {
-      return await licenseManager.validateLicense();
-    });
-  });
-
-  ipcMain.handle(IPC_ACTIONS.LICENSE_IMPORT, async (_, filePath: string) => {
-    return await getErrorHandledReponse(async () => {
-      return await licenseManager.importLicenseFile(filePath);
-    });
-  });
-
-  ipcMain.handle(IPC_ACTIONS.LICENSE_DELETE, async () => {
-    return await getErrorHandledReponse(async () => {
-      await licenseManager.deleteLicenseFile();
-      return { success: true, message: 'License deleted successfully' };
-    });
-  });
-
-  // Update last seen timestamp on app close
-  app.on('before-quit', async () => {
-    await licenseManager.cleanup();
   });
 }

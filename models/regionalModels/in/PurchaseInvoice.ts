@@ -231,8 +231,8 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
             tdsSection.mutualExclusiveWith
           )) as TDSSection,
           {
-            buyerTurnover:
-              this.fyo.singles.AccountingSettings?.businessTurnover,
+            buyerTurnover: this.fyo.singles.AccountingSettings
+              ?.businessTurnover as Money | undefined,
             sellerTurnover: party.businessTurnover,
             amount: absBaseApplicableAmount,
           }
@@ -265,7 +265,7 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
           tdsSection.cumulativeThreshold.gt(0)
         ) {
           const invoiceDate = DateTime.fromISO(
-            (this.date as string) || DateTime.local().toISODate()
+            (this.date as unknown as string) || DateTime.local().toISODate()
           );
 
           // Use fiscal year start based on Indian financial year (April 1)
@@ -335,7 +335,7 @@ export class PurchaseInvoice extends BasePurchaseInvoice {
 
       // Round TDS amount to 2 decimal places
       const roundedTdsAmount = this.fyo.pesa(
-        Math.round(tdsAmount.toNumber() * 100) / 100
+        Math.round(tdsAmount.float * 100) / 100
       );
 
       return {

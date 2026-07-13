@@ -195,8 +195,8 @@ export class TDSPayable extends Report {
             ? tdsDetails.tdsAmount.float
             : tdsDetails.tdsAmount)
         : tdsDetails.tdsAmount instanceof Money
-        ? tdsDetails.tdsAmount.float
-        : tdsDetails.tdsAmount;
+          ? tdsDetails.tdsAmount.float
+          : tdsDetails.tdsAmount;
 
       const grossAmount =
         pi.baseGrandTotal instanceof Money
@@ -238,7 +238,7 @@ export class TDSPayable extends Report {
 
         reportRow.cells.push({
           rawValue: value ?? '',
-          value: rawValue,
+          value: rawValue ?? '',
           align,
           width: width ?? 1,
         });

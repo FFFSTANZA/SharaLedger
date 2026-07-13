@@ -34,6 +34,8 @@ export class Main {
   HEIGHT = process.platform === 'win32' ? 826 : 800;
 
   constructor() {
+    app.disableHardwareAcceleration();
+
     this.icon = this.isDevelopment
       ? path.resolve('./build/icon.png')
       : path.join(__dirname, 'icons', '512x512.png');
@@ -55,7 +57,7 @@ export class Main {
 
     this.registerListeners();
     if (this.isMac && this.isDevelopment) {
-      app.dock.setIcon(this.icon);
+      app.dock?.setIcon(this.icon);
     }
   }
 

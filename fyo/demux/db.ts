@@ -1,4 +1,4 @@
-import { DatabaseError, NotImplemented } from 'fyo/utils/errors';
+import { DatabaseError } from 'fyo/utils/errors';
 import { SchemaMap } from 'schemas/types';
 import { DatabaseDemuxBase, DatabaseMethod } from 'utils/db/types';
 import { BackendResponse } from 'utils/ipc/types';
@@ -26,11 +26,11 @@ export class DatabaseDemux extends DatabaseDemuxBase {
 
   async getSchemaMap(): Promise<SchemaMap> {
     if (!this.#isElectron) {
-      throw new NotImplemented();
+      return {};
     }
 
     return (await this.#handleDBCall(async () => {
-      return await ipc.db.getSchema();
+      return await window.ipc.db.getSchema();
     })) as SchemaMap;
   }
 
@@ -39,11 +39,11 @@ export class DatabaseDemux extends DatabaseDemuxBase {
     countryCode?: string
   ): Promise<string> {
     if (!this.#isElectron) {
-      throw new NotImplemented();
+      return countryCode ?? '';
     }
 
     return (await this.#handleDBCall(async () => {
-      return ipc.db.create(dbPath, countryCode);
+      return window.ipc.db.create(dbPath, countryCode);
     })) as string;
   }
 
@@ -52,31 +52,31 @@ export class DatabaseDemux extends DatabaseDemuxBase {
     countryCode?: string
   ): Promise<string> {
     if (!this.#isElectron) {
-      throw new NotImplemented();
+      return countryCode ?? '';
     }
 
     return (await this.#handleDBCall(async () => {
-      return ipc.db.connect(dbPath, countryCode);
+      return window.ipc.db.connect(dbPath, countryCode);
     })) as string;
   }
 
   async call(method: DatabaseMethod, ...args: unknown[]): Promise<unknown> {
     if (!this.#isElectron) {
-      throw new NotImplemented();
+      return {};
     }
 
     return await this.#handleDBCall(async () => {
-      return await ipc.db.call(method, ...args);
+      return await window.ipc.db.call(method, ...args);
     });
   }
 
   async callBespoke(method: string, ...args: unknown[]): Promise<unknown> {
     if (!this.#isElectron) {
-      throw new NotImplemented();
+      return [];
     }
 
     return await this.#handleDBCall(async () => {
-      return await ipc.db.bespoke(method, ...args);
+      return await window.ipc.db.bespoke(method, ...args);
     });
   }
 }

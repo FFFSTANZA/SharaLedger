@@ -21,19 +21,22 @@ import { setLanguageMap } from './utils/language';
   fyo.store.language = language || 'English';
 
   registerIpcRendererListeners();
-  const { isDevelopment, platform, version } = await ipc.getEnv();
 
-  fyo.store.isDevelopment = isDevelopment;
-  fyo.store.appVersion = version;
-  fyo.store.platform = platform;
-  const platformName = getPlatformName(platform);
+  let platformName = '';
+  if (window.ipc) {
+    const { isDevelopment, platform, version } = await window.ipc.getEnv();
+    fyo.store.isDevelopment = isDevelopment;
+    fyo.store.appVersion = version;
+    fyo.store.platform = platform;
+    platformName = getPlatformName(platform);
+  }
 
-  setOnWindow(isDevelopment);
+  setOnWindow(fyo.store.isDevelopment);
 
   const app = createApp({
     template: '<App/>',
   });
-  app.config.unwrapInjectedRef = true;
+  (app.config as unknown as Record<string, boolean>).unwrapInjectedRef = true;
   setErrorHandlers(app);
 
   app.use(router);

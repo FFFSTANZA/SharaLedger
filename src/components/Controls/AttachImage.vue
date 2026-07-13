@@ -103,8 +103,12 @@ export default defineComponent({
         filters: [{ name: 'Image', extensions: Object.keys(mime_types) }],
       };
 
-      const { name, success, data } = await ipc.selectFile(options);
+      const result = await window.ipc?.selectFile(options);
+      if (!result) {
+        return;
+      }
 
+      const { name, success, data } = result;
       if (!success) {
         return;
       }

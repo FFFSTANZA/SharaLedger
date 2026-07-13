@@ -472,7 +472,7 @@ export abstract class Invoice extends Transactional {
   getGrandTotal() {
     const totalDiscount = this.getTotalDiscount();
 
-    if (!this.taxes!.length) {
+    if (!this.taxes?.length) {
       if (this.redeemLoyaltyPoints) {
         return this.getLPAddedBaseGrandTotal();
       }
@@ -481,13 +481,16 @@ export abstract class Invoice extends Transactional {
 
     const grandTotal = ((this.taxes ?? []) as Doc[])
       .map((doc) => doc.amount as Money)
-      .reduce((a, b) => {
-        if (this.isReturn) {
-          return a.abs().add(b.abs()).neg();
-        }
+      .reduce(
+        (a, b) => {
+          if (this.isReturn) {
+            return a.abs().add(b.abs()).neg();
+          }
 
-        return a.add(b.abs());
-      }, (this.netTotal as Money).abs())
+          return a.add(b.abs());
+        },
+        (this.netTotal as Money).abs()
+      )
       .sub(totalDiscount);
 
     if (this.redeemLoyaltyPoints) {
@@ -623,7 +626,7 @@ export abstract class Invoice extends Transactional {
     return discountAmount;
   }
   async getTotalTaxRate(row: InvoiceItem): Promise<number> {
-    if (!this.taxes!.length) {
+    if (!this.taxes?.length) {
       return 0;
     }
 
@@ -641,7 +644,7 @@ export abstract class Invoice extends Transactional {
     }, this.fyo.pesa(0));
 
     // Convert back to number for compatibility, rounding to 2 decimal places
-    return Math.round(totalRate.toNumber() * 100) / 100;
+    return Math.round(totalRate.float * 100) / 100;
   }
 
   async getItemsDiscountedTotal(row: InvoiceItem) {
@@ -1046,7 +1049,7 @@ export abstract class Invoice extends Transactional {
       dependsOn: ['loyaltyPoints'],
     },
     baseGrandTotal: {
-      formula: () => (this.grandTotal as Money).mul(this.exchangeRate! ?? 1),
+      formula: () => (this.grandTotal as Money).mul(this.exchangeRate ?? 1),
       dependsOn: ['grandTotal', 'exchangeRate'],
     },
     outstandingAmount: {
@@ -1189,7 +1192,7 @@ export abstract class Invoice extends Transactional {
     discountAfterTax: () => !this.enableDiscounting,
     taxes: () => !this.taxes?.length,
     baseGrandTotal: () =>
-      this.exchangeRate === 1 || this.baseGrandTotal!.isZero(),
+      this.exchangeRate === 1 || (this.baseGrandTotal as Money)?.isZero(),
     terms: () => !(this.terms || !(this.isSubmitted || this.isCancelled)),
     attachment: () =>
       !(this.attachment || !(this.isSubmitted || this.isCancelled)),
@@ -1508,8 +1511,9 @@ export abstract class Invoice extends Transactional {
     const names = transfers.map(({ name }) => name).join(', ');
     const label = this.fyo.schemaMap[schemaName]?.label ?? schemaName;
     throw new ValidationError(
-      this.fyo.t`Cannot cancel ${this.schema.label} ${this
-        .name!} because of the following ${label}: ${names}`
+      this.fyo.t`Cannot cancel ${this.schema.label} ${
+        this.name!
+      } because of the following ${label}: ${names}`
     );
   }
 

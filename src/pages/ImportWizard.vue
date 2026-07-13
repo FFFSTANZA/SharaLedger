@@ -118,7 +118,9 @@
             :border="true"
             :df="gridColumnTitleDf"
             :value="importer.assignedTemplateFields[index]!"
-            @change="(value: string | null) => importer.setTemplateField(index, value)"
+            @change="
+              (value: string | null) => importer.setTemplateField(index, value)
+            "
           />
         </div>
 
@@ -165,8 +167,8 @@
                   val.value != null
                     ? String(val.value)
                     : val.rawValue != null
-                    ? String(val.rawValue)
-                    : ''
+                      ? String(val.rawValue)
+                      : ''
                 "
                 :read-only="true"
               />
@@ -181,19 +183,21 @@
                 "
                 :title="getFieldTitle(val)"
                 :df="
-                    importer.templateFieldsMap.get(
-                      importer.assignedTemplateFields[cidx]!
-                    )
-                  "
+                  importer.templateFieldsMap.get(
+                    importer.assignedTemplateFields[cidx]!
+                  )
+                "
                 size="small"
                 :rows="1"
                 :border="true"
                 :value="val.error ? null : val.value"
                 :read-only="false"
-                @change="(value: DocValue)=> {
-                    importer.valueMatrix[ridx][cidx]!.error = false
-                    importer.valueMatrix[ridx][cidx]!.value = value
-                  }"
+                @change="
+                  (value: DocValue) => {
+                    importer.valueMatrix[ridx][cidx]!.error = false;
+                    importer.valueMatrix[ridx][cidx]!.value = value;
+                  }
+                "
               />
             </template>
           </template>
@@ -253,7 +257,7 @@
                 :show-label="true"
                 :read-only="tf.required"
                 :value="importer.templateFieldsPicked.get(tf.fieldKey)"
-                @change="(value:boolean) => pickColumn(tf.fieldKey, value)"
+                @change="(value: boolean) => pickColumn(tf.fieldKey, value)"
               />
               <p v-if="tf.required" class="w-0 text-red-600 -ml-4">*</p>
             </div>
@@ -796,7 +800,7 @@ export default defineComponent({
         return;
       }
 
-      await ipc.saveData(template, filePath);
+      await window.ipc?.saveData(template, filePath);
     },
     async preImportValidations(): Promise<boolean> {
       const title = this.t`Cannot Import`;

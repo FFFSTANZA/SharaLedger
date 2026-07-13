@@ -2,7 +2,11 @@ import { handleError } from 'src/errorHandling';
 import { fyo } from 'src/initFyo';
 
 export default function registerIpcRendererListeners() {
-  ipc.registerMainProcessErrorListener(
+  if (!window.ipc) {
+    return;
+  }
+
+  window.ipc.registerMainProcessErrorListener(
     (_, error: unknown, more?: Record<string, unknown>) => {
       if (!(error instanceof Error)) {
         throw error;
@@ -24,7 +28,7 @@ export default function registerIpcRendererListeners() {
     }
   );
 
-  ipc.registerConsoleLogListener((_, ...stuff: unknown[]) => {
+  window.ipc.registerConsoleLogListener((_, ...stuff: unknown[]) => {
     if (!fyo.store.isDevelopment) {
       return;
     }

@@ -116,9 +116,9 @@ export class EWayBillRegister extends Report {
         label: t`Invoice No`,
         fieldtype: 'Link',
         fieldname: 'invoiceNo',
-        target: ModelNameEnum.SalesInvoice,
+        target: ModelNameEnum.SalesInvoice as unknown as string,
         width: 1,
-      },
+      } as ColumnField,
       {
         label: t`Customer`,
         fieldtype: 'Data',
@@ -257,8 +257,8 @@ export class EWayBillRegister extends Report {
             (typeof ewayBill.invoiceValue === 'number' &&
               ewayBill.invoiceValue === 0)
           ) {
-            ewayBill.invoiceValue =
-              invoice.baseGrandTotal || invoice.grandTotal;
+            ewayBill.invoiceValue = (invoice.baseGrandTotal ??
+              invoice.grandTotal) as never;
           }
         } catch (error) {
           // If invoice not found, we still show the E-Way Bill but with what we have
@@ -334,7 +334,7 @@ export class EWayBillRegister extends Report {
 
         reportRow.cells.push({
           rawValue: value ?? '',
-          value: rawValue,
+          value: rawValue ?? '',
           align,
           width: width ?? 1,
         });

@@ -280,10 +280,13 @@ export default defineComponent({
       };
     },
     groupColorClassMap(): Record<SearchGroup, string> {
-      return searchGroups.reduce((map, g) => {
-        map[g] = getBgTextColorClass(this.groupColorMap[g]);
-        return map;
-      }, {} as Record<SearchGroup, string>);
+      return searchGroups.reduce(
+        (map, g) => {
+          map[g] = getBgTextColorClass(this.groupColorMap[g]);
+          return map;
+        },
+        {} as Record<SearchGroup, string>
+      );
     },
     suggestions(): SearchItems {
       if (!this.searcher) {
@@ -315,7 +318,7 @@ export default defineComponent({
   },
   methods: {
     openDocs() {
-      ipc.openLink('https://docs.versoll.com/' + docsPathMap.Search);
+      window.ipc?.openLink('https://docs.versoll.com/' + docsPathMap.Search);
     },
     getShortcuts() {
       const ifOpen = (cb: Function) => () => this.openModal && cb();

@@ -10,7 +10,7 @@ export class AuthDemux extends AuthDemuxBase {
 
   async getCreds(): Promise<Creds> {
     if (this.#isElectron) {
-      return await ipc.getCreds();
+      return await window.ipc.getCreds();
     } else {
       return { errorLogUrl: '', tokenString: '', telemetryUrl: '' };
     }

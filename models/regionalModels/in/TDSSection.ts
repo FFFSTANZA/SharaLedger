@@ -66,7 +66,7 @@ export class TDSSection extends Doc {
 
     // For ITR filers: 2% above ₹1 crore
     if (isITRFiler) {
-      return amount.gte('10000000') ? this.rate ?? 2 : 0;
+      return amount.gte('10000000') ? (this.rate ?? 2) : 0;
     }
 
     // For non-ITR filers: 2% above ₹20 lakh, 5% above ₹1 crore
@@ -131,18 +131,14 @@ export class TDSSection extends Doc {
     // Handle turnover-based sections (194Q, 206C1H)
     if (this.turnoverThreshold) {
       if (this.serviceType === 'Goods-Purchase') {
-        // 194Q: Buyer conditions
         return (
-          amount.gte('5000000') && // ₹50 lakh purchase
-          buyerTurnover &&
-          buyerTurnover.gte(this.turnoverThreshold) // ₹10 crore buyer turnover
+          amount.gte('5000000') &&
+          Boolean(buyerTurnover && buyerTurnover.gte(this.turnoverThreshold))
         );
       } else if (this.serviceType === 'Goods-Sale') {
-        // 206C1H: Seller conditions
         return (
-          amount.gte('5000000') && // ₹50 lakh sale
-          sellerTurnover &&
-          sellerTurnover.gte(this.turnoverThreshold) // ₹10 crore seller turnover
+          amount.gte('5000000') &&
+          Boolean(sellerTurnover && sellerTurnover.gte(this.turnoverThreshold))
         );
       }
     }

@@ -216,21 +216,24 @@ export function getActionsForDoc(doc?: Doc): Action[] {
 
 export function getGroupedActionsForDoc(doc?: Doc): ActionGroup[] {
   const actions = getActionsForDoc(doc);
-  const actionsMap = actions.reduce((acc, ac) => {
-    if (!ac.group) {
-      ac.group = '';
-    }
+  const actionsMap = actions.reduce(
+    (acc, ac) => {
+      if (!ac.group) {
+        ac.group = '';
+      }
 
-    acc[ac.group] ??= {
-      group: ac.group,
-      label: ac.label ?? '',
-      type: ac.type ?? 'secondary',
-      actions: [],
-    };
+      acc[ac.group] ??= {
+        group: ac.group,
+        label: ac.label ?? '',
+        type: ac.type ?? 'secondary',
+        actions: [],
+      };
 
-    acc[ac.group].actions.push(ac);
-    return acc;
-  }, {} as Record<string, ActionGroup>);
+      acc[ac.group].actions.push(ac);
+      return acc;
+    },
+    {} as Record<string, ActionGroup>
+  );
 
   const grouped = Object.keys(actionsMap)
     .filter(Boolean)
@@ -480,9 +483,16 @@ export async function selectTextFile(filters?: SelectFileOptions['filters']) {
     title: t`Select File`,
     filters,
   };
-  const { success, canceled, filePath, data, name } = await ipc.selectFile(
-    options
-  );
+  const result = await window.ipc?.selectFile(options);
+  if (!result) {
+    showToast({
+      type: 'error',
+      message: t`File selection failed`,
+    });
+    return;
+  }
+
+  const { success, canceled, filePath, data, name } = result;
 
   if (canceled || !success) {
     showToast({
@@ -1018,13 +1028,14 @@ export function showExportInFolder(message: string, filePath: string) {
     actionText: t`Open Folder`,
     type: 'success',
     action: () => {
-      ipc.showItemInFolder(filePath);
+      window.ipc?.showItemInFolder(filePath);
     },
   });
 }
 
 export async function deleteDb(filePath: string) {
-  const { error } = await ipc.deleteFile(filePath);
+  if (!window.ipc) return;
+  const { error } = await window.ipc.deleteFile(filePath);
 
   if (error?.code === 'EBUSY') {
     await showDialog({
@@ -1053,7 +1064,7 @@ export async function deleteDb(filePath: string) {
 }
 
 export async function getSelectedFilePath() {
-  return ipc.getOpenFilePath({
+  return window.ipc?.getOpenFilePath({
     title: t`Select file`,
     properties: ['openFile'],
     filters: [{ name: 'SQLite DB File', extensions: ['db'] }],
@@ -1061,7 +1072,11 @@ export async function getSelectedFilePath() {
 }
 
 export async function getSavePath(name: string, extention: string) {
-  const response = await ipc.getSaveFilePath({
+  if (!window.ipc) {
+    return { canceled: true, filePath: undefined };
+  }
+
+  const response = await window.ipc.getSaveFilePath({
     title: t`Select folder`,
     defaultPath: `${name}.${extention}`,
   });

@@ -155,7 +155,7 @@ export default defineComponent({
       this.activeScreen = Screen.Desk;
       await this.setDeskRoute();
       await fyo.telemetry.start(true);
-      await ipc.checkForUpdates();
+      await window.ipc?.checkForUpdates();
       this.dbPath = filePath;
       this.companyName = (await fyo.getValue(
         ModelNameEnum.AccountingSettings,
@@ -169,7 +169,10 @@ export default defineComponent({
     },
     async fileSelected(filePath: string): Promise<void> {
       fyo.config.set('lastSelectedFilePath', filePath);
-      if (filePath !== ':memory:' && !(await ipc.checkDbAccess(filePath))) {
+      if (
+        filePath !== ':memory:' &&
+        !(await window.ipc?.checkDbAccess(filePath))
+      ) {
         await showDialog({
           title: this.t`Cannot open file`,
           type: 'error',
@@ -190,7 +193,7 @@ export default defineComponent({
     },
     async setupComplete(setupWizardOptions: SetupWizardOptions): Promise<void> {
       const companyName = setupWizardOptions.companyName;
-      const filePath = await ipc.getDbDefaultPath(companyName);
+      const filePath = await window.ipc?.getDbDefaultPath(companyName);
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set('lastSelectedFilePath', filePath);
       await this.setDesk(filePath);

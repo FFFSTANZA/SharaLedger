@@ -115,10 +115,12 @@ export abstract class BaseGSTR extends Report {
           'items',
           'outstandingAmount',
         ],
-        orderBy: {
-          field: 'date',
-          order: 'desc',
-        },
+        orderBy: [
+          {
+            field: 'date',
+            order: 'desc',
+          },
+        ] as unknown as string[],
       })) as any[];
 
       // Process invoices with enhanced error handling
@@ -151,7 +153,10 @@ export abstract class BaseGSTR extends Report {
   ): Promise<GSTRRow | null> {
     try {
       // Get party details with validation
-      const party = (await this.fyo.doc.getDoc('Party', invoice.party)) as Party;
+      const party = (await this.fyo.doc.getDoc(
+        'Party',
+        invoice.party
+      )) as Party;
       if (!party) {
         console.warn(`Party not found for invoice ${invoice.name}`);
         return null;
@@ -164,7 +169,7 @@ export abstract class BaseGSTR extends Report {
       const gstrRow: GSTRRow = {
         invNo: invoice.name,
         party: party.name as string,
-        partyName: (party.get('fullName') as string) || party.name,
+        partyName: ((party.get('fullName') as string) || party.name) as string,
         gstin: gstin,
         invDate: invoice.date,
         place: place,

@@ -165,9 +165,13 @@ export class DatabaseHandler extends DatabaseBase {
     const rawSingleValue = (await this.#demux.call(
       'getSingleValues',
       ...fieldnames
-    )) as SingleValue<RawValue>;
+    )) as SingleValue<RawValue> | undefined;
 
     const docSingleValue: SingleValue<DocValue> = [];
+    if (!rawSingleValue) {
+      return docSingleValue;
+    }
+
     for (const sv of rawSingleValue) {
       const field = this.fieldMap[sv.parent][sv.fieldname];
       const value = Converter.toDocValue(sv.value, field, this.#fyo);

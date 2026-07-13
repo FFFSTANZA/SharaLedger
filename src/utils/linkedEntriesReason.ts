@@ -66,12 +66,12 @@ export async function getLinkedEntryReason(
     schemaName === ModelNameEnum.SalesInvoice ||
     schemaName === ModelNameEnum.PurchaseInvoice
   ) {
-    return await getInvoiceReason(sourceDoc, linkedDoc);
+    return getInvoiceReason(sourceDoc, linkedDoc);
   }
 
   // Quote relationships
   if (schemaName === 'SalesQuote') {
-    return await getQuoteReason(sourceDoc, linkedDoc);
+    return getQuoteReason(sourceDoc, linkedDoc);
   }
 
   // Journal Entry relationships
@@ -223,10 +223,10 @@ async function getStockTransferReason(
   };
 }
 
-async function getInvoiceReason(
+function getInvoiceReason(
   sourceDoc: Doc,
   linkedDoc: LinkedDoc
-): Promise<LinkedEntryReason> {
+): LinkedEntryReason {
   const schemaName = linkedDoc.schemaName;
   const isSales = schemaName === ModelNameEnum.SalesInvoice;
   const party = linkedDoc.party as string | undefined;
@@ -410,10 +410,10 @@ function getStockMovementReason(
   };
 }
 
-async function getQuoteReason(
+function getQuoteReason(
   sourceDoc: Doc,
   linkedDoc: LinkedDoc
-): Promise<LinkedEntryReason> {
+): LinkedEntryReason {
   const party = linkedDoc.party as string | undefined;
   const grandTotal = linkedDoc.grandTotal as Money | undefined;
 
@@ -449,7 +449,7 @@ function getDefaultReason(
     const partyName = name;
     const role = (linkedDoc as any).role as string | undefined;
     return {
-      reason: role ? `${role}: ${partyName}` : partyName,
+      reason: role ? `${role}: ${partyName}` : (partyName ?? ''),
       impact: 'Party record',
       relationship: 'reference',
       icon: 'user',
@@ -461,7 +461,7 @@ function getDefaultReason(
     const itemName = name;
     const itemType = (linkedDoc as any).itemType as string | undefined;
     return {
-      reason: itemType ? `${itemType}: ${itemName}` : itemName,
+      reason: itemType ? `${itemType}: ${itemName}` : (itemName ?? ''),
       impact: 'Item record',
       relationship: 'reference',
       icon: 'box',
@@ -473,7 +473,7 @@ function getDefaultReason(
     const accountName = name;
     const rootType = (linkedDoc as any).rootType as string | undefined;
     return {
-      reason: rootType ? `${rootType}: ${accountName}` : accountName,
+      reason: rootType ? `${rootType}: ${accountName}` : (accountName ?? ''),
       impact: 'Account record',
       relationship: 'ledger_entry',
       icon: 'layers',
@@ -484,7 +484,7 @@ function getDefaultReason(
   if (linkedDoc.schemaName === ModelNameEnum.Location) {
     const locationName = name;
     return {
-      reason: locationName,
+      reason: locationName ?? '',
       impact: 'Location record',
       relationship: 'reference',
       icon: 'map-pin',

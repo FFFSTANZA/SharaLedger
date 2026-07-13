@@ -2,7 +2,7 @@
   <div
     class="py-4 h-full flex justify-between flex-col bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 relative border-r border-gray-200 dark:border-gray-700 shadow-lg"
     :class="{
-      'window-drag': platform !== 'Windows',
+      'window-drag': platform === 'Mac',
     }"
   >
     <div class="space-y-1">
@@ -24,7 +24,7 @@
       <!-- Sidebar Items -->
       <div v-for="group in groups" :key="group.label" class="px-2">
         <div
-          class="px-3 flex items-center cursor-pointer hover:bg-violet-50 dark:hover:bg-violet-900/20 h-10 rounded-lg transition-all duration-200 group"
+          class="px-3 flex items-center cursor-pointer hover:bg-violet-50 dark:hover:bg-violet-900/20 h-10 rounded-lg transition-all duration-200 group window-no-drag"
           :class="
             isGroupActive(group) && !group.items
               ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 font-semibold'
@@ -42,7 +42,7 @@
           <div
             v-for="item in group.items"
             :key="item.label"
-            class="text-sm h-9 ps-6 pe-3 cursor-pointer flex items-center hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-md transition-all duration-200 group"
+            class="text-sm h-9 ps-6 pe-3 cursor-pointer flex items-center hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-md transition-all duration-200 group window-no-drag"
             :class="
               isItemActive(item)
                 ? 'text-violet-600 dark:text-violet-400 font-medium'
@@ -191,7 +191,7 @@ export default defineComponent({
     reportIssue,
     toggleSidebar,
     openDocumentation() {
-      ipc.openLink('https://docs.versoll.com/' + docsPathRef.value);
+      window.ipc?.openLink('https://docs.versoll.com/' + docsPathRef.value);
     },
     setActiveGroup() {
       const { fullPath } = this.$router.currentRoute.value;

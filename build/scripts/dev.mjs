@@ -123,7 +123,7 @@ async function handleResult(result) {
 }
 
 function runElectron() {
-  const electronProcess = $$`npx electron --inspect=5858 ${path.join(
+  const electronProcess = $$`npx electron --no-sandbox --disable-gpu --disable-software-rasterizer --disable-gpu-sandbox --ozone-platform-hint=x11 --inspect=5858 ${path.join(
     root,
     'dist_electron',
     'dev',

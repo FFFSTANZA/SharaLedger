@@ -63,7 +63,7 @@ export interface SinglesMap {
   POSSettings?: POSSettings;
   POSProfile?: POSProfile;
   POSOpeningShift?: POSOpeningShift;
-  ERPNextSyncSettings?: ERPNextSyncSettings;
+  ERPNextSyncSettings?: never;
   POSClosingShift?: POSClosingShift;
   PrintSettings?: PrintSettings;
   Defaults?: Defaults;

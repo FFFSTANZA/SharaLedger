@@ -75,17 +75,18 @@ export default {
   },
   methods: {
     minimizeWindow() {
-      ipc.minimizeWindow();
+      window.ipc?.minimizeWindow();
     },
     toggleMaximize() {
-      ipc.toggleMaximize();
+      window.ipc?.toggleMaximize();
       this.getIsMaximized();
     },
     closeWindow() {
-      ipc.closeWindow();
+      window.ipc?.closeWindow();
     },
     getIsMaximized() {
-      ipc
+      if (!window.ipc) return;
+      window.ipc
         .isMaximized()
         .then((result) => {
           this.isMax = result;
@@ -95,7 +96,8 @@ export default {
         });
     },
     getIsFullscreen() {
-      ipc
+      if (!window.ipc) return;
+      window.ipc
         .isFullscreen()
         .then((result) => {
           this.isFullscreen = result;

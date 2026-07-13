@@ -111,6 +111,10 @@ function getIndianCOA(): COATree {
             isGroup: false,
             accountType: 'Receivable',
           },
+          Debtors: {
+            isGroup: false,
+            accountType: 'Receivable',
+          },
         },
         'Bank Accounts': {
           accountType: 'Bank',
@@ -240,6 +244,9 @@ function getIndianCOA(): COATree {
       'Current Liabilities': {
         'Accounts Payable': {
           'Sundry Creditors': {
+            accountType: 'Payable',
+          },
+          Creditors: {
             accountType: 'Payable',
           },
           'Payroll Payable': {},

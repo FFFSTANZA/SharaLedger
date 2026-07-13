@@ -4,11 +4,32 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
+  push:
+    branches: [main, master, develop]
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
 
 jobs:
-  setup_and_build:
-    runs-on: macos-15-intel
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15-intel, ubuntu-latest, windows-2022]
+        include:
+          - os: macos-15-intel
+            build-flags: --mac
+          - os: ubuntu-latest
+            build-flags: --linux
+          - os: windows-2022
+            build-flags: --win
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Setup node
         uses: actions/setup-node@v4
@@ -18,7 +39,7 @@ jobs:
       - name: Set yarn version
         run: yarn set version 1.22.18
 
-      - name: Checkout Books
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Dependencies
@@ -28,4 +49,15 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
           APPLE_NOTARIZE: 0
-        run: yarn build -mw --publish never
+        run: yarn build ${{ matrix.build-flags }} --publish never --nosign
+
+      - name: Tar artifacts
+        if: always()
+        run: tar -cvf dist-${{ matrix.os }}.tar dist_electron
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}
+          path: dist-${{ matrix.os }}.tar

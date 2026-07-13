@@ -3,7 +3,6 @@
     class="flex-1 flex justify-center items-center bg-slate-50 dark:bg-slate-950"
     :class="{
       'pointer-events-none': loadingDatabase,
-      'window-drag': platform !== 'Windows',
     }"
   >
     <div
@@ -361,6 +360,16 @@ export default defineComponent({
       });
     },
     async createDemo() {
+      if (!window.ipc) {
+        const { showDialog } = await import('src/utils/interactive');
+        await showDialog({
+          title: fyo.t`Demo Unavailable`,
+          message: fyo.t`Demo requires the desktop app. Download it at versoll.com`,
+          type: 'info',
+        });
+        return;
+      }
+
       if (!fyo.store.isDevelopment) {
         await this.startDummyInstanceSetup();
       } else {
@@ -393,7 +402,7 @@ export default defineComponent({
       this.$emit('file-selected', filePath);
     },
     async setFiles() {
-      const dbList = await ipc.getDbList();
+      const dbList = await window.ipc?.getDbList();
       this.files = dbList?.sort(
         (a, b) => Date.parse(b.modified) - Date.parse(a.modified)
       );
@@ -407,6 +416,16 @@ export default defineComponent({
     },
     async existingDatabase() {
       if (this.creatingDemo) {
+        return;
+      }
+
+      if (!window.ipc) {
+        const { showDialog } = await import('src/utils/interactive');
+        await showDialog({
+          title: fyo.t`Desktop App Required`,
+          message: fyo.t`File selection requires the desktop app.`,
+          type: 'info',
+        });
         return;
       }
 

@@ -39,18 +39,18 @@ export async function connectToDatabase(
 export async function handleDatabaseConnectionError(
   error: Error,
   dbPath: string
-) {
+): Promise<(typeof dbErrorActionSymbols)[keyof typeof dbErrorActionSymbols]> {
   const message = error.message;
   if (typeof message !== 'string') {
     throw error;
   }
 
   if (message.includes(dbErrors.DirectoryDoesNotExist)) {
-    return await handleDirectoryDoesNotExist(dbPath);
+    return (await handleDirectoryDoesNotExist(dbPath)) as symbol;
   }
 
   if (message.includes(dbErrors.UnableToAcquireConnection)) {
-    return await handleUnableToAcquireConnection(dbPath);
+    return (await handleUnableToAcquireConnection(dbPath)) as symbol;
   }
 
   throw error;

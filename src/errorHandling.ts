@@ -42,7 +42,7 @@ export async function sendError(errorLogObj: ErrorLog) {
     console.log('sendError', body);
   }
 
-  await ipc.sendError(JSON.stringify(body));
+  await window.ipc?.sendError(JSON.stringify(body));
 }
 
 function getToastProps(errorLogObj: ErrorLog) {
@@ -153,7 +153,7 @@ export async function showErrorDialog(title?: string, content?: string) {
   // To be used for  show stopper errors
   title ??= t`Error`;
   content ??= t`Something has gone terribly wrong. Please check the console and raise an issue.`;
-  await ipc.showError(title, content);
+  await window.ipc?.showError(title, content);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -197,20 +197,23 @@ function getFeatureFlags(): string[] {
   const getBooleanFields = (docName: string) => {
     const doc = fyo.singles[docName];
 
-    return Object.entries(doc as Doc).reduce((acc, [key, value]) => {
-      const fieldsArray = fyo.schemaMap[docName]?.fields ?? [];
-      const fieldsMap = new Map(fieldsArray.map((f) => [f.fieldname, f]));
+    return Object.entries(doc as Doc).reduce(
+      (acc, [key, value]) => {
+        const fieldsArray = fyo.schemaMap[docName]?.fields ?? [];
+        const fieldsMap = new Map(fieldsArray.map((f) => [f.fieldname, f]));
 
-      const field = fieldsMap.get(key);
-      if (
-        typeof value === 'boolean' &&
-        !field?.hidden &&
-        !key.startsWith('_')
-      ) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, boolean>);
+        const field = fieldsMap.get(key);
+        if (
+          typeof value === 'boolean' &&
+          !field?.hidden &&
+          !key.startsWith('_')
+        ) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
   };
 
   const sections = [
@@ -284,7 +287,7 @@ function getIssueUrlQuery(errorLogObj?: ErrorLog): string {
 
 export function reportIssue(errorLogObj?: ErrorLog) {
   const urlQuery = getIssueUrlQuery(errorLogObj);
-  ipc.openExternalUrl(urlQuery);
+  window.ipc?.openExternalUrl(urlQuery);
 }
 
 function getErrorLabel(error: Error) {
